@@ -45,7 +45,7 @@ public class AgentPropertyImpl implements IAgentProperty {
 	@Column(name = "PROPERTY_NAME", nullable = false)
 	private String propertyName;
 
-	@Column(name = "PROPERTY_VALUE", nullable = false)
+	@Column(name = "PROPERTY_VALUE", nullable = false, length = 1500)
 	private String propertyValue;
 
 	@Temporal(TemporalType.TIMESTAMP)

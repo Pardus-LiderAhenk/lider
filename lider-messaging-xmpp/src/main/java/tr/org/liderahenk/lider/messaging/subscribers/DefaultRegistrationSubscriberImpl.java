@@ -97,13 +97,6 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 		// Register agent
 		if (AgentMessageType.REGISTER == message.getType()) {
 			
-			String userName = message.getUserName();
-			String userPassword = message.getUserPassword();
-			
-			LdapEntry user = null;
-			
-			user = getUserFromLdap(userName, userPassword);
-
 			boolean alreadyExists = false;
 			String dn = null;
 
@@ -172,7 +165,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			respMessage.setLdapServer(configurationService.getLdapServer());
 			respMessage.setLdapBaseDn(configurationService.getUserLdapBaseDn());
 			respMessage.setLdapVersion(LDAP_VERSION);
-			respMessage.setLdapUserDn(user.getDistinguishedName());
+			respMessage.setLdapUserDn(dn);
 			
 			logger.info("Registration message created..  "
 					+ "Message details ldap base dn : " +respMessage.getLdapBaseDn() 

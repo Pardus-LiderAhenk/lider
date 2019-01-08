@@ -45,6 +45,8 @@ public class UserSessionMessageImpl implements IUserSessionMessage {
 
 	private String ipAddresses;
 	
+	private String hostname;
+	
 	private String userIp; // for ltsp user sessions
 
 	private Date timestamp;
@@ -101,6 +103,14 @@ public class UserSessionMessageImpl implements IUserSessionMessage {
 
 	public String getUserIp() {
 		return userIp;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
 	}
 
 }

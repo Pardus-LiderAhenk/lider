@@ -323,7 +323,7 @@ public class XMPPClientImpl {
 		registrationListener.setDefaultSubcriber(defaultRegistrationSubscriber);
 		connection.addAsyncStanzaListener(registrationListener, registrationListener);
 		// Hook listener for user session messages
-		userSessionListener = new UserSessionListener();
+		userSessionListener = new UserSessionListener(this);
 		userSessionListener.setSubscriber(userSessionSubscriber);
 		connection.addAsyncStanzaListener(userSessionListener, userSessionListener);
 		// Hook listener for missing plugin messages

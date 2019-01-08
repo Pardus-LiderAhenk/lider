@@ -19,6 +19,7 @@
 */
 package tr.org.liderahenk.lider.core.api.messaging.subscribers;
 
+import tr.org.liderahenk.lider.core.api.messaging.messages.ILiderMessage;
 import tr.org.liderahenk.lider.core.api.messaging.messages.IUserSessionMessage;
 
 /**
@@ -39,6 +40,6 @@ public interface IUserSessionSubscriber {
 	 * @throws Exception
 	 * 
 	 */
-	void messageReceived(IUserSessionMessage message) throws Exception;
+	ILiderMessage messageReceived(IUserSessionMessage message) throws Exception;
 
 }

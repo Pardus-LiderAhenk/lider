@@ -44,6 +44,8 @@
 	<bean id="userSessionSubscriber"
 		class="tr.org.liderahenk.lider.messaging.subscribers.UserSessionSubscriberImpl">
 		<property name="agentDao" ref="agentDao" />
+		<property name="ldapService" ref="ldapService" />
+		<property name="configurationService" ref="configurationService" />
 		<property name="entityFactory" ref="entityFactory" />
 	</bean>
 

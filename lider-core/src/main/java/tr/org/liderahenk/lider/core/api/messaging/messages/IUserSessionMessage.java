@@ -42,5 +42,7 @@ public interface IUserSessionMessage extends IAgentMessage {
 	String getIpAddresses();
 	
 	String getUserIp();
+	
+	String getHostname();
 
 }

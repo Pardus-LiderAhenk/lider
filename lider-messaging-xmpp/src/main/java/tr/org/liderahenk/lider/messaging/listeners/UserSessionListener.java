@@ -31,7 +31,9 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tr.org.liderahenk.lider.core.api.messaging.messages.ILiderMessage;
 import tr.org.liderahenk.lider.core.api.messaging.subscribers.IUserSessionSubscriber;
+import tr.org.liderahenk.lider.messaging.XMPPClientImpl;
 import tr.org.liderahenk.lider.messaging.messages.UserSessionMessageImpl;
 
 /**
@@ -55,6 +57,15 @@ public class UserSessionListener implements StanzaListener, StanzaFilter {
 	 * Message subscriber
 	 */
 	private IUserSessionSubscriber subscriber;
+	
+	private XMPPClientImpl client;
+	
+	
+	
+	 public UserSessionListener(XMPPClientImpl client) {
+		 this.client = client;
+	}
+	
 
 	@Override
 	public boolean accept(Stanza stanza) {
@@ -86,7 +97,12 @@ public class UserSessionListener implements StanzaListener, StanzaFilter {
 				message.setFrom(msg.getFrom());
 
 				if (subscriber != null) {
-					subscriber.messageReceived(message);
+					ILiderMessage  responseMessage = subscriber.messageReceived(message);
+					
+					if (responseMessage != null) {
+						client.sendMessage(new ObjectMapper().writeValueAsString(responseMessage), msg.getFrom());
+					}
+					
 					logger.debug("Notified subscriber => {}", subscriber);
 				}
 

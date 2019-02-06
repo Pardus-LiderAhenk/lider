@@ -20,7 +20,9 @@
 package tr.org.liderahenk.lider.core.api.rest.processors;
 
 import java.util.Date;
+import java.util.List;
 
+import tr.org.liderahenk.lider.core.api.ldap.model.LdapEntry;
 import tr.org.liderahenk.lider.core.api.rest.enums.DNType;
 import tr.org.liderahenk.lider.core.api.rest.responses.IRestResponse;
 
@@ -85,12 +87,27 @@ public interface IPolicyRequestProcessor {
 	 */
 	IRestResponse listAppliedPolicies(String label, Date createDateRangeStart, Date createDateRangeEnd, Integer status,
 			Integer maxResults, String containsPlugin, DNType dnType, String dn);
+	
 
+	/**
+	 * Returns latest agent policy
+	 * @return
+	 */
+	IRestResponse getLatestAgentPolicy(String uid);
+	
+
+	/**
+	 * Returns latest user policy
+	 * @return
+	 */
+	IRestResponse getLatestUserPolicy(String uid, List<LdapEntry> groupDns);
+	
 	/**
 	 * 
 	 * @param policyId
 	 * @return
 	 */
 	IRestResponse listCommands(Long policyId);
+
 
 }

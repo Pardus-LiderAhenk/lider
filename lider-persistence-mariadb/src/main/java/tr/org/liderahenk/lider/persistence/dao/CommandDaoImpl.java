@@ -44,6 +44,7 @@ import org.apache.directory.api.util.exception.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tr.org.liderahenk.lider.core.api.ldap.model.LdapEntry;
 import tr.org.liderahenk.lider.core.api.messaging.enums.StatusCode;
 import tr.org.liderahenk.lider.core.api.persistence.PropertyOrder;
 import tr.org.liderahenk.lider.core.api.persistence.dao.ICommandDao;
@@ -439,6 +440,36 @@ public class CommandDaoImpl implements ICommandDao {
 		return (List<CommandImpl>) query.getResultList();
 	}
 
+	private static final String COMMAND_EXECUTION_RESULT_LIST_BY_POLICY_ID_AND_DN = 
+			"SELECT cer.id, cer.responseCode, cer.responseMessage " + 
+			"FROM CommandImpl as com " + 
+			"LEFT OUTER JOIN com.commandExecutions cex " + 
+			"LEFT OUTER JOIN cex.commandExecutionResults cer " + 
+			"LEFT OUTER JOIN com.policy as pol " + 
+			"WHERE com.dnListJsonString = :uid " + 
+			"AND pol.id = :policyID " +
+			"ORDER BY cer.createDate DESC";
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object[]> getCommandExecutionResultsOfPolicy(String uid, List<LdapEntry> groupDns) {
+		uid = "[\"uid=edip,ou=Ankara,ou=Kullanıcılar,dc=liderahenk,dc=org\"]";
+		int policyID = 30652;
+		Query query = entityManager.createQuery(COMMAND_EXECUTION_RESULT_LIST_BY_POLICY_ID_AND_DN);
+		query.setParameter("uid", uid);
+		query.setParameter("policyID", policyID);
+		List<Object[]>  resultList = query.getResultList();
+		
+		for (Object[] objects : resultList) {
+	        Long id = ((Long) objects[0]).longValue();
+	        int responseCode = (Integer) objects[1];
+	        String responseMessage = (String) objects[2];
+	        logger.info(responseMessage + id + responseCode);
+		}
+
+		//logger.info(resultList.get(0).getResponseMessage());
+		return resultList;
+	}
 	/**
 	 * 
 	 * @param tokens

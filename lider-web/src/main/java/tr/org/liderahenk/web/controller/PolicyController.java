@@ -20,7 +20,9 @@
 package tr.org.liderahenk.web.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import tr.org.liderahenk.lider.core.api.ldap.model.LdapEntry;
 import tr.org.liderahenk.lider.core.api.rest.IResponseFactory;
 import tr.org.liderahenk.lider.core.api.rest.enums.DNType;
 import tr.org.liderahenk.lider.core.api.rest.processors.IPolicyRequestProcessor;
@@ -215,6 +218,83 @@ public class PolicyController {
 		return restResponse;
 	}
 
+//	/**
+//	 * List commands according to given parameters.
+//	 * 
+//	 * @param pluginName
+//	 * @param pluginVersion
+//	 * @param createDateRangeStart
+//	 * @param createDateRangeEnd
+//	 * @param status
+//	 * @param maxResults
+//	 * @param request
+//	 * @return
+//	 * @throws UnsupportedEncodingException
+//	 */
+//	@RequestMapping(value = "/list/assignedpolicy", method = { RequestMethod.GET })
+//	@ResponseBody
+//	public IRestResponse listAllAppliedPolicies(@RequestParam(value = "uid", required = true) String uid,
+//			HttpServletRequest request)
+//			throws UnsupportedEncodingException {
+//		logger.info(
+//				"Request received. URL: '/lider/policy/list/assignedpolicy?dnList={}'",
+//				new Object[] { uid });
+//		IRestResponse restResponse = policyProcessor.getAllAppliedPolicies(uid);
+//		//logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+//		return restResponse;
+//	}
+	
+	/**
+	 * Get latest agent policy
+	 * 
+	 * @param uid
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	@RequestMapping(value = "/list/latestagentpolicy", method = { RequestMethod.GET })
+	@ResponseBody
+	public IRestResponse getLatestAgentPolicy(@RequestParam(value = "uid", required = true) String uid,
+			HttpServletRequest request)
+			throws UnsupportedEncodingException {
+		logger.info(
+				"Request received. URL: '/lider/policy/list/latestagentpolicy?uid={}'",
+				new Object[] { uid });
+		IRestResponse restResponse = policyProcessor.getLatestAgentPolicy(uid);
+		//logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		return restResponse;
+	}
+	
+	/**
+	 * Get latest user policy
+	 * 
+	 * @param uid
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	@RequestMapping(value = "/list/latestuserpolicy", method = { RequestMethod.GET })
+	@ResponseBody
+	public IRestResponse getLatestUserPolicy(
+			@RequestParam(value = "uid", required = true) String uid,
+			@RequestParam(value = "groupDns", required = false) String groupDns,
+			HttpServletRequest request)
+			throws UnsupportedEncodingException {
+		List<LdapEntry> listLdapEntry = null;
+		if(groupDns != null && groupDns.equals("")) {
+			listLdapEntry = new ArrayList<>();
+			LdapEntry ldapEntry = null;
+			for (int i = 0; i < groupDns.split(",").length; i++) {
+				ldapEntry = new LdapEntry(null, null, null);
+				listLdapEntry.add(ldapEntry);
+			}
+		}
+		logger.info(
+				"Request received. URL: '/lider/policy/list/latestuserpolicy?uid={}'",
+				new Object[] { uid });
+		IRestResponse restResponse = policyProcessor.getLatestUserPolicy(uid, listLdapEntry);
+		//logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		return restResponse;
+	}
+	
 	/**
 	 * Retrieve command related to policy specified policy id.
 	 * 

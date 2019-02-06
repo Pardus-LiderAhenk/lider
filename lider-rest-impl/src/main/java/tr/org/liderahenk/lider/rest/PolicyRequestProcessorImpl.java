@@ -48,6 +48,7 @@ import tr.org.liderahenk.lider.core.api.persistence.dao.ICommandDao;
 import tr.org.liderahenk.lider.core.api.persistence.dao.IMailAddressDao;
 import tr.org.liderahenk.lider.core.api.persistence.dao.IPolicyDao;
 import tr.org.liderahenk.lider.core.api.persistence.dao.IProfileDao;
+import tr.org.liderahenk.lider.core.api.persistence.entities.IAppliedPolicy;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ICommand;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ICommandExecution;
 import tr.org.liderahenk.lider.core.api.persistence.entities.IMailAddress;
@@ -561,5 +562,51 @@ public class PolicyRequestProcessorImpl implements IPolicyRequestProcessor {
 	public void setMailAddressDao(IMailAddressDao mailAddressDao) {
 		this.mailAddressDao = mailAddressDao;
 	}
+
+//	@Override
+//	public IRestResponse getAllAppliedPolicies(String uid) {
+//		// TODO Auto-generated method stub
+//		IPolicy policy = policyDao.getAllAppliedPolicies(uid);
+//		Map<String, Object> resultMap = new HashMap<String, Object>();
+//		resultMap.put("policy", policy);
+//		return responseFactory.createResponse(RestResponseStatus.OK, "Record retrieved.", resultMap);
+//	}
+
+	@Override
+	public IRestResponse getLatestAgentPolicy(String uid) {
+		// TODO Auto-generated method stub
+		List<Object[]> policies = policyDao.getLatestAgentPolicy(uid);
+		List<IAppliedPolicy> listPolicy = null;
+		if(policies != null) {
+			listPolicy = new ArrayList<>();
+			for(int i = 0; i < policies.size(); i++) {
+				IAppliedPolicy policy = (IAppliedPolicy) policies.get(i)[0];
+				listPolicy.add(policy);
+			}
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("policy", listPolicy);
+		return responseFactory.createResponse(RestResponseStatus.OK, "Record retrieved.", resultMap);
+	}
+
+	@Override
+	public IRestResponse getLatestUserPolicy(String uid, List<LdapEntry> groupDns) {
+		List<Object[]> policies = policyDao.getLatestUserPolicy(uid, groupDns);
+		List<IPolicy> listPolicy = null;
+		if(policies != null) {
+			listPolicy = new ArrayList<>();
+			for(int i = 0; i < policies.size(); i++) {
+				IPolicy policy = (IPolicy) policies.get(i)[0];
+				listPolicy.add(policy);
+			}
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("policy", listPolicy);
+		return responseFactory.createResponse(RestResponseStatus.OK, "Record retrieved.", resultMap);
+	}
+
+
+
+
 
 }

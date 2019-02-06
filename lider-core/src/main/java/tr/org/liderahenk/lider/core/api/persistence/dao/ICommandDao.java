@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import tr.org.liderahenk.lider.core.api.ldap.model.LdapEntry;
 import tr.org.liderahenk.lider.core.api.persistence.IBaseDao;
 import tr.org.liderahenk.lider.core.api.persistence.PropertyOrder;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ICommand;
@@ -166,5 +167,7 @@ public interface ICommandDao extends IBaseDao<ICommand> {
 	ICommand getCommandByPolicyId(Long id);
 
 	List<? extends ICommand> findPolicyCommandsWithMailNotification();
+
+	List<Object[]> getCommandExecutionResultsOfPolicy(String uid, List<LdapEntry> groupDns);
 
 }

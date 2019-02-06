@@ -55,8 +55,6 @@ public class AppliedPolicyImpl implements IPolicy {
 	private Date modifyDate;
 
 	private String policyVersion;
-	
-	private String responseMessage;
 
 	public AppliedPolicyImpl() {
 	}
@@ -72,7 +70,6 @@ public class AppliedPolicyImpl implements IPolicy {
 		this.createDate = createDate;
 		this.modifyDate = modifyDate;
 		this.policyVersion = policyVersion;
-		this.responseMessage = responseMessage;
 	}
 
 	public AppliedPolicyImpl(IAppliedPolicy policy) {
@@ -84,7 +81,6 @@ public class AppliedPolicyImpl implements IPolicy {
 		this.createDate = policy.getCreateDate();
 		this.modifyDate = policy.getModifyDate();
 		this.policyVersion = policy.getPolicyVersion();
-		this.responseMessage = policy.getResponseMessage();
 		
 		// Convert IProfile to ProfileImpl
 		Set<? extends IProfile> tmpProfiles = policy.getProfiles();
@@ -190,15 +186,6 @@ public class AppliedPolicyImpl implements IPolicy {
 	@Override
 	public void setPolicyVersion(String policyVersion) {
 		this.policyVersion = policyVersion;
-	}
-
-	
-	public String getResponseMessage() {
-		return responseMessage;
-	}
-
-	public void setResponseMessage(String responseMessage) {
-		this.responseMessage = responseMessage;
 	}
 
 	@Override

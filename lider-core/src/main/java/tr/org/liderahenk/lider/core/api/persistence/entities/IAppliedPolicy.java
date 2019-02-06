@@ -82,6 +82,4 @@ public interface IAppliedPolicy extends IEntity {
 
 	void setPolicyVersion(String policyVersion);
 	
-	String getResponseMessage();
-
 }

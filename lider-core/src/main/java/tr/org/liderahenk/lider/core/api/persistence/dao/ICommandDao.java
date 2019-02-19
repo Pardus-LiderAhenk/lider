@@ -168,6 +168,6 @@ public interface ICommandDao extends IBaseDao<ICommand> {
 
 	List<? extends ICommand> findPolicyCommandsWithMailNotification();
 
-	List<Object[]> getCommandExecutionResultsOfPolicy(String uid, List<LdapEntry> groupDns);
+	List<Object[]> getCommandExecutionResultsOfPolicy(Long policyID, String uid, List<LdapEntry> groupDns);
 
 }

@@ -38,6 +38,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import tr.org.liderahenk.lider.core.api.configuration.IConfigurationService;
+import tr.org.liderahenk.lider.core.api.ldap.ILDAPService;
+import tr.org.liderahenk.lider.core.api.ldap.LdapSearchFilterAttribute;
+import tr.org.liderahenk.lider.core.api.ldap.enums.SearchFilterEnum;
+import tr.org.liderahenk.lider.core.api.ldap.exceptions.LdapException;
 import tr.org.liderahenk.lider.core.api.ldap.model.LdapEntry;
 import tr.org.liderahenk.lider.core.api.rest.IResponseFactory;
 import tr.org.liderahenk.lider.core.api.rest.enums.DNType;
@@ -48,7 +53,7 @@ import tr.org.liderahenk.web.controller.utils.ControllerUtils;
 /**
  * Controller for policy related operations.
  * 
- * @author <a href="mailto:emre.akkaya@agem.com.tr">Emre Akkaya</a>
+ * @author <a href="mailto:hasan.kara@pardus.org.tr">Hasan Kara</a>
  *
  */
 @Controller
@@ -62,6 +67,10 @@ public class PolicyController {
 	@Autowired
 	private IPolicyRequestProcessor policyProcessor;
 
+	@Autowired
+	private ILDAPService ldapService;
+	@Autowired
+	private IConfigurationService configurationService;
 	/**
 	 * Execute policy. 'Execution' means saving policy as command which can be
 	 * then queried by agents on user login.
@@ -218,32 +227,6 @@ public class PolicyController {
 		return restResponse;
 	}
 
-//	/**
-//	 * List commands according to given parameters.
-//	 * 
-//	 * @param pluginName
-//	 * @param pluginVersion
-//	 * @param createDateRangeStart
-//	 * @param createDateRangeEnd
-//	 * @param status
-//	 * @param maxResults
-//	 * @param request
-//	 * @return
-//	 * @throws UnsupportedEncodingException
-//	 */
-//	@RequestMapping(value = "/list/assignedpolicy", method = { RequestMethod.GET })
-//	@ResponseBody
-//	public IRestResponse listAllAppliedPolicies(@RequestParam(value = "uid", required = true) String uid,
-//			HttpServletRequest request)
-//			throws UnsupportedEncodingException {
-//		logger.info(
-//				"Request received. URL: '/lider/policy/list/assignedpolicy?dnList={}'",
-//				new Object[] { uid });
-//		IRestResponse restResponse = policyProcessor.getAllAppliedPolicies(uid);
-//		//logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
-//		return restResponse;
-//	}
-	
 	/**
 	 * Get latest agent policy
 	 * 
@@ -260,38 +243,112 @@ public class PolicyController {
 				"Request received. URL: '/lider/policy/list/latestagentpolicy?uid={}'",
 				new Object[] { uid });
 		IRestResponse restResponse = policyProcessor.getLatestAgentPolicy(uid);
-		//logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
 		return restResponse;
 	}
 	
 	/**
-	 * Get latest user policy
+	 * Get latest user policies.
 	 * 
 	 * @param uid
 	 * @return
 	 * @throws UnsupportedEncodingException
+	 * @throws LdapException 
 	 */
-	@RequestMapping(value = "/list/latestuserpolicy", method = { RequestMethod.GET })
+	@RequestMapping(value = "/list/latestuserpolicybygroupofnames", method = { RequestMethod.GET })
 	@ResponseBody
-	public IRestResponse getLatestUserPolicy(
+	public IRestResponse getLatestUserPolicyByCheckingGroupOfNames(
 			@RequestParam(value = "uid", required = true) String uid,
-			@RequestParam(value = "groupDns", required = false) String groupDns,
 			HttpServletRequest request)
-			throws UnsupportedEncodingException {
-		List<LdapEntry> listLdapEntry = null;
-		if(groupDns != null && groupDns.equals("")) {
-			listLdapEntry = new ArrayList<>();
-			LdapEntry ldapEntry = null;
-			for (int i = 0; i < groupDns.split(",").length; i++) {
-				ldapEntry = new LdapEntry(null, null, null);
-				listLdapEntry.add(ldapEntry);
+			throws UnsupportedEncodingException, LdapException {
+		List<LdapEntry> groupsOfUser = null;
+		if(uid!= null && !uid.equals("")) {
+
+			// Find LDAP user entry
+			String userDn = ldapService.getDN(configurationService.getLdapRootDn(), configurationService.getUserLdapUidAttribute(),
+					uid);
+
+			List<LdapSearchFilterAttribute> filterAttributesList = new ArrayList<LdapSearchFilterAttribute>();
+			String[] groupLdapObjectClasses = configurationService.getGroupLdapObjectClasses().split(",");
+			for (String groupObjCls : groupLdapObjectClasses) {
+				filterAttributesList.add(new LdapSearchFilterAttribute("objectClass", groupObjCls, SearchFilterEnum.EQ));
 			}
+			filterAttributesList.add(new LdapSearchFilterAttribute("member", userDn, SearchFilterEnum.EQ));
+			groupsOfUser =  ldapService.search(configurationService.getLdapRootDn(), filterAttributesList, null);
 		}
 		logger.info(
-				"Request received. URL: '/lider/policy/list/latestuserpolicy?uid={}'",
+				"Request received. URL: '/lider/policy/list/latestuserpolicybygroupofnames?uid={}'",
 				new Object[] { uid });
-		IRestResponse restResponse = policyProcessor.getLatestUserPolicy(uid, listLdapEntry);
-		//logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		IRestResponse restResponse = policyProcessor.getLatestUserPolicy(uid, groupsOfUser);
+		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		return restResponse;
+	}
+	
+	/**
+	 * Get latest group policy
+	 * 
+	 * @param uid
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws LdapException 
+	 */
+	@RequestMapping(value = "/list/latestgrouppolicy", method = { RequestMethod.GET })
+	@ResponseBody
+	public IRestResponse getLatestGroupPolicy(@RequestParam(value = "dn", required = true) String dn,
+			HttpServletRequest request)
+			throws UnsupportedEncodingException, LdapException {
+		logger.info(
+				"Request received. URL: '/lider/policy/list/latestgrouppolicy?dn={}'",
+				new Object[] { dn });
+		List<String> listParent = getParents(dn);
+		if(listParent != null) {
+			IRestResponse restResponse = policyProcessor.getLatestGroupPolicy(listParent);
+			logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+			return restResponse;
+		}
+		else {
+			logger.debug("PolicyController failed to parse DN to find parent DN's.");
+			return null;
+		}
+
+	}
+	
+	/**
+	 * Get latest user policy's executed command results
+	 * 
+	 * @param uid
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 * @throws LdapException 
+	 */
+	@RequestMapping(value = "/list/getexecutedcommandrequest", method = { RequestMethod.GET })
+	@ResponseBody
+	public IRestResponse getCommandExecutionResult(
+			@RequestParam(value = "policyID", required = true) Long policyID,
+			@RequestParam(value = "uid", required = false) String uid,
+			HttpServletRequest request)
+			throws UnsupportedEncodingException, LdapException {
+		List<LdapEntry> groupsOfUser = null;
+		if(uid!= null && !uid.equals("")) {
+
+			// Find LDAP user entry
+			String userDn = ldapService.getDN(configurationService.getLdapRootDn(), configurationService.getUserLdapUidAttribute(),
+					uid);
+
+			
+			List<LdapSearchFilterAttribute> filterAttributesList = new ArrayList<LdapSearchFilterAttribute>();
+			String[] groupLdapObjectClasses = configurationService.getGroupLdapObjectClasses().split(",");
+			for (String groupObjCls : groupLdapObjectClasses) {
+				filterAttributesList.add(new LdapSearchFilterAttribute("objectClass", groupObjCls, SearchFilterEnum.EQ));
+			}
+			filterAttributesList.add(new LdapSearchFilterAttribute("member", userDn, SearchFilterEnum.EQ));
+			groupsOfUser =  ldapService.search(configurationService.getLdapRootDn(), filterAttributesList, null);
+		}
+		logger.info(
+				"Request received. URL: '/lider/policy/list/getExecutedCommandRequest?policyID={}&uid={}'",
+				new Object[] { policyID, uid });
+		IRestResponse restResponse = policyProcessor.getCommandExecutionResult(policyID, uid, groupsOfUser);
+		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
 		return restResponse;
 	}
 	
@@ -325,4 +382,39 @@ public class PolicyController {
 		return ControllerUtils.handleAllException(e, responseFactory);
 	}
 
+	/*
+	 * Parse a dn to find parent of that dn
+	 */
+	public List<String> getParents(String dn) {
+		if(!dn.contains("ou=")) {
+			return null;
+		}
+		String[] parsedString = dn.split("ou=");
+		
+		List<String> listParent = new ArrayList<>();
+		String base = "";
+		for (int i = parsedString.length -1; i >= 0; i--) {
+			if(!parsedString[i].equals("")) {
+				if(i == parsedString.length) {
+					if(!parsedString[i].contains("cn=")) {
+						base = "ou=" + parsedString[i];
+					}
+					else {
+						base = parsedString[i];
+					}
+					listParent.add("[\"" + parsedString[i] + "\"]");
+				}
+				else {
+					if(!parsedString[i].contains("cn=")) {
+						base = "ou=" + parsedString[i] + base;
+					}
+					else {
+						base = parsedString[i] + base;
+					}
+					listParent.add("[\"" + base + "\"]");
+				}
+			}
+		}
+		return listParent;
+	}
 }

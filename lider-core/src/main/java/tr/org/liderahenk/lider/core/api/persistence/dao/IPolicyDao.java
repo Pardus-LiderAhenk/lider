@@ -91,4 +91,11 @@ public interface IPolicyDao extends IBaseDao<IPolicy> {
 	 */
 	List<Object[]> getLatestAgentPolicy(String uid);
 
+	/**
+	 * 
+	 * @param uid
+	 * @return latest group policy.
+	 */
+	List<Object[]> getLatestGroupPolicy(List<String> dnList);
+
 }

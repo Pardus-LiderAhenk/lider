@@ -48,7 +48,6 @@ import tr.org.liderahenk.lider.core.api.persistence.dao.ICommandDao;
 import tr.org.liderahenk.lider.core.api.persistence.dao.IMailAddressDao;
 import tr.org.liderahenk.lider.core.api.persistence.dao.IPolicyDao;
 import tr.org.liderahenk.lider.core.api.persistence.dao.IProfileDao;
-import tr.org.liderahenk.lider.core.api.persistence.entities.IAppliedPolicy;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ICommand;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ICommandExecution;
 import tr.org.liderahenk.lider.core.api.persistence.entities.IMailAddress;
@@ -325,9 +324,10 @@ public class PolicyRequestProcessorImpl implements IPolicyRequestProcessor {
 		if (label != null && !label.isEmpty()) {
 			propertiesMap.put("label", label);
 		}
-		if (active != null) {
-			propertiesMap.put("active", active);
-		}
+		//if this comment is open it will not show inactive policies
+//		if (active != null) {
+//			propertiesMap.put("active", active);
+//		}
 
 		// Find desired policies
 		List<? extends IPolicy> policies = policyDao.findByProperties(IPolicy.class, propertiesMap, null, null);
@@ -563,24 +563,14 @@ public class PolicyRequestProcessorImpl implements IPolicyRequestProcessor {
 		this.mailAddressDao = mailAddressDao;
 	}
 
-//	@Override
-//	public IRestResponse getAllAppliedPolicies(String uid) {
-//		// TODO Auto-generated method stub
-//		IPolicy policy = policyDao.getAllAppliedPolicies(uid);
-//		Map<String, Object> resultMap = new HashMap<String, Object>();
-//		resultMap.put("policy", policy);
-//		return responseFactory.createResponse(RestResponseStatus.OK, "Record retrieved.", resultMap);
-//	}
-
 	@Override
 	public IRestResponse getLatestAgentPolicy(String uid) {
-		// TODO Auto-generated method stub
 		List<Object[]> policies = policyDao.getLatestAgentPolicy(uid);
-		List<IAppliedPolicy> listPolicy = null;
+		List<IPolicy> listPolicy = null;
 		if(policies != null) {
 			listPolicy = new ArrayList<>();
 			for(int i = 0; i < policies.size(); i++) {
-				IAppliedPolicy policy = (IAppliedPolicy) policies.get(i)[0];
+				IPolicy policy = (IPolicy) policies.get(i)[0];
 				listPolicy.add(policy);
 			}
 		}
@@ -605,7 +595,29 @@ public class PolicyRequestProcessorImpl implements IPolicyRequestProcessor {
 		return responseFactory.createResponse(RestResponseStatus.OK, "Record retrieved.", resultMap);
 	}
 
+	@Override
+	public IRestResponse getCommandExecutionResult(Long policyID, String uid, List<LdapEntry> groupDns) {
+		List<Object[]> executionResults = commandDao.getCommandExecutionResultsOfPolicy(policyID, uid, groupDns);
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("commandExecutionResult", executionResults);
+		return responseFactory.createResponse(RestResponseStatus.OK, "Record retrieved.", resultMap);
+	}
 
+	@Override
+	public IRestResponse getLatestGroupPolicy(List<String> dnList) {
+		List<Object[]> policies = policyDao.getLatestGroupPolicy(dnList);
+		List<IPolicy> listPolicy = null;
+		if(policies != null) {
+			listPolicy = new ArrayList<>();
+			for(int i = 0; i < policies.size(); i++) {
+				IPolicy policy = (IPolicy) policies.get(i)[0];
+				listPolicy.add(policy);
+			}
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("policy", listPolicy);
+		return responseFactory.createResponse(RestResponseStatus.OK, "Record retrieved.", resultMap);
+	}
 
 
 

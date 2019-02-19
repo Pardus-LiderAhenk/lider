@@ -54,6 +54,7 @@ import tr.org.liderahenk.lider.core.api.persistence.entities.ICommandExecutionRe
 import tr.org.liderahenk.lider.core.api.persistence.entities.IPolicy;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ITask;
 import tr.org.liderahenk.lider.core.api.persistence.enums.OrderType;
+import tr.org.liderahenk.lider.core.api.rest.enums.DNType;
 import tr.org.liderahenk.lider.persistence.entities.CommandExecutionImpl;
 import tr.org.liderahenk.lider.persistence.entities.CommandExecutionResultImpl;
 import tr.org.liderahenk.lider.persistence.entities.CommandImpl;
@@ -440,36 +441,56 @@ public class CommandDaoImpl implements ICommandDao {
 		return (List<CommandImpl>) query.getResultList();
 	}
 
+	
+	/**
+	 * CEX dn ile larşılaştırma yapılmalı
+	 */
 	private static final String COMMAND_EXECUTION_RESULT_LIST_BY_POLICY_ID_AND_DN = 
-			"SELECT cer.id, cer.responseCode, cer.responseMessage " + 
+			"SELECT cer.id, cer.responseCode, cer.responseMessage, cer.createDate " + 
 			"FROM CommandImpl as com " + 
-			"LEFT OUTER JOIN com.commandExecutions cex " + 
-			"LEFT OUTER JOIN cex.commandExecutionResults cer " + 
-			"LEFT OUTER JOIN com.policy as pol " + 
-			"WHERE com.dnListJsonString = :uid " + 
+			"INNER JOIN com.commandExecutions cex " + 
+			"INNER JOIN cex.commandExecutionResults cer " + 
+			"INNER JOIN com.policy as pol " + 
+			"WHERE ((cex.uid = :uid)##WHERE##) " + 
 			"AND pol.id = :policyID " +
 			"ORDER BY cer.createDate DESC";
 	
+	private static final String GROUP_CONDITION = " OR (cex.dnType = :gDnType AND cex.dn IN :gDnList)";
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Object[]> getCommandExecutionResultsOfPolicy(String uid, List<LdapEntry> groupDns) {
-		uid = "[\"uid=edip,ou=Ankara,ou=Kullanıcılar,dc=liderahenk,dc=org\"]";
-		int policyID = 30652;
-		Query query = entityManager.createQuery(COMMAND_EXECUTION_RESULT_LIST_BY_POLICY_ID_AND_DN);
+	public List<Object[]> getCommandExecutionResultsOfPolicy(Long policyID, String uid, List<LdapEntry> groupDns) {
+		List<String> list = convertStringList(groupDns);
+		String sql = COMMAND_EXECUTION_RESULT_LIST_BY_POLICY_ID_AND_DN;
+		// User may or may not have groups! Handle 'WHERE' clause here
+		if (list != null && !list.isEmpty()) {
+			sql = sql.replaceFirst("##WHERE##", GROUP_CONDITION);
+		} else {
+			sql = sql.replaceFirst("##WHERE##", "");
+		}
+		//Query query = entityManager.createQuery(sql);
+		Query query = entityManager.createQuery(sql);
+		if (list != null && !list.isEmpty()) {
+			query.setParameter("gDnType", DNType.GROUP.getId());
+			query.setParameter("gDnList", list);
+		}
+		
 		query.setParameter("uid", uid);
 		query.setParameter("policyID", policyID);
-		List<Object[]>  resultList = query.getResultList();
-		
-		for (Object[] objects : resultList) {
-	        Long id = ((Long) objects[0]).longValue();
-	        int responseCode = (Integer) objects[1];
-	        String responseMessage = (String) objects[2];
-	        logger.info(responseMessage + id + responseCode);
-		}
-
-		//logger.info(resultList.get(0).getResponseMessage());
-		return resultList;
+		return query.getResultList();
 	}
+	
+	private List<String> convertStringList(List<LdapEntry> entries) {
+		List<String> list = null;
+		if (entries != null) {
+			list = new ArrayList<String>();
+			for (LdapEntry entry : entries) {
+				list.add(entry.getDistinguishedName());
+			}
+		}
+		return list;
+	}
+	
 	/**
 	 * 
 	 * @param tokens

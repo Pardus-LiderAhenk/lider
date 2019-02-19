@@ -103,11 +103,26 @@ public interface IPolicyRequestProcessor {
 	IRestResponse getLatestUserPolicy(String uid, List<LdapEntry> groupDns);
 	
 	/**
+	 * Returns latest group policy
+	 * @return
+	 */
+	IRestResponse getLatestGroupPolicy(List<String> dnList);
+	
+	/**
 	 * 
 	 * @param policyId
 	 * @return
 	 */
 	IRestResponse listCommands(Long policyId);
+	
+	/**
+	 * Returns command execuiton results of a policy which is applied to a user or to an agent
+	 * 
+	 * @param policyId
+	 * @param uid
+	 * @return
+	 */
+	IRestResponse getCommandExecutionResult(Long policyID, String uid, List<LdapEntry> groupDns);
 
 
 }

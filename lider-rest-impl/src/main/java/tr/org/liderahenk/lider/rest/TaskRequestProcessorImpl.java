@@ -19,7 +19,6 @@
 */
 package tr.org.liderahenk.lider.rest;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -29,9 +28,6 @@ import java.util.Map;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +40,7 @@ import tr.org.liderahenk.lider.core.api.messaging.IMessagingService;
 import tr.org.liderahenk.lider.core.api.persistence.dao.ICommandDao;
 import tr.org.liderahenk.lider.core.api.persistence.dao.ITaskDao;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ICommand;
+import tr.org.liderahenk.lider.core.api.persistence.entities.ICommandExecution;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ICommandExecutionResult;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ITask;
 import tr.org.liderahenk.lider.core.api.persistence.factories.IEntityFactory;
@@ -306,6 +303,22 @@ public class TaskRequestProcessorImpl implements ITaskRequestProcessor {
 		return responseFactory.createResponse(RestResponseStatus.OK, "Records listed.", resultMap);
 	}
 
+	/**
+	 * Get all executed tasks of an agent.
+	 */
+	@Override
+	public IRestResponse listExecutedDeviceTasks(String uid) {
+		List<? extends ICommand> resultList = taskDao.listExecutedDeviceTasks(uid);
+		// Construct result map
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			resultMap.put("tasks", resultList);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}		
+		return responseFactory.createResponse(RestResponseStatus.OK, "Records listed.", resultMap);
+	}
+	
 	/**
 	 * 
 	 * @param serviceRouter

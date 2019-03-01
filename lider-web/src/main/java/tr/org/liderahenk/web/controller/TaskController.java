@@ -163,6 +163,16 @@ public class TaskController {
 		return restResponse;
 	}
 
+	@RequestMapping(value = "/list/executeddevicetask", method = { RequestMethod.GET })
+	@ResponseBody
+	public IRestResponse listExecutedDeviceTasks(@RequestParam(value = "uid", required = true) String uid,
+			HttpServletRequest request) throws UnsupportedEncodingException {
+		logger.info("Request received. URL: '/lider/task/list/executeddevicetask?uid={}'", uid);
+		IRestResponse restResponse = taskProcessor.listExecutedDeviceTasks(uid);
+		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		return restResponse;
+	}
+	
 	/**
 	 * Handle predefined exceptions that we did not write and did not throw.
 	 * 

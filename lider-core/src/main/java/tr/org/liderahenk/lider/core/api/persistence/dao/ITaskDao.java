@@ -34,5 +34,7 @@ import tr.org.liderahenk.lider.core.api.persistence.entities.ITask;
 public interface ITaskDao extends IBaseDao<ITask> {
 
 	List<? extends ICommand> findFutureTasks();
+	
+	List<? extends ICommand> listExecutedDeviceTasks(String uid);
 
 }

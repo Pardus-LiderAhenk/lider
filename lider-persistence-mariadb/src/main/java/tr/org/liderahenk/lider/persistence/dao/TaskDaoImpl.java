@@ -44,8 +44,9 @@ import tr.org.liderahenk.lider.core.api.persistence.dao.ITaskDao;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ICommand;
 import tr.org.liderahenk.lider.core.api.persistence.entities.ITask;
 import tr.org.liderahenk.lider.core.api.persistence.enums.OrderType;
+import tr.org.liderahenk.lider.persistence.entities.CommandExecutionImpl;
+import tr.org.liderahenk.lider.persistence.entities.CommandExecutionResultImpl;
 import tr.org.liderahenk.lider.persistence.entities.CommandImpl;
-import tr.org.liderahenk.lider.persistence.entities.MailAddressImpl;
 import tr.org.liderahenk.lider.persistence.entities.TaskImpl;
 
 /**
@@ -209,8 +210,63 @@ public class TaskDaoImpl implements ITaskDao {
 		
 	}
 
+	private static final String EXECUTED_DEVICE_TASKS = 
+			"SELECT c.task, ce "
+			+ "FROM CommandImpl c "
+			+ "LEFT OUTER JOIN c.commandExecutions ce "
+			+ "LEFT OUTER JOIN c.task t "
+			+ "WHERE ce.uid =:uidClean "
+			+ "AND c.task IS NOT NULL "
+			+ "AND c.uidListJsonString LIKE :uid   "
+			+ "ORDER BY c.createDate DESC";
+	
+	@Override
+	public List<? extends ICommand> listExecutedDeviceTasks(String uid) {
+		Query query = entityManager.createQuery(EXECUTED_DEVICE_TASKS);
+		query.setParameter("uid", "%\"" + uid + " \"%");
+		query.setParameter("uidClean", uid);
+		List<Object[]>  resultList = query.getResultList();
+		
+		TaskImpl task = null;
+		CommandExecutionImpl commandExecution = null;
+		CommandExecutionResultImpl commandExecutionResult = null;
+		CommandImpl command = null;
+		List<CommandImpl> listCommand = new ArrayList<>(); 
+		List<CommandExecutionResultImpl> listCommandExecutionResult = null; 
+		
+		for(int i = 0; i < resultList.size(); i++) {
+			listCommandExecutionResult = new ArrayList<>(); 
+			task = (TaskImpl) resultList.get(i)[0];
+			//if commandExecutionResult is not null 
+			
+			commandExecution = (CommandExecutionImpl) resultList.get(i)[1];
+			CommandExecutionImpl newCommandExecution = new CommandExecutionImpl();
+			newCommandExecution.setDn(commandExecution.getDn());
+			newCommandExecution.setCreateDate(commandExecution.getCreateDate());
+			
+
+			if(resultList.get(i).length == 2) {
+				for (int j = 0; j < commandExecution.getCommandExecutionResults().size(); j++) {
+					commandExecutionResult = new CommandExecutionResultImpl();
+					commandExecutionResult = commandExecution.getCommandExecutionResults().get(j);
+					listCommandExecutionResult.add(commandExecutionResult);
+				}
+				newCommandExecution.setCommandExecutionResults(listCommandExecutionResult);
+			}
+
+			command = new CommandImpl();
+			command.setTask(task);
+			//newCommandExecution.setCommand(command);
+			command.addCommandExecution(newCommandExecution);
+			listCommand.add(command);
+		}
+		logger.debug("ICommand objects found: {}", resultList);
+		return listCommand;
+	}
+	
 	public void setEntityManager(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
+
 
 }

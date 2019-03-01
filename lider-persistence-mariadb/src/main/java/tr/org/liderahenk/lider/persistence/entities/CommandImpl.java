@@ -336,4 +336,13 @@ public class CommandImpl implements ICommand {
 		
 	}
 
+	@Override
+	public void setTask(ITask task) {
+		TaskImpl taskImpl = null;
+		if(task instanceof TaskImpl) {
+			taskImpl = (TaskImpl) task;
+		}
+		this.task = taskImpl;
+	}
+
 }

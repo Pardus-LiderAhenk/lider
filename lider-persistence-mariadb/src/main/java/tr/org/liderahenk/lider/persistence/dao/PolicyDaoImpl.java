@@ -282,11 +282,14 @@ public class PolicyDaoImpl implements IPolicyDao {
 			+ "FROM CommandImpl c "
 			+ "INNER JOIN c.policy pol "
 			+ "INNER JOIN c.commandExecutions ce "
-			+ "WHERE c.dnListJsonString IN :dnList "
-			+ "AND (c.activationDate IS NULL OR c.activationDate < :today) "
+			+ "WHERE "
+			+ "(c.activationDate IS NULL OR c.activationDate < :today) "
 			+ "AND (c.expirationDate IS NULL OR c.expirationDate > :today) "
 			+ "AND pol.deleted = False "
+			+ "##WHERE##"
 			+ "ORDER BY ce.createDate DESC";
+	
+	
 	
 	/**
 	 * Return the latest applied policy to group or to groupOfNames for Lider Console
@@ -295,8 +298,22 @@ public class PolicyDaoImpl implements IPolicyDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getLatestGroupPolicy(List<String> dnList) {
-		Query query = entityManager.createQuery(LATEST_GROUP_POLICY);
-		query.setParameter("dnList", dnList);
+		String sql = LATEST_GROUP_POLICY;
+		String WHERE_CONDITION = "AND ( ";
+		if(dnList != null) {
+			for (int i = 0; i < dnList.size(); i++) {
+				if(i != 0) {
+					WHERE_CONDITION += " OR ";
+				}
+				WHERE_CONDITION += "c.dnListJsonString LIKE \"%" + dnList.get(i) + "%\"";
+			}
+			WHERE_CONDITION += ") ";
+			sql = sql.replace("##WHERE##", WHERE_CONDITION);
+		}
+		else {
+			sql = sql.replace("##WHERE##", "");
+		}
+		Query query = entityManager.createQuery(sql);
 		query.setParameter("today", new Date(), TemporalType.TIMESTAMP);
 		List<Object[]> resultList = query.setMaxResults(1).getResultList();
 		logger.debug("Agent policy result list: {}",

@@ -89,6 +89,8 @@ public interface ICommand extends IEntity {
 	 */
 	void addCommandExecution(ICommandExecution commandExecution);
 
+	void setTask(ITask task);
+	
 	List<String> getUidList();
 
 	boolean isSentMail();

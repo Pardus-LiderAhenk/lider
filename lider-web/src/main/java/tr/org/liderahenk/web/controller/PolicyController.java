@@ -402,7 +402,7 @@ public class PolicyController {
 					else {
 						base = parsedString[i];
 					}
-					listParent.add("[\"" + parsedString[i] + "\"]");
+					listParent.add("" + parsedString[i] + "");
 				}
 				else {
 					if(!parsedString[i].contains("cn=")) {
@@ -411,7 +411,7 @@ public class PolicyController {
 					else {
 						base = parsedString[i] + base;
 					}
-					listParent.add("[\"" + base + "\"]");
+					listParent.add("" + base + "");
 				}
 			}
 		}

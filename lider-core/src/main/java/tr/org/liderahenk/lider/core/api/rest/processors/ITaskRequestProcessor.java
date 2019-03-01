@@ -88,4 +88,10 @@ public interface ITaskRequestProcessor {
 	 */
 	IRestResponse rescheduleTask(Long id, String cronExpression);
 
+	/**
+	 * 
+	 * @param uid
+	 * @return
+	 */
+	IRestResponse listExecutedDeviceTasks(String uid);
 }

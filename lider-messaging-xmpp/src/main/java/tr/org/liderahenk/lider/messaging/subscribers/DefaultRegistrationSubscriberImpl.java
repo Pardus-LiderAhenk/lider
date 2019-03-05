@@ -99,6 +99,20 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			
 			boolean alreadyExists = false;
 			String dn = null;
+			
+			String userName = message.getUserName();
+			String userPassword = message.getUserPassword();
+			
+			LdapEntry ldapUserEntry= getUserFromLdap(userName, userPassword);
+			
+			if(ldapUserEntry==null) {
+				
+				RegistrationResponseMessageImpl	respMessage = new RegistrationResponseMessageImpl(StatusCode.NOT_AUTHORIZED,
+						"User Not Found", dn, null, new Date());
+				return respMessage;
+			}
+			
+			
 
 			// Try to find agent LDAP entry
 			final List<LdapEntry> entries = ldapService.search(configurationService.getAgentLdapJidAttribute(), jid,
@@ -290,14 +304,16 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 		LdapEntry user = null;
 
 		List<LdapSearchFilterAttribute> filterAtt = new ArrayList();
-		filterAtt.add(new LdapSearchFilterAttribute("cn", userName, SearchFilterEnum.EQ));
+		filterAtt.add(new LdapSearchFilterAttribute("uid", userName, SearchFilterEnum.EQ));
 		filterAtt.add(new LdapSearchFilterAttribute("userPassword", userPassword, SearchFilterEnum.EQ));
 
-		List<LdapEntry> userList = ldapService.search(filterAtt, new String[] { "cn", "dn" });
+		List<LdapEntry> userList = ldapService.search(filterAtt, new String[] { "cn", "dn","uid" });
 		if (userList != null && userList.size() > 0) {
 
 			user = userList.get(0);
 		}
 		return user;
 	}
+	
+	
 }

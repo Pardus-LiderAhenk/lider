@@ -202,8 +202,13 @@ public class CommandImpl implements ICommand {
 	public List<String> getDnList() {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			return mapper.readValue(dnListJsonString, new TypeReference<ArrayList<String>>() {
-			});
+			if(dnListJsonString != null && !dnListJsonString.equals("")) {
+				return mapper.readValue(dnListJsonString, new TypeReference<ArrayList<String>>() {
+				});
+			}
+			else {
+				return null;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

@@ -113,10 +113,19 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 		List<LdapSearchFilterAttribute> filterAttt = new ArrayList();
 		
 		filterAttt.add(new LdapSearchFilterAttribute("sudoUser", userName, SearchFilterEnum.EQ));
-		filterAttt.add(new LdapSearchFilterAttribute("sudoHost", hostName, SearchFilterEnum.EQ));
+		filterAttt.add(new LdapSearchFilterAttribute("sudoHost", "ALL", SearchFilterEnum.EQ));
 		logger.info("Serching for username " + userName + " in OU " + userLdapRolesDn);
-		userAuthDomainGroupList = ldapService.search(userLdapRolesDn, filterAttt,
-				new String[] { "cn", "dn", "sudoCommand", "sudoHost", "sudoUser" });
+		userAuthDomainGroupList = ldapService.search(userLdapRolesDn, filterAttt, new String[] { "cn", "dn", "sudoCommand", "sudoHost", "sudoUser" });
+		
+		if(userAuthDomainGroupList.size()==0) {
+			filterAttt = new ArrayList();
+			filterAttt.add(new LdapSearchFilterAttribute("sudoUser", userName, SearchFilterEnum.EQ));
+			filterAttt.add(new LdapSearchFilterAttribute("sudoHost", hostName, SearchFilterEnum.EQ));
+			
+			userAuthDomainGroupList = ldapService.search(userLdapRolesDn, filterAttt, new String[] { "cn", "dn", "sudoCommand", "sudoHost", "sudoUser" });
+		}
+		
+		
 		return userAuthDomainGroupList;
 	}
 	/**

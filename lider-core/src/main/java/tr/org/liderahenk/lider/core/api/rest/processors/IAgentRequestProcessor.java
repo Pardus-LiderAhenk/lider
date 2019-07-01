@@ -38,6 +38,22 @@ public interface IAgentRequestProcessor {
 
 	/**
 	 * 
+	 * @param hostname
+	 * @param dn
+	 * @return
+	 */
+	IRestResponse listFilteredAgentsWithPaging(String propertyName, String propertyValue, String type, int firstResult, int maxResult);
+	
+	/**
+	 * 
+	 * @param hostname
+	 * @param dn
+	 * @return
+	 */
+	IRestResponse listAgentsForPaging(int firstResult, int maxResult);
+	
+	/**
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -55,5 +71,11 @@ public interface IAgentRequestProcessor {
 	 * @return
 	 */
 	IRestResponse getAllOnlineUsers();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	IRestResponse countOfAgents(String propertyName, String propertyValue, String type);
 
 }

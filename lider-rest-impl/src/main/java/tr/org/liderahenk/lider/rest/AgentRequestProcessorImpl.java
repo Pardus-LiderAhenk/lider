@@ -146,4 +146,26 @@ public class AgentRequestProcessorImpl implements IAgentRequestProcessor {
 		this.responseFactory = responseFactory;
 	}
 
+	@Override
+	public IRestResponse countOfAgents(String propertyName, String propertyValue, String type) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("countOfAgents", agentDao.countOfAgent(propertyName, propertyValue, type));		
+		return responseFactory.createResponse(RestResponseStatus.OK, "Records listed.", resultMap);
+	}
+
+	@Override
+	public IRestResponse listAgentsForPaging(int firstResult, int maxResult) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("agents", agentDao.listAgentsWithPaging(firstResult, maxResult));	
+		return responseFactory.createResponse(RestResponseStatus.OK, "Records listed.", resultMap);
+	}
+
+	@Override
+	public IRestResponse listFilteredAgentsWithPaging(String propertyName, String propertyValue, String type,
+			int firstResult, int maxResult) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("agents", agentDao.listFilteredAgentsWithPaging(propertyName, propertyValue, type, firstResult, maxResult));	
+		return responseFactory.createResponse(RestResponseStatus.OK, "Records listed.", resultMap);
+	}
+
 }

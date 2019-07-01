@@ -118,6 +118,10 @@ public interface IAgentDao extends IBaseDao<IAgent> {
 	
 	List<Object[]> findAgentFromOnlineUsers(String userName);
 	
+	int countOfAgent(String propertyName, String propertyValue, String type);
 	
+	List<? extends IAgent> listAgentsWithPaging(int firstResult ,int maxResult);
+	
+	List<? extends IAgent> listFilteredAgentsWithPaging(String propertyName, String propertyValue, String type, int firstResult ,int maxResult);
 
 }

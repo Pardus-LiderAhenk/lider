@@ -57,6 +57,25 @@ public class AgentController {
 	private IAgentRequestProcessor agentProcessor;
 
 	/**
+	 * Get count of ahenks for pagination on Ahenk Info Editor 
+	 * 
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	@RequestMapping(value = "/count", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public IRestResponse countOfAgents(@RequestParam(value = "propertyName", required = false) String propertyName,
+			@RequestParam(value = "propertyValue", required = false) String propertyValue,
+			@RequestParam(value = "type", required = false) String type)
+			throws UnsupportedEncodingException {
+		logger.info("Request received. URL: '/lider/agent/count");
+		IRestResponse restResponse = agentProcessor.countOfAgents(propertyName == null ? "" :propertyName, 
+				propertyValue == null ? "" : propertyValue, type == null ? "" : type);
+		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		return restResponse;
+	}
+	
+	/**
 	 * List agents according to given parameters.
 	 * 
 	 * @param hostname
@@ -77,6 +96,30 @@ public class AgentController {
 		return restResponse;
 	}
 
+	/**
+	 * List agents according to given parameters.
+	 * 
+	 * @param firstResult
+	 * @param maxResult
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	@RequestMapping(value = "/list/paging", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public IRestResponse listAgentsWithPaging(
+			@RequestParam(value = "propertyName", required = false) String propertyName,
+			@RequestParam(value = "propertyValue", required = false) String propertyValue,
+			@RequestParam(value = "type", required = false) String type, 
+			@RequestParam(value = "firstResult") int firstResult,
+			@RequestParam(value = "maxResult") int maxResult,
+			HttpServletRequest request)
+			throws UnsupportedEncodingException {
+		logger.info("Request received. URL: '/lider/agent/list/paging");
+		IRestResponse restResponse = agentProcessor.listFilteredAgentsWithPaging(propertyName, propertyValue, type, firstResult, maxResult);
+		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		return restResponse;
+	}
+	
 	/**
 	 * Retrieve agent specified by id
 	 * 

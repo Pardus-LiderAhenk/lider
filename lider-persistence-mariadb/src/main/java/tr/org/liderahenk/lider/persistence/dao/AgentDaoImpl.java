@@ -20,6 +20,7 @@
 package tr.org.liderahenk.lider.persistence.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -281,8 +283,97 @@ public class AgentDaoImpl implements IAgentDao {
 		List<Object[]> resultList = query.getResultList();
 		return resultList;
 	}
-	
-	
-	
 
+	private String FIND_AGENT_NUMBER = "";
+	@Override
+	public int countOfAgent(String propertyName, String propertyValue, String type) {
+		Query query = null;
+		if(propertyName != null && !propertyName.equals("") 
+				&& propertyValue != null && !propertyValue.equals("")
+				&& type != null && !type.equals("")) {
+			if(type.equals("AGENT")) {
+				FIND_AGENT_NUMBER = "SELECT COUNT(a) "
+						+ "FROM AgentImpl a WHERE a.deleted = False "
+						+ "AND a." + propertyName + " LIKE '%" + propertyValue + "%' ";
+				query = entityManager.createQuery(FIND_AGENT_NUMBER);
+			}
+			else {
+				FIND_AGENT_NUMBER = "SELECT COUNT(a) "
+						+ "FROM AgentPropertyImpl a "
+						+ "WHERE a.propertyName = :propertyName AND a.propertyValue LIKE :propertyValue "
+						+ "AND a.agent IS NOT NULL AND a.agent.deleted = False ";
+				query = entityManager.createQuery(FIND_AGENT_NUMBER);
+				query.setParameter("propertyName", propertyName);
+				query.setParameter("propertyValue", "%" + propertyValue + "%");
+			}
+		}
+		else {
+			FIND_AGENT_NUMBER = 
+					"SELECT COUNT(a) "
+					+ "FROM AgentImpl a WHERE a.deleted = False";
+			query = entityManager.createQuery(FIND_AGENT_NUMBER);
+		}
+		
+		int count = 0;
+		try {
+			count = query.getSingleResult() != null ? Integer.parseInt(query.getSingleResult().toString()) : 0;			
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			count = 0;
+		}
+		return count;
+	}
+	
+	@Override
+	public List<? extends IAgent> listFilteredAgentsWithPaging(String propertyName, String propertyValue, String type, int firstResult, int maxResult) {
+		List<AgentImpl> agentList = null;
+		if(propertyName != null && !propertyName.equals("") 
+				&& propertyValue != null && !propertyValue.equals("")
+				&& type != null && !type.equals("")) {
+			if(type.equals("AGENT")) {
+				FIND_AGENT_NUMBER = "SELECT COUNT(a) "
+						+ "FROM AgentImpl a WHERE a.deleted = False "
+						+ "AND a." + propertyName + " LIKE '%" + propertyValue + "%' ";
+				agentList = entityManager
+						.createQuery("select t from " + AgentImpl.class.getSimpleName() + " t "
+								+ "where t.deleted = false and t." + propertyName + " LIKE '%" + propertyValue + "%'", AgentImpl.class)
+						.setFirstResult(firstResult)
+						.setMaxResults(maxResult)
+						.getResultList();
+			}
+			else {
+				agentList = entityManager
+						.createQuery("select t.agent from " + AgentPropertyImpl.class.getSimpleName() + " t "
+								+ "where t.propertyName = :propertyName and t.propertyValue LIKE :propertyValue "
+								+ "and t.agent is not null and t.agent.deleted = False", AgentImpl.class)
+						.setParameter("propertyName", propertyName)
+						.setParameter("propertyValue", "%" + propertyValue + "%")
+						.setFirstResult(firstResult)
+						.setMaxResults(maxResult)
+						.getResultList();
+			}
+		}
+		else {
+			agentList = entityManager
+					.createQuery("select t from " + AgentImpl.class.getSimpleName() + " t", AgentImpl.class)
+					.setFirstResult(firstResult)
+					.setMaxResults(maxResult)
+					.getResultList();
+		}
+
+		logger.debug("IAgent objects found: {}", agentList);
+		return agentList;
+	}
+	
+	@Override
+	public List<? extends IAgent> listAgentsWithPaging(int firstResult, int maxResult) {
+		List<AgentImpl> agentList = null;
+		agentList = entityManager
+				.createQuery("select t from " + AgentImpl.class.getSimpleName() + " t", AgentImpl.class)
+				.setFirstResult(firstResult)
+				.setMaxResults(maxResult)
+				.getResultList();
+		logger.debug("IAgent objects found: {}", agentList);
+		return agentList;
+	}
 }

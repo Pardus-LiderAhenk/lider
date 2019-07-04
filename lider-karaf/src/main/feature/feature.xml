@@ -21,7 +21,7 @@
 		<feature>lider-core-bundles</feature>
 		<!-- Use 'lider-plugin-bundles' feature only to pre-install plugins on 
 			Karaf -->
-<!--		<feature>lider-plugin-bundles</feature> -->
+		<feature>lider-plugin-bundles</feature>
 	</feature>
 
 	<feature name="lider-core-bundles" description="${project.name}"
@@ -131,13 +131,13 @@
 			override="true">mvn:${groupId}/lider-usb/1.0.0/cfg</configfile>
 		<bundle start-level="90">mvn:${groupId}/lider-usb/1.0.0</bundle>
 
-		<!-- Use either USB or USB-LTSP plugin: -->
+		<!-- Use either USB or USB-LTSP plugin:
 		<configfile finalname="/etc/tr.org.liderahenk.usb.ltsp.cfg"
 			override="true">mvn:${groupId}/lider-usb-ltsp/1.0.0/cfg</configfile>
 		<bundle start-level="90">mvn:${groupId}/lider-usb-ltsp/1.0.0
 		</bundle>
 		<bundle start-level="90">mvn:${groupId}/lider-usb-ltsp-db/1.0.0
-		</bundle>
+		</bundle> -->
 
 		<configfile finalname="/etc/tr.org.liderahenk.user.privilege.cfg"
 			override="true">mvn:${groupId}/lider-user-privilege/1.0.0/cfg</configfile>
@@ -211,6 +211,11 @@
 		<configfile finalname="/etc/tr.org.liderahenk.ldap.cfg" override="true">mvn:${groupId}/lider-ldap/1.0.0/cfg</configfile>
 		<bundle start-level="90">mvn:${groupId}/lider-ldap/1.0.0</bundle>
 		<bundle start-level="90">mvn:${groupId}/lider-ldap-db/1.0.0</bundle>
+		
+		<configfile finalname="/etc/tr.org.liderahenk.notify.cfg" override="true">mvn:${groupId}/lider-notify/1.0.0/cfg</configfile>
+                <bundle start-level="90">mvn:${groupId}/lider-notify/1.0.0</bundle>
+                <bundle start-level="90">mvn:${groupId}/lider-notify-db/1.0.0</bundle>
+
 	</feature>
 
 	<feature name="lider-dependent-bundles" description="${project.name}"

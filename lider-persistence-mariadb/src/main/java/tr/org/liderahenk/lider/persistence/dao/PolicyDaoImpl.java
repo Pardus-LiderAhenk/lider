@@ -190,7 +190,7 @@ public class PolicyDaoImpl implements IPolicyDao {
 	}
 
 	private static final String LATEST_USER_POLICY = 
-			"SELECT DISTINCT pol, ce.id, c.expirationDate " 
+			"SELECT DISTINCT pol, ce.id, c.expirationDate, c.commandOwnerUid " 
 			+ "FROM CommandImpl c "
 			+ "INNER JOIN c.policy pol " 
 			+ "INNER JOIN c.commandExecutions ce "
@@ -242,7 +242,7 @@ public class PolicyDaoImpl implements IPolicyDao {
 	}
 
 	private static final String LATEST_MACHINE_POLICY = 
-			"SELECT DISTINCT pol, ce.id, c.expirationDate "
+			"SELECT DISTINCT pol, ce.id, c.expirationDate, c.commandOwnerUid "
 			+ "FROM CommandImpl c "
 			+ "INNER JOIN c.policy pol "
 			+ "INNER JOIN c.commandExecutions ce "
@@ -278,7 +278,7 @@ public class PolicyDaoImpl implements IPolicyDao {
 	}
 
 	private static final String LATEST_GROUP_POLICY = 
-			"SELECT DISTINCT pol, ce.id, c.expirationDate "
+			"SELECT DISTINCT pol, ce.id, c.expirationDate, c.commandOwnerUid "
 			+ "FROM CommandImpl c "
 			+ "INNER JOIN c.policy pol "
 			+ "INNER JOIN c.commandExecutions ce "

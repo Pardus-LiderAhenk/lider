@@ -56,6 +56,8 @@ public class AppliedPolicyImpl implements IPolicy {
 
 	private String policyVersion;
 
+	private String commandOwnerUid;
+	
 	public AppliedPolicyImpl() {
 	}
 
@@ -188,6 +190,12 @@ public class AppliedPolicyImpl implements IPolicy {
 		this.policyVersion = policyVersion;
 	}
 
+	@Override
+	public void setcommandOwnerUid(String commandOwnerUid) {
+		this.commandOwnerUid = commandOwnerUid;
+		
+	}
+	
 	@Override
 	public String toString() {
 		return "PolicyImpl [id=" + id + ", label=" + label + ", description=" + description + ", active=" + active

@@ -21,7 +21,7 @@
 		<feature>lider-core-bundles</feature>
 		<!-- Use 'lider-plugin-bundles' feature only to pre-install plugins on 
 			Karaf -->
-		<feature>lider-plugin-bundles</feature>
+		<!--<feature>lider-plugin-bundles</feature>-->
 	</feature>
 
 	<feature name="lider-core-bundles" description="${project.name}"

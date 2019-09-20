@@ -35,6 +35,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import tr.org.liderahenk.lider.core.api.persistence.entities.IPolicy;
 import tr.org.liderahenk.lider.core.api.persistence.entities.IProfile;
@@ -86,6 +87,9 @@ public class PolicyImpl implements IPolicy {
 	@Column(name = "POLICY_VERSION")
 	private String policyVersion;
 
+	@Transient
+	private String commandOwnerUid;
+	
 	public PolicyImpl() {
 	}
 
@@ -194,6 +198,14 @@ public class PolicyImpl implements IPolicy {
 		this.modifyDate = modifyDate;
 	}
 
+	public String getCommandOwnerUid() {
+		return commandOwnerUid;
+	}
+
+	public void setCommandOwnerUid(String commandOwnerUid) {
+		this.commandOwnerUid = commandOwnerUid;
+	}
+
 	@Override
 	public void addProfile(IProfile profile) {
 		if (profiles == null) {
@@ -218,11 +230,18 @@ public class PolicyImpl implements IPolicy {
 		this.policyVersion = policyVersion;
 	}
 
+	
 	@Override
 	public String toString() {
 		return "PolicyImpl [id=" + id + ", label=" + label + ", description=" + description + ", active=" + active
 				+ ", deleted=" + deleted + ", profiles=" + profiles + ", createDate=" + createDate + ", modifyDate="
 				+ modifyDate + ", policyVersion=" + policyVersion + "]";
+	}
+
+	@Override
+	public void setcommandOwnerUid(String commandOwnerUid) {
+		this.commandOwnerUid = commandOwnerUid;
+		
 	}
 
 }

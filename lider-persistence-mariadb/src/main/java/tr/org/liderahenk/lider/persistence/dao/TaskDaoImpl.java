@@ -211,7 +211,7 @@ public class TaskDaoImpl implements ITaskDao {
 	}
 
 	private static final String EXECUTED_DEVICE_TASKS = 
-			"SELECT c.task, ce "
+			"SELECT c.task, ce, c.commandOwnerUid "
 			+ "FROM CommandImpl c "
 			+ "LEFT OUTER JOIN c.commandExecutions ce "
 			+ "LEFT OUTER JOIN c.task t "
@@ -237,15 +237,14 @@ public class TaskDaoImpl implements ITaskDao {
 		for(int i = 0; i < resultList.size(); i++) {
 			listCommandExecutionResult = new ArrayList<>(); 
 			task = (TaskImpl) resultList.get(i)[0];
-			//if commandExecutionResult is not null 
 			
 			commandExecution = (CommandExecutionImpl) resultList.get(i)[1];
 			CommandExecutionImpl newCommandExecution = new CommandExecutionImpl();
 			newCommandExecution.setDn(commandExecution.getDn());
 			newCommandExecution.setCreateDate(commandExecution.getCreateDate());
 			
-
-			if(resultList.get(i).length == 2) {
+			//if commandExecutionResult is not null 
+			if(resultList.get(i).length > 2) {
 				for (int j = 0; j < commandExecution.getCommandExecutionResults().size(); j++) {
 					commandExecutionResult = new CommandExecutionResultImpl();
 					commandExecutionResult = commandExecution.getCommandExecutionResults().get(j);
@@ -256,6 +255,7 @@ public class TaskDaoImpl implements ITaskDao {
 
 			command = new CommandImpl();
 			command.setTask(task);
+			command.setCommandOwnerUid((String) resultList.get(i)[2]);
 			//newCommandExecution.setCommand(command);
 			command.addCommandExecution(newCommandExecution);
 			listCommand.add(command);

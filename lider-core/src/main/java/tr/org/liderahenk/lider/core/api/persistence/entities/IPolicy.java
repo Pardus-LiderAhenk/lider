@@ -81,5 +81,7 @@ public interface IPolicy extends IEntity {
 	String getPolicyVersion();
 
 	void setPolicyVersion(String policyVersion);
+	
+	void setcommandOwnerUid(String commandOwnerUid);
 
 }

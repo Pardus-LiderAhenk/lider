@@ -571,6 +571,7 @@ public class PolicyRequestProcessorImpl implements IPolicyRequestProcessor {
 			listPolicy = new ArrayList<>();
 			for(int i = 0; i < policies.size(); i++) {
 				IPolicy policy = (IPolicy) policies.get(i)[0];
+				policy.setcommandOwnerUid((String) policies.get(i)[3]);
 				listPolicy.add(policy);
 			}
 		}
@@ -587,6 +588,7 @@ public class PolicyRequestProcessorImpl implements IPolicyRequestProcessor {
 			listPolicy = new ArrayList<>();
 			for(int i = 0; i < policies.size(); i++) {
 				IPolicy policy = (IPolicy) policies.get(i)[0];
+				policy.setcommandOwnerUid((String) policies.get(i)[3]);
 				listPolicy.add(policy);
 			}
 		}
@@ -611,6 +613,7 @@ public class PolicyRequestProcessorImpl implements IPolicyRequestProcessor {
 			listPolicy = new ArrayList<>();
 			for(int i = 0; i < policies.size(); i++) {
 				IPolicy policy = (IPolicy) policies.get(i)[0];
+				policy.setcommandOwnerUid((String) policies.get(i)[3]);
 				listPolicy.add(policy);
 			}
 		}

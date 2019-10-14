@@ -79,7 +79,7 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 		IPolicy userPolicy = null;
 		Long userCommandExecutionId = null;
 		Date userExpirationDate = null;
-		if (resultList != null && !resultList.isEmpty() && resultList.get(0) != null && resultList.get(0).length == 3) {
+		if (resultList != null && !resultList.isEmpty() && resultList.get(0) != null && resultList.get(0).length == 4) {
 			userPolicy = (IPolicy) resultList.get(0)[0];
 			userCommandExecutionId = (Long) resultList.get(0)[1];
 			userExpirationDate = (Date) resultList.get(0)[2];
@@ -94,7 +94,7 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 		IPolicy agentPolicy = null;
 		Long agentCommandExecutionId = null;
 		Date agentExpirationDate = null;
-		if (resultList != null && !resultList.isEmpty() && resultList.get(0) != null && resultList.get(0).length == 3) {
+		if (resultList != null && !resultList.isEmpty() && resultList.get(0) != null && resultList.get(0).length == 4) {
 			agentPolicy = (IPolicy) resultList.get(0)[0];
 			agentCommandExecutionId = (Long) resultList.get(0)[1];
 			agentExpirationDate = (Date) resultList.get(0)[2];

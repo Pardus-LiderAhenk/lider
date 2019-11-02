@@ -14,7 +14,7 @@
 	<properties>
 		<version.pax-exam>4.8.0</version.pax-exam>
 		<junit.version>4.11</junit.version>
-		<karaf.version>4.0.4</karaf.version>
+		<karaf.version>4.2.7</karaf.version>
 		<lider.version>1.0.0-SNAPSHOT</lider.version>
 		<lider.test.version>1.0.0-SNAPSHOT</lider.test.version>
 		<maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>

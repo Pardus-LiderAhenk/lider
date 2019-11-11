@@ -1,0 +1,14 @@
+package tr.org.lider.repositories;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import tr.org.lider.entities.PluginTask;
+
+
+
+public interface PluginTaskRepository extends BaseJpaRepository<PluginTask, Long>{
+	
+	List<PluginTask> findByState(int state);
+}

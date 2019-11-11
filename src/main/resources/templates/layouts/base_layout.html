@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+
+<html class="app-ui"  xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	>
+
+    <head>
+        <!-- Meta -->
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+        <!-- Document title -->
+        <title> </title>
+        
+        <!-- Favicons -->
+        <link rel="apple-touch-icon" href="assets/img/favicons/apple-touch-icon.png" />
+        <link rel="icon" href="assets/img/favicons/favicon.ico" />
+
+        <!-- Google fonts -->
+
+        <!-- Page JS Plugins CSS -->
+        <link rel="stylesheet" href="assets/js/plugins/slick/slick.min.css" />
+        <link rel="stylesheet" href="assets/js/plugins/slick/slick-theme.min.css" />
+
+        <!-- AppUI CSS stylesheets -->
+        <link rel="stylesheet" id="css-font-awesome" href="assets/css/font-awesome.css" />
+        <link rel="stylesheet" id="css-ionicons" href="assets/css/ionicons.css" />
+        <link rel="stylesheet" id="css-bootstrap" href="assets/css/bootstrap.css" />
+        <link rel="stylesheet" id="css-app" href="assets/css/app.css" />
+        <link rel="stylesheet" id="css-app-custom" href="assets/css/app-custom.css" />
+        
+         <!-- Page JS Plugins CSS -->
+        <link rel="stylesheet" href="assets/js/plugins/bootstrap-datepicker/bootstrap-datepicker3.min.css" />
+        <link rel="stylesheet" href="assets/js/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css" />
+        <link rel="stylesheet" href="assets/js/plugins/select2/select2.min.css" />
+        <link rel="stylesheet" href="assets/js/plugins/select2/select2-bootstrap.css" />
+        <link rel="stylesheet" href="assets/js/plugins/dropzonejs/dropzone.min.css" />
+        <link rel="stylesheet" href="assets/js/plugins/jquery-tags-input/jquery.tagsinput.min.css" />
+        
+        
+        <link rel="stylesheet" type="text/css" href="css/fullcalendar.css" />
+        <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/jquery-ui.theme.min.css" />
+        
+        <link rel="stylesheet" type="text/css" href="css/zebra-datepicker.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+        <link rel="stylesheet" href="css/print.min.css">
+        
+<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.min.css" />
+
+<style type="text/css">
+.fc h2 {
+	font-size: 16px;
+	font-family: Arial;
+	font-weight: bold;
+	color: steelblue;
+}
+
+.fc h3 {
+	font-size: 26px;
+	font-family: sans-serif;
+	font-weight: bold;
+}
+
+.fc h4 {
+	font-size: 16px;
+	font-family: sans-serif;
+}
+
+.fc h5 {
+	font-size: 16px;
+	font-family: sans-serif;
+}
+
+.fc-today {
+    background: lightyellow !important;
+   
+    font-weight: bold;
+} 
+
+.fc-today-header{
+    background-color:red;
+}
+
+.modal-header, .close {
+	background-color: #567FAB;
+	color: white !important;
+	text-align: center;
+	font-size: 30px;
+}
+
+.modal-footer {
+	background-color: #f9f9f9;
+}
+
+.list-group{
+    max-height: 240px;
+    overflow:scroll;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    font-size: 11px;
+}
+
+.table-order
+{
+    counter-reset: rowNumber;
+}
+
+.table-order .tr-order > .td-order:first-child
+{
+    counter-increment: rowNumber;
+}
+
+.table-order .tr-order .td-order:first-child::before
+{
+    content: counter(rowNumber);
+    min-width: 1em;
+    margin-right: 0.5em;
+}
+
+.table-middle
+{
+   text-align: left; 
+   vertical-align: middle;
+}
+
+.ui-autocomplete {
+  z-index:2147483647;
+}
+
+.my-custom-scrollbar {
+position: relative;
+height: 350px;
+overflow: auto;
+}
+.table-wrapper-scroll-y {
+display: block;
+}
+
+</style>
+        <!-- End Stylesheets -->
+        
+        <!-- AppUI Core JS: jQuery, Bootstrap, slimScroll, scrollLock and App.js -->
+        <script src="assets/js/core/jquery.min.js"></script>
+        <script src="assets/js/core/bootstrap.min.js"></script>
+        <script src="assets/js/core/jquery.slimscroll.min.js"></script>
+        <script src="assets/js/core/jquery.scrollLock.min.js"></script>
+        <script src="assets/js/core/jquery.placeholder.min.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/app-custom.js"></script>
+        
+        <script src="js/moment.min.js"></script>
+		 <script src="js/fullcalendar.js"></script>
+		<script src='js/locale-all.js'></script>
+		<script src='js/jquery-ui.min.js'></script>
+		<script src="js/notify.min.js" ></script>
+
+        <!-- Page JS Plugins -->
+        <script src="assets/js/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+        <script src="assets/js/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.js"></script>
+        <script src="assets/js/plugins/select2/select2.full.min.js"></script>
+        <script src="assets/js/plugins/masked-inputs/jquery.maskedinput.min.js"></script>
+        <script src="assets/js/plugins/dropzonejs/dropzone.min.js"></script>
+        <script src="assets/js/plugins/jquery-tags-input/jquery.tagsinput.min.js"></script>
+        
+        <script src="js/jquery.dataTables.min.js"></script>
+        
+		<script src="js/zebra_datepicker.js" charset="UTF-8"></script>
+		
+		<script type="text/javascript" src="js/jquery.form-validator.min.js"></script>
+	
+
+
+		
+		 <!-- Page JS Code -->
+        <script>
+            $(function()
+            {
+                // Init page helpers (BS Datepicker + BS Colorpicker + Select2 + Masked Input + Tags Inputs plugins)
+                App.initHelpers(['datepicker', 'colorpicker', 'select2', 'masked-inputs', 'tags-inputs']);
+            });
+            
+            
+            
+        	$(document).ready(function() {
+        		
+        		
+        		
+        		/* $("body").on("contextmenu",function(e){
+        	        return false;
+        	    });
+        		
+        		$('body').bind('cut copy paste', function (e) {
+        	        e.preventDefault();
+        	    });
+           
+        		
+        		$('#hastaSorgulamaModal').on(
+    					'show.bs.modal',
+    					function() {
+    						$(this).find('.modal-dialog').css({
+    							width : '80%', //probably not needed
+    							height : '80%', //probably not needed 
+    						});
+    						
+    						
+
+    					}); */
+    					
+    		var message ='[[${messages}]]';
+        	if(message){
+        		$.notify(message,"warn");
+        	}        		
+        		
+        	$('#hastaAra').click(function() {
+        		
+				$.ajax({
+					type : 'POST',
+					url : 'getHastaList',
+					data : 'protokolNo=' + $('#hstPrt').val()+'&ad='+$('#hstAdi').val()+'&soyad='+$('#hstSoyadi').val()+'&tel='+$('#hastaTeli').val(),
+					dataType : 'text',
+					success : function(data) {
+						aa = jQuery.parseJSON(data)
+                        var options = [];
+						
+						$('#hastaTableBase').empty();
+						
+						var table= '<table id="example" class="table table-border" >';
+						
+						table += '<thead >';
+						table += '<tr>';
+						table += '<th>Protokol</th>';
+						table += '<th>Ad</th>';
+						table += '<th>Soyad</th>';
+						table += '<th>Telefon</th>';
+						table += '<th style="visibility: hidden; width: 1px;"></th>';
+						table += '</tr>';
+						table += '</thead>';
+						table += '<tbody>';
+						
+						
+                        for (var i = 0; i < aa.length; i++) {
+                        	
+                        	var row ='<tr>';
+                        	
+                            var id= aa[i]['id'];
+                            var protokolNo= aa[i]['protokolNo'];
+                            var ad= aa[i]['ad'];
+                            var soyad= aa[i]['soyad'];
+                            var tel= aa[i]['tel'];
+                        	
+                           
+                            row +='<td>' ; 	row += protokolNo;  row +="</td>";
+                            row +='<td>'  ;	row += ad;  row +="</td>";
+                            row +="<td>"  ; row += soyad;  row +="</td>";
+                            row +="<td>"  ; row += tel;  row +="</td>";
+                            row +='<td>  <button type="button" class="btn btn-primary btn-sm secBase" value="Seç"> Seç </button> </td></td> ';
+                            row +='<td class="nr" style="visibility: hidden; width: 1px;">';   row += id;  row +="</td>";
+                            
+                            row += '</tr>';
+                        	
+                        	table += row;
+                        }
+                        
+                        table += '</tbody>';
+						table += '</table>';
+						
+						$('#hastaTableBase').append(table);
+						
+						$('.secBase').click(
+								function() {
+									
+									var item = $(this).closest("tr")   // Finds the closest row <tr> 
+				                       .find(".nr")     // Gets a descendent with class="nr"
+				                       .text(); 
+				                       
+									$('#hasta_idSorgulamaBase').val(item);
+									$('#sendBase').submit();
+									
+								});
+					
+					    
+					}
+				})
+			})
+			
+			$("#search-input").autocomplete({
+	            source:'getHastaListAutoComplete',
+	            minLenght:3,
+	            
+	            focus:function(event,ui){
+	            	
+	                return false;
+	            },
+	            select:function(event,ui){
+	            	
+	            	var id = ui.item.id;
+	            	$('#hasta_idSorgulamaBase').val(id);
+					$('#sendBase').submit();
+	            },
+	            close: function( event, ui ) {
+	            }
+	            
+	        });
+
+		});
+        	
+        	
+        function validateHastaEkleForm() {
+				var ad = $("#ad").val();
+				var soyad = $("#soyad").val();
+				var tckimlik = $("#tcKimlik").val();
+				var tel = $("#telefonEkle").val();
+				var adres = $("#adres").val();
+				
+				var regexNum = /\d/;
+				var regexLetter = /[a-zA-z]/;
+				
+				if(ad==-1 || ad==''){
+					$.notify("Lütfen hasta adı giriniz..","warn");
+					return false;
+				}
+				if(soyad==-1 || soyad==''){
+					$.notify("Lütfen hasta soyadı giriniz..","warn");
+					return false;
+				}
+				
+				if(tel==-1 || tel==''){
+					$.notify("Lütfen hasta telefonu giriniz..","warn");
+					return false;
+				}
+				
+				if (!regexNum.test(tel) && regexLetter.test(tel)) {
+					$.notify("Telefon alanına lütfen rakam giriniz.","warn");
+					return false;
+				}
+				
+				if(tel.length !=11 ){
+					$.notify("Lütfen Telefon No'sunu kontrol ediniz..","warn");
+					return false;
+				}
+				
+        	}
+        	
+
+        </script>
+		
+    </head>
+
+    <body class="app-ui layout-has-drawer layout-has-fixed-header" >
+        <div class="app-layout-canvas">
+            <div class="app-layout-container">
+
+                <!-- Drawer -->
+                <aside class="app-layout-drawer">
+
+                    <!-- Drawer scroll area -->
+                    <div class="app-layout-drawer-scroll">
+                        <!-- Drawer logo -->
+                        <div id="logo" class="drawer-header" >
+                            <a href="dashboard"> <img class="img-responsive" src="assets/img/logo/g3931.png" title="Dental Net Online" alt="Dental Net Online" />
+                            </a>
+                        </div>
+
+                        <!-- Drawer navigation -->
+                        <nav class="drawer-main">
+                            <ul class="nav nav-drawer">
+
+                                <li class="nav-item nav-drawer-header"><span th:text="${user.aktifSube.sAd}"></span></li>
+
+                                <li class="nav-item active">
+                                    <a href="dashboard"><i class="ion-ios-home-outline"></i> Panel</a>
+                                </li>
+
+                                
+                                <li class="nav-item nav-drawer-header">Menü</li>
+                                
+										
+							<li  th:if="${menu.subMenu.isEmpty()}" th:each="menu: ${menus}" th:attr="data-value=${menu.id}"
+										class="nav-item ">
+										
+										<a th:href="${menu.menuPage}"><i th:attr="class=${menu.menuPath}"></i> <span
+												th:text="${menu.menuAd}"></span></a>
+												
+							</li>
+											
+
+                             <li th:if="${menu.subMenu != null and !menu.subMenu.isEmpty()}"  
+                                th:each="menu: ${menus}" th:attr="data-value=${menu.id}" 
+                                 class="nav-item nav-item-has-subnav">
+                                 
+                                 
+                                    <a href="javascript:void(0)"><i th:attr="class=${menu.menuPath}"></i> 
+                                    <span
+												th:text="${menu.menuAd}"></span>
+                                    </a>
+                                    <ul class="nav nav-subnav">
+
+                                        <li th:each="smenu : ${menu.subMenu}" >
+                                            <a th:href="${smenu.menuPage}" >  <span th:text="${smenu.menuAd}"> </span> </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                        <!-- End drawer navigation -->
+                    </div>
+                    <!-- End drawer scroll area -->
+                </aside>
+                <!-- End drawer -->
+
+                <!-- Header -->
+                <header class="app-layout-header">
+                    <nav class="navbar navbar-default">
+                        <div class="container-fluid">
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar-collapse" aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+                                <button class="pull-left hidden-lg hidden-md navbar-toggle" type="button" data-toggle="layout" data-action="sidebar_toggle">
+					<span class="sr-only">Toggle drawer</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				
+				<button class="btn btn-link app-search-form" 
+				value="Hasta Sorgula" data-toggle="modal" data-target="#hastaSorgulamaModal" title="Hasta Ara" > <img src="img/serch_pat.jpg" height="42" width="42" /> </button>
+                      
+                            </div>
+
+                            <div class="collapse navbar-collapse" id="header-navbar-collapse">
+                                <!-- Header search form -->
+                                <div class="navbar-form navbar-left app-search-form" >
+                                    <div class="form-group">
+                                        <div class="input-group pull-right">
+                                            <input class="form-control" type="text" id="search-input" placeholder="Ara..." />
+                                            
+                                            <span class="input-group-btn">
+												<button class="btn" type="button"><i class="ion-ios-search-strong"></i></button>
+											</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                
+                                <!-- .navbar-left -->
+
+                                <ul class="nav navbar-nav navbar-right navbar-toolbar hidden-sm hidden-xs">
+                                    
+
+                                    <li class="dropdown dropdown-profile">
+                                        <a href="javascript:void(0)" data-toggle="dropdown">
+                                            
+                                            <span style="font-weight: bold;" class="m-r-sm"
+									th:text="${user.kullaniciBilgiDTO.kuAd} +' '+ ${user.kullaniciBilgiDTO.kuSoyad}"></span>
+									<img class="img-avatar img-avatar-48" src="assets/img/misc/base_pages_profile_header_bg.jpg" alt="User profile pic" />
+									
+									 <span class="caret"></span>
+                                            
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                            
+                                            <li>
+                                                <a href="profile">Kişisel Sayfam</a>
+                                            </li>
+                                            <li>
+                                            </li>
+                                            <li>
+                                                <a href="logout">Çıkış</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <!-- .navbar-right -->
+                            </div>
+                        </div>
+                        <!-- .container-fluid -->
+                    </nav>
+                    <!-- .navbar-default -->
+                </header>
+                <!-- End header -->
+
+                <main class="app-layout-content">
+
+                    <!-- Page Content -->
+     
+     
+     		 <div class="container-fluid p-y-md">
+     		 
+     		 <section layout:fragment="content">
+     		 
+     		 
+			 </section>
+					
+			</div>
+
+                </main>
+
+            </div>
+            <!-- .app-layout-container -->
+        </div>
+        <!-- .app-layout-canvas -->
+
+        <!-- Apps Modal -->
+        <!-- Opens from the button in the header -->
+        <div id="apps-modal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-sm modal-dialog modal-dialog-top">
+                <div class="modal-content">
+                    <!-- Apps card -->
+                    <div class="card m-b-0">
+                        <div class="card-header bg-app bg-inverse">
+                            <h4>Apps</h4>
+                            <ul class="card-actions">
+                                <li>
+                                    <button data-dismiss="modal" type="button"><i class="ion-close"></i></button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-block">
+                            <div class="row text-center">
+                                <div class="col-xs-6">
+                                    <a class="card card-block m-b-0 bg-app-secondary bg-inverse" href="index.html">
+                                        <i class="ion-speedometer fa-4x"></i>
+                                        <p>Admin</p>
+                                    </a>
+                                </div>
+                                <div class="col-xs-6">
+                                    <a class="card card-block m-b-0 bg-app-tertiary bg-inverse" href="frontend_home.html">
+                                        <i class="ion-laptop fa-4x"></i>
+                                        <p>Frontend</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- .card-block -->
+                    </div>
+                    <!-- End Apps card -->
+                </div>
+            </div>
+        </div>
+        <!-- End Apps Modal -->
+
+        <div class="app-ui-mask-modal"></div>
+        
+        <div class="modal fade" id="hastaSorgulamaModal" tabindex="-1" role="dialog" aria-hidden="true"  >
+                        <div class="modal-dialog" >
+                            <div class="modal-content">
+                                <div class="card-header bg-green bg-inverse">
+                                    <h4>Hasta Arama</h4>
+                                    <ul class="card-actions">
+                                        <li>
+                                            <button data-dismiss="modal" type="button"><i class="ion-close"></i></button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-block">
+                                    
+                                    <div class="form-inline"> 
+                                           
+                                            <div class="form-group">
+                                                <label class="sr-only" for="hstPrt">Protokol</label>
+                                                <input class="form-control" name="protokolNo" id="hstPrt" placeholder="P. No" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="sr-only" for="hstAdi">Ad</label>
+                                                <input class="form-control" name="ad" id="hstAdi" placeholder="Ad"   />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="sr-only" for="hstSoyadi">Soyad</label>
+                                               <input class="form-control" name="soyad" id="hstSoyadi"	placeholder="Soyad"   />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="sr-only" for="hastaTeli">Telefon</label>
+                                                <input class="form-control" name="tel" id="hastaTeli"	placeholder="Telefon"   />
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="submit" class=" btn btn-sm btn-default" value="Ara" name="bnt_gonder" id="hastaAra" />
+                                             </div>
+                                           
+                                  </div>
+                                    	
+					<hr>
+						<div id="hastaTableBase" >
+
+
+						</div>
+                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-sm btn-default" type="button" data-dismiss="modal">Kapat</button>
+                                </div>
+                            </div>
+                        </div>
+       </div>
+        
+        	
+
+
+	<form id="sendBase" action="getHasta" method="post">
+		<input type="hidden" name="id" id="hasta_idSorgulamaBase">
+	</form>
+
+        
+
+    </body>
+
+</html>

@@ -1,0 +1,13 @@
+h1{
+	color:red;
+}
+.log {
+	width: 200px;
+	word-wrap: break-word;
+	margin-left: 6px;
+}
+
+table {
+  font-size: 12px;
+}
+

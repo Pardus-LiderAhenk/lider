@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+
+<html lang="en" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"rel="stylesheet" id="bootstrap-css">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" type="text/css"  />
+
+<script type="text/javascript"	src="/js/jquery-3.1.1.min.js" ></script>
+<script type="text/javascript"	src="/js/bootstrap-3.3.0.js" ></script>
+
+<title>Lider Ahenk Merkezi Yonetim Sistemi</title>
+</head>
+<body>
+
+	<div class="container">
+		<h1>
+		</h1>
+
+		<p></p>
+	</div>
+	<div class="text-center" style="padding: 50px 0">
+		<div class="logo">LOGIN</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6">
+
+					<div class="login-form-1">
+						<form id="login-form" action="/login" class="text-center"
+							method="POST">
+							<div class="login-form-main-message"></div>
+							<div class="main-login-form">
+								<div class="login-group">
+									<div class="form-group">
+										<label for="lg_username" class="sr-only">Username</label> 
+										
+										<input
+											type="text" class="form-control" id="username"
+											name="username" placeholder="username"
+											value="lider_console">
+									</div>
+									<div class="form-group">
+										<label for="lg_password" class="sr-only">Password</label> <input
+											type="password" class="form-control" id="password"
+											name="password" placeholder="password" value="1">
+									</div>
+
+								</div>
+								<button type="submit" class="login-button">Login</button>
+							</div>
+						</form>
+					</div>
+				</div>
+				
+				
+				 
+                         
+								
+							
+								
+				
+				<!-- <div class="col-lg-6">
+				
+					<table class="tree" id="mytable">
+								<thead>
+									<tr>
+										<td align="center"> </td>
+									</tr>
+								</thead>
+
+
+								<th:block th:each="mess : ${plugins}">
+								
+									<tr>
+										<td><img alt="" src="/img/folder.png"> <a
+											href="#" class="gonder" id="send"
+											 > <span
+												th:text="${mess.status}"></span>
+										</a></td>
+
+									</tr>
+									
+							
+								</th:block>
+							</table> 
+				
+				
+				</div> -->
+				
+				<div>
+				
+				<span th:text="${message}" style="color: red;"></span>
+				</div>
+				
+				
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
+

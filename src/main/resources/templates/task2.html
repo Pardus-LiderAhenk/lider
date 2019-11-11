@@ -1,0 +1,141 @@
+<html lang="en" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+ <link rel="apple-touch-icon" href="assets/img/favicons/apple-touch-icon.png" />
+        <link rel="icon" href="assets/img/favicons/favicon.ico" />
+
+        <!-- Google fonts -->
+
+        <!-- Page JS Plugins CSS -->
+        <link rel="stylesheet" href="assets/js/plugins/slick/slick.min.css" />
+        <link rel="stylesheet" href="assets/js/plugins/slick/slick-theme.min.css" />
+
+        <!-- AppUI CSS stylesheets -->
+        <link rel="stylesheet" id="css-font-awesome" href="assets/css/font-awesome.css" />
+        <link rel="stylesheet" id="css-ionicons" href="assets/css/ionicons.css" />
+        <link rel="stylesheet" id="css-bootstrap" href="assets/css/bootstrap.css" />
+        <link rel="stylesheet" id="css-app" href="assets/css/app.css" />
+        <link rel="stylesheet" id="css-app-custom" href="assets/css/app-custom.css" />
+        
+         <!-- Page JS Plugins CSS -->
+        <link rel="stylesheet" href="assets/js/plugins/bootstrap-datepicker/bootstrap-datepicker3.min.css" />
+        <link rel="stylesheet" href="assets/js/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css" />
+        <link rel="stylesheet" href="assets/js/plugins/select2/select2.min.css" />
+        <link rel="stylesheet" href="assets/js/plugins/select2/select2-bootstrap.css" />
+        <link rel="stylesheet" href="assets/js/plugins/dropzonejs/dropzone.min.css" />
+        <link rel="stylesheet" href="assets/js/plugins/jquery-tags-input/jquery.tagsinput.min.css" />
+        
+
+<link rel='stylesheet'	href='//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css'>
+<link rel="stylesheet" type="text/css" href="css/jquery.treegrid.css" />
+<link rel="stylesheet" type="text/css" href="css/metisMenu.css" />
+<link rel="stylesheet" type="text/css" href="css/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="/css/main.css" />
+
+ <script src="assets/js/core/jquery.min.js"></script>
+        <script src="assets/js/core/bootstrap.min.js"></script>
+        <script src="assets/js/core/jquery.slimscroll.min.js"></script>
+        <script src="assets/js/core/jquery.scrollLock.min.js"></script>
+        <script src="assets/js/core/jquery.placeholder.min.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/app-custom.js"></script>
+
+	 <!-- <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script> 
+	<script type="text/javascript" src="js/bootstrap.min.js"></script> --> 
+	<script type="text/javascript" src="js/jquery.treegrid.js"></script>
+	<script type="text/javascript" src="js/metisMenu.min.js"></script>
+	<script type="text/javascript" src="js/sb-admin-2.js"></script>
+	<script type="text/javascript" src="js/strophe.js"></script>
+
+</head>
+
+<body>
+
+
+   		 		<div class="card" id="dataArea">
+			
+										 <div style="padding-left: 18px; padding-top: 11px; padding-bottom: 11px;"> 
+										 
+										 <div class="row"> 
+										 
+										 <span id="uidName"></span>
+										 
+											 <div class="col-lg-6"> 
+									              
+									              <img  style="padding-left: 18px; padding-top: 11px; padding-bottom: 11px;" src="img/mask.png" alt="" width="80px;" height="80px;" />
+										               
+										      </div>    
+										      
+										       <div class="col-lg-6" style="padding-left: 18px; padding-right: 58px; padding-top: 11px; padding-bottom: 11px;">
+										       
+										       			<button class="btn btn-sm btn-link pull-right" 
+							              			value="Yeni Hasta" data-toggle="modal"
+							              			data-target="#hastaEkleModal" title="Yeni Hasta" > 
+							              			<i class="ion-android-person-add fa-2x"> </i> </button>
+										       </div>  
+										      
+										       
+										</div>   
+									    </div>
+		                                
+						<div  style="padding-top:5px; padding-left: 35px; padding-right: 35px;">
+			
+                                    <ul class="nav nav-tabs nav-tabs-icons nav-tabs-alt nav-justified myFont" data-toggle="tabs">
+                                       
+                                        <li class="active">
+                                            <a class="myFont" href="#tab-kayit_bilgisi" id="kayitBilg"><i class="ion-compose" style="color: orange;" ></i> Kayıt Bilgisi</a>
+                                        </li>
+                                        <li>
+                                            <a class="myFont" href="#tab-gorevler" id="kayitGorevler"><i class="ion-compose" style="color: orange;" ></i> Görevler </a>
+                                        </li>
+                                        
+
+                                    </ul>
+                                    <div class="card-block tab-content">
+                                       
+                                        <div class="tab-pane active" id="tab-kayit_bilgisi">
+                                        
+                                        Bilgiler
+                                            
+                                        </div>
+                                        <div class="tab-pane" id="tab-gorevler">
+                                        
+
+																sddfsd
+												 <!-- <div id="pluginList"> 
+					                                <table class="table table-hover" id="pluginTable">
+															<thead>
+															<tr> <td> Görev Adı
+															</td>  <td>Açıklama</td> </tr>
+															
+															</thead>
+														
+															<tr th:each="plugin : ${pluginList}">
+																<td th:text="${plugin.name}"></td>
+																<td th:text="${plugin.description}"></td>
+																<td> 
+																
+																<button class="btn btn-xs btn-default" type="button" id="gorevId" data-toggle="modal" data-target="#taskModal" 
+																title="Görev Gönder"  data-id="${plugin.id}"> <img class="img-responsive" 
+																src="img/LiderAhenk-task.png" title="Lider MYS" alt="Lider MYS" />  </button>
+																</td>
+						
+															</tr>
+													
+													</table> 
+												</div>  -->
+
+                                       </div>
+                                    </div>
+						</div>
+						
+					</div>
+
+</body>
+</html>

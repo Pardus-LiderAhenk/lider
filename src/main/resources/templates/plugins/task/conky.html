@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h6 th:text="${pluginTask.name}"> </h6> 
+<hr>
+
+
+<span th:text="${pluginTask.description}"> </span> 
+<span id="entrySize"> </span> 
+
+<hr>
+<div class="login-form-1">
+				<div class="login-group">
+					<div class="form-group">
+					Mesaj : 
+						<input type="text" class="form-control" id="username" name="param" >
+					</div>
+				</div>
+				<button type="submit" class="login-button" id="gonder"><i class="fa fa-chevron-right"></i></button>
+				
+				<div id="plugin-result"></div>
+			
+</div>
+
+<script type="text/javascript">
+
+				
+				$("#entrySize").html(selectedEntries.length);
+				
+				var data = {
+						"pluginName":"conky",
+						"dnList":selectedEntries,
+						"pluginVersion":"1.0.0",
+						"timestamp":1523430976357,
+						"dnType":"AHENK",
+						"parameterMap":{"conkyMessage":"DENEEM","removeConkyMessage":false},
+						"commandId":"EXECUTE_CONKY"
+				}
+				
+				var params = JSON.stringify(data);
+
+				$("#gonder").click(function(e) {
+				    e.preventDefault();
+				    
+				    $.ajax({
+				      type: "POST",
+				      url: "/lider/task/execute",
+				      headers: {
+				          'Content-Type':'application/json',
+				          'username':'${sessionScope.userName}',
+				          'password':'${sessionScope.userPassword}',
+				      },
+				      data: params,
+				      contentType: "application/json",
+				      dataType: "json",
+				      converters: {
+				        'text json': true
+				      },
+				      success: function(result) {
+				    	  
+				    	var res = jQuery.parseJSON(result);
+				    	
+				    	
+				        $('#closePage').click();
+				      },
+				      error: function(result) {
+				        alert(result);
+				      }
+				    });
+				  }); 
+	 
+	</script>
+
+</body>
+</html>

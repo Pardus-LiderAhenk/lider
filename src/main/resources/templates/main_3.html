@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="app-ui"  xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	>
+
+    <head>
+        <!-- Meta -->
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+        <!-- Document title -->
+        <title> </title>
+        
+        <link
+	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+	rel="stylesheet" id="bootstrap-css">
+<link
+	href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+	rel="stylesheet">
+<link href='http://fonts.googleapis.com/css?family=Varela+Round'
+	rel='stylesheet' type='text/css'>
+<link rel='stylesheet'
+	href='//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css'>
+
+<link rel="stylesheet" type="text/css" href="/css/jquery.treegrid.css" />
+<link rel="stylesheet" type="text/css" href="/css/metisMenu.css" />
+<link rel="stylesheet" type="text/css" href="/css/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="/css/main.css" />
+
+
+<style>
+.log {
+	width: 250px;
+	word-wrap: break-word;
+	margin-left: 6px;
+}
+</style>
+        
+		 <!-- Page JS Code -->
+		 <script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-3.3.0.js"></script>
+	<script
+		src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js'></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.treegrid.js"></script>
+	<script type="text/javascript" src="/js/metisMenu.min.js"></script>
+	<script type="text/javascript" src="/js/sb-admin-2.js"></script>
+	<script type="text/javascript" src="/js/strophe.js"></script>
+        <script>
+            
+        	var BOSH_SERVICE = 'http://localhost:5280/bosh';
+    		var connection = null; 
+
+    		$('.tree').treegrid();
+    		
+    		$(document).ready(function() {
+    			
+    			var username = '[[${userNameJid}]]';
+    			var password = '[[${password}]]';
+
+    			connection = new Strophe.Connection(BOSH_SERVICE);
+
+    			connection.connect(username, password, onConnect);
+
+    			$('#disconnect').bind('click', function() {
+
+    				connection.disconnect();
+
+    			});
+    			
+    		});
+    		 
+    		function onConnect(status)
+    		{
+    		   if (status == Strophe.Status.CONNECTING) {
+    		 	/* log('Strophe is connecting.'); */
+    		     } 
+    		   else if (status == Strophe.Status.CONNFAIL) {
+    		 	log('Sunucuya bağlanırken hata oluştu.');
+    		 	$('#connect').get(0).value = 'connect';
+    		     } 
+    		   else if (status == Strophe.Status.DISCONNECTING) {
+    		 	log('Sunucu bağlantısı koparılmaktadır.');
+    		     } 
+    		   else if (status == Strophe.Status.DISCONNECTED) {
+    		 	log('Sunucu bağlantısı koparıldı.');
+    		 	$('#connect').get(0).value = 'connect';
+    		     } 
+    		   else if (status == Strophe.Status.CONNECTED) {
+    		 	log('Sunucu ile bağlantı kuruldu.');
+    		 	log('ECHOBOT: Send a message to ' + connection.jid + ' to talk to me.');
+
+    		 	connection.addHandler(onMessage, null, 'message', null, null,  null); 
+    		 	connection.send($pres().tree());
+    		   }
+    		}
+    		
+    		function onMessage(msg) {
+    		    var to = msg.getAttribute('to');
+    		    var from = msg.getAttribute('from');
+    		    var type = msg.getAttribute('type');
+    		    var elems = msg.getElementsByTagName('body');
+
+    		    if (type == "chat" && elems.length > 0) {
+    			var body = elems[0];
+
+    			var resul={"name":"John","age":30};
+
+    			//var data=  JSON.stringify(resul);
+
+    			log('ECHOBOT: Mesaj Alındı:  ' + from + ': ' +    Strophe.getText(body));
+
+    			//log('Data : ' +   body[0] );
+    		    
+    			var reply = $msg({to: from, from: to, type: 'chat'}).cnode(Strophe.copyElement(body));
+    			connection.send(reply.tree());
+    				alert(body+'selam');
+    			 log('ECHOBOT: Mesaj Gönderildi. ' + from + ': ' + Strophe.getText(body));
+    		    }
+
+    		    // we must return true to keep the handler alive.  
+    		    // returning false would remove it after it finishes.
+    		    return true;
+    		}
+    		
+    		function log(msg) 
+    		{
+    		    $('#log').append('<div></div>').append(document.createTextNode(msg));
+    		}
+
+        </script>
+		
+    </head>
+
+    <body class="app-ui layout-has-drawer layout-has-fixed-header" >
+        <div class="app-layout-canvas">
+            <div class="app-layout-container">
+
+                <!-- Drawer -->
+                <aside class="app-layout-drawer">
+
+                    <!-- Drawer scroll area -->
+                    <div class="app-layout-drawer-scroll">
+                        <!-- Drawer logo -->
+                        <div id="logo" class="drawer-header" >
+                            <a href="dashboard"> <img class="img-responsive" src="assets/img/logo/g3931.png" title="Lider MYS" alt="Lider MYS" />
+                            </a>
+                        </div>
+
+                        <!-- Drawer navigation -->
+                        <nav class="drawer-main">
+                            <ul class="nav nav-drawer">
+
+                                <li class="nav-item nav-drawer-header"> DDDDDD </li>
+
+                                <li class="nav-item active">
+                                    <a href="dashboard"><i class="ion-ios-home-outline"></i> Panel</a>
+                                </li>
+
+                                
+                                <li class="nav-item nav-drawer-header">Menü</li>
+                                
+                               
+											
+	                               
+	                               
+                            </ul>
+                            
+                             <table class="tree" id="mytable">
+									<thead>
+										<tr>
+											<td align="center">Organizasyon Yapısı</td>
+										</tr>
+									</thead>
+	
+	
+									<th:block th:each="entry : ${ldapTreeList}">
+									
+										<tr align="left" th:id="${entry.entryUUID}" th:class=" ${entry.parent}  ? 'treegrid-'+${entry.entryUUID} +' ' +' treegrid-parent-'+ ${entry.parent} : 'treegrid-'+${entry.entryUUID}+' ' +' expanded'">
+	
+											<td><img alt="" src="/img/folder.png"> <a
+												href="#" class="gonder" id="send"
+												th:attr="data-id=${entry.distinguishedName}" > <span
+													th:text="${entry.name}"></span>
+											</a></td>
+	
+										</tr>
+										
+								
+									</th:block>
+								</table> 
+                        </nav>
+                        <!-- End drawer navigation -->
+                    </div>
+                    <!-- End drawer scroll area -->
+                </aside>
+                <!-- End drawer -->
+
+                <!-- Header -->
+                <header class="app-layout-header">
+                    <nav class="navbar navbar-default">
+                        <div class="container-fluid">
+                            <div class="navbar-header">
+                                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar-collapse" aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+                
+                
+                <button class="pull-left hidden-lg hidden-md navbar-toggle" type="button" data-toggle="layout" data-action="sidebar_toggle">
+					<span class="sr-only">Toggle drawer</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				
+				<button class="btn btn-link app-search-form" 
+					value="Sorgula" data-toggle="modal" data-target="#hastaSorgulamaModal" title="Hasta Ara" > <img src="img/serch_pat.jpg" height="42" width="42" /> 
+				
+				</button>
+                      
+                            </div>
+
+                            <div class="collapse navbar-collapse" id="header-navbar-collapse">
+                                <!-- Header search form -->
+                                <div class="navbar-form navbar-left app-search-form" >
+                                    <div class="form-group">
+                                        <div class="input-group pull-right">
+                                            <input class="form-control" type="text" id="search-input" placeholder="Ara..." />
+                                            
+                                            <span class="input-group-btn">
+												<button class="btn" type="button"><i class="ion-ios-search-strong"></i></button>
+											</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                
+                                <!-- .navbar-left -->
+
+                                <ul class="nav navbar-nav navbar-right navbar-toolbar hidden-sm hidden-xs">
+                                    
+
+                                    <li class="dropdown dropdown-profile">
+                                        <a href="javascript:void(0)" data-toggle="dropdown">
+                                            
+                                            <span style="font-weight: bold;" class="m-r-sm"
+									th:text="${userNameJid}"></span>
+									<img class="img-avatar img-avatar-48" src="assets/img/misc/base_pages_profile_header_bg.jpg" alt="User profile pic" />
+									
+									 <span class="caret"></span>
+                                            
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                            
+                                            <li>
+                                                <a href="profile">Profile</a>
+                                            </li>
+                                            <li>
+                                            </li>
+                                            <li>
+                                                <a href="logout">Çıkış</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <!-- .navbar-right -->
+                            </div>
+                        </div>
+                        <!-- .container-fluid -->
+                    </nav>
+                    <!-- .navbar-default -->
+                </header>
+                <!-- End header -->
+
+                <main class="app-layout-content">
+
+                    <!-- Page Content -->
+			     		 <div class="container-fluid p-y-md">
+			     		 
+			     		 <section layout:fragment="content">
+			     		 
+			     		 
+						 </section>
+								
+						</div>
+
+                </main>
+
+            </div>
+            <!-- .app-layout-container -->
+        </div>
+
+        <div class="app-ui-mask-modal"></div>
+
+    </body>
+
+</html>

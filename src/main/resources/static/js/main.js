@@ -1,17 +1,17 @@
-$('.tree').treegrid();
+		$('.tree').treegrid();
 
-var selectedEntries = []; // make a global to make for different selected entries
+		var selectedEntries = []; // make a global to make for different selected entries
 
-$("#subentryDiv").hide();
+		$("#subentryDiv").hide();
 
-$('#selectedEntryListModal').on('show.bs.modal', function(event) {
+		$('#selectedEntryListModal').on('show.bs.modal', function(event) {
+		
+			showSelectedEntries();
+			
+		});
 
-	showSelectedEntries();
-	
-});
 
-
-$('#addSelectedEntry').on('click',
+		$('#addSelectedEntry').on('click',
 				function() {
 					var rowCount = $('#subEntryDivTable tr').filter(':has(:checkbox:checked)').length;
 
@@ -107,6 +107,7 @@ $('.sendTaskButton').click(function() {
 		success : function(data) {
 
 			$('#pluginHtmpPageModal').modal('show');
+			$('#pluginHtmpPageModalLabel').html(name);
 			$('#pluginPageRender').html(data);
 			
 		}

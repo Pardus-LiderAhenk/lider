@@ -129,7 +129,7 @@ public class LoginController {
 				modelAndView.setViewName(LiderConstants.Pages.PAGES_MAIN_PAGE);
 				modelAndView.addObject("user", user);
 				modelAndView.addObject("password", password);
-				modelAndView.addObject("userNameJid", username+"@"+configService.getXmppHost());
+				modelAndView.addObject("userNameJid", username+"@"+configService.getXmppServiceName());
 				modelAndView.addObject("xmppHost", configService.getXmppHost());
 				modelAndView.addObject("ldapTreeList", treeList);
 				modelAndView.addObject("pluginTaskList", pluginTaskList);

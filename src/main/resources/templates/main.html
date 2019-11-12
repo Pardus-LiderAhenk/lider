@@ -42,9 +42,7 @@
 			var xmppHost = '[[${xmppHost}]]';
 			
 			var BOSH_SERVICE = 'http://'+xmppHost+':5280/bosh';
-			alert(BOSH_SERVICE);
 			var connection = null; 
-
 			var rosterList=[]; // make a global to make for different selected entries 
 			var onlineEntryList=[]; // make a global to make for different selected entries 
 			var childEntryList=[]; // make a global to make for different selected entries 
@@ -523,19 +521,6 @@
 
 	<script type="text/javascript">
 
-	$("#testMessage").click(function() {
-		
-		$.ajax({
-			type : 'POST',
-			url : 'sendMessage',
-			dataType : 'text',
-			success : function(data) {
-
-				alert(data);				
-			}
-		});
-	});
-	
 		 
 	</script>
 

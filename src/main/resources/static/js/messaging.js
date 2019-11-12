@@ -1,8 +1,4 @@
-
 $(document).ready(function() {
-	
-	alert(username+" "+ password)
-			
 		connection = new Strophe.Connection(BOSH_SERVICE);
 		connection.connect(username, password, onConnect);
 		

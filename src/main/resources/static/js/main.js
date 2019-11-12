@@ -100,7 +100,7 @@ $('.sendTaskButton').click(function() {
 	
 	$.ajax({
 		type : 'POST',
-		url : 'getPluginHtmlPage',
+		url : 'getPluginTaskHtmlPage',
 		data : 'id=' + id + '&name=' + name
 				+ '&page=' + page + '&description=' + description,
 		dataType : 'text',

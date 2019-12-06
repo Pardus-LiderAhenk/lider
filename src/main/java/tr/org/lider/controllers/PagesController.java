@@ -1,0 +1,23 @@
+package tr.org.lider.controllers;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+
+/**
+ * 
+ * Getting inner page for menu items.. When menu items clicked dynamic content of div rendered with inner page. 
+ * @author M. Edip YILDIZ
+ *
+ */
+@Controller
+public class PagesController {
+	
+	@RequestMapping(value="/getInnerHtmlPage", method = {RequestMethod.POST })
+	public String getInnerHtmlPage(Model model, String innerPage) {
+
+	    return innerPage;
+	}
+}

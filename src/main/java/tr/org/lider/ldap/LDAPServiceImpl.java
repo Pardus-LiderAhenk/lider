@@ -2,11 +2,15 @@
 package tr.org.lider.ldap;
 
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.PrivateKey;
+import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.services.ConfigurationService;
 
 
@@ -82,6 +87,10 @@ public class LDAPServiceImpl implements ILDAPService {
 	@Autowired
 	private ConfigurationService configurationService;
 	//private ICacheService cacheService;
+	
+	
+	@Autowired
+	private XMPPClientImpl xmppClientImpl;
 	
 //	@Autowired
 //	private Environment env;
@@ -128,10 +137,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		pool.setMaxActive(-1);
 		pool.setMaxWait(3000);
 		pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
-
-
 		logger.debug(this.toString());
-	
 	}
 
 	private TrustManager createCustomTrustManager() {
@@ -717,8 +723,8 @@ public class LDAPServiceImpl implements ILDAPService {
 		
 		Map<String, String> attrs = null;
 		
-		connection = getConnection();
 		try {
+			
 			connection = getConnection();
 			
 			SearchRequest request= new SearchRequestImpl();
@@ -774,17 +780,16 @@ public class LDAPServiceImpl implements ILDAPService {
 					ldapEntry.setUid(ldapEntry.getAttributes().get("uid"));
 					ldapEntry.setO(ldapEntry.getAttributes().get("o"));
 					ldapEntry.setUserPassword(ldapEntry.getAttributes().get("userPassword"));
+					ldapEntry.setExpanded("FALSE");
 					
 					ldapEntry.setName( (ldapEntry.getAttributes().get("ou")!=null &&  !ldapEntry.getAttributes().get("ou").equals("")) 
 							? ldapEntry.getAttributes().get("ou") : ldapEntry.getAttributes().get("cn")!=null &&  !ldapEntry.getAttributes().get("cn").equals("") 
 							? ldapEntry.getAttributes().get("cn") : ldapEntry.getAttributes().get("o") );
 					
+					ldapEntry.setOnline(xmppClientImpl.isRecipientOnline(ldapEntry.getUid()));
+					
 					result.add(ldapEntry);
-//					if("TRUE".equals(ldapEntry.getHasSubordinates())){
-//						List<LdapEntry> entries=findSubEntries(ldapEntry.getDistinguishedName(),"(objectclass=organizationalUnit)",
-//								new String[]{"cn","entryUUID","hasSubordinates"}, SearchScope.ONELEVEL);
-//						
-//					}
+
 					
 				}
 			}
@@ -807,26 +812,24 @@ public class LDAPServiceImpl implements ILDAPService {
 			return ldapEntry;
 		}
 		else{
+			
 			try {
-				List<LdapEntry> entries=findSubEntries(ldapEntry.getDistinguishedName(),"(objectclass=organizationalUnit)",
-						new String[]{"*"}, SearchScope.ONELEVEL);
+				List<LdapEntry> entries=findSubEntries(ldapEntry.getDistinguishedName(),"(objectclass=*)",
+						new String[]{"*"}, SearchScope.SUBTREE);
 				
 				ldapEntry.setChildEntries(entries);
-				for (LdapEntry ldapEntry2 : entries) {
-					ldapEntry2.setParent(ldapEntry.getEntryUUID());
-					ldapEntry2.setParentName(ldapEntry.getName());
-					getLdapTree(ldapEntry2);
-				}
-
-				
-				
-			} catch (Exception e) {
+//				for (LdapEntry ldapEntry2 : entries) {
+//					ldapEntry2.setParent(ldapEntry.getEntryUUID());
+//					ldapEntry2.setParentName(ldapEntry.getName());
+//					getLdapTree(ldapEntry2);
+//				}
+			} 
+			
+			catch (Exception e) {
 				e.printStackTrace();
 			}
-			
 		}
 		return ldapEntry;
-		
 	}
 	
 	
@@ -835,11 +838,8 @@ public class LDAPServiceImpl implements ILDAPService {
 	public LdapEntry getDomainEntry() throws LdapException {
 		
 		LdapEntry domainEntry= null;
-			
 		List<LdapEntry> entries = findSubEntries(configurationService.getLdapRootDn(), "(objectclass=*)", new String[]{"*"}, SearchScope.OBJECT);
-			
 		if(entries.size()>0) domainEntry=entries.get(0);
-
 		return domainEntry;
 	}
 	
@@ -1009,7 +1009,7 @@ public class LDAPServiceImpl implements ILDAPService {
 	
 			treeList = new ArrayList<>();
 			
-			 createList(domainBaseEntry, treeList);
+			 createTreeList(domainBaseEntry, treeList);
 			
 			} catch (LdapException e) {
 				// TODO Auto-generated catch block
@@ -1017,22 +1017,165 @@ public class LDAPServiceImpl implements ILDAPService {
 			}
 			
 			return treeList;
-		}
-
-	public void createList(LdapEntry entry, List<LdapEntry> treeList) {
+	}
 	
-		if (entry.getChildEntries().size() == 0) {
+	
+	public List<LdapEntry> getLdapTree(String baseEntry) {
+		
+		LdapEntry domainBaseEntry;
+		List<LdapEntry> treeList=null;
+		try {
+			domainBaseEntry = getDomainEntry();
+			getLdapTree(domainBaseEntry); // fill domain base entry 
+			
+			treeList = new ArrayList<>();
+			
+			createTreeList(domainBaseEntry, treeList);
+			
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		
+		return treeList;
+	}
+	
+
+
+	public void createTreeList(LdapEntry entry, List<LdapEntry> treeList) {
+		
+		if(entry.getType()!=null && entry.getType().equals(DNType.USER)) {
+			entry.setIconPath("checked-user-32.png");
+		}
+		else if(entry.getType()!=null && entry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
+			entry.setIconPath("folder.png");
+		}
+		else if(entry.getType()!=null && entry.getType().equals(DNType.AHENK)) {
+			entry.setIconPath("linux.png");
+		}
+		else {
+			entry.setIconPath("file.png");
+		}
+		
+		if (entry.getChildEntries()!=null && entry.getChildEntries().size() == 0) {
 			treeList.add(entry);
 	
-		} else {
+		} else if (entry!=null && entry.getChildEntries()!=null){
 			treeList.add(entry);
 	
 			for (LdapEntry ldapEntry : entry.getChildEntries()) {
 	
-				createList(ldapEntry, treeList);
+				createTreeList(ldapEntry, treeList);
 			}
 		}
 	}
+	
+	
+	
+	public LdapEntry getLdapUserTree() {
+		String globalUserOu = configurationService.getUserLdapBaseDn(); //"ou=Kullanıcılar,dc=mys,dc=pardus,dc=org";
+		LdapEntry usersDn = null;
+		try {
+			List<LdapEntry> usersEntrylist = findSubEntries(globalUserOu, "(objectclass=*)",
+					new String[] { "*" }, SearchScope.OBJECT);
 
+			if (usersEntrylist.size() > 0) {
+				usersDn = usersEntrylist.get(0);
+				usersDn.setExpanded("FALSE");
+			}
+			
+
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return usersDn;
+		
+	}
+	
+	public LdapEntry getLdapComputersTree() {
+		LdapEntry computersDn = null;
+		try {
+			String globalUserOu =  configurationService.getAgentLdapBaseDn(); //"ou=Ahenkler,dc=mys,dc=pardus,dc=org";
+			logger.info("Getting computers");
+			List<LdapEntry> retList = findSubEntries(globalUserOu, "(objectclass=*)",
+					new String[] { "*" }, SearchScope.OBJECT);
+
+			logger.info("Ldap Computers Node listed.");
+			if (retList.size() > 0) {
+				computersDn = retList.get(0);
+				computersDn.setExpanded("FALSE");
+			}
+
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return computersDn;
+	}
+	
+	
+	public LdapEntry getLdapGroupsTree() {
+		
+		List<LdapEntry> allGorups = null;
+		
+		LdapEntry groupDn= new LdapEntry("Gruplar",null,DNType.ORGANIZATIONAL_UNIT);
+	
+		try {
+			String globalUserOu =  configurationService.getLdapRootDn(); 
+			
+			allGorups = findSubEntries(globalUserOu, "(objectclass=groupOfNames)",new String[] { "*" }, SearchScope.SUBTREE);
+			
+			groupDn.setChildEntries(allGorups);
+			
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		
+		return groupDn;
+	}
+	
+	
+	public LdapEntry getLdapSudoGroupsTree() {
+		LdapEntry rolesDn = null;
+		List<LdapEntry> roleList=null;
+		try {
+			String roles =  configurationService.getUserLdapRolesDn();
+			logger.info("Getting computers");
+			List<LdapEntry> retList = findSubEntries(roles, "(objectclass=*)",new String[] { "*" }, SearchScope.OBJECT);
+			
+			logger.info("Ldap Computers Node listed.");
+			if (retList.size() > 0) {
+				rolesDn = retList.get(0);
+				roleList=findSubEntries(roles, "(objectclass=sudoRole)",new String[] { "*" }, SearchScope.SUBTREE);
+				rolesDn.setChildEntries(roleList);
+			}
+
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return rolesDn;
+	}
+
+	private static final int SALT_LENGTH = 4;
+
+	public static String generateSSHA(byte[] password)
+	        throws NoSuchAlgorithmException {
+	    SecureRandom secureRandom = new SecureRandom();
+	    byte[] salt = new byte[SALT_LENGTH];
+	    secureRandom.nextBytes(salt);
+
+	    MessageDigest crypt = MessageDigest.getInstance("SHA-1");
+	    crypt.reset();
+	    crypt.update(password);
+	    crypt.update(salt);
+	    byte[] hash = crypt.digest();
+
+	    byte[] hashPlusSalt = new byte[hash.length + salt.length];
+	    System.arraycopy(hash, 0, hashPlusSalt, 0, hash.length);
+	    System.arraycopy(salt, 0, hashPlusSalt, hash.length, salt.length);
+
+	    return new StringBuilder().append("{SSHA}")
+	            .append(Base64.getEncoder().encodeToString(hashPlusSalt))
+	            .toString();
+	}
+	
 
 }

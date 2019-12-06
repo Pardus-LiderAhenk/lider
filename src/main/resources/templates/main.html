@@ -35,21 +35,49 @@
 		<link rel="stylesheet" type="text/css" href="css/sb-admin-2.css" />
 		<link rel="stylesheet" type="text/css" href="css/main.css" />
 		
-		<script type="text/javascript">
+		<link rel="stylesheet" href="css/jqx.base.css" type="text/css" />
+        <link rel="stylesheet" href="css/jqx.arctic.css" type="text/css" />
 		
+		<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script> 
+		<script type="text/javascript" src="js/bootstrap.min.js"></script>  
+
+	<!-- <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script> -->
+	<!-- <script type="text/javascript" src="js/jquery.js"></script> -->
+	<!-- <script type="text/javascript" src="js/bootstrap.min.js"></script> -->
+
+	<!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script> -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
+
+	<!--<script src="assets/js/core/jquery.min.js"></script>
+        <script src="assets/js/core/bootstrap.min.js"></script>       
+        -->
+       <script src='js/jquery-ui.min.js'></script>
+    
+	<script src="assets/js/core/jquery.slimscroll.min.js"></script>
+	<script src="assets/js/core/jquery.scrollLock.min.js"></script>
+	<script src="assets/js/core/jquery.placeholder.min.js"></script>
+	<script src="assets/js/app.js"></script>
+	<script src="assets/js/app-custom.js"></script>
+	<script type="text/javascript" src="js/metisMenu.min.js"></script>
+	<script type="text/javascript" src="js/sb-admin-2.js"></script>
+	<script type="text/javascript" src="js/strophe.js"></script>
+	<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript">
 			var username = '[[${userNameJid}]]';
 			var password = '[[${password}]]';
 			var xmppHost = '[[${xmppHost}]]';
+			var pluginTaskListSTR ='[[${pluginTaskList}]]'.replace(/&quot;/g,'"');
+			
+			var pluginTaskList=jQuery.parseJSON(pluginTaskListSTR);
 			
 			var BOSH_SERVICE = 'http://'+xmppHost+':5280/bosh';
 			var connection = null; 
-			var rosterList=[]; // make a global to make for different selected entries 
-			var onlineEntryList=[]; // make a global to make for different selected entries 
-			var childEntryList=[]; // make a global to make for different selected entries 
-		
+			var rosterList=[]; 
+			var onlineEntryList=[]; 
+			var childEntryList=[]; 
+			
 		</script>
 </head>
-
 
  <body class="app-ui layout-has-drawer layout-has-fixed-header" >
  
@@ -62,7 +90,7 @@
                     <!-- Drawer scroll area -->
                     <div class="app-layout-drawer-scroll">
                         <!-- Drawer logo -->
-                        <div id="logo" class="drawer-header" >
+                        <div id="logo" class="drawer-header"  >
                             <a href="dashboard"> <img class="img-responsive" src="img/LiderAhenk-Logo-02.png" title="Lider MYS" alt="Lider MYS" />  Lider MYS
                             </a>
                         </div>
@@ -74,50 +102,65 @@
                                 <li class="nav-item nav-drawer-header"></li>
 
                                 <li class="nav-item active">
-                                    <a href="#"><i class="ion-ios-home-outline"></i> Panel</a>
+                                    <a class="dizin" href="#" data-page="dashboard"><i class="fa fa-home"></i> Panel</a>
                                 </li>
                                 
-                                <li class="nav-item nav-drawer-header"> Etki Alanı Organizasyonu</li>
-                                
-                                <div class="navbar-form navbar-left app-search-form" >
-                                    <div class="form-group">
-                                        <div class="input-group pull-right">
-                                            <input class="form-control" type="text" id="search-input" placeholder="Ara..." />
-                                            
-                                            <span class="input-group-btn">
-												<button class="btn" type="button"><i class="ion-ios-search-strong"></i></button>
-											</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <table class="tree" id="mytable">
-										
-	
-									<th:block th:each="entry : ${ldapTreeList}">
-									
-										<tr align="left" th:id="${entry.entryUUID}" th:class=" ${entry.parent}  ? 'treegrid-'+${entry.entryUUID} +' ' +' treegrid-parent-'+ ${entry.parent} : 'treegrid-'+${entry.entryUUID}+' ' +' expanded'">
-	
-											<td><img alt="" src="/img/folder.png"> 
-											<a style="color: blue;"
-												href="#" class="ldapTreeItem" id="send"
-												th:attr="data-id=${entry.distinguishedName}, data-type=${entry.type} , data-parent=${entry.parentName}" > <span
-													th:text="${entry.name}"></span>
-											</a></td>
-	
-										</tr>
-										
-								
-									</th:block>
-								</table> 
-                            
+                                 <li class="nav-item nav-item-has-subnav">
+                                    <a href="#"><i class="fa fa-server"></i> Dizin Yönetimi</a>
+                                    <ul class="nav nav-subnav">
+
+                                        <li>
+                                            <a class="dizin" href="#" data-page="users">Kullanıcılar</a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dizin" href="#" data-page="computers"> İstemciler </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dizin" href="#" data-page="groups">Gruplar</a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dizin" href="#" data-page="sudo_groups">Yetki Grupları</a>
+                                        </li>
+
+                                    </ul>
+                                </li>
+                                 <li class="nav-item nav-item-has-subnav">
+                                    <a href="#"><i class="fa fa-list-alt"></i> Raporlar</a>
+                                    <ul class="nav nav-subnav">
+
+                                        <li>
+                                            <a class="dizin" href="#" data-page="users"> Detaylı İstemci Raporu</a>
+                                        </li>
+
+                                       
+
+                                    </ul>
+                                </li>
+                                 <li class="nav-item nav-item-has-subnav">
+                                    <a href="#"><i class="fa fa-cogs"></i> Ayarlar</a>
+                                    <ul class="nav nav-subnav">
+
+                                        <li>
+                                            <a class="dizin" href="#" data-page="users"> Sunucu Ayarları</a>
+                                        </li>
+
+                                       
+
+                                    </ul>
+                                </li>
                              <li class="nav-item nav-drawer">  <div id='log' class="log"></div> </li>
-                           
                             </ul>
                         </nav>
                         <!-- End drawer navigation -->
                     </div>
                     <!-- End drawer scroll area -->
+                    
+                    <div id="logger" > 
+						
+						</div>
                 </aside>
                 <!-- End drawer -->
 
@@ -197,325 +240,42 @@
                     <!-- Page Content -->
 			     		 <div class="container-fluid p-y-md">
 			     		 
-			     		 <div id="mainArea">
-			     		 
-			     		 <div class="col-lg-12">  
-			     		 
-					     		 <div class="row">
-		                    
-		                            <!-- .col-sm-6 -->
-		                            
-		                            <div class="col-sm-6 col-lg-3 pull-right">
-		                                
-		                                 <a class="card bg-blue bg-inverse" href="javascript:void(0)">
-		                                    <div class="card-block clearfix">
-		                                        <div class="pull-right">
-		                                            <p class="h6 text-muted m-t-0 m-b-xs"> Online İstemci Listesi </p>
-		                                            
-		                                            <p class="h3 m-t-sm m-b-0" id="onlineEntryListSize" data-target="#onlineEntryListModal" 
-		                                            data-toggle="modal" > ... </p>
-		                                        </div>
-		                                        
-		                                        <div class="pull-left m-r">
-		                                            <span class="img-avatar img-avatar-48 bg-gray-light-o"><img class="img-responsive" 
-																	src="img/online_status.png" ></img></span>
-		                                        </div>
-		                                        
-		                                        
-		                                    </div>
-		                                </a>
-		                                
-		                                <!--  <div id="selectedEntriesHolder"></div> -->
-		                                
-		                            </div>
-		                            <div class="col-sm-6 col-lg-3 pull-right">
-		                                
-		                                 <a class="card bg-blue bg-inverse" href="javascript:void(0)">
-		                                    <div class="card-block clearfix">
-		                                        <div class="pull-right">
-		                                            <p class="h6 text-muted m-t-0 m-b-xs"> Kontak Listesi </p>
-		                                            
-		                                            <p class="h3 m-t-sm m-b-0" id="rosterListSize" data-target="#rosterListModal" data-toggle="modal" > ... </p>
-		                                        </div>
-		                                        
-		                                        <div class="pull-left m-r">
-		                                            <span class="img-avatar img-avatar-48 bg-gray-light-o"><img class="img-responsive" 
-																	src="img/list.png" ></img></span>
-		                                        </div>
-		                                        
-		                                        
-		                                    </div>
-		                                </a>
-		                                
-		                                <!--  <div id="selectedEntriesHolder"></div> -->
-		                                
-		                            </div>
-		                            <div class="col-sm-6 col-lg-3 pull-right">
-		                                
-		                                 <a class="card bg-blue bg-inverse" href="javascript:void(0)">
-		                                    <div class="card-block clearfix">
-		                                        <div class="pull-right">
-		                                            <p class="h6 text-muted m-t-0 m-b-xs" >Seçilen Kayıtlar</p>
-		                                            
-		                                            <p class="h3 m-t-sm m-b-0" id="selectedEntrySize" data-target="#selectedEntryListModal" data-toggle="modal" > ... </p>
-		                                        </div>
-		                                        
-		                                        <div class="pull-left m-r">
-		                                            <span class="img-avatar img-avatar-48 bg-gray-light-o"><img class="img-responsive" 
-																	src="img/basket.png" ></img></span>
-		                                        </div>
-		                                        
-		                                        
-		                                    </div>
-		                                </a>
-		                                
-		                                <!--  <div id="selectedEntriesHolder"></div> -->
-		                                
-		                            </div>
-		                            <!-- .col-sm-6 -->
-		                        </div>
-		                        <!-- .row -->
-			     		 
-			     		 </div>
-			     		 
-			     		 
-				     		 <div id="subentryDiv" > 
-				     		 
-				     				<div class="col-lg-6">
-	
-												<div class="card">
-												<div class="card-header  bg-teal bg-inverse">
-												<h6 id="selectedEntryHeader"> </h6>
-												</div>
-												<div class="card-block">
-												
-												<div class="row"> 
-													<div class="col-lg-6 col-md-6">
-															<div class="input-group ">
-																		   <input type="text" class="form-control" id="textSubEntrySearch" placeholder="Ara.">
-															</div>
-														</div>
-													<div class="col-lg-6 pull-right" >
-														<a class="pull-right" id="addSelectedEntry" href="#"> <img class="img-responsive" 
-																			src="img/add_icon.png" title="Seçilenleri Ekle" alt="Seçilenleri Ekle">   </a>
-													
-													</div>
-												</div>
-												
-													<div id="subEntryDivTable">
-													</div>
-												</div>
-			
-										</div>
-									</div>
-									
-				     				<div class="col-lg-6">
-	
-												<div class="card">
-												<div class="card-header  bg-teal bg-inverse">
-												<h6> Görevler </h6>
-												</div>
-												<div class="card-block">
-													 
-													  
-														 <div id="pluginList"> 
-															  
-															 
-															 <div>  
-							                                
-							                                <div class="input-group ">
-																				   <input type="text" class="form-control" id="textTaskSearch" placeholder="Ara.">
-															
-															 </div>
-								                                <table class="table table-hover" id="pluginTaskTable">
-																		<thead>
-																		<tr> <td> Görev Adı
-																		</td>  <td>Açıklama</td> </tr>
-																		
-																		</thead>
-																	
-																		<tr th:each="ptask : ${pluginTaskList}">
-																			<td th:text="${ptask.name}"></td>
-																			<td th:text="${ptask.description}"></td>
-																			<td> 
-																			
-																			<button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" data-toggle="modal" data-target="#taskModal" 
-																			title="Görev Gönder" th:attr="data-id=${ptask.id}, data-page=${ptask.page}, data-name=${ptask.name}, data-description=${ptask.description}" > <img class="img-responsive" 
-																			src="img/LiderAhenk-task.png" title="Lider MYS" alt="Lider MYS" />  </button>
-																			</td>
-									
-																		</tr>
-																
-																</table> 
-															</div>
-													</div>  
-												</div>
-			
-										</div>
-									</div>
-									
-				     		</div>
-			     			
-			     		 </div>
+				     		 <div id="mainArea">
+				     			
+				     		 </div>
 			  
 						</div>
-
-
-					<div id="attributeModal" class="modal fade">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content">
-									
-									<div class="card-header bg-green bg-inverse">
-				                                    <h4> Attributes </h4>
-				                                    <ul class="card-actions">
-				                                        <li>
-				                                            <button data-dismiss="modal" type="button"><i class="ion-close"></i></button>
-				                                        </li>
-				                                    </ul>
-				                    </div>
-				                    
-									<div class="modal-body">
-										<span id="attributes_dn"></span>
-										<div id="attributes_attributes"></div>
-										
-									</div>
-				
-									<div class="modal-footer">
-										<input type="submit" class="btn btn-success"
-											value="Özellikleri Guncelle" id="btnAttributes" name="bnt_gonder">
-										<button type="button" class="btn btn-success" data-dismiss="modal">Vazgeç</button>
-									</div>
-							</div>
-						</div>
-					</div>
-					
-					<div id="selectedEntryListModal" class="modal fade">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content">
-									
-									<div class="card-header bg-green bg-inverse">
-				                                    <h4> Seçili Kayıtlar </h4>
-				                    </div>
-				                    
-									<div class="modal-body">
-										 <div id="selectedEntriesHolder"></div>
-									</div>
-				
-									<div class="modal-footer">
-										
-										<button type="button" class="btn btn-success" data-dismiss="modal">Kapat</button>
-									</div>
-							</div>
-						</div>
-					</div>
-					
-					<div id="rosterListModal" class="modal fade">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content">
-									
-									<div class="card-header bg-green bg-inverse">
-				                                    <h4>Kontak Listesi </h4>
-				                    </div>
-				                    
-									<div class="modal-body">
-										 <div id="rosterListHolder"></div>
-									</div>
-				
-									<div class="modal-footer">
-										
-										<button type="button" class="btn btn-success" data-dismiss="modal">Kapat</button>
-									</div>
-							</div>
-						</div>
-					</div>
-					
-					<div id="onlineEntryListModal" class="modal fade">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content">
-									
-									<div class="card-header bg-green bg-inverse">
-				                                    <h4>Online İstemci Listesi </h4>
-				                    </div>
-				                    
-									<div class="modal-body">
-										 <div id="onlineEntryListHolder"></div>
-									</div>
-				
-									<div class="modal-footer">
-										
-										<button type="button" class="btn btn-success" data-dismiss="modal">Kapat</button>
-									</div>
-							</div>
-						</div>
-					</div>
-					
-					
-					<div class="modal fade" id="pluginHtmpPageModal">
-								<div class="modal-dialog" role="document">
-									<div class="modal-content">
-										
-										<div class="card-header bg-green bg-inverse">
-				                                    <h4 id="pluginHtmpPageModalLabel"> </h4>
-				                   	 </div>
-										
-										<div class="modal-body">
-					
-											<div id="pluginPageRender"></div>
-					
-										</div>
-										<div class="modal-footer">
-											<button type="button" class="btn btn-success"
-												id="closePage" data-dismiss="modal">Kapat</button>
-										</div>
-					
-									</div>
-								</div>
-					</div>
-					
-
+						
+						
 
                 </main>
 
             </div>
             <!-- .app-layout-container -->
         </div>
+        
+        
         <!-- .app-layout-canvas -->
 
         <!-- Apps Modal -->
        
-       <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script> 
-	<script type="text/javascript" src="js/bootstrap.min.js"></script>  
-
-	<!-- <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script> -->
-	<!-- <script type="text/javascript" src="js/jquery.js"></script> -->
-	<!-- <script type="text/javascript" src="js/bootstrap.min.js"></script> -->
-
-	<!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script> -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
-
-	<!--<script src="assets/js/core/jquery.min.js"></script>
-        <script src="assets/js/core/bootstrap.min.js"></script>       
-        -->
-       <script src='js/jquery-ui.min.js'></script>
-    
-	<script src="assets/js/core/jquery.slimscroll.min.js"></script>
-	<script src="assets/js/core/jquery.scrollLock.min.js"></script>
-	<script src="assets/js/core/jquery.placeholder.min.js"></script>
-	<script src="assets/js/app.js"></script>
-	<script src="assets/js/app-custom.js"></script>
-
-
-	<script type="text/javascript" src="js/jquery.treegrid.js"></script>
-	<script type="text/javascript" src="js/metisMenu.min.js"></script>
-	<script type="text/javascript" src="js/sb-admin-2.js"></script>
-	<script type="text/javascript" src="js/strophe.js"></script>
-	<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="js/notify.min.js" ></script>
+	<script type="text/javascript" src="js/jquery.treegrid.js"></script>
+	<!-- <script type="text/javascript"	src="/js/main.js"></script> -->
 	<script type="text/javascript" src="js/messaging.js"></script> <!-- for xmmp connecetion send message -->
 	<script type="text/javascript" src="js/main.js"></script>
-	<script type="text/javascript" src="js/notify.min.js" ></script>
-	<!-- <script type="text/javascript"	src="/js/main.js"></script> -->
-
+	
+	 <script type="text/javascript" src="js/treegrid/jqxcore.js"></script>
+         <script type="text/javascript" src="js/treegrid/jqxbuttons.js"></script>
+        <script type="text/javascript" src="js/treegrid/jqxscrollbar.js"></script>
+        <script type="text/javascript" src="js/treegrid/jqxdatatable.js"></script>
+        <script type="text/javascript" src="js/treegrid/jqxtreegrid.js"></script> 
+        <script type="text/javascript" src="js/treegrid/jqxdata.js"></script>   
+        <script type="text/javascript" src="js/treegrid/jqxcheckbox.js"></script>
+        <script type="text/javascript" src="js/treegrid/jqxlistbox.js"></script>
+        <script type="text/javascript" src="js/treegrid/jqxdropdownlist.js"></script>
+        <script type="text/javascript" src="js/treegrid/demos.js"></script>
+	
 	<script type="text/javascript">
 
 		 

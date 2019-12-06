@@ -14,9 +14,21 @@ $(document).ready(function() {
 				
 			 connection.disconnect();
 		});
+		
 });
 
 
+function objToString (obj) {
+    var str = '';
+    for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+            str += p + '::' + obj[p] + '\n';
+        }
+    }
+    return str;
+}
+
+	        
 function showRosterList(){
 	
 	var html = '<table class="table table-striped table-bordered " id="rosterListTable">';
@@ -32,35 +44,35 @@ function showRosterList(){
     $('#rosterListHolder').html(html);
 }
 
-function showOnlineEntryList(){
-	
-	var html = '<table class="table table-striped table-bordered " id="onlineEntryListTable">';
-	
-	html += '<thead>';
-	
-	html += '<tr>';
-	html += '<th>JID</th>';
-	html += '<th>Kaynak</th>';
-	html += '</tr>';
-	html += '</thead>';
-    
-    for (var i = 0; i < onlineEntryList.length ; i++) {
-    	
-    	var entry=onlineEntryList[i];
-    	
-        	html += '<tr>';
-            html += '<td>' + entry.jid + '</td>';
-            html += '<td>' + entry.source + '</td>';
-         /*    html += '<td>' + roster.id + '</td>';
-            html += '<td>' + roster.jid + '</td>'; */
-            
-       		 
-            html += '</tr>';
-    }
-    html += '</table>';
-    
-    $('#onlineEntryListHolder').html(html);
-}
+//function showOnlineEntryList(){
+//	
+//	var html = '<table class="table table-striped table-bordered " id="onlineEntryListTable">';
+//	
+//	html += '<thead>';
+//	
+//	html += '<tr>';
+//	html += '<th>JID</th>';
+//	html += '<th>Kaynak</th>';
+//	html += '</tr>';
+//	html += '</thead>';
+//    
+//    for (var i = 0; i < onlineEntryList.length ; i++) {
+//    	
+//    	var entry=onlineEntryList[i];
+//    	
+//        	html += '<tr>';
+//            html += '<td>' + entry.jid + '</td>';
+//            html += '<td>' + entry.source + '</td>';
+//         /*    html += '<td>' + roster.id + '</td>';
+//            html += '<td>' + roster.jid + '</td>'; */
+//            
+//       		 
+//            html += '</tr>';
+//    }
+//    html += '</table>';
+//    
+//    $('#onlineEntryListHolder').html(html);
+//}
 
 function onConnect(status)
 {
@@ -70,6 +82,7 @@ function onConnect(status)
    else if (status == Strophe.Status.CONNFAIL) {
  	log('Sunucuya bağlanırken hata oluştu.');
  	$('#connect').get(0).value = 'connect';
+ 	  
      } 
    else if (status == Strophe.Status.DISCONNECTING) {
  	log('Sunucu bağlantısı koparılmaktadır.');
@@ -80,18 +93,21 @@ function onConnect(status)
      } 
    else if (status == Strophe.Status.CONNECTED) {
  	log('Sunucu ile bağlantı kuruldu.');
- 	log('Mesaj göndermek için kullanıcı adım: ' + connection.jid );
+// 	log('Mesaj göndermek için kullanıcı adım: ' + connection.jid );
 
  	connection.addHandler(onMessage, null, 'message', null, null,  null); 
  	
 	var iq = $iq({type: 'get'}).c('query', {xmlns: 'jabber:iq:roster'});
-    
+	
 	connection.sendIQ(iq, onRoster);
 	
-	Gab.connection.addHandler(onRosterChanged, "jabber:iq:roster", "iq", "set");
-
-	//connection.send($pres().tree());
-	
+	connection.addHandler(onRosterChanged, "jabber:iq:roster", "iq", "set");
+//    connection.send($pres().tree());
+	connection.send($pres().tree());
+   }
+   
+   else{
+	   log('Sunucuya ulaşılamıyor.');
    }
 }
 
@@ -106,7 +122,6 @@ function onRoster(iq)
         
         
        rosterList.push({id :jid_id, item_name: name, jid: jid });
-        
         
 
         /* var contact = $("<li id='" + jid_id + "'>" +
@@ -126,8 +141,8 @@ function onRoster(iq)
 	$('#rosterListSize').html(rosterList.length);
 
     // set up presence handler and send initial presence
-    connection.addHandler(onPresence, null, "presence");
-    connection.send($pres().tree());
+	connection.addHandler(onPresence, null, "presence");
+	connection.send($pres().tree());
 }
 
 function onRosterChanged(iq) {
@@ -173,32 +188,23 @@ function onPresence(presence)
         var source = jid_to_source(from);
         
        if (ptype === 'subscribe') {
-            // populate pending_subscriber, the approve-jid span, and
-            // open the dialog
-            /* Gab.pending_subscriber = from;
-            $('#approve-jid').text(Strophe.getBareJidFromJid(from));
-            $('#approve_dialog').dialog('open'); */
             
     	   $.notify("subscribe","warn");
             
         } else if (ptype !== 'error') {
-           
+        	//OFFLine state
             if (ptype === 'unavailable') {
                
             	$.notify(name+" offline..",{className: 'error',position:"right bottom"}  );
             	
             	for (var i =0; i < onlineEntryList.length; i++){
-            		   if (onlineEntryList[i].from === from && onlineEntryList[i].source ===source) {
+            		
+            		   if (onlineEntryList[i].from === from && onlineEntryList[i].source === source) {
             			   onlineEntryList.splice(i,1);
             		      break;
             		   }
             	}
-               	 
-               	// onlineEntryList.splice($.inArray(from, onlineEntryList), 1);
-				  $('#onlineEntryListSize').html(onlineEntryList.length);
-				  
-				  loadChildEntries();
-                
+            	
             } else {
             	$.notify(name+" online..", {className: 'success',position:"right bottom"}  );
             	
@@ -215,19 +221,11 @@ function onPresence(presence)
             	if (isExist==false) {
 					onlineEntryList.push({'from':from, 'jid':jid_id, 'name':name, 'source':source  });
 				}
-            	
-            	loadChildEntries();
             }
+          
         }
-
-       $('#onlineEntryListSize').html(onlineEntryList.length);
-        // reset addressing for user since their presence changed
-        /* var jid_id = Gab.jid_to_id(from);
-        $('#chat-' + jid_id).data('jid', Strophe.getBareJidFromJid(from));  */
-
        
         return true;
-	
 }
 
 function jid_to_id(jid) {
@@ -245,7 +243,6 @@ function jid_to_source(jid) {
 }
 
 function onMessage(msg) {
-	
     var to = msg.getAttribute('to');
     var from = msg.getAttribute('from');
     var type = msg.getAttribute('type');
@@ -264,22 +261,20 @@ function onMessage(msg) {
     	// log('Mesaj Alındı:  ' + data.pluginName );
 	
     	var ee=JSON.parse(data);
+    	console.log(ee);
 		log('Data : ' +   ee.type );
 		log('from : ' +   from );
-	    
-			var reply = $msg({to: from, from: to, type: 'chat'}).cnode(Strophe.copyElement(body));
-			connection.send(reply.tree());
+		var reply = $msg({to: from, from: to, type: 'chat'}).cnode(Strophe.copyElement(body));
+		connection.send(reply.tree());
 		
 		//	 log('Mesaj Gönderildi. ' + from + ' : ' + Strophe.getText(body));
 		
     }
-
-    // we must return true to keep the handler alive.  
-    // returning false would remove it after it finishes.
+    // we must return true to keep the handler alive. returning false would remove it after it finishes.
     return true;
 }
-
 function log(msg) 
 {
-    $('#log').append('<div></div>').append(document.createTextNode(msg));
+    $('#logger').append(document.createTextNode("* "+msg));
 }
+

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.3.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>tr.com.lider</groupId>
 	<artifactId>Lider2</artifactId>
@@ -22,44 +23,44 @@
 	</properties>
 
 	<dependencies>
-	
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-	
+
 		<dependency>
-	        <groupId>org.springframework.boot</groupId>
-	        <artifactId>spring-boot-starter-thymeleaf</artifactId>
-	    </dependency>
-	    
-	    <dependency>
-		 <groupId>nz.net.ultraq.thymeleaf</groupId>
-		 <artifactId>thymeleaf-layout-dialect</artifactId>
-		 </dependency>
-		
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>nz.net.ultraq.thymeleaf</groupId>
+			<artifactId>thymeleaf-layout-dialect</artifactId>
+		</dependency>
+
 		<!-- Apache DS Dependencies -->
 		<dependency>
 			<groupId>org.apache.directory.api</groupId>
@@ -71,14 +72,14 @@
 			<artifactId>api-ldap-schema-data</artifactId>
 			<version>1.0.0-M20</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.directory.api</groupId>
 			<artifactId>api-ldap-codec-standalone</artifactId>
 			<version>1.0.0-M20</version>
 		</dependency>
-		
-		
+
+
 		<!-- XMPP Dependencies -->
 		<dependency>
 			<groupId>org.igniterealtime.smack</groupId>
@@ -116,8 +117,8 @@
 			<version>${smack.version}</version>
 		</dependency>
 		<!-- End of XMPP Dependencies -->
-		
-		
+
+
 	</dependencies>
 
 	<build>
@@ -128,6 +129,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 
 </project>

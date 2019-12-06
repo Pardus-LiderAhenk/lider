@@ -7,33 +7,30 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import tr.org.lider.services.LoginService;
 import tr.org.lider.services.TaskService;
 import tr.org.lider.utils.ControllerUtils;
 import tr.org.lider.utils.IRestResponse;
 
-@Controller
+
+/**
+ *  Task execute
+ * @author M. Edip YILDIZ
+ *
+ */
 @RestController()
 @RequestMapping("/lider/task")
 public class TaskController {
-	
-	
-	Logger logger = LoggerFactory.getLogger(LdapController.class);
-	
+	Logger logger = LoggerFactory.getLogger(TaskController.class);
 	
 	@Autowired
 	public TaskService taskService;
 	
-	
 	@RequestMapping(value = "/execute", method = { RequestMethod.POST })
-	@ResponseBody
 	public IRestResponse executeTask(@RequestBody String requestBody, HttpServletRequest request)
 			throws UnsupportedEncodingException {
 		String requestBodyDecoded = ControllerUtils.decodeRequestBody(requestBody);

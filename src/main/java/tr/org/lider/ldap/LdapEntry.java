@@ -32,6 +32,11 @@ public class LdapEntry implements Serializable{
 	private String hasSubordinates;
 
 	private String name;	
+	
+	private String iconPath;	
+	
+	private String expanded;
+
 	/**
 	 * single valued attributes
 	 */
@@ -41,8 +46,13 @@ public class LdapEntry implements Serializable{
 	
 	private boolean isOnline;
 	
+	
+	
 	private List<LdapEntry> childEntries;
 
+	public LdapEntry() {
+		// TODO Auto-generated constructor stub
+	}
 	/**
 	 * 
 	 * @param dn
@@ -51,6 +61,7 @@ public class LdapEntry implements Serializable{
 	 */
 	public LdapEntry(String dn, Map<String, String> attributes, DNType type) {
 		this.distinguishedName = dn;
+		this.name = dn;
 		this.attributes = attributes;
 		this.type = type;
 	}
@@ -88,11 +99,11 @@ public class LdapEntry implements Serializable{
 		return type;
 	}
 
-	@Override
-	public String toString() {
-		return "LdapEntry [distinguishedName=" + distinguishedName + ", attributes=" + attributes + ", type=" + type
-				+ "]";
-	}
+//	@Override
+//	public String toString() {
+//		return "LdapEntry [distinguishedName=" + distinguishedName + ", attributes=" + attributes + ", type=" + type
+//				+ "]";
+//	}
 
 	public boolean isOnline() {
 		return isOnline;
@@ -210,6 +221,18 @@ public class LdapEntry implements Serializable{
 		this.parentName = parentName;
 	}
 
+	public String getIconPath() {
+		return iconPath;
+	}
 
+	public void setIconPath(String iconPath) {
+		this.iconPath = iconPath;
+	}
+	public String getExpanded() {
+		return expanded;
+	}
+	public void setExpanded(String expanded) {
+		this.expanded = expanded;
+	}
 
 }

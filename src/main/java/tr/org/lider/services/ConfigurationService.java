@@ -69,6 +69,7 @@ public class ConfigurationService{
 	private String userLdapObjectClasses;
 	private Boolean userAuthorizationEnabled;
 	private String groupLdapObjectClasses;
+	private String userLdapRolesDn;
 
 	// Task manager configuration
 	private Boolean taskManagerCheckFutureTask;
@@ -163,6 +164,7 @@ public class ConfigurationService{
 		userLdapObjectClasses = env.getProperty("user.ldap.object.classes");
 		userAuthorizationEnabled = Boolean.getBoolean(env.getProperty("user.authorization.enabled"));
 		groupLdapObjectClasses = env.getProperty("group.ldap.object.classes");
+		setUserLdapRolesDn(env.getProperty("user.ldap.roles.dn"));
 	}
 
 	public void refresh() {
@@ -864,6 +866,14 @@ public class ConfigurationService{
 
 	public void setCronIntervalEntrySize(Integer cronIntervalEntrySize) {
 		this.cronIntervalEntrySize = cronIntervalEntrySize;
+	}
+
+	public String getUserLdapRolesDn() {
+		return userLdapRolesDn;
+	}
+
+	public void setUserLdapRolesDn(String userLdapRolesDn) {
+		this.userLdapRolesDn = userLdapRolesDn;
 	}
 
 }

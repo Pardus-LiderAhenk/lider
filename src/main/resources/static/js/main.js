@@ -1,4 +1,3 @@
-		$('.tree').treegrid();
 
 		var selectedEntries = []; // make a global to make for different selected entries
 
@@ -34,6 +33,22 @@
 					}
 
 				});
+		
+		$('.dizin').on('click',	function(e) {
+			
+			var page = $(this).data("page");
+			
+			$.ajax({
+				type : 'POST',
+				url : 'getInnerHtmlPage',
+				data : 'innerPage=' + page,
+				dataType : 'text',
+				success : function(data) {
+					$('#mainArea').html(data);
+				}
+			});
+			
+		});
 
 			$('.ldapTreeItem').on('click',	function(e) {
 
@@ -76,59 +91,12 @@
 									
 									childEntryList=selectedEntry.childEntries;
 
-									
-									loadChildEntries();
-
 								}
+					
 							});
-
-					/*
-					 * $.get("task", function(data, status){
-					 * $('#mainArea').html(""); $('#mainArea').append(data);
-					 * $('#uidName').append(uid +" "+type);
-					 * 
-					 * });
-					 */
+				
 				});
 
-$('.sendTaskButton').click(function() {
-	var page = $(this).data('page');
-	var name = $(this).data('name');
-	var description = $(this).data('description');
-	var id = $(this).data('id');
-
-	
-	$.ajax({
-		type : 'POST',
-		url : 'getPluginTaskHtmlPage',
-		data : 'id=' + id + '&name=' + name
-				+ '&page=' + page + '&description=' + description,
-		dataType : 'text',
-		success : function(data) {
-
-			$('#pluginHtmpPageModal').modal('show');
-			$('#pluginHtmpPageModalLabel').html(name);
-			$('#pluginPageRender').html(data);
-			
-		}
-	});
-	
-	
-	
-
-	
-});
-
-
-$('#textTaskSearch').keyup(function() {
-	
-	var txt=$('#textTaskSearch').val();
-	 $("#pluginTaskTable > tbody > tr").filter(function() {
-		 $(this).toggle($(this).text().indexOf(txt) > -1)
-	 });
-
-			
-});
 
 function showSelectedEntries() {
 
@@ -158,150 +126,4 @@ function showSelectedEntries() {
 }
 
 
-function loadChildEntries(){
-	
-	$('#subEntryDivTable').empty();
-
-	var table = '<table id="subEntryTable" class="table table-sm table-border table-striped table-order"  >';
-
-	table += '<thead>';
-
-	table += '<tr>';
-	table += '<th> <input type="checkbox" name="checkAll" id="checkAll"/> </th>';
-	table += '<th></th>';
-	table += '<th>Name</th>';
-	table += '<th></th>';
-	table += '</tr>';
-	table += '</thead>';
-	table += '<tbody>';
-	
-	for (i = 0; i < childEntryList.length; i++) {
-
-		var rep = childEntryList[i];
-		
-		var isOnline=false;
-		
-		for (var k =0; k < onlineEntryList.length; k++){
-    		  var on=onlineEntryList[k];
-				if(on.name==rep.uid){
-					isOnline=true;
-				}
-		
-    	}
-
-		var row = '<tr class="tr-order" id= "'
-				+ rep.distinguishedName
-				+ '"  >';
-
-		row += ' <td class="td-order" style="text-align: left; vertical-align: middle;">';
-
-		row += ' <input id="checkBox" class="selectedEntryCheckbox" type="checkbox" name="selectedEntry" value="'+ rep.uid + '" />';
-
-		row += ' </td>';
-		
-		var imagePath="";
-		if(rep.type=='USER')
-		{imagePath="checked-user-32.png";}
-		else if(rep.type=='AHENK' && isOnline==true)
-			{imagePath="pardus_online.png";}
-		else if(rep.type=='AHENK' && isOnline==false)
-			{imagePath="pardus_offline.png";}
-
-		row += '<td class="td-order" style="text-align: left; vertical-align: middle;">  <img src="img/'+imagePath +'"></img> </td>';
-
-		row += '<td class="td-order" style="text-align: left; vertical-align: middle;">'
-			+ rep.uid + '</td>';
-
-		row += '<td style="text-align: left; vertical-align: middle;" >'
-		row += '<div class="btn-group">  <button class="btn btn-xs btn-default" type="button" data-html="true" data-toggle="modal"  data-target="#attributeModal" data-id='
-				+ rep.name
-				+ ' data-dn='
-				+ rep.distinguishedName
-				+ ' data-uuid='
-				+ rep.entryUUID
-				+ '  title="Özellikler"> <img src="img/information.png"></img> </button>';
-		row += '</td>'
-
-		row += '</tr>'
-
-		table += row;
-	}
-
-	table += '</tbody>';
-	table += '</table>';
-
-	$('#subEntryDivTable').append(table);
-	
-	$('#checkAll').click(function() {
-		$('.selectedEntryCheckbox').prop('checked', this.checked);
-	});
-
-	$('#attributeModal').on('show.bs.modal',
-					function(event) {
-						var button = $(event.relatedTarget) 
-						var modal = $(this)
-
-						var id = button.data('id') 
-						var distinguishedName = button.data('dn') 
-						var uuid = button.data('uuid') 
-
-						var dn = "";
-						for (k = 0; k < childEntryList.length; k++) {
-
-							var res = childEntryList[k];
-
-							if (uuid == res.entryUUID) {
-
-								dn = res.distinguishedName;
-
-								var tableAtt = '<table id="subeEntryAttrTable"  >';
-								tableAtt += '<caption>Özellikler</caption>';
-								tableAtt += '<thead>';
-
-								tableAtt += '<tr>';
-								tableAtt += '<th>Key</th>';
-								tableAtt += '<th>Value</th>';
-								tableAtt += '</thead>';
-								tableAtt += '<tbody>';
-
-								for ( var key in res.attributes) {
-									var rowAttr = '<tr class="tr-order">';
-									rowAttr += '<td class="td-order" style="text-align: left; vertical-align: middle;">'
-											+ key
-											+ '</td>';
-									rowAttr += '<td class="td-order" style="text-align: left; vertical-align: middle;" >'
-											+ res.attributes[key]
-											+ '</td>';
-
-									rowAttr += '</tr>';
-									tableAtt += rowAttr;
-								}
-
-								tableAtt += '</tbody>';
-								tableAtt += '</table>';
-
-								modal.find('#attributes_attributes').html("");
-								modal.find('#attributes_attributes').append(tableAtt);
-
-							}
-						}
-
-						modal.find('#attributes_dn').html("")
-						modal.find('#attributes_dn').html("DN = "+ dn)
-
-					});
-	
-	
-	$('#textSubEntrySearch').keyup(function() {
-		
-		var txt=$('#textSubEntrySearch').val();
-		 $("#subEntryTable > tbody > tr").filter(function() {
-			 $(this).toggle($(this).text().indexOf(txt) > -1)
-		 });
-
-				
-	});
-	
-	
-}
 

@@ -11,4 +11,5 @@ import tr.org.lider.entities.TaskImpl;
 public interface CommandRepository extends BaseJpaRepository<CommandImpl, Long>{
 
 	List<CommandImpl> findByTask(TaskImpl task );
+	
 }

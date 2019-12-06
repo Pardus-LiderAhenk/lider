@@ -7,7 +7,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h6 th:text="${pluginTask.name}"> </h6> 
+<h6 th:text="${pluginTask.description}"> </h6> 
+<h6>  deneme</h6> 
 <hr>
 
 
@@ -20,22 +21,30 @@
 					<div class="form-group">
 					Mesaj : 
 						<input type="text" class="form-control" id="username" name="param" >
+						
+						<div id="plugin-result">result</div>
 					</div>
 				</div>
 				<button type="submit" class="login-button" id="gonder"><i class="fa fa-chevron-right"></i></button>
 				
-				<div id="plugin-result"></div>
+				
 			
 </div>
-
 <script type="text/javascript">
 
 				
+				var ref=connection.addHandler(onMessage2, null, 'message', null, null,  null); 
 				$("#entrySize").html(selectedEntries.length);
+				
+				var dnlist=[]
+				
+				for (var i = 0; i < selectedEntries.length; i++) {
+					dnlist.push(selectedEntries[i].distinguishedName);
+				}
 				
 				var data = {
 						"pluginName":"conky",
-						"dnList":selectedEntries,
+						"dnList":dnlist,
 						"pluginVersion":"1.0.0",
 						"timestamp":1523430976357,
 						"dnType":"AHENK",
@@ -43,7 +52,7 @@
 						"commandId":"EXECUTE_CONKY"
 				}
 				
-				var params = JSON.stringify(data);
+				  var params = JSON.stringify(data); 
 
 				$("#gonder").click(function(e) {
 				    e.preventDefault();
@@ -51,29 +60,72 @@
 				    $.ajax({
 				      type: "POST",
 				      url: "/lider/task/execute",
-				      headers: {
+				       headers: {
 				          'Content-Type':'application/json',
 				          'username':'${sessionScope.userName}',
 				          'password':'${sessionScope.userPassword}',
-				      },
+				      }, 
 				      data: params,
-				      contentType: "application/json",
+				       contentType: "application/json",
 				      dataType: "json",
 				      converters: {
 				        'text json': true
-				      },
+				      }, 
 				      success: function(result) {
+				    	
 				    	  
 				    	var res = jQuery.parseJSON(result);
-				    	
-				    	
-				        $('#closePage').click();
+				    	console.log(res);
+				    	alert(res);
+				        /* $('#closePage').click(); */
 				      },
 				      error: function(result) {
 				        alert(result);
 				      }
 				    });
 				  }); 
+				
+				function onMessage2(msg) {
+				    var to = msg.getAttribute('to');
+				    var from = msg.getAttribute('from');
+				    var type = msg.getAttribute('type');
+				    var elems = msg.getElementsByTagName('body');
+				    
+				    if (type == "chat" && elems.length > 0) {
+					
+				    	var body = elems[0];
+				    	var resul={"name":"edip","age":30};
+
+				    	// 	var data=  JSON.stringify(resul);
+				    	
+				    	var data=Strophe.xmlunescape(Strophe.getText(body));
+				    	// var sss = jQuery.parseJSON(body);
+						
+				    	// log('Mesaj Alındı:  ' + data.pluginName );
+					
+				    	var ee=JSON.parse(data);
+				    	
+				    	console.log(ee);
+				    	
+						if(ee.commandClsId == "EXECUTE_CONKY"){
+							console.log("gorev sonucu:");
+							console.log(ee.result);
+							console.log(ee.result.responseMessage);
+							$("#plugin-result").html(ee.result.responseMessage);
+						}
+						
+						/* connection.deleteHandler(ref); */
+						
+				    }
+				    // we must return true to keep the handler alive. returning false would remove it after it finishes.
+				    return true;
+				}
+				
+				$('#closePage').click(function(e){
+					
+					connection.deleteHandler(ref);
+					
+				});
 	 
 	</script>
 

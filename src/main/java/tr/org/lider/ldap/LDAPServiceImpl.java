@@ -785,9 +785,9 @@ public class LDAPServiceImpl implements ILDAPService {
 					ldapEntry.setName( (ldapEntry.getAttributes().get("ou")!=null &&  !ldapEntry.getAttributes().get("ou").equals("")) 
 							? ldapEntry.getAttributes().get("ou") : ldapEntry.getAttributes().get("cn")!=null &&  !ldapEntry.getAttributes().get("cn").equals("") 
 							? ldapEntry.getAttributes().get("cn") : ldapEntry.getAttributes().get("o") );
-					
+					if(ldapEntry.getType()==DNType.AHENK) {
 					ldapEntry.setOnline(xmppClientImpl.isRecipientOnline(ldapEntry.getUid()));
-					
+					}
 					result.add(ldapEntry);
 
 					

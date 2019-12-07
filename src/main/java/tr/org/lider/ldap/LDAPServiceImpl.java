@@ -780,7 +780,7 @@ public class LDAPServiceImpl implements ILDAPService {
 					ldapEntry.setUid(ldapEntry.getAttributes().get("uid"));
 					ldapEntry.setO(ldapEntry.getAttributes().get("o"));
 					ldapEntry.setUserPassword(ldapEntry.getAttributes().get("userPassword"));
-					ldapEntry.setExpanded("FALSE");
+					ldapEntry.setExpandedUser("FALSE");
 					
 					ldapEntry.setName( (ldapEntry.getAttributes().get("ou")!=null &&  !ldapEntry.getAttributes().get("ou").equals("")) 
 							? ldapEntry.getAttributes().get("ou") : ldapEntry.getAttributes().get("cn")!=null &&  !ldapEntry.getAttributes().get("cn").equals("") 
@@ -1080,7 +1080,7 @@ public class LDAPServiceImpl implements ILDAPService {
 
 			if (usersEntrylist.size() > 0) {
 				usersDn = usersEntrylist.get(0);
-				usersDn.setExpanded("FALSE");
+				usersDn.setExpandedUser("FALSE");
 			}
 			
 
@@ -1102,7 +1102,7 @@ public class LDAPServiceImpl implements ILDAPService {
 			logger.info("Ldap Computers Node listed.");
 			if (retList.size() > 0) {
 				computersDn = retList.get(0);
-				computersDn.setExpanded("FALSE");
+				computersDn.setExpandedUser("FALSE");
 			}
 
 		} catch (LdapException e) {

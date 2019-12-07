@@ -35,7 +35,7 @@ public class LdapEntry implements Serializable{
 	
 	private String iconPath;	
 	
-	private String expanded;
+	private String expandedUser;
 
 	/**
 	 * single valued attributes
@@ -228,11 +228,12 @@ public class LdapEntry implements Serializable{
 	public void setIconPath(String iconPath) {
 		this.iconPath = iconPath;
 	}
-	public String getExpanded() {
-		return expanded;
+	public String getExpandedUser() {
+		return expandedUser;
 	}
-	public void setExpanded(String expanded) {
-		this.expanded = expanded;
+	public void setExpandedUser(String expandedUser) {
+		this.expandedUser = expandedUser;
 	}
+	
 
 }

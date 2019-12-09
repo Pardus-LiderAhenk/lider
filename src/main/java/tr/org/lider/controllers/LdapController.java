@@ -171,7 +171,7 @@ public class LdapController {
 		return ret;
 	}
 	
-	@RequestMapping(value = "/getOnlyOnlineAhenks", method = { RequestMethod.POST })
+	@RequestMapping(value = "/getOnlineAhenks", method = { RequestMethod.POST })
 	public String getOnlyOnlineAhenks(HttpServletRequest request,Model model, @RequestBody LdapEntry[] selectedEntryArr) {
 		
 		List<LdapEntry> ahenkList=new ArrayList<>();
@@ -194,14 +194,14 @@ public class LdapController {
 							break;
 						}
 					}
-					boolean isOnline=false;
-					for (String online : messagingService.getOnlineUsers()) {
-						if(ldapEntry2.getUid().equals(online)) {
-							isOnline=true;
-							break;
-						}
-					}
-					if(!isExist && isOnline) {
+//					boolean isOnline=false;
+//					for (String online : messagingService.getOnlineUsers()) {
+//						if(ldapEntry2.getUid().equals(online)) {
+//							isOnline=true;
+//							break;
+//						}
+//					}
+					if(!isExist && messagingService.isRecipientOnline(ldapEntry2.getUid())) {
 						ahenkList.add(ldapEntry2);
 					}
 				}

@@ -47,9 +47,27 @@ $(document).ready(function(){
 			  };
 			 
 			 var cellclass = function (row, columnfield, value,rowData) {
-	                if (rowData.online) {
-	                    return 'green';
+				 
+	                
+				 //if((value.indexOf("online") != -1) || (rowData.online) ){
+				 
+				 console.log("onlineeee"+ value)
+				 console.log(rowData)
+					
+				 if(rowData.online){
+					 
+						 return 'green';
+					}
+				
+	                else{
+	                    return 'white';
 	                }
+//	                if (rowData.online) {
+//	                	return 'green';
+//	                }
+//	                else if (!rowData.online) {
+//	                	return 'white';
+//	                }
 	            };
 
 			 var dataAdapter = new $.jqx.dataAdapter(source, {
@@ -72,6 +90,7 @@ $(document).ready(function(){
 			     source: dataAdapter,
 			     altRows: true,
 			     sortable: true,
+			     theme :"Orange",
 			     columnsResize: true,
 	             filterable: true,
 			     hierarchicalCheckboxes: true,
@@ -194,7 +213,7 @@ $(document).ready(function(){
 			   	},
 			     
 			     columns: [
-			       { text: "Bilgisayarlar", align: "center", dataField: "name",cellclassname: cellclass, width: 300 },
+			       { text: "Bilgisayarlar", align: "center", dataField: "name", cellclassname: cellclass, width: 300 }
 			       
 //			       { text: '',  cellsAlign: 'center', align: "center", columnType: 'none',
 //			    	  		cellsRenderer: function (row, column, value) {
@@ -324,6 +343,52 @@ $(document).ready(function(){
 										}
 								    });
 				});
+			$('#addOnlyOnlineAhenk').on('click',function() {
+				
+				var checkedRows = $("#treegrid").jqxTreeGrid('getCheckedRows');
+				console.log(checkedRows)
+				var checkedEntryArray=[]
+				
+				for (var i = 0; i < checkedRows.length; i++) {
+					// get a row.
+					var rowData = checkedRows[i];
+					
+					checkedEntryArray.push(
+							{
+								distinguishedName :rowData.distinguishedName, 
+								entryUUID: rowData.entryUUID, 
+								name: rowData.name,
+								type: rowData.type,
+								uid: rowData.uid
+							});
+				}
+				
+				$.ajax({
+					url : 'getOnlineAhenks',
+					type : 'POST',
+					data: JSON.stringify(checkedEntryArray),
+					dataType: "json",
+					contentType: "application/json",
+					success : function(data) {
+						var ahenks = data;
+						
+						for (var i = 0; i < ahenks.length; i++) {
+							// get a row.
+							var rowData = ahenks[i];
+							if(rowData.type=="AHENK"){
+								var indexx=$.grep(selectedEntries, function(item){
+									return item.entryUUID == rowData.entryUUID;
+								}).length
+								
+								if(indexx ==0 ){
+									selectedEntries.push(rowData);
+								}
+							}
+						}
+						$('#selectedEntrySize').html(selectedEntries.length);
+					}
+				});
+			});
 			 
 				$('#treegrid').on('rowDoubleClick', function (event) {
 			        var args = event.args;
@@ -449,20 +514,29 @@ function onPresence2(presence)
         var name = jid_to_name(from);
         var source = jid_to_source(from);
         
+        
        if (ptype === 'subscribe') {
     	   $.notify("subscribe","warn");
         } 
        
-       
-       
        else if (ptype !== 'error') {
         	//OFFLine state
         	
-        	
             if (ptype === 'unavailable') {
-            	 $("#treegrid").jqxTreeGrid('updateRow', name , {name:name+"offline",online:false}); 
+            	
+            	var row = $("#treegrid").jqxTreeGrid('getRow', name);
+            	
+            	row.online=false;
+            	
+            	$("#treegrid").jqxTreeGrid('updateRow', name , {name:name}); 
+            
             } else {
-            	 $("#treegrid").jqxTreeGrid('updateRow', name , {name:name+"online",online:true}); 
+            	
+            	var row = $("#treegrid").jqxTreeGrid('getRow', name);
+            	
+            	row.online=true;
+            	
+            	$("#treegrid").jqxTreeGrid('updateRow', name , {name:name}); 
             }
        }
        

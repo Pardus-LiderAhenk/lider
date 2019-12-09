@@ -26,12 +26,8 @@
 					</div>
 				</div>
 				<button type="submit" class="login-button" id="gonder"><i class="fa fa-chevron-right"></i></button>
-				
-				
-			
 </div>
 <script type="text/javascript">
-
 				
 				var ref=connection.addHandler(onMessage2, null, 'message', null, null,  null); 
 				$("#entrySize").html(selectedEntries.length);
@@ -113,20 +109,14 @@
 							console.log(ee.result.responseMessage);
 							$("#plugin-result").html(ee.result.responseMessage);
 						}
-						
 						/* connection.deleteHandler(ref); */
-						
 				    }
 				    // we must return true to keep the handler alive. returning false would remove it after it finishes.
 				    return true;
 				}
-				
 				$('#closePage').click(function(e){
-					
 					connection.deleteHandler(ref);
-					
 				});
-	 
 	</script>
 
 </body>

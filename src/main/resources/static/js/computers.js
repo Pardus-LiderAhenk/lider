@@ -48,17 +48,10 @@ $(document).ready(function(){
 			 
 			 var cellclass = function (row, columnfield, value,rowData) {
 				 
-	                
 				 //if((value.indexOf("online") != -1) || (rowData.online) ){
-				 
-				 console.log("onlineeee"+ value)
-				 console.log(rowData)
-					
 				 if(rowData.online){
-					 
 						 return 'green';
 					}
-				
 	                else{
 	                    return 'white';
 	                }
@@ -213,7 +206,7 @@ $(document).ready(function(){
 			   	},
 			     
 			     columns: [
-			       { text: "Bilgisayarlar", align: "center", dataField: "name", cellclassname: cellclass, width: 300 }
+			       { text: "Bilgisayarlar", align: "center", dataField: "name", cellclassname: cellclass, width: 450 }
 			       
 //			       { text: '',  cellsAlign: 'center', align: "center", columnType: 'none',
 //			    	  		cellsRenderer: function (row, column, value) {
@@ -239,9 +232,7 @@ $(document).ready(function(){
 			      var row = args.row;
 			      
 			      if(row.expandedUser=="FALSE") {
-				      console.log(row)
 				      var nameList=[];
-				      
 				      for (var m = 0; m < row.records.length; m++) {
 				    	  var childRow = row.records[m];
 							nameList.push(childRow.name);      

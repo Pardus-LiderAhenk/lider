@@ -160,6 +160,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 						message.getMacAddresses(), 
 						agent.getCreateDate(), 
 						new Date(),
+						false,
 						(Set<AgentPropertyImpl>) agent.getProperties(),
 						(Set<UserSessionImpl>) agent.getSessions());
 				
@@ -182,7 +183,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 						message.getHostname(), 
 						message.getIpAddresses(),  
 						message.getMacAddresses(),
-						new Date(), null, null, null);
+						new Date(), null, false, null, null);
 				if (message.getData() != null) {
 					for (Entry<String, Object> entryy : message.getData().entrySet()) {
 						if (entryy.getKey() != null && entryy.getValue() != null) {

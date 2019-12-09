@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -65,6 +66,9 @@ public class AgentImpl implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "MODIFY_DATE")
 	private Date modifyDate;
+	
+	@Transient
+	private Boolean isOnline = false;
 
 	@OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Set<AgentPropertyImpl> properties = new HashSet<AgentPropertyImpl>(0); // bidirectional
@@ -76,7 +80,7 @@ public class AgentImpl implements Serializable{
 	}
 
 	public AgentImpl(Long id, String jid, Boolean deleted, String dn, String password, String hostname,
-			String ipAddresses, String macAddresses, Date createDate, Date modifyDate,
+			String ipAddresses, String macAddresses, Date createDate, Date modifyDate, Boolean isOnline,
 			Set<AgentPropertyImpl> properties, Set<UserSessionImpl> sessions) {
 		super();
 		this.id = id;
@@ -89,6 +93,7 @@ public class AgentImpl implements Serializable{
 		this.macAddresses = macAddresses;
 		this.createDate = createDate;
 		this.modifyDate = modifyDate;
+		this.isOnline = isOnline;
 		this.properties = properties;
 		this.sessions = sessions;
 	}
@@ -184,6 +189,14 @@ public class AgentImpl implements Serializable{
 	}
 
 	
+	public Boolean getIsOnline() {
+		return isOnline;
+	}
+
+	public void setIsOnline(Boolean isOnline) {
+		this.isOnline = isOnline;
+	}
+
 	public Set<AgentPropertyImpl> getProperties() {
 		return properties;
 	}

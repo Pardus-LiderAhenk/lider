@@ -1,0 +1,271 @@
+<!-- Google fonts -->
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,900%7CRoboto+Slab:300,400%7CRoboto+Mono:400" />
+
+
+<link rel="stylesheet" id="css-font-awesome" href="css/agent.info.css" />
+<script src="assets/js/core/bootstrap.min.js"></script><script src="assets/js/core/jquery.slimscroll.min.js"></script>
+<script src="assets/js/core/jquery.scrollLock.min.js"></script>
+<script src="assets/js/core/jquery.placeholder.min.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/app-custom.js"></script>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+
+<script src="js/FileSaver.js"></script>
+<script src="js/xlsx.full.min.js"></script>
+<script src="js/agent.info.js"></script>
+
+<div class="container-fluid p-y-md">
+	<div class="table-wrapper">
+		<div class="table-title">
+			<div class="row">
+				<div class="col-sm-4">
+					<h2>Ahenk Bilgisi</h2>
+				</div>
+				<div class="col-sm-8">
+					<a href="#" class="btn btn-primary"><i
+						class="material-icons">&#xE863;</i> <span>Listeyi Yenile</span></a>
+					<a href="#" class="btn btn-primary" onclick="exportButtonClicked()">
+						<i class="material-icons">&#xE24D;</i><span>Dışa Aktar</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="table-filter">
+			<div class="row">
+				<div class="col-sm-3">
+					<div class="show-entries">
+						<select id="pageSize" name="pageSize" class="form-control">
+							<option>10</option>
+							<option>20</option>
+							<option>25</option>
+							<option>50</option>
+							<option>100</option>
+							<option>200</option>
+							<option>500</option>
+							<option>1000</option>
+						</select> <span> Sonuç Göster</span>
+					</div>
+				</div>
+				<div class="col-sm-9">
+					<button type="button" class="btn btn-primary" onclick="search()">
+						<i class="fa fa-search"></i>
+					</button>
+					<div class="filter-group">
+						<label>Ara</label> <input type="text" class="form-control"
+							id="searchText">
+					</div>
+					<div class="filter-group">
+						<label>Filtre Alanı</label> <select class="form-control"
+							id="searchByAgentProperty">
+							<option value="dn">DN</option>
+							<option value="jid">JID</option>
+							<option value="hostname">Bilgisayar Adı</option>
+							<option value="ipAddresses">IP Adresleri</option>
+							<option value="macAddresses">MAC Adresleri</option>
+							<option value="os.distributionName">İşletim Sistemi</option>
+							<option value="os.distributionVersion">İşletim
+								Sistemi Versiyonu</option>
+							<option value="hardware.baseboard.manufacturer">Marka</option>
+							<option value="hardware.systemDefinitions">Model</option>
+							<option value="hardware.memory.total">Bellek</option>
+							<option value="hardware.disk.total">Disk</option>
+							<option value="phase">Faz</option>
+						</select>
+					</div>
+					<div class="filter-group">
+						<label>Durumu</label> <select class="form-control"
+							id="searchByStatus">
+							<option>Hepsi</option>
+							<option>Açık</option>
+							<option>Kapalı</option>
+						</select>
+					</div>
+					<span class="filter-icon"><i class="fa fa-filter"></i></span>
+				</div>
+			</div>
+		</div>
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr>
+					<th style="width: 3%">#</th>
+					<th style="width: 12%">Bilgisayar Adı</th>
+					<th style="width: 12%">MAC Adresi</th>
+					<th style="width: 12%">IP Adresi</th>
+					<th style="width: 11%">Durum</th>
+					<th style="width: 12%">Marka</th>
+					<th style="width: 12%">İşletim Sistemi</th>
+					<th style="width: 11%">Versiyon</th>
+					<th style="width: 12%">Oluşturulma Tarihi</th>
+					<th style="width: 3%"></th>
+				</tr>
+			</thead>
+			<tbody id="agentsTable">
+			</tbody>
+		</table>
+		<div class="clearfix">
+			<!-- <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>  -->
+			<ul id="pagingList" class="pagination">
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- .container-fluid --> <!-- End Page Content -->
+
+	<!-- Apps Modal -->
+	<!-- Opens from the button in the header -->
+	<div id="apps-modal" class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-sm modal-dialog modal-dialog-top">
+			<div class="modal-content">
+				<!-- Apps card -->
+				<div class="card m-b-0">
+					<div class="card-header bg-app bg-inverse">
+						<h4>Apps</h4>
+						<ul class="card-actions">
+							<li>
+								<button data-dismiss="modal" type="button">
+									<i class="ion-close"></i>
+								</button>
+							</li>
+						</ul>
+					</div>
+					<div class="card-block">
+						<div class="row text-center">
+							<div class="col-xs-6">
+								<a class="card card-block m-b-0 bg-app-secondary bg-inverse"
+									href="index.html"> <i class="ion-speedometer fa-4x"></i>
+									<p>Admin</p>
+								</a>
+							</div>
+							<div class="col-xs-6">
+								<a class="card card-block m-b-0 bg-app-tertiary bg-inverse"
+									href="frontend_home.html"> <i class="ion-laptop fa-4x"></i>
+									<p>Frontend</p>
+								</a>
+							</div>
+						</div>
+					</div>
+					<!-- .card-block -->
+				</div>
+				<!-- End Apps card -->
+			</div>
+		</div>
+	</div>
+	<!-- End Apps Modal -->
+
+
+
+
+
+
+<!-- Start Agent Detail Modal -->
+<div id="agentDetailModal" class="modal fade" tabindex="-1"
+	role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Ahenk Detayları</h4>
+			</div>
+			<div class="modal-body">
+				<!-- Card Tabs Justified Alternative Style -->
+				<div class="card">
+					<ul class="nav nav-tabs nav-tabs-icons nav-tabs-alt nav-justified"
+						data-toggle="tabs">
+						<li class="active"><a
+							href="#btabs-alt-static-justified-home"><i
+								class="ion-laptop"></i> Bilgisayar Öznitelikleri </a></li>
+						<li><a href="#btabs-alt-static-justified-profile"><i
+								class="fa fa-users"></i> Kullanıcı Oturumları</a></li>
+					</ul>
+					<div class="card-block tab-content">
+						<div class="tab-pane active" id="btabs-alt-static-justified-home">
+							<table class="table table-striped table-hover table-bordered">
+								<thead>
+									<tr>
+										<th>Özellik Adı</th>
+										<th>Özellik Değeri</th>
+									</tr>
+								</thead>
+								<tbody id="agentDetailTable">
+								</tbody>
+							</table>
+						</div>
+						<div class="tab-pane" id="btabs-alt-static-justified-profile">
+							<table class="table table-striped table-hover table-bordered">
+								<thead>
+									<tr>
+										<th style="width: 35%">Kullanıcı Adı</th>
+										<th style="width: 35%">Oturum Durumu</th>
+										<th style="width: 30%">Oluşturulma Tarihi</th>
+									</tr>
+								</thead>
+								<tbody id="userSessionsTable">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- End Card Tabs Justified Default Style -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<!-- End Agent Detail Modal -->
+
+
+<!-- Start Export Agents Modal -->
+<div id="exportAgentsModal" class="modal fade" tabindex="-1"
+	role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Ahenk Detayları</h4>
+			</div>
+			<div class="modal-body">
+				<!-- Card Tabs Justified Alternative Style -->
+				<div class="card">
+					<ul class="nav nav-tabs nav-tabs-icons nav-tabs-alt nav-justified"
+						data-toggle="tabs">
+						<li class="active"><a
+							href="#btabs-alt-static-justified-home"><i class="ion-home"></i>
+								Home</a></li>
+						<li><a href="#btabs-alt-static-justified-profile"><i
+								class="ion-person"></i> Profile</a></li>
+					</ul>
+					<div class="card-block tab-content">
+						<div class="tab-pane active" id="btabs-alt-static-justified-home">
+							<p>Raw denim</p>
+						</div>
+						<div class="tab-pane" id="btabs-alt-static-justified-profile">
+							<p>Food truck.</p>
+						</div>
+					</div>
+				</div>
+				<!-- End Card Tabs Justified Default Style -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<!-- End Export Agents Modal -->

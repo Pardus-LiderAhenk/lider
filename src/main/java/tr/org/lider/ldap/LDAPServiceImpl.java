@@ -729,6 +729,9 @@ public class LDAPServiceImpl implements ILDAPService {
 			
 			SearchRequest request= new SearchRequestImpl();
 			
+			if(dn==null)return new ArrayList<>();
+			
+			
 			dn = dn.replace("+", " ");
 			request.setBase(new Dn(dn));
 			request.setScope(scope);

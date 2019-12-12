@@ -61,71 +61,38 @@ public class LdapController {
 	}
 
 	@RequestMapping(value = "/getSudoGroups")
-	public String getSudoGroups(HttpServletRequest request, Model model) {
+	public List<LdapEntry> getSudoGroups(HttpServletRequest request, Model model) {
 
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		retList.add(ldapService.getLdapSudoGroupsTree());
-
-		ObjectMapper mapper = new ObjectMapper();
-
-		String ret = null;
-		try {
-			ret = mapper.writeValueAsString(retList);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		return ret;
+		
+		return retList;
 	}
 	
 	@RequestMapping(value = "/getGroups")
-	public String getGroups(HttpServletRequest request, Model model) {
+	public List<LdapEntry> getGroups(HttpServletRequest request, Model model) {
 		
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		retList.add(ldapService.getLdapGroupsTree());
 		
-		ObjectMapper mapper = new ObjectMapper();
 		
-		String ret = null;
-		try {
-			ret = mapper.writeValueAsString(retList);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		return ret;
+		return retList;
 	}
 	
 	@RequestMapping(value = "/getUsers")
-	public String getUsers(HttpServletRequest request, Model model) {
+	public List<LdapEntry> getUsers(HttpServletRequest request, Model model) {
 		
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		retList.add(ldapService.getLdapUserTree());
-		
-		ObjectMapper mapper = new ObjectMapper();
-		
-		String ret = null;
-		try {
-			ret = mapper.writeValueAsString(retList);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		
-		return ret;
+		return retList;
 	}
 
 	@RequestMapping(value = "/getComputers")
-	public String getComputers(HttpServletRequest request, Model model) {
+	public List<LdapEntry> getComputers(HttpServletRequest request, Model model) {
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		
 		retList.add(ldapService.getLdapComputersTree());
-		
-		ObjectMapper mapper = new ObjectMapper();
-		String ret = null;
-		try {
-			ret = mapper.writeValueAsString(retList);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		return ret;
+		return retList;
 
 	}
 	

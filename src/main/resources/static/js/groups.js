@@ -8,7 +8,7 @@ $(document).ready(function(){
 	$.ajax({
 		type : 'POST',
 		url : 'getGroups',
-		dataType : 'text',
+		dataType : 'json',
 		success : function(data) {
 			 var source =
 			  {

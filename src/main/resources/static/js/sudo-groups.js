@@ -9,7 +9,7 @@ $(document).ready(function(){
 	$.ajax({
 		type : 'POST',
 		url : 'getSudoGroups',
-		dataType : 'text',
+		dataType : 'json',
 		success : function(data) {
 			console.log(data);
 			 var source =

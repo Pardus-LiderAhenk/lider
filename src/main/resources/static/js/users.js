@@ -8,9 +8,8 @@ $(document).ready(function(){
 	$.ajax({
 		type : 'POST',
 		url : 'getUsers',
-		dataType : 'text',
+		dataType : 'json',
 		success : function(data) {
-			console.log(data);
 			 var source =
 			  {
 			      dataType: "json",

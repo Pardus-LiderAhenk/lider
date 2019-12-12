@@ -13,14 +13,53 @@ var selectedEntries = [];
 //creating pluginTask Table on the page
 loadPluginTaskTable();
 
+var html = '<table class="table table-striped table-bordered " id="rosterListTable">';
+for (var i = 0; i < rosterList.length ; i++) {
+	var roster=rosterList[i];
+    	html += '<tr>';
+        html += '<td>' + roster.item_name + '</td>';
+     /*    html += '<td>' + roster.id + '</td>';
+        html += '<td>' + roster.jid + '</td>'; */
+        html += '</tr>';
+}
+html += '</table>';
+$('#rosterListHolder').html(html);
+
+
+var html = '<table class="table table-striped table-bordered " id="onlineEntryListTable">';
+
+html += '<thead>';
+
+html += '<tr>';
+html += '<th>JID</th>';
+html += '<th>Kaynak</th>';
+html += '</tr>';
+html += '</thead>';
+
+for (var i = 0; i < onlineEntryList.length ; i++) {
+	
+	var entry=onlineEntryList[i];
+	
+    	html += '<tr>';
+        html += '<td>' + entry.jid + '</td>';
+        html += '<td>' + entry.source + '</td>';
+     /*    html += '<td>' + roster.id + '</td>';
+        html += '<td>' + roster.jid + '</td>'; */
+        
+   		 
+        html += '</tr>';
+}
+html += '</table>';
+
+$('#onlineEntryListHolder').html(html);
+
 $(document).ready(function(){
 	
 	$.ajax({
 		type : 'POST',
 		url : 'getComputers',
-		dataType : 'text',
+		dataType : 'json',
 		success : function(data) {
-			console.log(data);
 			 var source =
 			  {
 			      dataType: "json",

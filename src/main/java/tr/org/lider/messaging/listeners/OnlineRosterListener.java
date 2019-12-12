@@ -125,7 +125,7 @@ public class OnlineRosterListener implements RosterListener {
 				}
 			}
 		}
-		logger.debug("Online users: {}", onlineUsers.toString());
+		logger.info("Online users: {}", onlineUsers.toString());
 	}
 
 	/**

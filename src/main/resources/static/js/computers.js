@@ -447,26 +447,7 @@ $(document).ready(function(){
 		
 	});
 	
-	$('.sendTaskButton').click(function() {
-		var page = $(this).data('page');
-		var name = $(this).data('name');
-		var description = $(this).data('description');
-		var id = $(this).data('id');
-		
-		$.ajax({
-			type : 'POST',
-			url : 'getPluginTaskHtmlPage',
-			data : 'id=' + id + '&name=' + name
-					+ '&page=' + page + '&description=' + description,
-			dataType : 'text',
-			success : function(data) {
-				
-				$('#pluginHtmpPageModal').modal('show');
-				$('#pluginHtmpPageModalLabel').html(name);
-				$('#pluginPageRender').html(data);
-			}
-		});
-	});
+
 	
 	$('#textTaskSearch').keyup(function() {
 		
@@ -541,6 +522,27 @@ function loadPluginTaskTable() {
 		    html += '</table>';
 		    
 		    $('#pluginListTableDiv').html(html);
+		    
+		    $('.sendTaskButton').click(function() {
+				var page = $(this).data('page');
+				var name = $(this).data('name');
+				var description = $(this).data('description');
+				var id = $(this).data('id');
+				
+				$.ajax({
+					type : 'POST',
+					url : 'getPluginTaskHtmlPage',
+					data : 'id=' + id + '&name=' + name
+							+ '&page=' + page + '&description=' + description,
+					dataType : 'text',
+					success : function(data) {
+						
+						$('#pluginHtmpPageModal').modal('show');
+						$('#pluginHtmpPageModalLabel').html(name);
+						$('#pluginPageRender').html(data);
+					}
+				});
+			});
 		}
 	});
 	

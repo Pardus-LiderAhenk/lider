@@ -1,28 +1,159 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
 <body>
-KAYNAK KULLANIMI
+<h6 th:text="${pluginTask.description}"> </h6> 
 <hr>
 
-<span th:text="${deneme}"> </span> 
+
+<span th:text="${pluginTask.description}"> </span> 
+<span id="entrySize"> </span> 
 
 <hr>
 <div class="login-form-1">
 				<div class="login-group">
 					<div class="form-group">
-					Mesaj : 
-						<input type="text" class="form-control" id="username" name="param" >
+						<table class="table table-striped">
+						  <thead>
+						    <tr>
+						      <th scope="col">#</th>
+						      <th scope="col">Özellik</th>
+						      <th scope="col">Değer</th>
+						    </tr>
+						  </thead>
+						  <tbody>
+						    <tr>
+						      <th scope="row">1</th>
+						      <td>Sistem</td>
+						      <td>Linux</td>
+						    </tr>
+						    <tr>
+						      <th scope="row">2</th>
+						      <td>Sürüm</td>
+						      <td>pardus_17</td>
+						    </tr>
+						    <tr>
+						      <th scope="row">3</th>
+						      <td>Versiyon</td>
+						      <td>17.5</td> 
+						    </tr>
+						    <tr>
+						      <th scope="row">4</th>
+						      <td>Fiziksel Çekirdek Sayısı</td>
+						      <td>17.5</td> 
+						    </tr>
+						    <tr>
+						      <th scope="row">5</th>
+						      <td>Mantıksal Çekirdek Sayısı</td>
+						      <td>17.5</td> 
+						    </tr>
+						    <tr>
+						      <th scope="row">6</th>
+						      <td>Gerçek Frekans</td>
+						      <td id="plugin-result2"></td> 
+						    </tr>
+						  </tbody>
+						</table>
+						
+						<div id="plugin-result">result</div>
 					</div>
 				</div>
 				<button type="submit" class="login-button" id="gonder"><i class="fa fa-chevron-right"></i></button>
-				
-				<div id="plugin-result"></div>
-			
 </div>
+<script type="text/javascript">
+				
+				var ref=connection.addHandler(onMessage2, null, 'message', null, null,  null); 
+				$("#entrySize").html(selectedEntries.length);
+				
+				var dnlist=[]
+				
+				for (var i = 0; i < selectedEntries.length; i++) {
+					dnlist.push(selectedEntries[i].distinguishedName);
+				}
+				
+				var data = {
+						"pluginName":"resource-usage",
+						"dnList":dnlist,
+						"pluginVersion":"1.0.0",
+						"timestamp":1523430976357,
+						"dnType":"AHENK",
+						"parameterMap":{"conkyMessage":"DENEEM","removeConkyMessage":false},
+						"commandId":"RESOURCE_INFO_FETCHER"
+				}
+				
+				  var params = JSON.stringify(data); 
+
+				$("#gonder").click(function(e) {
+				    e.preventDefault();
+				    
+				    $.ajax({
+				      type: "POST",
+				      url: "/lider/task/execute",
+				       headers: {
+				          'Content-Type':'application/json',
+				          'username':'${sessionScope.userName}',
+				          'password':'${sessionScope.userPassword}',
+				      }, 
+				      data: params,
+				       contentType: "application/json",
+				      dataType: "json",
+				      converters: {
+				        'text json': true
+				      }, 
+				      success: function(result) {
+				    	
+				    	  
+				    	var res = jQuery.parseJSON(result);
+				    	
+				    	
+				        /* $('#closePage').click(); */
+				      },
+				      error: function(result) {
+				        alert(result);
+				      }
+				    });
+				  }); 
+				
+				function onMessage2(msg) {
+				    var to = msg.getAttribute('to');
+				    var from = msg.getAttribute('from');
+				    var type = msg.getAttribute('type');
+				    var elems = msg.getElementsByTagName('body');
+				    
+				    if (type == "chat" && elems.length > 0) {
+					
+				    	var body = elems[0];
+				    	// 	var data=  JSON.stringify(resul);
+				    	console.log(body);
+				    	
+				    	var data=Strophe.xmlunescape(Strophe.getText(body));
+				    	// var sss = jQuery.parseJSON(body);
+						
+				    	// log('Mesaj Alındı:  ' + data.pluginName );
+					
+				    	
+				    	var ee=JSON.parse(data);
+// 				    	console.log(ee);
+				    	
+						if(ee.commandClsId == "RESOURCE_INFO_FETCHER"){					    	
+							
+							$("#plugin-result").html(ee.result.responseMessage);
+							$("#plugin-result2").html(ee.result.responseData);
+						}
+						/* connection.deleteHandler(ref); */
+				    }
+				    // we must return true to keep the handler alive. returning false would remove it after it finishes.
+				    return true;
+				}
+				$('#closePage').click(function(e){
+					connection.deleteHandler(ref);
+				});
+	</script>
 
 </body>
 </html>

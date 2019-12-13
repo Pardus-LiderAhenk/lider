@@ -10,26 +10,14 @@ import java.util.List;
  * Default implementation for {@link IUser}
  * 
  */
-public class UserImpl {
+public class LiderUser {
 	
 	private String username;
-	
 	private String password;
-
-	/**
-	 * 
-	 */
 	private String name;
-
-	/**
-	 * 
-	 */
 	private String surname;
-
-	/**
-	 * 
-	 */
-	private String uid;
+	
+	private List<String> roles;
 
 //	/**
 //	 * Collection of task privileges. Each privilege indicates whether the user
@@ -43,7 +31,6 @@ public class UserImpl {
 //	 */
 //	private List<IReportPrivilege> reportPrivileges = new ArrayList<IReportPrivilege>(0);
 
-	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -61,16 +48,7 @@ public class UserImpl {
 	public void setSurname(String surname) {
 		this.surname = surname;
 	}
-
 	
-	public String getUid() {
-		return uid;
-	}
-
-	public void setUid(String uid) {
-		this.uid = uid;
-	}
-
 	
 //	public List<ITaskPrivilege> getTaskPrivileges() {
 //		return taskPrivileges;
@@ -103,6 +81,14 @@ public class UserImpl {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
 
 }

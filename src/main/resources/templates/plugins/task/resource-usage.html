@@ -131,7 +131,8 @@
 				    	// 	var data=  JSON.stringify(resul);
 				    	console.log(body);
 				    	
-				    	var data=Strophe.xmlunescape(Strophe.getText(body));
+				    	//var data=Strophe.xmlunescape(Strophe.getText(body));
+				    	var data=Strophe.xmlunescape(Strophe.xmlGenerator(body));
 				    	// var sss = jQuery.parseJSON(body);
 						
 				    	// log('Mesaj Alındı:  ' + data.pluginName );

@@ -508,31 +508,43 @@ function showSelectedEntries() {
 	
 function loadPluginTaskTable() {
 	
-	var html = '<table class="table table-striped table-bordered " id="pluginListTable">';
-	html += '<thead>';
+	$.ajax({
+		type : 'POST',
+		url : 'getPluginTaskList',
+		dataType : 'json',
+		success : function(data) {
+			
+			var pluginTaskList = data;
+
+			var html = '<table class="table table-striped table-bordered " id="pluginListTable">';
+			html += '<thead>';
+			
+			html += '<tr>';
+			html += '<th>Görev Adı</th>';
+			html += '<th>Açıklama</th>';
+			html += '</tr>';
+			html += '</thead>';
+		    
+		    for (var i = 0; i < pluginTaskList.length ; i++) {
+		    	
+		    	var entry=pluginTaskList[i];
+		    	
+		        	html += '<tr>';
+		            html += '<td>' + entry.name + '</td>';
+		            html += '<td>' + entry.description + '</td>';
+		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" data-toggle="modal" data-target="#taskModal" data-id="' + entry.id + '" data-page="'
+		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <img class="img-responsive" src="img/LiderAhenk-task.png" title="Lider MYS" alt="Lider MYS" />  </button>  </td>';
+		        
+		       		 
+		            html += '</tr>';
+		    }
+		    html += '</table>';
+		    
+		    $('#pluginListTableDiv').html(html);
+		}
+	});
 	
-	html += '<tr>';
-	html += '<th>Görev Adı</th>';
-	html += '<th>Açıklama</th>';
-	html += '</tr>';
-	html += '</thead>';
-    
-    for (var i = 0; i < pluginTaskList.length ; i++) {
-    	
-    	var entry=pluginTaskList[i];
-    	
-        	html += '<tr>';
-            html += '<td>' + entry.name + '</td>';
-            html += '<td>' + entry.description + '</td>';
-            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" data-toggle="modal" data-target="#taskModal" data-id="' + entry.id + '" data-page="'
-            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <img class="img-responsive" src="img/LiderAhenk-task.png" title="Lider MYS" alt="Lider MYS" />  </button>  </td>';
-        
-       		 
-            html += '</tr>';
-    }
-    html += '</table>';
-    
-    $('#pluginListTableDiv').html(html);
+	
 
 }
 

@@ -68,9 +68,7 @@
 			var username = '[[${userNameJid}]]';
 			var password = '[[${password}]]';
 			var xmppHost = '[[${xmppHost}]]';
-			var pluginTaskListSTR ='[[${pluginTaskList}]]'.replace(/&quot;/g,'"');
-			
-			var pluginTaskList=jQuery.parseJSON(pluginTaskListSTR);
+		
 			
 			var BOSH_SERVICE = 'http://'+xmppHost+':5280/bosh';
 			var connection = null; 

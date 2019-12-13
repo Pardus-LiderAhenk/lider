@@ -34,8 +34,7 @@ public class LoginController {
 	public LoginService loginService;
 	
 	
-	@Autowired
-	public PluginService pluginService;
+	
 	
 	
 	@Autowired
@@ -71,15 +70,11 @@ public class LoginController {
 				return  modelAndView;
 
 			} else {
-				List<PluginTask> pluginTaskList= pluginService.findAllPluginTask();
-
 				modelAndView.setViewName(LiderConstants.Pages.PAGES_MAIN_PAGE);
 				modelAndView.addObject("user", user);
 				modelAndView.addObject("password", password);
 				modelAndView.addObject("userNameJid", username+"@"+configService.getXmppServiceName());
 				modelAndView.addObject("xmppHost", configService.getXmppHost());
-				modelAndView.addObject("pluginTaskList", pluginTaskList);
-				
 			}
 
 		} catch (Exception e) {

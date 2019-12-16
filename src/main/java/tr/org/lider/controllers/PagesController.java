@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  *
  */
 @Controller
+@RequestMapping("/lider/pages")
 public class PagesController {
 	
 	@RequestMapping(value="/getInnerHtmlPage", method = {RequestMethod.POST })

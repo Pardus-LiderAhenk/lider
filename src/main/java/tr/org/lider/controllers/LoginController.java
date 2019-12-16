@@ -1,82 +1,55 @@
 package tr.org.lider.controllers;
 
-import java.util.List;
-
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.constant.LiderConstants;
-import tr.org.lider.entities.PluginTask;
-import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.services.LoginService;
-import tr.org.lider.services.PluginService;
-
 
 /**
  * 
- * 
  * @author M. Edip YILDIZ
- *
  */
 @RestController()
 public class LoginController {
 	
+	Logger logger = LoggerFactory.getLogger(LoginController.class);
+
 	@Autowired
 	public LoginService loginService;
 	
-	
-	
-	
-	
 	@Autowired
-	 public ServletContext servletContext;
+	public ServletContext servletContext;
 	
-
 	@Autowired
 	private ConfigurationService configService;
-	
 
-	@RequestMapping("/")
-	public ModelAndView main(Model model) {
+	@RequestMapping(value = "/")
+	public ModelAndView login(Model model, Authentication authentication) {
 
-		ModelAndView modelAndView = new ModelAndView();
-	    modelAndView.setViewName(LiderConstants.Pages.PAGES_LOGIN_PAGE);
-	    return modelAndView;
-	}
-	
-	@RequestMapping(value = "/loginLdap", method = { RequestMethod.POST, RequestMethod.GET })
-	public ModelAndView login(@RequestParam(value = "username", required = false) String username,
-			@RequestParam(value = "password", required = false) String password, HttpServletRequest request,
-			Model model) {
-		
 		ModelAndView modelAndView = new ModelAndView();
 		try {
 
-			LdapEntry user= loginService.getUser(username, password);
-
-			if (user == null) {
-				
-				modelAndView.setViewName(LiderConstants.Pages.PAGES_LOGIN_PAGE);
-				modelAndView.addObject("message", "User Not Found");
-				return  modelAndView;
-
-			} else {
-				modelAndView.setViewName(LiderConstants.Pages.PAGES_MAIN_PAGE);
-				modelAndView.addObject("user", user);
-				modelAndView.addObject("password", password);
-				modelAndView.addObject("userNameJid", username+"@"+configService.getXmppServiceName());
-				modelAndView.addObject("xmppHost", configService.getXmppHost());
-			}
-
+			LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) authentication.getPrincipal();
+			
+			logger.info("User logged as " + userDetails.getAuthorities());
+			logger.info("User has authorities: " + userDetails.getAuthorities());
+			
+			modelAndView.setViewName(LiderConstants.Pages.PAGES_MAIN_PAGE);
+			modelAndView.addObject("user", userDetails);
+			modelAndView.addObject("password", userDetails.getPassword());
+			modelAndView.addObject("userNameJid", userDetails.getLiderUser().getName() + "@" + configService.getXmppServiceName());
+			modelAndView.addObject("xmppHost", configService.getXmppHost());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -84,5 +57,20 @@ public class LoginController {
 		return modelAndView;
 	}
 	
+	@RequestMapping(value = "/logout")
+	public ModelAndView logout(Model model, Authentication authentication) {
+		
+		ModelAndView modelAndView = new ModelAndView();
+		try {
+			modelAndView.setViewName("logout");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return modelAndView;
+	}
 	
+	
+
 }

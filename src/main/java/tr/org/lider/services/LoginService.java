@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,12 @@ public class LoginService {
 		
 		LdapEntry ldapEntry=null;
 		try {
-			List<LdapEntry> ldapEntries = ldapService.search(filterAtt, new String[] { "*" });
+//			List<LdapEntry> ldapEntries = ldapService.search(filterAtt, new String[] { "cn","userPassword","sn" });
+			
+			String filter= "(&(objectClass=pardusAccount)(objectClass=pardusLider)(cn=$1))".replace("$1", userName);
+			List<LdapEntry> ldapEntries  = ldapService.findSubEntries(filter,
+					new String[] { "*" }, SearchScope.SUBTREE);
+			
 			
 			if(ldapEntries.size()>0) {
 				

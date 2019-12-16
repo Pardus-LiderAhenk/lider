@@ -16,6 +16,7 @@ public class LiderUser {
 	private String password;
 	private String name;
 	private String surname;
+	private String uid;
 	
 	private List<String> roles;
 
@@ -89,6 +90,14 @@ public class LiderUser {
 
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
+	}
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
 	}
 
 }

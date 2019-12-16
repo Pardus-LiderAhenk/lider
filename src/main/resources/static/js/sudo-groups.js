@@ -8,7 +8,7 @@ $(document).ready(function(){
 	
 	$.ajax({
 		type : 'POST',
-		url : 'getSudoGroups',
+		url : 'lider/ldap/getSudoGroups',
 		dataType : 'json',
 		success : function(data) {
 			console.log(data);

@@ -58,6 +58,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tr.org.lider.messaging.messages.XMPPClientImpl;
+import tr.org.lider.models.LiderUser;
 import tr.org.lider.services.ConfigurationService;
 
 
@@ -241,24 +242,23 @@ public class LDAPServiceImpl implements ILDAPService {
 	 * @throws LdapException
 	 */
 //	@Override
-//	public IUser getUser(String userDn) throws LdapException {
+//	public LiderUser getUser(String userDn) throws LdapException {
 //
 //		LdapConnection connection = null;
-//		UserImpl user = null;
+//		LiderUser user = null;
 //
-//		user = (UserImpl) cacheService.get("ldap:getuser:" + userDn);
+////		user = (LiderUser) cacheService.get("ldap:getuser:" + userDn);
 //
-//		if (user != null) {
-//			logger.debug("Cache hit. User DN: {}", userDn);
-//			return user;
-//		}
-//
-//		logger.debug("Cache miss: user DN: {}, doing ldap search", userDn);
+////		if (user != null) {
+////			logger.debug("Cache hit. User DN: {}", userDn);
+////			return user;
+////		}
+////		logger.debug("Cache miss: user DN: {}, doing ldap search", userDn);
 //		try {
 //			connection = getConnection();
 //			Entry resultEntry = connection.lookup(userDn);
 //			if (null != resultEntry) {
-//				user = new UserImpl();
+//				user = new LiderUser();
 //
 //				if (null != resultEntry.get(configurationService.getUserLdapUidAttribute())) {
 //					// Set user's UID/JID
@@ -267,14 +267,15 @@ public class LDAPServiceImpl implements ILDAPService {
 //
 //				if (null != resultEntry.get(configurationService.getUserLdapPrivilegeAttribute())) {
 //					// Set task & report privileges
-//					user.setTaskPrivileges(new ArrayList<ITaskPrivilege>());
-//					user.setReportPrivileges(new ArrayList<IReportPrivilege>());
-//					Iterator<Value<?>> iter = resultEntry.get(configurationService.getUserLdapPrivilegeAttribute())
-//							.iterator();
-//					while (iter.hasNext()) {
-//						String privilege = iter.next().getValue().toString();
-//						addUserPrivilege(user, privilege);
-//					}
+////					user.setTaskPrivileges(new ArrayList<ITaskPrivilege>());
+////					user.setReportPrivileges(new ArrayList<IReportPrivilege>());
+//					
+////					Iterator<Value<?>> iter = resultEntry.get(configurationService.getUserLdapPrivilegeAttribute())
+////							.iterator();
+////					while (iter.hasNext()) {
+////						String privilege = iter.next().getValue().toString();
+////						addUserPrivilege(user, privilege);
+////					}
 //
 //					// Find group privileges if this user belongs to a group
 //					LdapConnection connection2 = null;
@@ -312,8 +313,8 @@ public class LDAPServiceImpl implements ILDAPService {
 //					}
 //				}
 //
-//				logger.debug("Putting user to cache: user DN: {}", userDn);
-//				cacheService.put("ldap:getuser:" + userDn, user);
+////				logger.debug("Putting user to cache: user DN: {}", userDn);
+////				cacheService.put("ldap:getuser:" + userDn, user);
 //
 //				return user;
 //			}
@@ -715,32 +716,30 @@ public class LDAPServiceImpl implements ILDAPService {
 		return search(configurationService.getLdapRootDn(), filterAttributes, returningAttributes);
 	}
 	
+	@Override
+	public List<LdapEntry> findSubEntries(String filter, String[] returningAttributes,SearchScope scope) throws LdapException {
+		
+		return	findSubEntries(configurationService.getLdapRootDn(), filter, returningAttributes, scope);
+	}
+	
+	
 	
 	@Override
 	public List<LdapEntry> findSubEntries(String dn, String filter, String[] returningAttributes,SearchScope scope) throws LdapException {
 		List<LdapEntry> result = new ArrayList<LdapEntry>();
 		LdapConnection connection = null;
-		
 		Map<String, String> attrs = null;
-		
 		try {
-			
 			connection = getConnection();
-			
 			SearchRequest request= new SearchRequestImpl();
-			
 			if(dn==null)return new ArrayList<>();
-			
-			
 			dn = dn.replace("+", " ");
 			request.setBase(new Dn(dn));
 			request.setScope(scope);
 			request.setFilter(filter);  //"(objectclass=*)"
 			
 			for (String attr : returningAttributes) {
-				
 				request.addAttributes(attr);
-				
 			}
 			
 		//	request.addAttributes("*");
@@ -760,6 +759,21 @@ public class LDAPServiceImpl implements ILDAPService {
 //							attrs.put(attr, entry.get(attr) != null ? entry.get(attr).getString() : "");
 //						}
 //					}
+					List<String> priviliges=null;
+					
+					if (null != entry.get("liderPrivilege")) {
+						
+						priviliges=new ArrayList<>();
+						Iterator<Value<?>> iter2 = entry.get("liderPrivilege").iterator();
+						while (iter2.hasNext()) {
+							String privilege = iter2.next().getValue().toString();
+							priviliges.add(privilege);
+						}
+						
+						
+					} else {
+						logger.debug("No privilege found in group => {}", entry.getDn());
+					}
 					
 					for (Iterator iterator = entry.getAttributes().iterator(); iterator.hasNext();) {
 						Attribute attr = (Attribute) iterator.next();
@@ -789,7 +803,11 @@ public class LDAPServiceImpl implements ILDAPService {
 							? ldapEntry.getAttributes().get("ou") : ldapEntry.getAttributes().get("cn")!=null &&  !ldapEntry.getAttributes().get("cn").equals("") 
 							? ldapEntry.getAttributes().get("cn") : ldapEntry.getAttributes().get("o") );
 					if(ldapEntry.getType()==DNType.AHENK) {
-					ldapEntry.setOnline(xmppClientImpl.isRecipientOnline(ldapEntry.getUid()));
+						ldapEntry.setOnline(xmppClientImpl.isRecipientOnline(ldapEntry.getUid()));
+					}
+					
+					if(priviliges!=null) {
+						ldapEntry.setPriviliges(priviliges);
 					}
 					result.add(ldapEntry);
 

@@ -7,7 +7,7 @@ $(document).ready(function(){
 	
 	$.ajax({
 		type : 'POST',
-		url : 'getGroups',
+		url : 'lider/ldap/getGroups',
 		dataType : 'json',
 		success : function(data) {
 			 var source =

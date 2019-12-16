@@ -47,6 +47,8 @@ public class LdapEntry implements Serializable{
 	private boolean isOnline;
 	
 	
+	private List<String> priviliges;
+	
 	
 	private List<LdapEntry> childEntries;
 
@@ -233,6 +235,12 @@ public class LdapEntry implements Serializable{
 	}
 	public void setExpandedUser(String expandedUser) {
 		this.expandedUser = expandedUser;
+	}
+	public List<String> getPriviliges() {
+		return priviliges;
+	}
+	public void setPriviliges(List<String> priviliges) {
+		this.priviliges = priviliges;
 	}
 	
 

@@ -33,6 +33,7 @@ import tr.org.lider.messaging.messages.XMPPClientImpl;
  *
  */
 @RestController()
+@RequestMapping("/lider/ldap")
 public class LdapController {
 
 	Logger logger = LoggerFactory.getLogger(LdapController.class);

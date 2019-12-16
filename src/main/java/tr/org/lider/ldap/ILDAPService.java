@@ -44,7 +44,7 @@ public interface ILDAPService {
 	List<LdapEntry> search(String attributeName, String attributeValue, String[] returningAttributes)
 			throws LdapException;
 
-	
+	 List<LdapEntry> findSubEntries(String filter, String[] returningAttributes,SearchScope scope) throws LdapException;
 	List<LdapEntry> findSubEntries(String dn, String filter, String[] returningAttributes, SearchScope scope) throws LdapException;
 	
 	LdapEntry getLdapTree(LdapEntry ldapEntry);

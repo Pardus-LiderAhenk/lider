@@ -11,7 +11,6 @@ $(document).ready(function() {
 		});
 		
 		$('#logout').on('click', function() {
-				
 			 connection.disconnect();
 		});
 		
@@ -80,19 +79,19 @@ function onConnect(status)
  	/* log('Strophe is connecting.'); */
      } 
    else if (status == Strophe.Status.CONNFAIL) {
- 	log('Sunucuya bağlanırken hata oluştu.');
+ 	log('Mesajlaşma Servisine bağlanırken hata oluştu.');
  	$('#connect').get(0).value = 'connect';
  	  
      } 
    else if (status == Strophe.Status.DISCONNECTING) {
- 	log('Sunucu bağlantısı koparılmaktadır.');
+ 	log('Mesajlaşma Servisi bağlantısı koparılmaktadır.');
      } 
    else if (status == Strophe.Status.DISCONNECTED) {
- 	log('Sunucu bağlantısı koparıldı.');
+ 	log('Mesajlaşma Servisi bağlantısı koparıldı.');
  	$('#connect').get(0).value = 'connect';
      } 
    else if (status == Strophe.Status.CONNECTED) {
- 	log('Sunucu ile bağlantı kuruldu.');
+ 	log('Mesajlaşma Servisi ile bağlantı kuruldu.');
 // 	log('Mesaj göndermek için kullanıcı adım: ' + connection.jid );
 
  	connection.addHandler(onMessage, null, 'message', null, null,  null); 
@@ -251,26 +250,16 @@ function onMessage(msg) {
     if (type == "chat" && elems.length > 0) {
 	
     	var body = elems[0];
-    	var resul={"name":"edip","age":30};
-
-    	// 	var data=  JSON.stringify(resul);
     	
     	var data=Strophe.xmlunescape(Strophe.getText(body));
-    	// var sss = jQuery.parseJSON(body);
-
-    	// log('Mesaj Alındı:  ' + data.pluginName );
 	
-    	var ee=JSON.parse(data);
-    	console.log(ee);
-		log('Data : ' +   ee.type );
+    	var ret=JSON.parse(data);
+		log('Data : ' +   ret.type );
 		log('from : ' +   from );
 		var reply = $msg({to: from, from: to, type: 'chat'}).cnode(Strophe.copyElement(body));
 		connection.send(reply.tree());
 		
-		//	 log('Mesaj Gönderildi. ' + from + ' : ' + Strophe.getText(body));
-		
     }
-    // we must return true to keep the handler alive. returning false would remove it after it finishes.
     return true;
 }
 function log(msg) 

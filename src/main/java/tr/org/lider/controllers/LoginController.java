@@ -6,8 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,7 +22,7 @@ import tr.org.lider.services.LoginService;
  * 
  * @author M. Edip YILDIZ
  */
-@RestController()
+@Controller()
 public class LoginController {
 	
 	Logger logger = LoggerFactory.getLogger(LoginController.class);
@@ -34,8 +36,8 @@ public class LoginController {
 	@Autowired
 	private ConfigurationService configService;
 
-	@RequestMapping(value = "/")
-	public ModelAndView login(Model model, Authentication authentication) {
+	@RequestMapping(value = "/",method = {RequestMethod.GET, RequestMethod.POST})
+	public ModelAndView getMainPage(Model model, Authentication authentication) {
 
 		ModelAndView modelAndView = new ModelAndView();
 		try {
@@ -58,19 +60,14 @@ public class LoginController {
 	}
 	
 	@RequestMapping(value = "/logout")
-	public ModelAndView logout(Model model, Authentication authentication) {
+	public String logout(Model model, Authentication authentication) {
 		
-		ModelAndView modelAndView = new ModelAndView();
-		try {
-			modelAndView.setViewName("logout");
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return modelAndView;
+		return "login";
 	}
-	
-	
+	@RequestMapping(value = "/login")
+	public String login(Model model, Authentication authentication) {
+		
+		return "login";
+	}
 
 }

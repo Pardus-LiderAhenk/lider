@@ -222,7 +222,7 @@ rendered: function () {
 				     
 					      $.ajax({
 								type : 'POST',
-								url : 'getOuDetails',
+								url : 'lider/ldap/getOuDetails',
 								data : 'uid=' + row.distinguishedName + '&type=' + row.type
 										+ '&name=' + row.name + '&parent=' + row.parent,
 								dataType : 'text',

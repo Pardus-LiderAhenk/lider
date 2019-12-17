@@ -158,7 +158,7 @@
                     </div>
                     <!-- End drawer scroll area -->
                     
-                    <div id="logger" > 
+                    <div id="logger" class="text-success"> 
 						
 						</div>
                 </aside>
@@ -221,7 +221,7 @@
                                             <li>
                                             </li>
                                             <li>
-                                                <a href="#" id="logout">Çıkış</a>
+                                                <a href="logout" id="logout">Çıkış</a>
                                             </li>
                                         </ul>
                                     </li>
@@ -239,6 +239,8 @@
 			     		 <div class="container-fluid p-y-md">
 			     		 
 				     		 <div id="mainArea">
+				     		 
+				     		 <div th:insert="dashboard :: navbar">  </div>
 				     		 </div>
 						</div>
                 </main>

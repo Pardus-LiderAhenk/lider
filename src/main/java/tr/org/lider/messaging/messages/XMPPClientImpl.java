@@ -145,7 +145,7 @@ public class XMPPClientImpl {
 	@Autowired
 	private List<ITaskStatusSubscriber> taskStatusSubscribers;
 	
-	
+	@Autowired
 	private List<IPresenceSubscriber> presenceSubscribers;
 
 	//	private List<IPolicyStatusSubscriber> policyStatusSubscribers;

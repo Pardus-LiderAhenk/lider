@@ -9,8 +9,6 @@
 <body>
 <h6 th:text="${pluginTask.description}"> </h6> 
 <hr>
-
-
 <span th:text="${pluginTask.description}"> </span> 
 <span id="entrySize"> </span> 
 
@@ -67,7 +65,14 @@
 </div>
 <script type="text/javascript">
 				
-				var ref=connection.addHandler(onMessage2, null, 'message', null, null,  null); 
+			var ref=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
+				
+			var pluginTask = '[[${pluginTask}]]';
+			pluginTask=pluginTask.replace(/&quot;/g,'"')
+			
+			var pluginTaskJson=jQuery.parseJSON(pluginTask);
+			console.log(pluginTaskJson)
+				
 				$("#entrySize").html(selectedEntries.length);
 				
 				var dnlist=[]
@@ -90,7 +95,7 @@
 
 				$("#gonder").click(function(e) {
 				    e.preventDefault();
-				    
+				   
 				    $.ajax({
 				      type: "POST",
 				      url: "/lider/task/execute",
@@ -106,11 +111,7 @@
 				        'text json': true
 				      }, 
 				      success: function(result) {
-				    	
-				    	  
 				    	var res = jQuery.parseJSON(result);
-				    	
-				    	
 				        /* $('#closePage').click(); */
 				      },
 				      error: function(result) {
@@ -119,7 +120,9 @@
 				    });
 				  }); 
 				
-				function onMessage2(msg) {
+				
+				
+				function resourceUsageListener(msg) {
 				    var to = msg.getAttribute('to');
 				    var from = msg.getAttribute('from');
 				    var type = msg.getAttribute('type');
@@ -129,24 +132,27 @@
 					
 				    	var body = elems[0];
 				    	// 	var data=  JSON.stringify(resul);
-				    	console.log(body);
+				    	
 				    	
 				    	//var data=Strophe.xmlunescape(Strophe.getText(body));
-				    	var data=Strophe.xmlunescape(Strophe.xmlGenerator(body));
+				    	
+				    	var data=Strophe.xmlunescape(Strophe.getText(body));
+				    	
 				    	// var sss = jQuery.parseJSON(body);
 						
 				    	// log('Mesaj Alındı:  ' + data.pluginName );
 					
 				    	
-				    	var ee=JSON.parse(data);
-// 				    	console.log(ee);
+				    	var xmppResponse=JSON.parse(data);
 				    	
-						if(ee.commandClsId == "RESOURCE_INFO_FETCHER"){					    	
-							
-							$("#plugin-result").html(ee.result.responseMessage);
-							$("#plugin-result2").html(ee.result.responseData);
+				    	console.log(xmppResponse.commandClsId)
+				    	
+						if(xmppResponse.commandClsId == "RESOURCE_INFO_FETCHER"){					    	
+							alert("ok")
+							$("#plugin-result").html(xmppResponse.result.responseMessage);
+							$("#plugin-result2").html(xmppResponse.result.responseDataStr);
 						}
-						/* connection.deleteHandler(ref); */
+						 
 				    }
 				    // we must return true to keep the handler alive. returning false would remove it after it finishes.
 				    return true;

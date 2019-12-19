@@ -159,6 +159,8 @@ public class TaskStatusSubscriberImpl implements ITaskStatusSubscriber {
 								result = new CommandExecutionResultImpl(result.getId(), c, agent.getId(),
 										message.getResponseCode(), message.getResponseMessage(), null,
 										message.getContentType(), new Date(), mailSubject, mailContent);
+								
+								
 
 							} else {
 								logger.info("Sending the result with data!");
@@ -169,6 +171,9 @@ public class TaskStatusSubscriberImpl implements ITaskStatusSubscriber {
 									new Object[] { message.getTaskId(), message.getResponseCode(), recipient });
 
 							try {
+								if(result.getResponseData()!=null) {
+								result.setResponseDataStr(new String(result.getResponseData()));}
+								
 
 								PluginImpl p = result.getCommandExecution().getCommand().getTask().getPlugin();
 								TaskStatusNotificationImpl notification = new TaskStatusNotificationImpl(recipient,
@@ -178,6 +183,9 @@ public class TaskStatusSubscriberImpl implements ITaskStatusSubscriber {
 
 								ObjectMapper mapper = new ObjectMapper();
 								mapper.setDateFormat(new SimpleDateFormat("dd-MM-yyyy HH:mm"));
+								
+							String resultData= new String(notification.getResult().getResponseData());
+								
 								messagingService.sendChatMessage(mapper.writeValueAsString(notification),
 										notification.getRecipient());
 

@@ -46,8 +46,8 @@ public class PluginPagesController {
 	public List<PluginTask> getPluginTaskList(Model model, PluginTask pluginTask) {
 		
 		logger.info("Getting plugink list ");
-		
-		return pluginService.findAllPluginTask();
+		List<PluginTask>  list=pluginService.findAllPluginTask();
+		return list;
 	}
 
 }

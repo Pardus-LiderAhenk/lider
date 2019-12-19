@@ -1,265 +1,324 @@
-<!DOCTYPE html>
-<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
 <head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
- 		<link rel="apple-touch-icon" href="assets/img/favicons/apple-touch-icon.png" />
-        <link rel="icon" href="assets/img/favicons/favicon.ico" />
-         <!-- Google fonts -->
-        <!-- Page JS Plugins CSS -->
-        <link rel="stylesheet" href="assets/js/plugins/slick/slick.min.css" />
-        <link rel="stylesheet" href="assets/js/plugins/slick/slick-theme.min.css" />
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Language" content="en">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+<meta name="description"
+	content="This is an example dashboard created using build-in elements and components.">
+<meta name="msapplication-tap-highlight" content="no">
+<link rel="stylesheet"
+	href="http://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,900%7CRoboto+Slab:300,400%7CRoboto+Mono:400" />
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-        <!-- AppUI CSS stylesheets -->
-        <link rel="stylesheet" id="css-font-awesome" href="assets/css/font-awesome.css" />
-        <link rel="stylesheet" id="css-ionicons" href="assets/css/ionicons.css" />
-        <link rel="stylesheet" id="css-bootstrap" href="assets/css/bootstrap.css" />
-        <link rel="stylesheet" id="css-app" href="assets/css/app.css" />
-        <link rel="stylesheet" id="css-app-custom" href="assets/css/app-custom.css" />
-        
-         <!-- Page JS Plugins CSS -->
-        <link rel="stylesheet" href="assets/js/plugins/bootstrap-datepicker/bootstrap-datepicker3.min.css" />
-        <link rel="stylesheet" href="assets/js/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css" />
-        <link rel="stylesheet" href="assets/js/plugins/select2/select2.min.css" />
-        <link rel="stylesheet" href="assets/js/plugins/select2/select2-bootstrap.css" />
-        <link rel="stylesheet" href="assets/js/plugins/dropzonejs/dropzone.min.css" />
-        <link rel="stylesheet" href="assets/js/plugins/jquery-tags-input/jquery.tagsinput.min.css" />
+<link href="css/main.css" rel="stylesheet">
+<link rel="stylesheet" href="css/jqx.base.css" type="text/css" />
+<link rel="stylesheet" type="text/css" href="css/main_b.css" />
+<link rel="stylesheet" id="css-font-awesome" href="css/agent.info.css" />
 
-		<link rel='stylesheet'	href='//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css'>
-		<link rel="stylesheet" type="text/css" href="css/metisMenu.css" />
-		<link rel="stylesheet" type="text/css" href="css/sb-admin-2.css" />
-		<link rel="stylesheet" type="text/css" href="css/main.css" />
-		
-		<link rel="stylesheet" href="css/jqx.base.css" type="text/css" />
-		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,900%7CRoboto+Slab:300,400%7CRoboto+Mono:400" />
-		<link rel="stylesheet" id="css-font-awesome" href="css/agent.info.css" /> 
-		
-		
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-		
-		
-		<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script> 
-		<script type="text/javascript" src="js/bootstrap.min.js"></script>  
+<script type="text/javascript" src="assets/scripts/main.js"></script>
+<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
 
-	<!-- <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script> -->
-	<!-- <script type="text/javascript" src="js/jquery.js"></script> -->
-	<!-- <script type="text/javascript" src="js/bootstrap.min.js"></script> -->
+<script type="text/javascript" src="js/strophe.js"></script>
+<script type="text/javascript">
+	var username = '[[${userNameJid}]]';
+	var password = '[[${password}]]';
+	var xmppHost = '[[${xmppHost}]]';
 
-	<!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script> -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
-
-	<!--<script src="assets/js/core/jquery.min.js"></script>
-        <script src="assets/js/core/bootstrap.min.js"></script>       
-        -->
-       <script src='js/jquery-ui.min.js'></script>
-    
-	<script src="assets/js/core/jquery.slimscroll.min.js"></script>
-	<script src="assets/js/core/jquery.scrollLock.min.js"></script>
-	<script src="assets/js/core/jquery.placeholder.min.js"></script>
-	<script src="assets/js/app.js"></script>
-	<script src="assets/js/app-custom.js"></script>
-	<script type="text/javascript" src="js/metisMenu.min.js"></script>
-	<script type="text/javascript" src="js/sb-admin-2.js"></script>
-	<script type="text/javascript" src="js/strophe.js"></script>
-	<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-		<script type="text/javascript">
-			var username = '[[${userNameJid}]]';
-			var password = '[[${password}]]';
-			var xmppHost = '[[${xmppHost}]]';
-		
-			
-			var BOSH_SERVICE = 'http://'+xmppHost+':5280/bosh';
-			var connection = null; 
-			var rosterList=[]; 
-			var onlineEntryList=[]; 
-			var childEntryList=[]; 
-			
-		</script>
+	var BOSH_SERVICE = 'http://' + xmppHost + ':5280/bosh';
+	var connection = null;
+	var rosterList = [];
+	var onlineEntryList = [];
+	var childEntryList = [];
+</script>
 </head>
+<body>
+	<div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
+		<div class="app-header header-shadow">
+			<div class="app-header__logo">
+				<div class="logo-src"></div>
+				<div class="header__pane ml-auto">
+					<div>
+						<button type="button"
+							class="hamburger close-sidebar-btn hamburger--elastic"
+							data-class="closed-sidebar">
+							<span class="hamburger-box"> <span class="hamburger-inner"></span>
+							</span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="app-header__mobile-menu">
+				<div>
+					<button type="button"
+						class="hamburger hamburger--elastic mobile-toggle-nav">
+						<span class="hamburger-box"> <span class="hamburger-inner"></span>
+						</span>
+					</button>
+				</div>
+			</div>
+			<div class="app-header__menu">
+				<span>
+					<button type="button"
+						class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+						<span class="btn-icon-wrapper"> <i
+							class="fa fa-ellipsis-v fa-w-6"></i>
+						</span>
+					</button>
+				</span>
+			</div>
 
- <body class="app-ui layout-has-drawer layout-has-fixed-header" >
- 
-        <div class="app-layout-canvas">
-            <div class="app-layout-container">
-
-                <!-- Drawer -->
-                <aside class="app-layout-drawer">
-
-                    <!-- Drawer scroll area -->
-                    <div class="app-layout-drawer-scroll">
-                        <!-- Drawer logo -->
-                        <div id="logo" class="drawer-header"  >
-                            <a href="dashboard"> <img class="img-responsive" src="img/LiderAhenk-Logo-02.png" title="Lider MYS" alt="Lider MYS" />  Lider MYS
-                            </a>
-                        </div>
-
-                        <!-- Drawer navigation -->
-                        <nav class="drawer-main">
-                            <ul class="nav nav-drawer">
-
-                                <li class="nav-item nav-drawer-header"></li>
-
-                                <li class="nav-item active">
-                                    <a class="dizin" href="#" data-page="dashboard"><i class="fa fa-home"></i> Panel</a>
-                                </li>
-                                
-                                 <li class="nav-item nav-item-has-subnav">
-                                    <a href="#"><i class="fa fa-server"></i> Dizin Yönetimi</a>
-                                    <ul class="nav nav-subnav">
-
-                                        <li>
-                                            <a class="dizin" href="#" data-page="users">Kullanıcılar</a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dizin" href="#" data-page="computers"> İstemciler </a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dizin" href="#" data-page="groups">Gruplar</a>
-                                        </li>
-
-                                        <li>
-                                            <a class="dizin" href="#" data-page="sudo_groups">Yetki Grupları</a>
-                                        </li>
-
-                                    </ul>
-                                </li>
-                                 <li class="nav-item nav-item-has-subnav">
-                                    <a href="#"><i class="fa fa-list-alt"></i> Raporlar</a>
-                                    <ul class="nav nav-subnav">
-
-                                        <li>
-                                            <a class="dizin" href="#" data-page="agent_info"> Detaylı İstemci Raporu</a>
-                                        </li>
-
-                                       
-
-                                    </ul>
-                                </li>
-                                 <li class="nav-item nav-item-has-subnav">
-                                    <a href="#"><i class="fa fa-cogs"></i> Ayarlar</a>
-                                    <ul class="nav nav-subnav">
-
-                                        <li>
-                                            <a class="dizin" href="#" data-page="users"> Sunucu Ayarları</a>
-                                        </li>
-
-                                       
-
-                                    </ul>
-                                </li>
-                             <li class="nav-item nav-drawer">  <div id='log' class="log"></div> </li>
-                            </ul>
-                        </nav>
-                        <!-- End drawer navigation -->
-                    </div>
-                    <!-- End drawer scroll area -->
-                    
-                    <div id="logger" class="text-success"> 
-						
+			<div class="app-header__content">
+				<div class="app-header-right">
+					<div class="header-btn-lg pr-0">
+						<div class="widget-content p-0">
+							<div class="widget-content-wrapper">
+								<div class="widget-content-left">
+									<div class="btn-group">
+										<a data-toggle="dropdown" aria-haspopup="true"
+											aria-expanded="false" class="p-0 btn"> <img width="42"
+											class="rounded-circle" src="img/LiderAhenk-Logo-02.png"
+											alt=""> <i class="fa fa-angle-down ml-2 opacity-8"></i>
+										</a>
+										<div tabindex="-1" role="menu" aria-hidden="true"
+											class="dropdown-menu dropdown-menu-right">
+											<button type="button" tabindex="0" class="dropdown-item">Bilgilerim</button>
+											
+										</div>
+									</div>
+								</div>
+								<div class="widget-content-left  ml-3 header-user-info">
+									<div class="widget-heading" th:text="${user.liderUser.name}"> </div>
+									<div class="widget-subheading"> Lider Yönetici</div>
+								</div>
+								<div class="widget-content-right header-user-info ml-3">
+								
+									<a href="logout" id="logout">Çıkış</a>
+								</div>
+							</div>
 						</div>
-                </aside>
-                <!-- End drawer -->
+					</div>
+				</div>
+			</div>
+		</div>
 
-                <!-- Header -->
-                <header class="app-layout-header">
-                    <nav class="navbar navbar-default">
-                        <div class="container-fluid">
-                            <div class="navbar-header">
-					                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar-collapse" aria-expanded="false">
-										<span class="sr-only">Toggle navigation</span>
-										<span class="icon-bar"></span>
-										<span class="icon-bar"></span>
-										<span class="icon-bar"></span>
-									</button>
-					                                <button class="pull-left hidden-lg hidden-md navbar-toggle" type="button" data-toggle="layout" data-action="sidebar_toggle">
-										<span class="sr-only">Toggle drawer</span>
-										<span class="icon-bar"></span>
-										<span class="icon-bar"></span>
-										<span class="icon-bar"></span>
-									</button>
-                      
-                            </div>
-
-                            <div class="collapse navbar-collapse" id="header-navbar-collapse">
-                                <!-- Header search form -->
-                                <div class="navbar-form navbar-left app-search-form" >
-                                    <div class="form-group">
-                                        <div class="input-group pull-right">
-                                            <input class="form-control" type="text" id="search-input" placeholder="Ara..." />
-                                            
-                                            <span class="input-group-btn">
-												<button class="btn" type="button"><i class="ion-ios-search-strong"></i></button>
-											</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                
-                                <!-- .navbar-left -->
-
-                                <ul class="nav navbar-nav navbar-right navbar-toolbar hidden-sm hidden-xs">
-                                    
-                                    <li class="dropdown dropdown-profile">
-                                        <a href="javascript:void(0)" data-toggle="dropdown">
-                                            
-                                            <span style="font-weight: bold;" class="m-r-sm"
-									th:text="${userNameJid}"></span>
-									<img class="img-avatar img-avatar-48" src="img/online-icon-png-11.jpg" alt="User profile pic" />
-									
-									 <span class="caret"></span>
-                                            
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
-                                            
-                                            <li>
-                                                <a href="profile">Kişisel Sayfam</a>
-                                            </li>
-                                            <li>
-                                            </li>
-                                            <li>
-                                                <a href="logout" id="logout">Çıkış</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                                <!-- .navbar-right -->
-                            </div>
-                        </div>
-                        <!-- .container-fluid -->
-                    </nav>
-                    <!-- .navbar-default -->
-                </header>
-                <!-- End header -->
-
-                <main class="app-layout-content">
-			     		 <div class="container-fluid p-y-md">
-			     		 
-				     		 <div id="mainArea">
-				     		 
-				     		 <div th:insert="dashboard :: navbar">  </div>
-				     		 </div>
+		<div class="app-main">
+			<div class="app-sidebar sidebar-shadow">
+				<div class="app-header__logo">
+					<div class="logo-src"></div>
+					<div class="header__pane ml-auto">
+						<div>
+							<button type="button"
+								class="hamburger close-sidebar-btn hamburger--elastic"
+								data-class="closed-sidebar">
+								<span class="hamburger-box"> <span
+									class="hamburger-inner"></span>
+								</span>
+							</button>
 						</div>
-                </main>
+					</div>
+				</div>
+				<div class="app-header__mobile-menu">
+					<div>
+						<button type="button"
+							class="hamburger hamburger--elastic mobile-toggle-nav">
+							<span class="hamburger-box"> <span class="hamburger-inner"></span>
+							</span>
+						</button>
+					</div>
+				</div>
+				<div class="app-header__menu">
+					<span>
+						<button type="button"
+							class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
+							<span class="btn-icon-wrapper"> <i
+								class="fa fa-ellipsis-v fa-w-6"></i>
+							</span>
+						</button>
+					</span>
+				</div>
+				<div class="scrollbar-sidebar">
+					<div class="app-sidebar__inner">
+						<ul class="vertical-nav-menu">
+							<li class="app-sidebar__heading">Panel</li>
+							<li><a href="#" class="mm-active dizin"
+								data-page="dashboard"> <i
+									class="metismenu-icon pe-7s-rocket"></i> Durum
+							</a></li>
+							<li class="app-sidebar__heading">Dizin Yönetimi</li>
 
-            </div>
-        </div>
-	<script type="text/javascript" src="js/notify.min.js" ></script>
+							<li><a class="dizin" href="#" data-page="users"> <i
+									class="metismenu-icon pe-7s-users"></i> Kullanıcı Yönetimi
+							</a></li>
+							<li><a class="dizin" href="#" data-page="computers"> <i
+									class="metismenu-icon pe-7s-display2"></i> İstemci Yönetimi
+							</a></li>
+
+							<li><a> <i class="metismenu-icon pe-7s-diamond"></i>
+									Grup Yönetimi <i
+									class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+							</a>
+
+								<ul>
+									<li><a class="dizin" href="#" data-page="user_groups"> <i
+											class="metismenu-icon"></i> Kullanıcı Grupları
+									</a></li>
+									<li><a class="dizin" href="#" data-page="groups">
+											<i class="metismenu-icon"></i> İstemci Grupları
+									</a></li>
+									<li><a class="dizin" href="#" data-page="sudo_groups">
+											<i class="metismenu-icon"></i> Yetki Grupları
+									</a></li>
+
+								</ul></li>
+							<li class="app-sidebar__heading">Raporlar</li>
+							<li><a class="dizin" href="#" data-page="agent_info"> <i
+									class="metismenu-icon pe-7s-display2"></i> Detaylı İstemci
+									Raporu
+							</a></li>
+
+							<li class="app-sidebar__heading">Ayarlar</li>
+							<li><a class="dizin" href="#" data-page="agent_info"> <i
+									class="metismenu-icon pe-7s-display2"></i> Sunucu Ayarları
+							</a></li>
+						</ul>
+
+						<div id="logger" class="text-success"></div>
+
+
+					</div>
+				</div>
+			</div>
+
+			<div class="app-main__outer">
+				<div class="app-main__inner">
+					<div class="app-page-title">
+					
+					<!--  Dynamic Content  -->
+						<div id="mainArea">
+							<div th:insert="dashboard :: navbar"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!--All Modals should be add here.. -->
+	
+	
+	
+	<!--Plugin Tasks loading here -->
+
+	<div class="modal fade" id="pluginHtmpPageModal" tabindex="0"
+		role="dialog" aria-labelledby="pluginHtmpPageModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h5 class="modal-title" id="pluginHtmpPageModalLabel"></h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body">
+
+					<div id="pluginPageRender"></div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Kapat</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+<!--Ldap Entry attributes setting here -->
+	<div id="attributeModal" class="modal fade">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+
+				<div class="card-header bg-green bg-inverse">
+					<h4>Attributes</h4>
+					<ul class="card-actions">
+						<li>
+							<button data-dismiss="modal" type="button">
+								<i class="ion-close"></i>
+							</button>
+						</li>
+					</ul>
+				</div>
+
+				<div class="modal-body">
+					<span id="attributes_dn"></span>
+					<div id="attributes_attributes"></div>
+
+				</div>
+
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-success"
+						value="Özellikleri Guncelle" id="btnAttributes" name="bnt_gonder">
+					<button type="button" class="btn" data-dismiss="modal">Vazgeç</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<!-- Selected ldap entries searching and ahenks listing here-->
+	<div id="selectedEntryListModal" class="modal fade">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h5 class="modal-title">Seçili İstemci Listesi</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body">
+					<div id="selectedEntriesHolder"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Kapat</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="js/notify.min.js"></script>
 	<script type="text/javascript" src="js/messaging.js"></script> <!-- for xmmp connection send message -->
 	<script type="text/javascript" src="js/main.js"></script>
 	<script type="text/javascript" src="js/treegrid/jqxcore.js"></script>
-    <script type="text/javascript" src="js/treegrid/jqxbuttons.js"></script>
-    <script type="text/javascript" src="js/treegrid/jqxscrollbar.js"></script>
-    <script type="text/javascript" src="js/treegrid/jqxdatatable.js"></script>
-    <script type="text/javascript" src="js/treegrid/jqxtreegrid.js"></script> 
-    <script type="text/javascript" src="js/treegrid/jqxdata.js"></script>   
-    <script type="text/javascript" src="js/treegrid/jqxcheckbox.js"></script>
-    <script type="text/javascript" src="js/treegrid/jqxlistbox.js"></script>
-    <script type="text/javascript" src="js/treegrid/jqxdropdownlist.js"></script>
-    <script type="text/javascript" src="js/treegrid/demos.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxbuttons.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxscrollbar.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxdatatable.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxtreegrid.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxdata.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxcheckbox.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxlistbox.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxdropdownlist.js"></script>
+	<script type="text/javascript" src="js/treegrid/demos.js"></script>
+
 
 </body>
 </html>

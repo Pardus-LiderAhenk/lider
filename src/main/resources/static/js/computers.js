@@ -94,16 +94,19 @@ function showSelectedEntries() {
 
 		html += '<tr>';
 
-		html += '<td>' + selectedEntries[i].name + '</td>';
-		html += '<td>' + selectedEntries[i].distinguishedName + '</td>';
+		html += '<td style="width: 30%">' + selectedEntries[i].name + '</td>';
+		html += '<td style="width: 60%">' + selectedEntries[i].distinguishedName + '</td>';
 
-		html += '<td> <button class="btn btn-xs btn-default removeEntry" type="button" id="' +selectedEntries[i]+ '" data-id="'+ selectedEntries[i]+'" title="Kaldir"> <img src="img/remove.png"></img> </button>  </td>';
+		html += '<td style="width: 10%"> <button class="btn btn-xs btn-default removeEntry" type="button" id="' +selectedEntries[i]+ '" data-id="'+ selectedEntries[i]+'" title="Kaldir"> <i class="fa fa-minus fa-w-20"> </i> </button>  </td>';
 
 		html += '</tr>';
 	}
 	html += '</table>';
+	
 
 	$('#selectedEntriesHolder').html(html);
+	
+	
 	
 	$('.removeEntry').on('click', function(e) {
 		var uid = $(this).data("id");
@@ -128,9 +131,10 @@ function loadPluginTaskTable() {
 			html += '<thead>';
 			
 			html += '<tr>';
-			html += '<th>Görev Adı</th>';
-			html += '<th>Açıklama</th>';
-			html += '<th></th>';
+			html += '<th style="width: 40%">Görev Adı</th>';
+			html += '<th style="width: 25%" >Açıklama</th>';
+			html += '<th style="width: 25%" >Plugin</th>';
+			html += '<th style="width: 10%"></th>';
 			html += '</tr>';
 			html += '</thead>';
 		    
@@ -141,7 +145,8 @@ function loadPluginTaskTable() {
 		        	html += '<tr>';
 		            html += '<td>' + entry.name + '</td>';
 		            html += '<td>' + entry.description + '</td>';
-		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" data-toggle="modal" data-target="#taskModal" data-id="' + entry.id + '" data-page="'
+		            html += '<td>' + entry.plugin.name + '</td>';
+		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" data-toggle="modal" data-target="#pluginHtmpPageModal" data-id="' + entry.id + '" data-page="'
 		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <img class="img-responsive" src="img/LiderAhenk-task.png" title="Lider MYS" alt="Lider MYS" />  </button>  </td>';
 		        
 		       		 
@@ -164,7 +169,6 @@ function loadPluginTaskTable() {
 							+ '&page=' + page + '&description=' + description,
 					dataType : 'text',
 					success : function(data) {
-						
 						$('#pluginHtmpPageModal').modal('show');
 						$('#pluginHtmpPageModalLabel').html(name);
 						$('#pluginPageRender').html(data);
@@ -390,7 +394,9 @@ function loadComputersTree(data){
 	      }
 	 }); 
 	
-	$('#addSelectedEntry2').on('click',function() {
+	 
+	// adding tree selected computers to box
+	$('#addSelectedEntry2Box').on('click',function() {
 			 
 							var checkedRows = $("#treegrid").jqxTreeGrid('getCheckedRows');
 							console.log(checkedRows)
@@ -411,7 +417,7 @@ function loadComputersTree(data){
 						      }
 							
 							$.ajax({
-						        url : 'getAhenks',
+						        url : 'lider/ldap/getAhenks',
 						        type : 'POST',
 						        data: JSON.stringify(checkedEntryArray),
 						        dataType: "json",
@@ -457,7 +463,7 @@ function loadComputersTree(data){
 		}
 		
 		$.ajax({
-			url : 'getOnlineAhenks',
+			url : 'lider/ldap/getOnlineAhenks',
 			type : 'POST',
 			data: JSON.stringify(checkedEntryArray),
 			dataType: "json",

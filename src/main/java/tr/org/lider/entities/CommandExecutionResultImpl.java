@@ -32,6 +32,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -90,6 +91,11 @@ public class CommandExecutionResultImpl {
 
 	@Column(name = "MAIL_CONTENT", columnDefinition = "TEXT", length = 65535)
 	private String mailContent;
+	
+	@Transient
+	private String responseDataStr;
+
+	
 
 	public CommandExecutionResultImpl() {
 	}
@@ -239,6 +245,14 @@ public class CommandExecutionResultImpl {
 		return "CommandExecutionResultImpl [id=" + id + ", agentId=" + agentId + ", responseCode=" + responseCode
 				+ ", responseMessage=" + responseMessage + ", contentType=" + contentType + ", createDate=" + createDate
 				+ ", mailSubject=" + mailSubject + ", mailContent=" + mailContent + "]";
+	}
+	
+	public String getResponseDataStr() {
+		return responseDataStr;
+	}
+
+	public void setResponseDataStr(String responseDataStr) {
+		this.responseDataStr = responseDataStr;
 	}
 
 }

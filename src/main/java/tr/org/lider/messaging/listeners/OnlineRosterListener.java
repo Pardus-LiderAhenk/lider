@@ -46,6 +46,7 @@ public class OnlineRosterListener implements RosterListener {
 
 	private XMPPTCPConnection connection;
 	private List<String> onlineUsers = new ArrayList<String>();
+	
 	private List<IPresenceSubscriber> presenceSubscribers;
 
 	public OnlineRosterListener(XMPPTCPConnection connection) {

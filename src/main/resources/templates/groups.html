@@ -1,92 +1,103 @@
 <script type="text/javascript" src="js/groups.js"></script>
 
-<div class="col-lg-12">
-	<div class="card">
-		<div class="card-header">
-			<h6 id="selectedEntryHeader">  Grup Yönetimi </h6>
-		</div>
-		<div class="card-block">
-			
-		<div class="row">
-				<div class="col-lg-3"> 
-				
-					<div class="col-lg-6 pull-right">
-						
-					</div>
-					
-					<div id="treeGridUser"></div>
-					
-				</div>
-				
-				<div class="col-lg-9">
-				
-						<div id="exTab2" class="container">	
-						<ul class="nav nav-tabs">
-									<li class="active">
-						        <a  href="#1" data-toggle="tab" id="new_task"> Özellikler</a>
-									</li>
-									
-								</ul>
-						
-									<div class="tab-content ">
-									  <div class="tab-pane active" id="1">
-									  
-							                                <div class="input-group ">
-																<input type="text" class="form-control" id="textTaskSearch" placeholder="Ara.">
-															 </div>
-															 
-															 <div id="pluginListTableDiv">
-															 
-															 </div>
-								                            
-
-										</div>
-										
-									</div>
-						  </div>
-				
-				
-				</div>
-				
+<div class="app-page-title">
+	<div class="page-title-wrapper">
+		<div class="page-title-heading">
+			<div class="page-title-icon">
+				<i class="pe-7s-drawer icon-gradient bg-happy-itmeo"> </i>
 			</div>
-		
-		
-		</div>
-
-	</div>
-
-
-	<div id="attributeModal" class="modal fade">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-
-				<div class="card-header bg-green bg-inverse">
-					<h4>Attributes</h4>
-					<ul class="card-actions">
-						<li>
-							<button data-dismiss="modal" type="button">
-								<i class="ion-close"></i>
-							</button>
-						</li>
-					</ul>
-				</div>
-
-				<div class="modal-body">
-					<span id="attributes_dn"></span>
-					<div id="attributes_attributes"></div>
-
-				</div>
-
-				<div class="modal-footer">
-					<input type="submit" class="btn btn-success"
-						value="Özellikleri Guncelle" id="btnAttributes" name="bnt_gonder">
-					<button type="button" class="btn btn-success" data-dismiss="modal">Vazgeç</button>
-				</div>
+			<div>
+				İstemci Grupları
+				<div class="page-title-subheading">Sistemde bulunan
+					İstemci gruplarını listeleyebilir, gruplara görev gönderebilirsiniz.</div>
 			</div>
 		</div>
+		<div class="page-title-actions">
+
+			<div class="d-inline-block dropdown">
+				<button type="button" data-toggle="dropdown" aria-haspopup="true"
+					aria-expanded="false"
+					class="btn-shadow dropdown-toggle btn btn-info">
+					<span class="btn-icon-wrapper pr-2 opacity-7"> <i
+						class="fa fa-business-time fa-w-20"> </i>
+					</span> <span class="btn-icon-wrapper pr-2 "> </span> İstemci Grupları
+				</button>
+
+			</div>
+
+			<button type="button" id="selectedEntrySize"
+				data-target="#selectedEntryListModal" data-toggle="modal"
+				data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
+				<i class="fa fa-star"></i>
+			</button>
+		</div>
 	</div>
-					
 </div>
+
+<div class="row">
+
+	<div class="col-lg-4">
+		<div class="main-card mb-3 card">
+			<div class="card-header">
+				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+
+				<div>
+					<button id="userInfo" type="button"
+						class="btn-shadow btn btn-info" title="Kullanıcı Detay" ><i class="fa fa-info"></i></button>
+						
+					<button id="addUser" type="button"
+						class="btn-shadow btn btn-info" title="Kullanıcı Ekle" ><i class="fa fa-plus"></i></button>
+						
+					<button id="editUser" type="button"
+						class="btn-shadow btn btn-info"   title="Kullanıcı Düzenle"><i class="fa fa-edit"></i></button>
+						
+					<button id="deleteUser" type="button"
+						class="btn-shadow btn btn-info"   title="Kullanıcı Sil"><i class="fa fa-times"></i></button>
+						
+				</div>
+
+			</div>
+			<div class="card-body">
+				<div id="treeGridUser"></div>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="col-lg-8">
+		<div class="main-card mb-3 card">
+			<div class="card-header card-header-tab-animation">
+				<ul class="nav nav-justified">
+					<li class="nav-item">
+						<a role="tab" class="nav-link active"
+							id="tab-c-0" data-toggle="tab" href="#tab-animated-0"> 
+							<span>Kullanıcı Detay</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a role="tab" class="nav-link"
+							id="tab-c-1" data-toggle="tab" href="#tab-animated-1"> 
+							<span>Politika Gönder</span>
+						</a>
+					</li>
+				</ul>
+
+			</div>
+			<div class="card-body">
+				<div class="tab-content">
+					<div class="tab-pane active" id="tab-animated-0" role="tabpanel">
+						<p class="mb-0"></p>
+
+					</div>
+					<div class="tab-pane" id="tab-animated-1" role="tabpanel">
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+
 
 
 

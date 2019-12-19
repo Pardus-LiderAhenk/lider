@@ -7,148 +7,80 @@
 </head>
 <body >
     <div>
-        <div th:fragment="navbar" class="navbar">
+        <div th:fragment="navbar">
             
-
-                    <!-- Page Content -->
-                    <div class="container-fluid p-y-md">
-                        <!-- Stats -->
-                        <div class="row">
-                            <div class="col-sm-6 col-lg-3">
-                                
-                            </div>
-                            <!-- .col-sm-6 -->
-
-                            <div class="col-sm-6 col-lg-3">
-                                <a class="card bg-green bg-inverse" href="javascript:void(0)">
-                                    <div class="card-block clearfix">
-                                        <div class="pull-right">
-                                            <p class="h6 text-muted m-t-0 m-b-xs">Toplam Kullanıcı</p>
-                                            <p class="h3 m-t-sm m-b-0">2450</p>
-                                        </div>
-                                        <div class="pull-left m-r">
-                                            <span class="img-avatar img-avatar-48 bg-gray-light-o"><i class="ion-ios-people fa-1-5x"></i></span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <!-- .col-sm-6 -->
-
-                            <div class="col-sm-6 col-lg-3">
-                                <a class="card bg-blue bg-inverse" href="javascript:void(0)">
-                                    <div class="card-block clearfix">
-                                        <div class="pull-right">
-                                            <p class="h6 text-muted m-t-0 m-b-xs">Adres Defteri</p>
-                                            <p class="h3 m-t-sm m-b-0">2500 </p>
-                                        </div>
-                                        <div class="pull-left m-r">
-                                            <span class="img-avatar img-avatar-48 bg-gray-light-o"><i class="ion-ios-speedometer fa-1-5x"></i></span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <!-- .col-sm-6 -->
-
-                            <div class="col-sm-6 col-lg-3">
-                                <a class="card bg-purple bg-inverse" href="javascript:void(0)">
-                                    <div class="card-block clearfix">
-                                        <div class="pull-right">
-                                            <p class="h6 text-muted m-t-0 m-b-xs">Mesajlar</p>
-                                            <p class="h3 m-t-sm m-b-0">3</p>
-                                        </div>
-                                        <div class="pull-left m-r">
-                                            <span class="img-avatar img-avatar-48 bg-gray-light-o"><i class="ion-ios-email fa-1-5x"></i></span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <!-- .col-sm-6 -->
-                        </div>
-                        <!-- .row -->
-                        <!-- End stats -->
-
-                
-                        
-
-                        <div class="row">
-                            <div class="col-lg-8">
-                                <!-- Yearly summary widget -->
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4>Özet Durum</h4>
-                                        <ul class="card-actions">
-                                            <li class="dropdown">
-                                                <button type="button" data-toggle="dropdown"><i class="ion-more"></i></button>
-                                                <ul class="dropdown-menu dropdown-menu-right">
-                                                    <li class="dropdown-header">Profile</li>
-                                                    <li>
-                                                        <a tabindex="-1" href="javascript:void(0)"><span class="badge pull-right">3</span> News</a>
-                                                    </li>
-                                                    <li>
-                                                        <a tabindex="-1" href="javascript:void(0)"><span class="badge pull-right">1</span> Messages</a>
-                                                    </li>
-                                                    <li class="divider"></li>
-                                                    <li class="dropdown-header">More</li>
-                                                    <li>
-                                                        <a tabindex="-1" href="javascript:void(0)">Edit Profile..</a>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                        <!-- .card-actions -->
-                                    </div>
-                                    <!-- .card-header -->
-                                    <div class="card-block">
-                                        <div class="row">
-                                            <div class="col-sm-4">
-                                                <p class="h6 small text-muted">Aktif İstemciler</p>
-                                                <p class="h3 m-t-0">14</p>
-                                                <!-- Chart.js Charts (initialized in js/pages/base_pages_dashboard.js), for more examples please check http://www.chartjs.org/docs/ -->
-                                                <div style="height: 120px;"><canvas class="js-chartjs-lines4"></canvas></div>
+			<div class="app-page-title">
+				<div class="page-title-wrapper">
+					<div class="page-title-heading">
+						<div class="page-title-icon">
+							<i class="pe-7s-wallet icon-gradient bg-plum-plate"> </i>
+						</div>
+						<div>
+							Dashboard
+							<div class="page-title-subheading"> sfdsdf</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		     <div class="row">
+                                <div class="col-lg-6 col-xl-4">
+                                    <div class="card mb-3 widget-content">
+                                        <div class="widget-content-wrapper">
+                                            <div class="widget-content-left">
+                                                <div class="widget-heading">Toplam Kullanıcı</div>
+                                                <div class="widget-subheading">Last year expenses</div>
                                             </div>
-                                            <div class="col-sm-4">
-                                                <p class="h6 small text-muted">Kapalı İstemciler</p>
-                                                <p class="h3 m-t-0">788</p>
-                                                <!-- Chart.js Charts (initialized in js/pages/base_pages_dashboard.js), for more examples please check http://www.chartjs.org/docs/ -->
-                                                <div style="height: 120px;"><canvas class="js-chartjs-lines5"></canvas></div>
+                                            <div class="widget-content-right">
+                                                <div class="widget-numbers text-success"><span>1896</span></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- .card-block -->
                                 </div>
-                                <!-- .card -->
-                                <!-- End Yearly summary widget -->
+                                <div class="col-lg-6 col-xl-4">
+                                    <div class="card mb-3 widget-content">
+                                        <div class="widget-content-wrapper">
+                                            <div class="widget-content-left">
+                                                <div class="widget-heading">Toplam İstemci</div>
+                                                <div class="widget-subheading">Total Clients Profit</div>
+                                            </div>
+                                            <div class="widget-content-right">
+                                                <div class="widget-numbers text-primary"><span>$ 568</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-xl-4">
+                                    <div class="card mb-3 widget-content">
+                                        <div class="widget-content-wrapper">
+                                            <div class="widget-content-left">
+                                                <div class="widget-heading">Products Sold</div>
+                                                <div class="widget-subheading">Total revenue streams</div>
+                                            </div>
+                                            <div class="widget-content-right">
+                                                <div class="widget-numbers text-warning"><span>$14M</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-xl-4">
+                                    <div class="card mb-3 widget-content">
+                                        <div class="widget-content-wrapper">
+                                            <div class="widget-content-left">
+                                                <div class="widget-heading">Followers</div>
+                                                <div class="widget-subheading">People Interested</div>
+                                            </div>
+                                            <div class="widget-content-right">
+                                                <div class="widget-numbers text-danger"><span>46%</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <!-- .col-lg-8 -->
 
-                            <!-- Server load Widget -->
-                            <div class="col-lg-4">
-                                <div class="card">
-                                    <div class="card-header bg-purple bg-inverse">
-                                        <h4>Sunucu Durumları</h4>
-                                        <ul class="card-actions">
-                                            <li>
-                                                <span class="js-flot-live-info"></span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="card-block bg-purple p-x-0 p-b-0">
-                                        <!-- Live Chart Container -->
-                                        <div class="js-flot-live" style="height: 207px;"></div>
-                                    </div>
-                                </div>
-                                <!-- .card -->
-                            </div>
-                            <!-- End Server load Widget // .col-lg-4 -->
-                        </div>
-                        <!-- .row -->
-                    </div>
-                    <!-- .container-fluid -->
-                    <!-- End Page Content -->
+
             
         </div>
     </div>
-    
-
 </body>
 </html>

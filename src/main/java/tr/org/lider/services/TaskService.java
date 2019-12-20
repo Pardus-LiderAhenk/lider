@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import tr.org.lider.entities.CommandExecutionImpl;
 import tr.org.lider.entities.CommandImpl;
 import tr.org.lider.entities.PluginImpl;
+import tr.org.lider.entities.PluginTask;
 import tr.org.lider.entities.TaskImpl;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
@@ -64,82 +65,13 @@ public class TaskService {
 	private TaskRepository taskRepository;
 	
 
-	public IRestResponse execute(String requestBodyDecoded) {
+	public IRestResponse execute(PluginTask request) {
 
-		ITaskRequest request = null;
-		List<LdapEntry> targetEntries = null;
-
-		try {
-			request = new ObjectMapper().readValue(requestBodyDecoded, TaskRequestImpl.class);
-
-			// This is the default format for operation definitions. (such as BROWSER/SAVE, USB/ENABLE etc.)
-			String targetOperation = request.getPluginName() + "/" + request.getCommandId();
-			logger.debug("Target operation: {}", targetOperation);
-
-			// DN list may contain any combination of agent, user,
-			// organizational unit and group DNs,
-			// and DN type indicates what kind of entries in this list are
-			// subject to command execution. Therefore we need to find these
-			// LDAP entries first before authorization and command execution
-			// phases.
-			targetEntries = ldapService.findTargetEntries(request.getDnList(), request.getDnType());
-			
-			
-//
-//			if (configService.getUserAuthorizationEnabled()) {
-//				Subject currentUser = null;
-//				try {
-//					currentUser = SecurityUtils.getSubject();
-//				} catch (Exception e) {
-//					logger.error(e.getMessage(), e);
-//				}
-//				if (currentUser != null && currentUser.getPrincipal() != null) {
-//					request.setOwner(currentUser.getPrincipal().toString());
-//					
-//					if (targetEntries != null && !targetEntries.isEmpty()) {
-//						// Find only 'permitted' entries:
-//						targetEntries = authService.getPermittedEntries(currentUser.getPrincipal().toString(),
-//								targetEntries, targetOperation);
-//						if (targetEntries == null || targetEntries.isEmpty()) {
-//							logger.error("Target Entries is not allowed for user "+ currentUser.getPrincipal().toString());
-//							return responseFactory.createResponse(request, RestResponseStatus.ERROR, Arrays.asList(new String[] { "Target Entries is not allowed for user" }));
-//						}
-//					} else if (ldapService.getUser(currentUser.getPrincipal().toString()) == null) {
-//						// Request might not contain any target entries, When
-//						// that's the case, check only if user exists!
-//						logger.error("User not authorized: {}", currentUser.getPrincipal().toString());
-//						return responseFactoryService.createResponse(request, RestResponseStatus.ERROR,
-//								Arrays.asList(new String[] { "NOT_AUTHORIZED" }));
-//					}
-//				} else {
-//					logger.warn("Unauthenticated user access.");
-//					return responseFactoryService.createResponse(request, RestResponseStatus.ERROR,
-//							Arrays.asList(new String[] { "NOT_AUTHORIZED" }));
-//				}
-//			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return responseFactoryService.createResponse(request, RestResponseStatus.ERROR,	Arrays.asList(new String[] { e.getMessage() }));
-		}
-			//return serviceRouter.delegateRequest(request, targetEntries);
-		String key = buildKey(request.getPluginName(), request.getPluginVersion(),	request.getCommandId());
-		
-		
-		// Find related plugin
-		
-		
-		List<PluginImpl> plugins= pluginService.findPluginByNameAndVersion(request.getPluginName(), request.getPluginVersion());
-		
-		PluginImpl selectedPlugin=null;
-		
-		if(plugins!=null && plugins.size()>0) {
-		
-			selectedPlugin=plugins.get(0);
-			
-		}
+		// Getting target entries 
+		List<LdapEntry> targetEntries = request.getEntryList();
 
 		// Create & persist task
-		TaskImpl task= new TaskImpl(null, selectedPlugin, request.getCommandId(), request.getParameterMap(), false,
+		TaskImpl task= new TaskImpl(null, request.getPlugin(), request.getCommandId(), request.getParameterMap(), false,
 				request.getCronExpression(), new Date(), null);
 
 		task = taskRepository.save(task);
@@ -162,7 +94,7 @@ public class TaskService {
 					request.getDnType(), 
 					uidList,
 					"lider_console", 
-					((ITaskRequest) request).getActivationDate(), 
+					((PluginTask) request).getActivationDate(), 
 					null, new Date(), null, false);
 		} catch (JsonGenerationException e) {
 			e.printStackTrace();
@@ -215,8 +147,7 @@ public class TaskService {
 						logger.error(e.getMessage(), e);
 					}
 					
-					FileServerConf fileServerConf=selectedPlugin.isUsesFileTransfer() 
-							? configService.getFileServerConf(uid.toLowerCase()) : null;
+					FileServerConf fileServerConf=request.getPlugin().isUsesFileTransfer() ? configService.getFileServerConf(uid.toLowerCase()) : null;
 					 // uid=jid
 					message= new ExecuteTaskMessageImpl(taskJsonString, uid, new Date(), fileServerConf);
 					
@@ -237,11 +168,8 @@ public class TaskService {
 				commandService.addCommandExecution(execution);
 			}
 		}
-		
-		
 		return responseFactoryService.createResponse(RestResponseStatus.OK,"Task Basarı ile Gonderildi.");
 	}
-
 	
 	public String buildKey(String pluginName, String pluginVersion, String commandId) {
 		StringBuilder key = new StringBuilder();

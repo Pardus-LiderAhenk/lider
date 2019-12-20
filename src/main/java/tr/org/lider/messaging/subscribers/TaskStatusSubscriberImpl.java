@@ -59,7 +59,7 @@ public class TaskStatusSubscriberImpl implements ITaskStatusSubscriber {
 	public void messageReceived(ITaskStatusMessage message) {
 
 		if (message != null) {
-			logger.debug("Task status subscriber received message from {}", message.getFrom());
+			logger.info("Task status subscriber received message from {}", message.getFrom());
 			String jid = message.getFrom().split("@")[0];
 
 			String mailSubject = null;

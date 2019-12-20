@@ -98,7 +98,7 @@ public class LdapController {
 	}
 	
 	@RequestMapping(value = "/getAhenks", method = { RequestMethod.POST })
-	public String getAhenks(HttpServletRequest request,Model model, @RequestBody LdapEntry[] selectedEntryArr) {
+	public List<LdapEntry> getAhenks(HttpServletRequest request,Model model, @RequestBody LdapEntry[] selectedEntryArr) {
 		
 		List<LdapEntry> ahenkList=new ArrayList<>();
 		
@@ -129,14 +129,14 @@ public class LdapController {
 			}
 		}
 		
-		ObjectMapper mapper = new ObjectMapper();
-		String ret = null;
-		try {
-			ret = mapper.writeValueAsString(ahenkList);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		return ret;
+//		ObjectMapper mapper = new ObjectMapper();
+//		String ret = null;
+//		try {
+//			ret = mapper.writeValueAsString(ahenkList);
+//		} catch (JsonProcessingException e) {
+//			e.printStackTrace();
+//		}
+		return ahenkList;
 	}
 	
 	@RequestMapping(value = "/getOnlineAhenks", method = { RequestMethod.POST })

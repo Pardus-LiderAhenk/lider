@@ -1,6 +1,9 @@
 package tr.org.lider.entities;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,11 +14,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import tr.org.lider.ldap.DNType;
+import tr.org.lider.ldap.LdapEntry;
 
 @Entity
 @Table(name = "c_plugin_task")
 public class PluginTask implements Serializable {
-		
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", unique = true, nullable = false)
@@ -31,12 +38,37 @@ public class PluginTask implements Serializable {
 	private String description;
 	
 	
+	@Column(name = "commandId")
+	private String commandId;
+	
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "plugin_id", nullable = false)
 	private PluginImpl plugin; // unidirectional
 	
 	@Column(name = "state")
 	private int state;
+	
+	@Transient
+	private DNType dnType;
+	
+	@Transient
+	private List<String> dnList;
+	
+	
+	@Transient
+	private List<LdapEntry> entryList;
+	
+	
+	@Transient
+	private String cronExpression;
+	
+	
+	@Transient
+	private Map<String, Object> parameterMap;
+	
+	@Transient
+	private Date activationDate;
 
 	public Long getId() {
 		return id;
@@ -94,6 +126,62 @@ public class PluginTask implements Serializable {
 	        e.printStackTrace();
 	    }
 	    return null;
+	}
+
+	public Map<String, Object> getParameterMap() {
+		return parameterMap;
+	}
+
+	public void setParameterMap(Map<String, Object> parameterMap) {
+		this.parameterMap = parameterMap;
+	}
+	
+	public String getCommandId() {
+		return commandId;
+	}
+
+	public void setCommandId(String commandId) {
+		this.commandId = commandId;
+	}
+
+	public DNType getDnType() {
+		return dnType;
+	}
+
+	public void setDnType(DNType dnType) {
+		this.dnType = dnType;
+	}
+
+	public List<String> getDnList() {
+		return dnList;
+	}
+
+	public void setDnList(List<String> dnList) {
+		this.dnList = dnList;
+	}
+
+	public String getCronExpression() {
+		return cronExpression;
+	}
+
+	public void setCronExpression(String cronExpression) {
+		this.cronExpression = cronExpression;
+	}
+
+	public List<LdapEntry> getEntryList() {
+		return entryList;
+	}
+
+	public void setEntryList(List<LdapEntry> entryList) {
+		this.entryList = entryList;
+	}
+
+	public Date getActivationDate() {
+		return activationDate;
+	}
+
+	public void setActivationDate(Date activationDate) {
+		this.activationDate = activationDate;
 	}
 	
 	

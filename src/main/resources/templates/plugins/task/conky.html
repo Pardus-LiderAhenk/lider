@@ -72,8 +72,8 @@
 				    	
 				    	  
 				    	var res = jQuery.parseJSON(result);
-				    	console.log(res);
-				    	alert(res);
+				    	console.log("rest response")
+				    	console.log(res)
 				        /* $('#closePage').click(); */
 				      },
 				      error: function(result) {
@@ -105,6 +105,7 @@
 				    return true;
 				}
 				$('#closePage').click(function(e){
+					alert("conky")
 					connection.deleteHandler(ref);
 				});
 	</script>

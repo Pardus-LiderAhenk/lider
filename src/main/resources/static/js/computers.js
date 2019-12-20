@@ -10,6 +10,8 @@ connection.addHandler(onPresence2, null, "presence");
 
 var selectedEntries = []; 
 
+var selectedPluginTask;
+
 //creating pluginTask Table on the page
 loadPluginTaskTable();
 
@@ -146,8 +148,8 @@ function loadPluginTaskTable() {
 		            html += '<td>' + entry.name + '</td>';
 		            html += '<td>' + entry.description + '</td>';
 		            html += '<td>' + entry.plugin.name + '</td>';
-		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" data-toggle="modal" data-target="#pluginHtmpPageModal" data-id="' + entry.id + '" data-page="'
-		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <img class="img-responsive" src="img/LiderAhenk-task.png" title="Lider MYS" alt="Lider MYS" />  </button>  </td>';
+		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" title="Görev Gönder" data-toggle="modal" data-target="#pluginHtmpPageModal" data-id="' + entry.id + '" data-page="'
+		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <i class="fa fa-tasks fa-w-20"> </i> </button>  </td>';
 		        
 		       		 
 		            html += '</tr>';
@@ -169,9 +171,19 @@ function loadPluginTaskTable() {
 							+ '&page=' + page + '&description=' + description,
 					dataType : 'text',
 					success : function(data) {
+						
+						for (var m = 0; m < pluginTaskList.length; m++) {
+						 	// get a row.
+				          	var pluginT = pluginTaskList[m];
+				          
+					          if(page==pluginT.page){
+					        	  selectedPluginTask=pluginT;
+					          }
+						} 
 						$('#pluginHtmpPageModal').modal('show');
 						$('#pluginHtmpPageModalLabel').html(name);
 						$('#pluginPageRender').html(data);
+						
 					}
 				});
 			});
@@ -218,8 +230,6 @@ function onPresence2(presence)
 
 
 function loadComputersTree(data){
-	
-	
 	
 	 var source =
 	  {
@@ -399,10 +409,9 @@ function loadComputersTree(data){
 	$('#addSelectedEntry2Box').on('click',function() {
 			 
 							var checkedRows = $("#treegrid").jqxTreeGrid('getCheckedRows');
-							console.log(checkedRows)
 							var checkedEntryArray=[]
 							
-							 for (var i = 0; i < checkedRows.length; i++) {
+							for (var i = 0; i < checkedRows.length; i++) {
 						          // get a row.
 						          var rowData = checkedRows[i];
 						         
@@ -414,7 +423,7 @@ function loadComputersTree(data){
 						        			  type: rowData.type,
 						        			  uid: rowData.uid
 						        			  });
-						      }
+						    }
 							
 							$.ajax({
 						        url : 'lider/ldap/getAhenks',
@@ -424,6 +433,9 @@ function loadComputersTree(data){
 						        contentType: "application/json",
 						        success : function(data) {
 						        	var ahenks = data;
+						        	
+						        	console.log("gelen ahenkler")
+						        	console.log(ahenks)
 						        	
 						        	for (var i = 0; i < ahenks.length; i++) {
 								          // get a row.

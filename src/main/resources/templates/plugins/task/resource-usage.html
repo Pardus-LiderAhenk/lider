@@ -64,15 +64,9 @@
 				<button type="submit" class="login-button" id="gonder"><i class="fa fa-chevron-right"></i></button>
 </div>
 <script type="text/javascript">
-				
-			var ref=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
-				
-			var pluginTask = '[[${pluginTask}]]';
-			pluginTask=pluginTask.replace(/&quot;/g,'"')
 			
-			var pluginTaskJson=jQuery.parseJSON(pluginTask);
-			console.log(pluginTaskJson)
-				
+			var ref=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
+			
 				$("#entrySize").html(selectedEntries.length);
 				
 				var dnlist=[]
@@ -80,18 +74,12 @@
 				for (var i = 0; i < selectedEntries.length; i++) {
 					dnlist.push(selectedEntries[i].distinguishedName);
 				}
+				selectedPluginTask.dnList=dnlist;
+				selectedPluginTask.parameterMap={"conkyMessage":"DENEEM","removeConkyMessage":false};
+				selectedPluginTask.entryList=selectedEntries;
+				selectedPluginTask.dnType="AHENK";
 				
-				var data = {
-						"pluginName":"resource-usage",
-						"dnList":dnlist,
-						"pluginVersion":"1.0.0",
-						"timestamp":1523430976357,
-						"dnType":"AHENK",
-						"parameterMap":{"conkyMessage":"DENEEM","removeConkyMessage":false},
-						"commandId":"RESOURCE_INFO_FETCHER"
-				}
-				
-				  var params = JSON.stringify(data); 
+				var params = JSON.stringify(selectedPluginTask); 
 
 				$("#gonder").click(function(e) {
 				    e.preventDefault();
@@ -99,19 +87,21 @@
 				    $.ajax({
 				      type: "POST",
 				      url: "/lider/task/execute",
-				       headers: {
+				      headers: {
 				          'Content-Type':'application/json',
 				          'username':'${sessionScope.userName}',
 				          'password':'${sessionScope.userPassword}',
 				      }, 
 				      data: params,
-				       contentType: "application/json",
+				      contentType: "application/json",
 				      dataType: "json",
 				      converters: {
 				        'text json': true
 				      }, 
 				      success: function(result) {
 				    	var res = jQuery.parseJSON(result);
+				    	console.log("rest response")
+				    	console.log(res)
 				        /* $('#closePage').click(); */
 				      },
 				      error: function(result) {
@@ -119,8 +109,6 @@
 				      }
 				    });
 				  }); 
-				
-				
 				
 				function resourceUsageListener(msg) {
 				    var to = msg.getAttribute('to');
@@ -148,7 +136,6 @@
 				    	console.log(xmppResponse.commandClsId)
 				    	
 						if(xmppResponse.commandClsId == "RESOURCE_INFO_FETCHER"){					    	
-							alert("ok")
 							$("#plugin-result").html(xmppResponse.result.responseMessage);
 							$("#plugin-result2").html(xmppResponse.result.responseDataStr);
 						}
@@ -158,6 +145,8 @@
 				    return true;
 				}
 				$('#closePage').click(function(e){
+					$('#pluginHtmpPageModal').modal('hide');
+					alert("resource info")
 					connection.deleteHandler(ref);
 				});
 	</script>

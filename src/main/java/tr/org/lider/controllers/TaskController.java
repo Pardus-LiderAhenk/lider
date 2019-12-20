@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import tr.org.lider.entities.PluginTask;
 import tr.org.lider.services.TaskService;
 import tr.org.lider.utils.ControllerUtils;
 import tr.org.lider.utils.IRestResponse;
@@ -31,15 +32,15 @@ public class TaskController {
 	public TaskService taskService;
 	
 	@RequestMapping(value = "/execute", method = { RequestMethod.POST })
-	public IRestResponse executeTask(@RequestBody String requestBody, HttpServletRequest request)
+	public IRestResponse executeTask(@RequestBody PluginTask requestBody, HttpServletRequest request)
 			throws UnsupportedEncodingException {
-		String requestBodyDecoded = ControllerUtils.decodeRequestBody(requestBody);
 		
+		System.out.println(requestBody);
+//		String requestBodyDecoded = ControllerUtils.decodeRequestBody(requestBody);
 		
-		logger.info("Request received. URL: '/lider/task/execute' Body: {}", requestBodyDecoded.length() 
-				> ControllerUtils.MAX_LOG_SIZE ? requestBodyDecoded.substring(0, ControllerUtils.MAX_LOG_SIZE) : requestBodyDecoded);
+		logger.info("Request received. URL: '/lider/task/execute' Body: {}", requestBody);
 		
-		IRestResponse restResponse = taskService.execute(requestBodyDecoded);
+		IRestResponse restResponse = taskService.execute(requestBody);
 		
 		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
 		

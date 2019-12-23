@@ -11,9 +11,17 @@
 	<!-- <span id="entrySize"> </span>  -->	
 	<!-- <hr> -->
 	<div class="login-form-1">
+	
+	
+	<button type="submit" class="login-button" id="gonder"><i class="pe-7s-refresh-2"></i></button>
+	<hr>
 					<div class="login-group">
 						<div class="form-group">
-							<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
+						
+						<div class="row">
+						<div class="col-lg-3">  
+						
+						<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
 							<tbody>
 								<!-- Platform Bilgileri -->
 							    <tr>
@@ -43,6 +51,18 @@
 							      <td>Faz</td>
 							      <td id=phase></td> 
 							    </tr>
+							    
+							  </tbody>
+							</table>
+						
+						
+						
+						</div>
+						<div class="col-lg-3"> 
+					
+							
+							<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
+							<tbody>
 								
 								<!-- İçlemci Bilgileri -->
 							    <tr>
@@ -64,7 +84,18 @@
 							      <td>Beklenen Frekans</td>
 							      <td id="cpu_advertised"></td> 
 							    </tr>
+	</tbody>
+							</table>
 	
+	
+							
+						 </div>
+						 
+						 
+						 <div class="col-lg-3"> 
+						 
+						 <table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
+							<tbody>
 								<!-- Bellek Bilgileri -->
 							    <tr>
 							     <th class="col-md-12" colspan="2">Bellek Bilgisi</th>
@@ -78,29 +109,41 @@
 							      <td id="usage_memory"></td>
 							    </tr>
 							    
-								<!--  Disk Bilgileri -->
-							    <tr>
-							     <th class="col-md-12" colspan="2">Disk Bilgisi</th>
-							    </tr>
-							  <tbody>
-							    <tr>
-							      <td>Bölüm İsmi</td>
-							      <td id="device"></td>
-							    </tr>
-							    <tr>
-							      <td>Toplam Disk</td>
-							      <td id="total_disk"></td>
-							    </tr>
-							    <tr>
-							      <td>Kullanılan</td>
-							      <td id="usage_disk"></td> 
-							    </tr>
-							  </tbody>
-							</table>
-							<div id="plugin-result">Sonuç</div>
+								</tbody>
+									</table>
+						</div>
+									<div class="col-lg-3">
+									<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
+									<tbody>
+										<!--  Disk Bilgileri -->
+									    <tr>
+									     <th class="col-md-12" colspan="2">Disk Bilgisi</th>
+									    </tr>
+									  <tbody>
+									    <tr>
+									      <td>Bölüm İsmi</td>
+									      <td id="device"></td>
+									    </tr>
+									    <tr>
+									      <td>Toplam Disk</td>
+									      <td id="total_disk"></td>
+									    </tr>
+									    <tr>
+									      <td>Kullanılan</td>
+									      <td id="usage_disk"></td> 
+									    </tr>
+									  </tbody>
+									</table>
+						 
+						 </div>
+						 
+						  </div>
+						  
+						  <div class="progress"></div>
+							<div id="plugin-result"></div>
 						</div>
 					</div>
-				<button type="submit" class="login-button" id="gonder"><i class="fa fa-chevron-right"></i></button>
+				
 	</div>
 	<script type="text/javascript">
 			
@@ -124,6 +167,31 @@
 				    e.preventDefault();
 				   
 				    $.ajax({
+				    	xhr: function () {
+				            var xhr = new window.XMLHttpRequest();
+				            xhr.upload.addEventListener("progress", function (evt) {
+				                if (evt.lengthComputable) {
+				                    var percentComplete = evt.loaded / evt.total;
+				                    console.log(percentComplete);
+				                    $('.progress').css({
+				                        width: percentComplete * 100 + '%'
+				                    });
+				                    if (percentComplete === 1) {
+				                        $('.progress').addClass('hide');
+				                    }
+				                }
+				            }, false);
+				            xhr.addEventListener("progress", function (evt) {
+				                if (evt.lengthComputable) {
+				                    var percentComplete = evt.loaded / evt.total;
+				                    console.log(percentComplete);
+				                    $('.progress').css({
+				                        width: percentComplete * 100 + '%'
+				                    });
+				                }
+				            }, false);
+				            return xhr;
+				        },
 				      type: "POST",
 				      url: "/lider/task/execute",
 				      headers: {
@@ -141,6 +209,11 @@
 				    	var res = jQuery.parseJSON(result);
 				    	console.log("rest response")
 				    	console.log(res)
+				    	if(res.status=="OK"){
+				    		
+				    		$("#plugin-result").html("Görev başarı ile gönderildi.. Cevap Bekleniyor..");
+				    	}
+				    	
 				        /* $('#closePage').click(); */
 				      },
 				      error: function(result) {
@@ -192,7 +265,6 @@
 				}
 				$('#closePage').click(function(e){
 					$('#pluginHtmpPageModal').modal('hide');
-					alert("resource info")
 					connection.deleteHandler(ref);
 				});
 	</script>

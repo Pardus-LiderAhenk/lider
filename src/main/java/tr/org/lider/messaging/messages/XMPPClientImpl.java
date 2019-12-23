@@ -79,6 +79,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tr.org.lider.messaging.subscribers.IPresenceSubscriber;
+import tr.org.lider.messaging.subscribers.IRegistrationSubscriber;
 import tr.org.lider.messaging.subscribers.ITaskStatusSubscriber;
 import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.messaging.listeners.OnlineRosterListener;
@@ -95,6 +96,7 @@ import tr.org.lider.messaging.listeners.PacketListener;
 //import tr.org.liderahenk.lider.messaging.listeners.ScriptResultListener;
 //import tr.org.liderahenk.lider.messaging.listeners.TaskStatusListener;
 //import tr.org.liderahenk.lider.messaging.listeners.UserSessionListener;
+import tr.org.lider.messaging.listeners.RegistrationListener;
 
 
 /**
@@ -130,7 +132,7 @@ public class XMPPClientImpl {
 	private TaskStatusListener taskStatusListener;
 
 //	private PolicyStatusListener policyStatusListener;
-//	private RegistrationListener registrationListener;
+	private RegistrationListener registrationListener;
 //	private UserSessionListener userSessionListener;
 //	private MissingPluginListener missingPluginListener;
 //	private PolicyListener policyListener;
@@ -153,7 +155,9 @@ public class XMPPClientImpl {
 //	private IMissingPluginSubscriber missingPluginSubscriber;
 //	private IPolicySubscriber policySubscriber;
 //	private IRequestAgreementSubscriber reqAggrementSubscriber;
-//	private IRegistrationSubscriber registrationSubscriber;
+	
+	@Autowired
+	private IRegistrationSubscriber registrationSubscriber;
 //	private IAgreementStatusSubscriber aggrementStatusSubscriber;
 //	private IScriptResultSubscriber scriptResultSubscriber;
 //	private IRegistrationSubscriber defaultRegistrationSubscriber;
@@ -334,11 +338,11 @@ public class XMPPClientImpl {
 //		policyStatusListener.setSubscribers(policyStatusSubscribers);
 //		connection.addAsyncStanzaListener(policyStatusListener, policyStatusListener);
 //		
-//		// Hook listener for registration messages
-//		registrationListener = new RegistrationListener(this);
-//		registrationListener.setSubscriber(registrationSubscriber);
-//		registrationListener.setDefaultSubcriber(defaultRegistrationSubscriber);
-//		connection.addAsyncStanzaListener(registrationListener, registrationListener);
+		// Hook listener for registration messages
+		registrationListener = new RegistrationListener(this);
+		registrationListener.setSubscriber(registrationSubscriber);
+		//registrationListener.setDefaultSubcriber(defaultRegistrationSubscriber);
+		connection.addAsyncStanzaListener(registrationListener, registrationListener);
 //		
 //		// Hook listener for user session messages
 //		userSessionListener = new UserSessionListener();

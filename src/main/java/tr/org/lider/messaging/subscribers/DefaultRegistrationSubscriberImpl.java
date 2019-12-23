@@ -193,7 +193,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 					}
 				}
 				
-				agentDao.save(agent);
+				agentDao.save(agentImpl);
 			}
 			
 			
@@ -220,7 +220,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			}
 			
 			respMessage.setLdapServer(configurationService.getLdapServer());
-			respMessage.setLdapBaseDn(configurationService.getUserLdapBaseDn());
+			respMessage.setLdapBaseDn(configurationService.getLdapRootDn());
 			respMessage.setLdapVersion(LDAP_VERSION);
 			respMessage.setLdapUserDn(dn);
 			

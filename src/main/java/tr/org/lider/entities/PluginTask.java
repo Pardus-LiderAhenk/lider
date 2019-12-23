@@ -41,6 +41,9 @@ public class PluginTask implements Serializable {
 	@Column(name = "commandId")
 	private String commandId;
 	
+	@Column(name = "is_multi")
+	private Boolean isMulti;
+	
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "plugin_id", nullable = false)
@@ -182,6 +185,14 @@ public class PluginTask implements Serializable {
 
 	public void setActivationDate(Date activationDate) {
 		this.activationDate = activationDate;
+	}
+
+	public Boolean getIsMulti() {
+		return isMulti;
+	}
+
+	public void setIsMulti(Boolean isMulti) {
+		this.isMulti = isMulti;
 	}
 	
 	

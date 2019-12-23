@@ -153,7 +153,7 @@ public class ConfigurationService{
 
 		// Agent configuration
 		agentLdapBaseDn = env.getProperty("agent.ldap.base.dn");
-		agentLdapIdAttribute = env.getProperty("agent.ldap.id.attribute ");
+		agentLdapIdAttribute = env.getProperty("agent.ldap.id.attribute");
 		agentLdapJidAttribute = env.getProperty("agent.ldap.jid.attribute");
 		agentLdapObjectClasses = env.getProperty("agent.ldap.object.classes");
 

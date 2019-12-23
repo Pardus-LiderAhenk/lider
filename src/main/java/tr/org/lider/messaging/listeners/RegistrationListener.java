@@ -36,6 +36,7 @@ import tr.org.lider.messaging.messages.ILiderMessage;
 import tr.org.lider.messaging.messages.RegistrationMessageImpl;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.messaging.subscribers.DefaultRegistrationSubscriberImpl;
+import tr.org.lider.messaging.subscribers.IRegistrationSubscriber;
 
 
 /**
@@ -46,6 +47,8 @@ import tr.org.lider.messaging.subscribers.DefaultRegistrationSubscriberImpl;
  *
  */
 public class RegistrationListener implements StanzaListener, StanzaFilter {
+
+	
 
 	private static Logger logger = LoggerFactory.getLogger(RegistrationListener.class);
 
@@ -58,7 +61,7 @@ public class RegistrationListener implements StanzaListener, StanzaFilter {
 	/**
 	 * Message subscriber
 	 */
-	private DefaultRegistrationSubscriberImpl subscriber;
+	private IRegistrationSubscriber subscriber;
 
 	// TODO IMPROVEMENT: separate xmpp client into two classes. one for
 	// configuration/setup, other for functional methods
@@ -128,6 +131,14 @@ public class RegistrationListener implements StanzaListener, StanzaFilter {
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+	
+	public IRegistrationSubscriber getSubscriber() {
+		return subscriber;
+	}
+
+	public void setSubscriber(IRegistrationSubscriber subscriber) {
+		this.subscriber = subscriber;
 	}
 
 	

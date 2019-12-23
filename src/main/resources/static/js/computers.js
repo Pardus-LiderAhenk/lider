@@ -13,7 +13,7 @@ var selectedEntries = [];
 var selectedPluginTask;
 
 //creating pluginTask Table on the page
-loadPluginTaskTable();
+
 
 var html = '<table class="table table-striped table-bordered " id="rosterListTable">';
 for (var i = 0; i < rosterList.length ; i++) {
@@ -73,10 +73,7 @@ $(document).ready(function(){
 
 	$('#selectedEntryListModal').on('show.bs.modal', function(event) {
 		showSelectedEntries();
-		
 	});
-	
-
 	
 	$('#textTaskSearch').keyup(function() {
 		
@@ -108,7 +105,12 @@ function showSelectedEntries() {
 
 	$('#selectedEntriesHolder').html(html);
 	
-	
+	if(selectedEntries.length>1){
+		 loadPluginTaskTable(true);
+	}
+	else{
+	loadPluginTaskTable(false);
+	}
 	
 	$('.removeEntry').on('click', function(e) {
 		var uid = $(this).data("id");
@@ -116,10 +118,16 @@ function showSelectedEntries() {
 		selectedEntries.splice($.inArray(uid, selectedEntries), 1);
 		showSelectedEntries();
 		$('#selectedEntrySize').html(selectedEntries.length);
+		if(selectedEntries.length>1){
+			 loadPluginTaskTable(true);
+		}
+		else{
+		loadPluginTaskTable(false);
+		}
 	});
 }
 	
-function loadPluginTaskTable() {
+function loadPluginTaskTable(isMulti) {
 	
 	$.ajax({
 		type : 'POST',
@@ -144,48 +152,72 @@ function loadPluginTaskTable() {
 		    	
 		    	var entry=pluginTaskList[i];
 		    	
+		    	if(isMulti==entry.isMulti){
+		    	
 		        	html += '<tr>';
 		            html += '<td>' + entry.name + '</td>';
 		            html += '<td>' + entry.description + '</td>';
-		            html += '<td>' + entry.plugin.name + '</td>';
+		            html += '<td>' + entry.isMulti + '</td>';
 		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" title="Görev Gönder" data-toggle="modal" data-target="#pluginHtmpPageModal" data-id="' + entry.id + '" data-page="'
 		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <i class="fa fa-tasks fa-w-20"> </i> </button>  </td>';
 		        
 		       		 
 		            html += '</tr>';
+		    	}
+		    	else if(isMulti== false){
+		    		html += '<tr>';
+		            html += '<td>' + entry.name + '</td>';
+		            html += '<td>' + entry.description + '</td>';
+		            html += '<td>' + entry.isMulti + '</td>';
+		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" title="Görev Gönder" data-toggle="modal" data-target="#pluginHtmpPageModal" data-id="' + entry.id + '" data-page="'
+		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <i class="fa fa-tasks fa-w-20"> </i> </button>  </td>';
+		        
+		       		 
+		            html += '</tr>';
+		    	}
+		    	
 		    }
 		    html += '</table>';
 		    
 		    $('#pluginListTableDiv').html(html);
 		    
 		    $('.sendTaskButton').click(function() {
-				var page = $(this).data('page');
-				var name = $(this).data('name');
-				var description = $(this).data('description');
-				var id = $(this).data('id');
 				
-				$.ajax({
-					type : 'POST',
-					url : 'getPluginTaskHtmlPage',
-					data : 'id=' + id + '&name=' + name
-							+ '&page=' + page + '&description=' + description,
-					dataType : 'text',
-					success : function(data) {
+				if(selectedEntries.length ==0){
+					 $.notify("Lütfen Görev Gönderilecek İstemci Seçiniz.","warn");
+					 
+					 $('#pluginHtmpPageModalLabel').html("Lütfen Görev Gönderilecek İstemci Seçiniz.");
+				}
+				else{
+				
+						var page = $(this).data('page');
+						var name = $(this).data('name');
+						var description = $(this).data('description');
+						var id = $(this).data('id');
 						
-						for (var m = 0; m < pluginTaskList.length; m++) {
-						 	// get a row.
-				          	var pluginT = pluginTaskList[m];
-				          
-					          if(page==pluginT.page){
-					        	  selectedPluginTask=pluginT;
-					          }
-						} 
-						$('#pluginHtmpPageModal').modal('show');
-						$('#pluginHtmpPageModalLabel').html(name);
-						$('#pluginPageRender').html(data);
-						
-					}
-				});
+						$.ajax({
+							type : 'POST',
+							url : 'getPluginTaskHtmlPage',
+							data : 'id=' + id + '&name=' + name
+									+ '&page=' + page + '&description=' + description,
+							dataType : 'text',
+							success : function(data) {
+								
+								for (var m = 0; m < pluginTaskList.length; m++) {
+								 	// get a row.
+						          	var pluginT = pluginTaskList[m];
+						          
+							          if(page==pluginT.page){
+							        	  selectedPluginTask=pluginT;
+							          }
+								} 
+								$('#pluginHtmpPageModalLabel').html(name);
+								$('#pluginPageRender').html(data);
+								
+							}
+						});
+				
+				}
 			});
 		}
 	});
@@ -451,6 +483,15 @@ function loadComputersTree(data){
 								          }
 								      }
 									 $('#selectedEntrySize').html(selectedEntries.length);
+									 
+									 if(selectedEntries.length>1){
+										 loadPluginTaskTable(true);
+									}
+									else{
+									loadPluginTaskTable(false);
+									}
+									 
+									
 								}
 						    });
 		});
@@ -497,6 +538,13 @@ function loadComputersTree(data){
 					}
 				}
 				$('#selectedEntrySize').html(selectedEntries.length);
+				
+				if(selectedEntries.length>1){
+					 loadPluginTaskTable(true);
+				}
+				else{
+				loadPluginTaskTable(false);
+				}
 			}
 		});
 	});

@@ -25,6 +25,22 @@
 <link rel="stylesheet" type="text/css" href="css/main_b.css" />
 <link rel="stylesheet" id="css-font-awesome" href="css/agent.info.css" />
 
+
+<style type="text/css">
+
+.progress {
+    display: block;
+    text-align: center;
+    width: 0;
+    height: 3px;
+    background: red;
+    transition: width .3s;
+}
+.progress.hide {
+    opacity: 0;
+    transition: opacity 1.3s;
+}
+</style>
 <script type="text/javascript" src="assets/scripts/main.js"></script>
 <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
@@ -224,7 +240,7 @@
 	<div class="modal fade" id="pluginHtmpPageModal" tabindex="0"
 		role="dialog" aria-labelledby="pluginHtmpPageModalLabel"
 		aria-hidden="true">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog modal-xl" role="document">
 			<div class="modal-content">
 
 				<div class="modal-header">
@@ -241,7 +257,7 @@
 
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary"
+					<button type="button" class="btn btn-primary" id="closePage"
 						data-dismiss="modal">Kapat</button>
 				</div>
 
@@ -282,7 +298,7 @@
 
 <!-- Selected ldap entries searching and ahenks listing here-->
 	<div id="selectedEntryListModal" class="modal fade">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog " role="document">
 			<div class="modal-content">
 
 				<div class="modal-header">

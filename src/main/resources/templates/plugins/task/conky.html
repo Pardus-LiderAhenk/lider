@@ -25,13 +25,11 @@
 						<div id="plugin-result">result</div>
 					</div>
 				</div>
-				<button type="submit" class="login-button" id="gonder"><i class="fa fa-chevron-right"></i></button>
+				
 </div>
 <script type="text/javascript">
 				
 				var ref=connection.addHandler(conkylistener, null, 'message', null, null,  null); 
-				
-				$("#entrySize").html(selectedEntries.length);
 				
 				var dnlist=[]
 				
@@ -39,17 +37,22 @@
 					dnlist.push(selectedEntries[i].distinguishedName);
 				}
 				
-				var data = {
-						"pluginName":"conky",
-						"dnList":dnlist,
-						"pluginVersion":"1.0.0",
-						"timestamp":1523430976357,
-						"dnType":"AHENK",
-						"parameterMap":{"conkyMessage":"DENEEM","removeConkyMessage":false},
-						"commandId":"EXECUTE_CONKY"
-				}
+// 				var data = {
+// 						"pluginName":"conky",
+// 						"dnList":dnlist,
+// 						"pluginVersion":"1.0.0",
+// 						"timestamp":1523430976357,
+// 						"dnType":"AHENK",
+// 						"parameterMap":{"conkyMessage":"DENEEM","removeConkyMessage":false},
+// 						"commandId":"EXECUTE_CONKY"
+// 				}
 				
-				var params = JSON.stringify(data); 
+				selectedPluginTask.dnList=dnlist;
+				selectedPluginTask.parameterMap={};
+				selectedPluginTask.entryList=selectedEntries;
+				selectedPluginTask.dnType="AHENK";
+				
+				var params = JSON.stringify(selectedPluginTask); 
 
 				$("#gonder").click(function(e) {
 				    e.preventDefault();
@@ -59,8 +62,6 @@
 				      url: "/lider/task/execute",
 				       headers: {
 				          'Content-Type':'application/json',
-				          'username':'${sessionScope.userName}',
-				          'password':'${sessionScope.userPassword}',
 				      }, 
 				      data: params,
 				      contentType: "application/json",
@@ -69,12 +70,13 @@
 				        'text json': true
 				      }, 
 				      success: function(result) {
-				    	
 				    	  
 				    	var res = jQuery.parseJSON(result);
 				    	console.log("rest response")
 				    	console.log(res)
-				        /* $('#closePage').click(); */
+						if(res.status=="OK"){
+				    		$("#plugin-result").html("Görev başarı ile gönderildi.. Cevap Bekleniyor..");
+				    	}
 				      },
 				      error: function(result) {
 				        alert(result);
@@ -92,12 +94,9 @@
 					
 				    	var body = elems[0];
 				    	var data=Strophe.xmlunescape(Strophe.getText(body));
-				    	var ee=JSON.parse(data);
-						if(ee.commandClsId == "EXECUTE_CONKY"){
-							console.log("gorev sonucu:");
-							console.log(ee.result);
-							console.log(ee.result.responseMessage);
-							$("#plugin-result").html(ee.result.responseMessage);
+				    	var xmppResponse=JSON.parse(data);
+						if(xmppResponse.commandClsId == "EXECUTE_CONKY"){
+							$("#plugin-result").html(xmppResponse.result.responseMessage);
 						}
 						/* connection.deleteHandler(ref); */
 				    }

@@ -194,7 +194,7 @@ function onPresence(presence)
         	//OFFLine state
             if (ptype === 'unavailable') {
                
-            	$.notify(name+" offline..",{className: 'error',position:"right bottom"}  );
+            	$.notify(name+" offline..",{className: 'error',position:"left bottom"}  );
             	
             	for (var i =0; i < onlineEntryList.length; i++){
             		
@@ -205,7 +205,7 @@ function onPresence(presence)
             	}
             	
             } else {
-            	$.notify(name+" online..", {className: 'success',position:"right bottom"}  );
+            	$.notify(name+" online..", {className: 'success',position:"left bottom"}  );
             	
             	 var isExist=false;
             	

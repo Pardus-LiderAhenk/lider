@@ -41,14 +41,13 @@ table {
   padding : 5px 15px;
 }
 
-
-#logger {
-    position: fixed;
-    bottom: 10px;
-    left:1px; 
-    width: 200px; 
-    height: 300px; 
-    background-color: white;
-    overflow-y:auto;
-    font-size: 11px;
-}
+/* #logger { */
+/*     position: fixed; */
+/*     bottom: 10px; */
+/*     left:1px;  */
+/*     width: 200px;  */
+/*     height: 300px;  */
+/*     background-color: white; */
+/*     overflow-y:auto; */
+/*     font-size: 11px; */
+/* } */

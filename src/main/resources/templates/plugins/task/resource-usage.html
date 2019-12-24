@@ -5,11 +5,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<!-- <h6 th:text="${pluginTask.description}"> </h6>  -->
-	<!-- <hr> -->
-	<!-- <span th:text="${pluginTask.description}"> </span>  -->
-	<!-- <span id="entrySize"> </span>  -->	
-	<!-- <hr> -->
 	<div class="login-form-1">
 <!-- 	<button type="submit" class="login-button" id="gonder"><i class="pe-7s-play"></i>Çalıştır</button> -->
 					<div class="login-group">
@@ -143,36 +138,8 @@
 				selectedPluginTask.dnType="AHENK";
 
 				var params = JSON.stringify(selectedPluginTask);
-
-				$("#gonder").click(function(e) {
-				    e.preventDefault();
-				   
-				    $.ajax({
-				    	xhr: function () {
-				            var xhr = new window.XMLHttpRequest();
-				            xhr.upload.addEventListener("progress", function (evt) {
-				                if (evt.lengthComputable) {
-				                    var percentComplete = evt.loaded / evt.total;
-				                    console.log(percentComplete);
-				                    $('.progress').css({
-				                        width: percentComplete * 100 + '%'
-				                    });
-				                    if (percentComplete === 1) {
-				                        $('.progress').addClass('hide');
-				                    }
-				                }
-				            }, false);
-				            xhr.addEventListener("progress", function (evt) {
-				                if (evt.lengthComputable) {
-				                    var percentComplete = evt.loaded / evt.total;
-				                    console.log(percentComplete);
-				                    $('.progress').css({
-				                        width: percentComplete * 100 + '%'
-				                    });
-				                }
-				            }, false);
-				            return xhr;
-				        },
+				
+				$.ajax({
 				      type: "POST",
 				      url: "/lider/task/execute",
 				      headers: {
@@ -192,16 +159,14 @@
 				    	console.log(res)
 				    	if(res.status=="OK"){
 				    		
-				    		$("#plugin-result").html("Görev başarı ile gönderildi.. Cevap Bekleniyor..");
-				    	}
-				    	
+				    		$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
+				    	}   	
 				        /* $('#closePage').click(); */
 				      },
 				      error: function(result) {
 				        alert(result);
 				      }
 				    });
-				  }); 
 				
 				function resourceUsageListener(msg) {
 				    var to = msg.getAttribute('to');
@@ -251,3 +216,10 @@
 	</script>
 </body>
 </html>
+
+
+
+
+
+
+

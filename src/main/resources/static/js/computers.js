@@ -14,6 +14,7 @@ var selectedPluginTask;
 
 //creating pluginTask Table on the page
 
+loadPluginTaskTable(false);
 
 var html = '<table class="table table-striped table-bordered " id="rosterListTable">';
 for (var i = 0; i < rosterList.length ; i++) {
@@ -322,7 +323,8 @@ function loadComputersTree(data){
 	 // create jqxTreeGrid.
 	 $("#treegrid").jqxTreeGrid(
 	 {
-	     source: dataAdapter,
+		 width: '100%',
+         source: dataAdapter,
 	     altRows: true,
 	     sortable: true,
 	     theme :"Orange",
@@ -369,7 +371,7 @@ function loadComputersTree(data){
 	   	},
 	     
 	     columns: [
-	       { text: "Bilgisayarlar", align: "center", dataField: "name", cellclassname: cellclass, width: 450 }
+	       { text: "Bilgisayarlar", align: "center", dataField: "name", cellclassname: cellclass ,width: '100%'}
 	     
 	     ]
 	 });
@@ -523,7 +525,7 @@ function loadComputersTree(data){
 			contentType: "application/json",
 			success : function(data) {
 				var ahenks = data;
-				
+				selectedEntries=[]
 				for (var i = 0; i < ahenks.length; i++) {
 					// get a row.
 					var rowData = ahenks[i];
@@ -537,6 +539,7 @@ function loadComputersTree(data){
 						}
 					}
 				}
+				
 				$('#selectedEntrySize').html(selectedEntries.length);
 				
 				if(selectedEntries.length>1){

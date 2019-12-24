@@ -79,19 +79,19 @@ function onConnect(status)
  	/* log('Strophe is connecting.'); */
      } 
    else if (status == Strophe.Status.CONNFAIL) {
- 	log('Mesajlaşma Servisine bağlanırken hata oluştu.');
+ 	log('Mesajlaşma Servisine bağlanırken hata oluştu.',"ERROR");
  	$('#connect').get(0).value = 'connect';
  	  
      } 
    else if (status == Strophe.Status.DISCONNECTING) {
- 	log('Mesajlaşma Servisi bağlantısı koparılmaktadır.');
+ 	log('Mesajlaşma Servisi bağlantısı koparılmaktadır.',"INFO");
      } 
    else if (status == Strophe.Status.DISCONNECTED) {
- 	log('Mesajlaşma Servisi bağlantısı koparıldı.');
+ 	log('Mesajlaşma Servisi bağlantısı koparıldı.',"INFO");
  	$('#connect').get(0).value = 'connect';
      } 
    else if (status == Strophe.Status.CONNECTED) {
- 	log('Mesajlaşma Servisi ile bağlantı kuruldu.');
+ 	log('Mesajlaşma Servisi ile bağlantı kuruldu.',"SUCCESS");
 // 	log('Mesaj göndermek için kullanıcı adım: ' + connection.jid );
 
  	connection.addHandler(onMessage, null, 'message', null, null,  null); 
@@ -195,7 +195,7 @@ function onPresence(presence)
             if (ptype === 'unavailable') {
                
             	$.notify(name+" offline..",{className: 'error',position:"left bottom"}  );
-            	
+            	log(name+" çevrimdışı oldu.","INFO");
             	for (var i =0; i < onlineEntryList.length; i++){
             		
             		   if (onlineEntryList[i].from === from && onlineEntryList[i].source === source) {
@@ -206,6 +206,8 @@ function onPresence(presence)
             	
             } else {
             	$.notify(name+" online..", {className: 'success',position:"left bottom"}  );
+            	
+            	log(name+" çevrimiçi oldu.","INFO");
             	
             	 var isExist=false;
             	
@@ -254,16 +256,40 @@ function onMessage(msg) {
     	var data=Strophe.xmlunescape(Strophe.getText(body));
 	
     	var ret=JSON.parse(data);
-		log('Data : ' +   ret.type );
-		log('from : ' +   from );
+    	
+    	console.log(ret)
+    	
+    	log("Gelen Cevap : "+ret.result.responseMessage, "INFO");
 		var reply = $msg({to: from, from: to, type: 'chat'}).cnode(Strophe.copyElement(body));
 		connection.send(reply.tree());
-		
     }
     return true;
 }
-function log(msg) 
+
+function log(msg, type) 
 {
-    $('#logger').append(document.createTextNode("* "+msg));
+	if(type == null){
+		type="INFO"
+	}
+	var d = new Date();
+	var h = d.getHours();
+	var n = d.getMinutes();
+	
+	var message=h+":"+n+" | ["+ type + "] | "+msg;
+	var color="blue";
+	  
+	if(type=="SUCCESS"){
+		  color="green";
+    }
+	else if(type=="ERROR"){
+		  color="red";
+	}
+	  else if(type=="INFO"){
+		  color="blue";
+	}
+	
+	$('#logger').append('<span style="color: ' + color + '">'+message+'</span>');    
+	$('#logger').append('<br>');    
+    
 }
 

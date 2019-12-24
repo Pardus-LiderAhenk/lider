@@ -13,13 +13,13 @@
 	<div class="login-form-1">
 	
 	
-	<button type="submit" class="login-button" id="gonder"><i class="pe-7s-refresh-2"></i></button>
+	<button type="submit" class="login-button" id="gonder"><i class="pe-7s-play"></i>Çalıştır</button>
 	<hr>
 					<div class="login-group">
 						<div class="form-group">
 						
 						<div class="row">
-						<div class="col-lg-3">  
+						<div class="col-lg-6">  
 						
 						<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
 							<tbody>
@@ -44,101 +44,88 @@
 							      <td id="machine"></td> 
 							    </tr>
 							    <tr>
-							      <td>İşlemci</td>
-							      <td id="processor"></td> 
-							    </tr>
-							    <tr>
 							      <td>Faz</td>
 							      <td id=phase></td> 
-							    </tr>
-							    
+							    </tr>						    
 							  </tbody>
 							</table>
-						
-						
-						
 						</div>
-						<div class="col-lg-3"> 
-					
-							
+						<div class="col-lg-6"> 
+						
+							<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
+								<tbody>
+								
+									<!-- İçlemci Bilgileri -->
+								    <tr>
+								     <th class="col-md-12" colspan="2">İşlemci Bilgisi</th>
+								    </tr>
+								    <tr>
+								      <td>İşlemci</td>
+								      <td id="processor"></td> 
+								    </tr>
+								    <tr>
+								      <td>Fiziksel Çekirdek Sayısı</td>
+								      <td id="physical_core_count"></td>
+								    </tr>
+								    <tr>
+								      <td>Mantıksal Çekirdek Sayısı</td>
+								      <td id="logical_core_count"></td>
+								    </tr>
+								    <tr>
+								      <td>Gerçek Frekans</td>
+								      <td id="cpu_actual"></td> 
+								    </tr>
+								    <tr>
+								      <td>Beklenen Frekans</td>
+								      <td id="cpu_advertised"></td> 
+								    </tr>
+							</tbody>
+						</table>				
+					 </div>
+						 
+						 <div class="col-lg-6"> 	 
+							 <table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
+								<tbody>
+									<!-- Bellek Bilgileri -->
+								    <tr>
+								     <th class="col-md-12" colspan="2">Bellek Bilgisi</th>
+								    </tr>
+								    <tr>
+								      <td>Toplam Bellek</td>
+								      <td id="total_memory"></td>
+								    </tr>
+								    <tr>
+								      <td>Bellek Kullanımı</td>
+								      <td id="usage_memory"></td>
+								    </tr>
+								</tbody>
+							</table>
+						</div>
+						
+						<div class="col-lg-6">
 							<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
 							<tbody>
-								
-								<!-- İçlemci Bilgileri -->
+								<!--  Disk Bilgileri -->
 							    <tr>
-							     <th class="col-md-12" colspan="2">İşlemci Bilgisi</th>
+							     <th class="col-md-12" colspan="2">Disk Bilgisi</th>
+							    </tr>
+							  <tbody>
+							    <tr>
+							      <td>Bölüm İsmi</td>
+							      <td id="device"></td>
 							    </tr>
 							    <tr>
-							      <td>Fiziksel Çekirdek Sayısı</td>
-							      <td id="physical_core_count"></td>
+							      <td>Toplam Disk</td>
+							      <td id="total_disk"></td>
 							    </tr>
 							    <tr>
-							      <td>Mantıksal Çekirdek Sayısı</td>
-							      <td id="logical_core_count"></td>
+							      <td>Kullanılan</td>
+							      <td id="usage_disk"></td> 
 							    </tr>
-							    <tr>
-							      <td>Gerçek Frekans</td>
-							      <td id="cpu_actual"></td> 
-							    </tr>
-							    <tr>
-							      <td>Beklenen Frekans</td>
-							      <td id="cpu_advertised"></td> 
-							    </tr>
-	</tbody>
+							  </tbody>
 							</table>
-	
-	
-							
 						 </div>
-						 
-						 
-						 <div class="col-lg-3"> 
-						 
-						 <table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-							<tbody>
-								<!-- Bellek Bilgileri -->
-							    <tr>
-							     <th class="col-md-12" colspan="2">Bellek Bilgisi</th>
-							    </tr>
-							    <tr>
-							      <td>Toplam Bellek</td>
-							      <td id="total_memory"></td>
-							    </tr>
-							    <tr>
-							      <td>Bellek Kullanımı</td>
-							      <td id="usage_memory"></td>
-							    </tr>
-							    
-								</tbody>
-									</table>
-						</div>
-									<div class="col-lg-3">
-									<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-									<tbody>
-										<!--  Disk Bilgileri -->
-									    <tr>
-									     <th class="col-md-12" colspan="2">Disk Bilgisi</th>
-									    </tr>
-									  <tbody>
-									    <tr>
-									      <td>Bölüm İsmi</td>
-									      <td id="device"></td>
-									    </tr>
-									    <tr>
-									      <td>Toplam Disk</td>
-									      <td id="total_disk"></td>
-									    </tr>
-									    <tr>
-									      <td>Kullanılan</td>
-									      <td id="usage_disk"></td> 
-									    </tr>
-									  </tbody>
-									</table>
-						 
-						 </div>
-						 
-						  </div>
-						  
+					</div>
 						  <div class="progress"></div>
 							<div id="plugin-result"></div>
 						</div>

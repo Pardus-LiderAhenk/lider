@@ -144,44 +144,34 @@ function loadPluginTaskTable(isMulti) {
 			html += '<tr>';
 			html += '<th style="width: 40%">Görev Adı</th>';
 			html += '<th style="width: 25%" >Açıklama</th>';
-			html += '<th style="width: 25%" >Plugin</th>';
 			html += '<th style="width: 10%"></th>';
 			html += '</tr>';
 			html += '</thead>';
 		    
 		    for (var i = 0; i < pluginTaskList.length ; i++) {
 		    	
-		    	var entry=pluginTaskList[i];
-		    	
+		    	var entry=pluginTaskList[i];	
 		    	if(isMulti==entry.isMulti){
-		    	
+
 		        	html += '<tr>';
 		            html += '<td>' + entry.name + '</td>';
 		            html += '<td>' + entry.description + '</td>';
-		            html += '<td>' + entry.isMulti + '</td>';
 		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" title="Görev Gönder" data-toggle="modal" data-target="#pluginHtmpPageModal" data-id="' + entry.id + '" data-page="'
 		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <i class="fa fa-tasks fa-w-20"> </i> </button>  </td>';
-		        
-		       		 
 		            html += '</tr>';
 		    	}
 		    	else if(isMulti== false){
 		    		html += '<tr>';
 		            html += '<td>' + entry.name + '</td>';
 		            html += '<td>' + entry.description + '</td>';
-		            html += '<td>' + entry.isMulti + '</td>';
 		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" title="Görev Gönder" data-toggle="modal" data-target="#pluginHtmpPageModal" data-id="' + entry.id + '" data-page="'
-		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <i class="fa fa-tasks fa-w-20"> </i> </button>  </td>';
-		        
-		       		 
+		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <i class="fa fa-tasks fa-w-20"> </i> </button>  </td>';		 
 		            html += '</tr>';
-		    	}
-		    	
+		    	}	    	
 		    }
 		    html += '</table>';
 		    
-		    $('#pluginListTableDiv').html(html);
-		    
+		    $('#pluginListTableDiv').html(html);		    
 		    $('.sendTaskButton').click(function() {
 				
 				if(selectedEntries.length ==0){

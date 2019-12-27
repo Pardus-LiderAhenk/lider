@@ -25,6 +25,7 @@ $(document).ready(function(){
 			           { name: "hasSubordinates", type: "string" },
 			           { name: "expandedUser", type: "string" },
 			           { name: "entryUUID", type: "string" },
+			           { name: "attributes", type: "array" },
 			           { name: "childEntries", type: "array" }
 			      ],
 			      hierarchy:
@@ -52,7 +53,9 @@ $(document).ready(function(){
 			 // create jqxTreeGrid.
 			 $("#treeGridUser").jqxTreeGrid(
 			 {
-			     source: dataAdapter,
+				 theme :"Orange",
+				 width: '100%',
+				 source: dataAdapter,
 			     altRows: true,
 			     sortable: true,
 			     columnsResize: true,
@@ -86,117 +89,49 @@ $(document).ready(function(){
 			    	 
 			     },
 			     
-rendered: function () {
-			    	 
-//			    	 if ($(".editButtons").length > 0) {
-//
-//	                        $(".editButtons").jqxButton(); 
-//	                        
-//	                        var editClick = function (event) {
-//	                            var target = $(event.target);
-//	                            // get button's value.
-//	                            var value = target.val();
-//	                            // get clicked row.
-//	                            var rowKey = event.target.getAttribute('data-row');
-//	                            $("#treeGridUser").jqxTreeGrid('expandRow',rowKey);
-//	                            
-//	                            if (value == "+") {
-//	                            	
-//	                                var row = $("#treeGridUser").jqxTreeGrid('getRow', rowKey);
-//	                                console.log("row ");
-//	                                console.log(row);
-//	                                $.ajax({
-//	            						type : 'POST',
-//	            						url : 'getOuDetails',
-//	            						data : 'uid=' + row.distinguishedName + '&type=' + row.type
-//	            								+ '&name=' + row.name + '&parent=' + row.parent,
-//	            						dataType : 'text',
-//	            						success : function(ldapResult) {
-//	            							var childs = jQuery.parseJSON(ldapResult);
-//	            							 console.log(childs)
-//	            							  var nameList=[];
-//	            							
-//		            							if(row.records){
-//				            								for (var m = 0; m < row.records.length; m++) {
-//													    	  var childRow = row.records[m];
-//																nameList.push(childRow.name);      
-//														  }
-//													      
-//													      
-//													      for (var k = 0; k < nameList.length; k++) {
-//																          // get a row.
-//																          var childRowname = nameList[k];
-//																          $("#treeGridUser").jqxTreeGrid('deleteRow', name); 
-//														 }  
-//		            								}
-//	            							  
-//	            							var onlineCount=0;
-//	            							for (var m = 0; m < childs.length; m++) {
-//	            						          // get a row.
-//	            						          var childRow = childs[m];
-//	            						          
-//	            						          if(childRow.online){
-//	            						        	  onlineCount++;
-//	            						          }
-//	            						          $("#treeGridUser").jqxTreeGrid('addRow', childRow.name, childRow, 'last', row.name);
-//	            						          /* $("#treegrid").jqxTreeGrid('expandRow', childRow.name); */
-//	            						          
-//	            						      } 
-//	            							 
-//	            						}
-//	            			
-//	            					});
-//	                                
-//	                            }
-//	                            else {
-//	                               alert("none");
-//	                            }
-//
-//	                        }
-//
-//	                        $(".editButtons").on('click', function (event) {
-//	                            editClick(event);
-//
-//	                        });
-//	                 
-//	                       
-//	                }
+			     rendered: function () {
 			   	},
 			     columns: [
-			       { text: "Kullanıcılar", align: "center", dataField: "name", width: 320 }
-//			       { text: '',  cellsAlign: 'center', align: "center", columnType: 'none',
-//		    	  		cellsRenderer: function (row, column, value) {
-//                         var rowww = $("#treeGridUser").jqxTreeGrid('getRow', row);
-//              
-//                         if(rowww.expanded == "FALSE" && rowww.hasSubordinates=="TRUE"){
-//                         
-//                       	  return "<button id="+rowww.entryUUID +" data-row='" + row + "' class='editButtons'  style='border:none; outline: none;  background-color: Transparent; background-repeat:no-repeat;' >+</button>";
-//                         
-//                         }
-//                     }, 
-//                     width: 30
-//		     	}
-			     
+			       { text: "Kullanıcılar", align: "center", dataField: "name", width: '100%' }
 			     ]
 			 });
 			 
 				$('#treeGridUser').on('rowDoubleClick', function (event) {
 			        var args = event.args;
-			        var row = args.row;
-			       
-			        var name= row.name;
-			        alert(name);
-			        var entries = jQuery.parseJSON(data);
-			        alert(entries.length);
+				       var row = args.row;
+				       var name= row.name;
 			        
-			        for (var i = 0; i < entries.length; i++) {
-				          // get a row.
-				          var entry = entries[i];
-				          if(entry.name==name){
-				        	  
-				        	  console.log(entry.attributes);
-				          }
-				      }
+			        var row = $("#treeGridUser").jqxTreeGrid('getRow', name);
+			       
+			        var html = '<table class="table table-striped table-bordered " id="attrTable">';
+					html += '<thead>';
+					html += '<tr>';
+					html += '<th style="width: 40%"></th>';
+					html += '<th style="width: 60%"></th>';
+					html += '</tr>';
+					html += '</thead>';
+			        
+			        for (key in row.attributes) {
+			            if (row.attributes.hasOwnProperty(key)) {
+			                console.log(key + " = " + row.attributes[key]);
+			                
+			                html += '<tr>';
+				            html += '<td>' + key + '</td>';
+				            html += '<td>' + row.attributes[key] + '</td>';
+				            html += '</tr>';
+			            }
+			        } 
+			        html += '</table>';
+			        
+				    $('#selectedDnInfo').html("Seçili Kayıt: "+name);
+				    $('#ldapAttrInfoHolder').html(html);
+				    
+				    $('.nav-link').each(function(){               
+				    	  var $tweet = $(this);                    
+				    	  $tweet.removeClass('active');
+				    	});
+				    $('#tab-c-0').addClass('nav-link active');
+				    $('#tab-c-0').click();
 
 			    });
 				

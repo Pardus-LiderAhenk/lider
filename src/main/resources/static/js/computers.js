@@ -268,6 +268,7 @@ function loadComputersTree(data){
 	           { name: "distinguishedName", type: "string" },
 	           { name: "hasSubordinates", type: "string" },
 	           { name: "expandedUser", type: "string" },
+	           { name: "attributes", type: "array" },
 	           { name: "entryUUID", type: "string" },
 	           { name: "childEntries", type: "array" }
 	      ],
@@ -543,21 +544,41 @@ function loadComputersTree(data){
 	});
 	 
 		$('#treegrid').on('rowDoubleClick', function (event) {
-	        var args = event.args;
-	        var row = args.row;
-	       
-	        var name= row.name;
-	        alert(name);
-	        var entries = jQuery.parseJSON(data);
-	        alert(entries.length);
-	        
-	        for (var i = 0; i < entries.length; i++) {
-		          // get a row.
-		          var entry = entries[i];
-		          if(entry.name==name){
-		        	  console.log(entry.attributes);
-		          }
-		      }
+		       var args = event.args;
+		       var row = args.row;
+		       var name= row.name;
+		       var row = $("#treegrid").jqxTreeGrid('getRow', name);
+		        
+		       var html = '<table class="table table-striped table-bordered " id="attrTable">';
+				html += '<thead>';
+				html += '<tr>';
+				html += '<th style="width: 40%"></th>';
+				html += '<th style="width: 60%"></th>';
+				html += '</tr>';
+				html += '</thead>';
+		        
+		        for (key in row.attributes) {
+		            if (row.attributes.hasOwnProperty(key)) {
+		                console.log(key + " = " + row.attributes[key]);
+		                
+		                html += '<tr>';
+			            html += '<td>' + key + '</td>';
+			            html += '<td>' + row.attributes[key] + '</td>';
+			            html += '</tr>';
+		            }
+		        } 
+		        
+		        html += '</table>';
+		        
+			    $('#selectedDnInfo').html("Seçili Kayıt: "+name);
+			    $('#ldapAttrInfoHolder').html(html);
+			    
+			    $('.nav-link').each(function(){               
+			    	  var $tweet = $(this);                    
+			    	  $tweet.removeClass('active');
+			    	});
+			    $('#tab-c-4-info').addClass('nav-link active');
+			    $('#tab-c-4-info').click();
 
 	    });
 }

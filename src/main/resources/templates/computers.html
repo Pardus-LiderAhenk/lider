@@ -77,38 +77,50 @@
 			<div class="card-header card-header-tab-animation">
 				<ul class="nav nav-justified">
 					<li class="nav-item"><a role="tab" class="nav-link active"
-						id="tab-c-0" data-toggle="tab" href="#tab-animated-0"> <span>Görev
+						id="tab-c-0" data-toggle="tab" href="#tab-new-task"> <span>Görev
 								Gönder</span>
 					</a></li>
 					<li class="nav-item"><a role="tab" class="nav-link"
-						id="tab-c-1" data-toggle="tab" href="#tab-animated-1"> <span>Görev
+						id="tab-c-1" data-toggle="tab" href="#tab-task-history"> <span>Görev
 								Geçmişi</span>
 					</a></li>
 					<li class="nav-item"><a role="tab" class="nav-link"
-						id="tab-c-2" data-toggle="tab" href="#tab-animated-2"> <span>Açık
+						id="tab-c-2" data-toggle="tab" href="#tab-online-clients"> <span>Açık
 								İstemciler</span>
 					</a></li>
 					<li class="nav-item"><a role="tab" class="nav-link"
-						id="tab-c-3" data-toggle="tab" href="#tab-animated-3"> <span>Roster</span>
+						id="tab-c-3" data-toggle="tab" href="#tab-roster"> <span>Roster</span>
 					</a></li>
+					
+					<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab"
+											id="tab-c-4-info" href="#tab-entry-info"> <span>Kayıt Bilgisi</span>
+										</a>
+					</li>
 				</ul>
 
 			</div>
 			<div class="card-body">
 				<div class="tab-content">
-					<div class="tab-pane active" id="tab-animated-0" role="tabpanel">
+					<div class="tab-pane active" id="tab-new-task" role="tabpanel">
 						<p class="mb-0"></p>
-
 						<input type="text" class="form-control" id="textTaskSearch">
 						<div id="pluginListTableDiv"></div>
 					</div>
-					<div class="tab-pane" id="tab-animated-1" role="tabpanel">
-						<div id="onlineEntryListHolder"></div>
+					<div class="tab-pane" id="tab-task-history" role="tabpanel">
+						
 					</div>
-					<div class="tab-pane" id="tab-animated-2" role="tabpanel">
+					<div class="tab-pane" id="tab-online-clients" role="tabpanel">
+							<div id="onlineEntryListHolder"></div>
+						
 
-						<div id="rosterListHolder"></div>
-
+					</div>
+					<div class="tab-pane" id="tab-roster" role="tabpanel">
+							<div id="rosterListHolder"></div>
+					</div>
+					
+					<div class="tab-pane" id="tab-entry-info" role="tabpanel">
+							<h6 id="selectedDnInfo"></h6>
+							<div id="ldapAttrInfoHolder"></div>
 					</div>
 				</div>
 			</div>

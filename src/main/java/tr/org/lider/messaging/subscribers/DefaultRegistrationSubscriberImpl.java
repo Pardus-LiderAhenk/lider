@@ -31,6 +31,8 @@ import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import tr.org.lider.entities.AgentImpl;
@@ -75,6 +77,7 @@ import tr.org.lider.services.ConfigurationService;
  */
 
 @Component
+@ConditionalOnProperty(name = "registrationSubscriber.class", havingValue = "default")
 public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscriber {
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultRegistrationSubscriberImpl.class);
@@ -178,7 +181,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 				
 			} else {
 				// Create new agent database record
-				
+				logger.debug("Creating new agent record in database.");
 				AgentImpl agentImpl = new AgentImpl(null, jid, false, dn, message.getPassword(), 
 						message.getHostname(), 
 						message.getIpAddresses(),  

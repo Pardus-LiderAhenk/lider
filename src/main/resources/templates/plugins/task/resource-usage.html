@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/resource-usage.js"></script>
 </head>
 <body>
 	<div class="login-form-1">
@@ -10,210 +11,116 @@
 					<div class="login-group">
 						<div class="form-group">
 						<div class="row">
-						
-						<div class="col-lg-6">
-							<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-								<tbody>
-									<!-- Platform Bilgileri -->
-								    <tr>
-								     <th class="col-md-12" colspan="2">Platform Bilgileri</th>
-								    </tr>
-								    <tr>
-								      <td>Sistem</td>
-								      <td id=system></td>
-								    </tr>
-								    <tr>
-								      <td>Sürüm</td>
-								      <td id="release"></td>
-								    </tr>
-								    <tr>
-								      <td>Versiyon</td>
-								      <td id="version"></td> 
-								    </tr>
-								    <tr>
-								      <td>Makine</td>
-								      <td id="machine"></td> 
-								    </tr>
-								    <tr>
-								      <td>Faz</td>
-								      <td id=phase></td> 
-								    </tr>						    
-								  </tbody>
+							<div class="col-lg-6">
+								<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
+									<tbody>
+										<!-- Platform Bilgileri -->
+									    <tr>
+									     <th class="col-md-12" colspan="2">Platform Bilgileri</th>
+									    </tr>
+									    <tr>
+									      <td>Sistem</td>
+									      <td id=system></td>
+									    </tr>
+									    <tr>
+									      <td>Sürüm</td>
+									      <td id="release"></td>
+									    </tr>
+									    <tr>
+									      <td>Versiyon</td>
+									      <td id="version"></td> 
+									    </tr>
+									    <tr>
+									      <td>Makine</td>
+									      <td id="machine"></td> 
+									    </tr>
+									    <tr>
+									      <td>Faz</td>
+									      <td id=phase></td> 
+									    </tr>						    
+									  </tbody>
+									</table>
+							</div>
+							
+							<div class="col-lg-6">
+								<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
+									<tbody>
+										<!-- İçlemci Bilgileri -->
+									    <tr>
+									     <th class="col-md-12" colspan="2">İşlemci Bilgisi</th>
+									    </tr>
+									    <tr>
+									      <td>İşlemci</td>
+									      <td id="processor"></td> 
+									    </tr>
+									    <tr>
+									      <td>Fiziksel Çekirdek Sayısı</td>
+									      <td id="physical_core_count"></td>
+									    </tr>
+									    <tr>
+									      <td>Mantıksal Çekirdek Sayısı</td>
+									      <td id="logical_core_count"></td>
+									    </tr>
+									    <tr>
+									      <td>Gerçek Frekans</td>
+									      <td id="cpu_actual"></td> 
+									    </tr>
+									    <tr>
+									      <td>Beklenen Frekans</td>
+									      <td id="cpu_advertised"></td> 
+									    </tr>
+									</tbody>
+								</table>				
+							 </div>
+							 
+							 <div class="col-lg-6"> 	 
+								 <table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
+									<tbody>
+										<!-- Bellek Bilgileri -->
+									    <tr>
+									     <th class="col-md-12" colspan="2">Bellek Bilgisi</th>
+									    </tr>
+									    <tr>
+									      <td>Toplam Bellek</td>
+									      <td id="total_memory"></td>
+									    </tr>
+									    <tr>
+									      <td>Bellek Kullanımı</td>
+									      <td id="usage_memory"></td>
+									    </tr>
+									</tbody>
 								</table>
-						</div>
-						
-						<div class="col-lg-6">
-							<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-								<tbody>
-									<!-- İçlemci Bilgileri -->
-								    <tr>
-								     <th class="col-md-12" colspan="2">İşlemci Bilgisi</th>
-								    </tr>
-								    <tr>
-								      <td>İşlemci</td>
-								      <td id="processor"></td> 
-								    </tr>
-								    <tr>
-								      <td>Fiziksel Çekirdek Sayısı</td>
-								      <td id="physical_core_count"></td>
-								    </tr>
-								    <tr>
-								      <td>Mantıksal Çekirdek Sayısı</td>
-								      <td id="logical_core_count"></td>
-								    </tr>
-								    <tr>
-								      <td>Gerçek Frekans</td>
-								      <td id="cpu_actual"></td> 
-								    </tr>
-								    <tr>
-								      <td>Beklenen Frekans</td>
-								      <td id="cpu_advertised"></td> 
-								    </tr>
-							</tbody>
-						</table>				
-					 </div>
-						 
-						 <div class="col-lg-6"> 	 
-							 <table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-								<tbody>
-									<!-- Bellek Bilgileri -->
-								    <tr>
-								     <th class="col-md-12" colspan="2">Bellek Bilgisi</th>
-								    </tr>
-								    <tr>
-								      <td>Toplam Bellek</td>
-								      <td id="total_memory"></td>
-								    </tr>
-								    <tr>
-								      <td>Bellek Kullanımı</td>
-								      <td id="usage_memory"></td>
-								    </tr>
-								</tbody>
-							</table>
-						</div>
-						
-						<div class="col-lg-6">
-							<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-							<tbody>
-								<!--  Disk Bilgileri -->
-							    <tr>
-							     <th class="col-md-12" colspan="2">Disk Bilgisi</th>
-							    </tr>
-							    <tr>
-							      <td>Bölüm İsmi</td>
-							      <td id="device"></td>
-							    </tr>
-							    <tr>
-							      <td>Toplam Disk</td>
-							      <td id="total_disk"></td>
-							    </tr>
-							    <tr>
-							      <td>Kullanılan</td>
-							      <td id="usage_disk"></td> 
-							    </tr>
-							  </tbody>
+							</div>
+							
+							<div class="col-lg-6">
+								<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
+									<tbody>
+									<!--  Disk Bilgileri -->
+									    <tr>
+									     <th class="col-md-12" colspan="2">Disk Bilgisi</th>
+									    </tr>
+									    <tr>
+									      <td>Bölüm İsmi</td>
+									      <td id="device"></td>
+									    </tr>
+									    <tr>
+									      <td>Toplam Disk</td>
+									      <td id="total_disk"></td>
+									    </tr>
+									    <tr>
+									      <td>Kullanılan</td>
+									      <td id="usage_disk"></td> 
+									    </tr>
+								  </tbody>
 							</table>
 						 </div>
-					</div>
-					<div class="progress"></div>
-					<br>
-					<div id="plugin-result"></div>
+				</div>
+				<div class="progress"></div>
+				<br>
+				<div id="plugin-result"></div>
 			</div>
 		</div>			
 	</div>
-	<script type="text/javascript">
-			
-			var ref=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
-			
-				$("#entrySize").html(selectedEntries.length);
-				
-				var dnlist=[]
-				
-				for (var i = 0; i < selectedEntries.length; i++) {
-					dnlist.push(selectedEntries[i].distinguishedName);
-				}
-				selectedPluginTask.dnList=dnlist;
-				selectedPluginTask.parameterMap={};
-				selectedPluginTask.entryList=selectedEntries;
-				selectedPluginTask.dnType="AHENK";
-
-				var params = JSON.stringify(selectedPluginTask);
-				
-				$.ajax({
-				      type: "POST",
-				      url: "/lider/task/execute",
-				      headers: {
-				          'Content-Type':'application/json',
-				          'username':'${sessionScope.userName}',
-				          'password':'${sessionScope.userPassword}',
-				      }, 
-				      data: params,
-				      contentType: "application/json",
-				      dataType: "json",
-				      converters: {
-				        'text json': true
-				      }, 
-				      success: function(result) {
-				    	var res = jQuery.parseJSON(result);
-				    	console.log("rest response")
-				    	console.log(res)
-				    	if(res.status=="OK"){
-				    		
-				    		$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
-				    	}   	
-				        /* $('#closePage').click(); */
-				      },
-				      error: function(result) {
-				        alert(result);
-				      }
-				    });
-				
-				function resourceUsageListener(msg) {
-				    var to = msg.getAttribute('to');
-				    var from = msg.getAttribute('from');
-				    var type = msg.getAttribute('type');
-				    var elems = msg.getElementsByTagName('body');
-				    
-				    if (type == "chat" && elems.length > 0) {
-				    	var body = elems[0];
-				    	var data=Strophe.xmlunescape(Strophe.getText(body));
-				    	var xmppResponse=JSON.parse(data);
-				    	console.log(xmppResponse.commandClsId)
-				    	var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-						if(xmppResponse.commandClsId == "RESOURCE_INFO_FETCHER"){					    	
-							var phase = "";
-							if(arrg["Phase"]){
-								phase = arrg["Phase"]
-							}
-							else {
-								phase = "Faz Bilgisi Alınamadı"
-							}
-							$("#plugin-result").html(xmppResponse.result.responseMessage);
-							$("#system").html(arrg["System"]);
-							$("#release").html(arrg["Release"]);
-							$("#version").html(arrg["Version"]);
-							$("#machine").html(arrg["Machine"]);
-							$("#processor").html(arrg["Processor"]);
-							$("#phase").html(phase);
-							$("#physical_core_count").html(arrg["CPU Physical Core Count"]);
-							$("#logical_core_count").html(arrg["CPU Logical Core Count"]);
-							$("#cpu_advertised").html(arrg["CPU Advertised Hz"]);
-							$("#cpu_actual").html(arrg["CPU Actual Hz"]);
-							$("#total_memory").html(arrg["Total Memory"]+" MB");
-							$("#usage_memory").html(arrg["Usage"]+" MB");
-							$("#device").html(arrg["Device"]);
-							$("#total_disk").html(arrg["Total Disc"]+" MB");
-							$("#usage_disk").html(arrg["Usage Disc"]+" MB");
-						}						 
-				    }
-				    // we must return true to keep the handler alive. returning false would remove it after it finishes.
-				    return true;
-				}
-				$('#closePage').click(function(e){
-					$('#pluginHtmpPageModal').modal('hide');
-					connection.deleteHandler(ref);
-				});
-	</script>
 </body>
 </html>
 

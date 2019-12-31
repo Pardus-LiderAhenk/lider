@@ -1174,6 +1174,34 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 		return rolesDn;
 	}
+	
+	//gets tree of groups of names which just has agent members
+	public LdapEntry getLdapAgentGroupsTree() {
+		List<LdapEntry> allGorups = null;
+		LdapEntry groupDn= new LdapEntry("Gruplar",null,DNType.ORGANIZATIONAL_UNIT);
+		try {
+			String globalUserOu =  configurationService.getLdapRootDn(); 
+			allGorups = findSubEntries(globalUserOu, "(&(objectClass=groupOfNames)(liderGroupType=AHENK))",new String[] { "*" }, SearchScope.SUBTREE);
+			groupDn.setChildEntries(allGorups);
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return groupDn;
+	}
+	
+	//gets tree of groups of names which just has user members
+	public LdapEntry getLdapUserGroupsTree() {
+		List<LdapEntry> allGorups = null;
+		LdapEntry groupDn= new LdapEntry("Gruplar",null,DNType.ORGANIZATIONAL_UNIT);
+		try {
+			String globalUserOu =  configurationService.getLdapRootDn(); 
+			allGorups = findSubEntries(globalUserOu, "(&(objectClass=groupOfNames)(liderGroupType=USER))",new String[] { "*" }, SearchScope.SUBTREE);
+			groupDn.setChildEntries(allGorups);
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return groupDn;
+	}
 
 	private static final int SALT_LENGTH = 4;
 

@@ -882,6 +882,14 @@ public class XMPPClientImpl {
 	 * 
 	 * @return
 	 */
+	public List<String> getOfflineUsers() {
+		return onlineRosterListener.getOfflineUsers();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
 	public XMPPTCPConnection getConnection() {
 		return connection;
 	}

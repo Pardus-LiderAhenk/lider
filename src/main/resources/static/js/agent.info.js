@@ -14,7 +14,12 @@ var selectedPage = 1;
 var selectedPageSize = 10;
 var searchText = "";
 var agentList = "";
+var status = "all";
+var checkedAgentIDList = [];
+
 $(document).ready(function(){
+	$("#createAgentGroup").hide();
+	$("#newGroupInput").hide();
 	//load table data when page opened
 	//1st page and selectedPageSize amount will be retrieved from service
 	reloadTable(1, selectedPageSize);
@@ -25,9 +30,163 @@ $(document).ready(function(){
 	$("#pageSize").change(function(){
 		selectedPageSize = $("#pageSize option:selected").val();
 		selectedPage = 1;
-		reloadTable(1, selectedPageSize);
+		if(searchText != "") {
+			reloadTable(1, selectedPageSize, $("#searchByAgentProperty option:selected").val(), searchText);
+		} else {
+			reloadTable(1, selectedPageSize);
+		}
+	});
+	
+	$("#selectAll").change(function () {
+	    $("input:checkbox").prop('checked', $(this).prop("checked"));
+	    checkedAgentListChange();
 	});
 });
+
+function agentDetailClicked(agentID) {
+	//first tab and its content will be opened default
+	$('#tab-session-url').removeClass('active');
+	$('#tab-detail-url').addClass('active');
+	$('#tab-session').removeClass('active');
+	$('#tab-detail').addClass('active');
+	$("#agentDetailTable").empty();
+	var params = {
+		    "agentID" : agentID
+		};
+	$.ajax({ 
+	    type: 'POST', 
+	    url: 'agents/detail',
+	    data: params,
+	    dataType: 'json',
+	    success: function (data) {
+	    	if(data.properties.length > 0) {
+	        	var year = data.createDate.substring(0,4);
+	        	var month = data.createDate.substring(5,7);
+	        	var day = data.createDate.substring(8,10);
+	        	var time = data.createDate.substring(11,16);
+				var createDate = day + '.' + month + '.' + year + ' ' + time;
+				
+				var modifyDate = "";
+				if(data.modifyDate != null) {
+		        	year = data.modifyDate.substring(0,4);
+		        	month = data.modifyDate.substring(5,7);
+		        	day = data.modifyDate.substring(8,10);
+		        	time = data.modifyDate.substring(11,16);
+					modifyDate = day + '.' + month + '.' + year + ' ' + time;
+				}
+
+				var os = "";
+				var brand = "";
+				var memory = 0;
+				var disk = 0;
+				var osDistributionVersion = "";
+				
+				var tableElement = '<tr><th style="width: 30%">ID</th><td style="width: 70%">' + data.id + '</td></tr>';
+				tableElement += '<tr><th>Bilgisayar Adı</th><td>' + data.hostname + '</td></tr>';
+				tableElement += '<tr><th>JID</th><td>' + data.jid + '</td></tr>';
+				tableElement += '<tr><th>DN</th><td>' + data.dn + '</td></tr>';
+				tableElement += '<tr><th>IP Adresleri</th><td>' + data.ipAddresses + '</td></tr>'
+				tableElement += '<tr><th>MAC Adresleri</th><td>' + data.macAddresses + '</td></tr>';
+				tableElement += '<tr><th>Oluşturulma Tarihi</th><td>' + createDate + '</td></tr>';
+				tableElement += '<tr><th>Düzenlenme Tarihi</th><td>' + modifyDate + '</td></tr>';
+				
+				$.each(data.properties, function(index, element) {
+					tableElement += '<tr><th>' + element.propertyName + '</th><td>' + element.propertyValue + '</td></tr>';
+		        });
+				$('#agentDetailTable').append(tableElement);
+				
+				//append user sessions table
+				$("#userSessionsTable").empty();
+				tableElement = "";
+				if(data.sessions.length > 0) {
+					$.each(data.sessions, function(index, element) {
+			        	year = element.createDate.substring(0,4);
+			        	month = element.createDate.substring(5,7);
+			        	day = element.createDate.substring(8,10);
+			        	time = element.createDate.substring(11,19);
+						createDate = day + '.' + month + '.' + year + ' ' + time;
+						
+						tableElement += '<tr><td>' + element.username + '</td>';
+						tableElement += '<td>' + element.sessionEvent + '</td>';
+						tableElement += '<td>' + createDate + '</td></tr>';
+			        });
+					$('#userSessionsTable').append(tableElement);
+					
+				}
+				else {
+					$("#userSessionsTable").empty();
+					var trElement = '<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>';
+					$('#userSessionsTable').append(trElement);
+				}
+	    	}
+	    	else {
+	    		$.notify("Error occured while retrieving agent data.", "error");
+	    	}
+	    },
+	    error: function (data, errorThrown) {
+	    	var trElement = '<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>';
+	    	$("#userSessionsTable").empty();
+	    	$("#agentDetailTable").empty();
+			$('#userSessionsTable').append(trElement);
+			$('#agentDetailTable').append(trElement);
+	    }
+	});
+}
+
+function checkedAgentListChange() {
+	checkedAgentIDList = [];
+	$('input:checkbox[name=agent]').each(function() {    
+	    if($(this).is(':checked')) {
+	    	checkedAgentIDList.push($(this).val());
+	    }
+	});
+	if(checkedAgentIDList.length > 0) {
+		$("#createAgentGroup").show();
+	}
+	else{
+		$("#createAgentGroup").hide();
+	}
+}
+
+function agentChecked() {
+	checkedAgentListChange();
+}
+
+function createAgentGroup() {
+	if(checkedAgentIDList.length > 0) {
+		$.ajax({ 
+		    type: 'GET', 
+		    url: '/lider/ldap/agentGroups',
+		    dataType: 'json',
+		    success: function (data) { 
+		    	//choose existing radio button when modal is reopened
+		    	$("#rbExistingGroup").prop("checked", true);
+		    	$("#rbNewGroup").prop("checked", false);
+		    	$('#groupName').val('');
+				$("#newGroupInput").hide();
+				$("#existingGroupInput").show();
+				$("#submitGroup").attr("onclick","addAgentsToExistingGroup()");
+				$('#submitGroup').text('İstemcileri Seçili Gruba Ekle');
+				
+		    	if(data.length > 0) {
+		    		var options = $("#selectGroupDN");
+		    		options.empty();
+		    		$.each(data, function(index, element) {
+			    		if(element.childEntries.length > 0) {
+			    			$('#selectGroupDN').append('<option value="">Grup Seç</option>');
+			    			$.each(element.childEntries, function(j, child) {
+			    				options.append(new Option(child.name, child.distinguishedName));
+			    			});
+			    		}
+		    		});
+		    	}
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Something went wrong.", "error");
+		    }
+		});
+	}
+}
 
 function exportToExcel () {
 	var sheetData = [];
@@ -127,6 +286,7 @@ function exportToExcel () {
 function exportButtonClicked() {
 	saveAs(new Blob([exportToExcel()],{type:"application/octet-stream"}), 'Agent Detail.xlsx');
 }
+
 function pagingClicked(pNum) {
 	//user can not click same page number
 	//gets new page from backend, refreshes the table and append new data
@@ -136,106 +296,30 @@ function pagingClicked(pNum) {
 		} else {
 			reloadTable(pNum, selectedPageSize);
 		}
-		
 	}
-}
-
-function agentDetail(agentID) {
-	$("#agentDetailTable").empty();
-	$.ajax({ 
-	    type: 'GET', 
-	    url: 'agents/' + agentID, 
-	    dataType: 'json',
-	    success: function (data) {
-	    	if(data.properties.length > 0) {
-	        	var year = data.createDate.substring(0,4);
-	        	var month = data.createDate.substring(5,7);
-	        	var day = data.createDate.substring(8,10);
-	        	var time = data.createDate.substring(11,16);
-				var createDate = day + '.' + month + '.' + year + ' ' + time;
-				
-				var modifyDate = "";
-				if(data.modifyDate != null) {
-		        	year = data.modifyDate.substring(0,4);
-		        	month = data.modifyDate.substring(5,7);
-		        	day = data.modifyDate.substring(8,10);
-		        	time = data.modifyDate.substring(11,16);
-					modifyDate = day + '.' + month + '.' + year + ' ' + time;
-				}
-
-				var os = "";
-				var brand = "";
-				var memory = 0;
-				var disk = 0;
-				var osDistributionVersion = "";
-				
-				var tableElement = '<tr><th style="width: 30%">ID</th><td style="width: 70%">' + data.id + '</td></tr>';
-				tableElement += '<tr><th>Bilgisayar Adı</th><td>' + data.hostname + '</td></tr>';
-				tableElement += '<tr><th>JID</th><td>' + data.jid + '</td></tr>';
-				tableElement += '<tr><th>DN</th><td>' + data.dn + '</td></tr>';
-				tableElement += '<tr><th>IP Adresleri</th><td>' + data.ipAddresses + '</td></tr>'
-				tableElement += '<tr><th>MAC Adresleri</th><td>' + data.macAddresses + '</td></tr>';
-				tableElement += '<tr><th>Oluşturulma Tarihi</th><td>' + createDate + '</td></tr>';
-				tableElement += '<tr><th>Düzenlenme Tarihi</th><td>' + modifyDate + '</td></tr>';
-				
-				$.each(data.properties, function(index, element) {
-					tableElement += '<tr><th>' + element.propertyName + '</th><td>' + element.propertyValue + '</td></tr>';
-		        });
-				$('#agentDetailTable').append(tableElement);
-				
-				//append user sessions table
-				$("#userSessionsTable").empty();
-				tableElement = "";
-				if(data.sessions.length > 0) {
-					$.each(data.sessions, function(index, element) {
-			        	year = element.createDate.substring(0,4);
-			        	month = element.createDate.substring(5,7);
-			        	day = element.createDate.substring(8,10);
-			        	time = element.createDate.substring(11,19);
-						createDate = day + '.' + month + '.' + year + ' ' + time;
-						
-						tableElement += '<tr><td>' + element.username + '</td>';
-						tableElement += '<td>' + element.sessionEvent + '</td>';
-						tableElement += '<td>' + createDate + '</td></tr>';
-			        });
-					$('#userSessionsTable').append(tableElement);
-					
-				}
-				else {
-					$("#userSessionsTable").empty();
-					var trElement = '<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>';
-					$('#userSessionsTable').append(trElement);
-				}
-				$('#agentDetailModal').modal('show'); 
-	    	}
-	    	else {
-	    		alert("Error while retrieving agent data.");
-	    	}
-	    },
-	    error: function (data, errorThrown) {
-	    	var trElement = '<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>';
-	    	$("#userSessionsTable").empty();
-	    	$("#agentDetailTable").empty();
-			$('#userSessionsTable').append(trElement);
-			$('#agentDetailTable').append(trElement);
-	    }
-	});
 }
 
 //retrieves agents pageable object from service with given page number and pageSize
 function reloadTable(pNumber, pSize, field, text) {
-	var urlString = "";
+	//start number of agent order in table
+	var order = (pNumber-1)*pSize + 1;
+	var params = {
+		    "pageNumber" : pNumber,
+		    "pageSize": pSize,
+		    "status" : status
+		};
 	if (field && text) {
-		urlString = 'agents/' + pNumber +'/' + pSize + '/' + field + '/' + text
-	} else {
-		urlString = 'agents/' + pNumber +'/' + pSize
+		params['field'] = field;
+		params['text'] = text;
 	}
 	$.ajax({ 
-	    type: 'GET', 
-	    url: urlString,
+	    type: 'POST',
+	    url: 'agents/',
 	    dataType: 'json',
+	    data: params,
 	    success: function (data) { 
 	    	if(data.content.length > 0) {
+	    		$("#selectAll").prop("checked", false);
 	    		agentList = data.content;
 		    	pagination(pNumber,data.totalPages);
 		    	selectedPage = pNumber;
@@ -271,12 +355,18 @@ function reloadTable(pNumber, pSize, field, text) {
 						}
 					});
 		        	var trElement = '<tr>'
-		        				  + '<td  class="text-center">' + element.id + '</td>';
+		        				  + '<td><span class="cb-agent-info">'
+								  + '<input onclick="agentChecked()" type="checkbox" name="agent" value="' + element.dn +'">'
+								  + '<label for="checkbox1"></label>'
+								  + '</span>'
+								  + '</td>'
+		        				  + '<td  class="text-center">' + order + '</td>';
+		        	order++;
 		        	if(os == "Windows") {
-		        		trElement +=  '<td><a href="#"><img  src="img/windows.png" class="avatar" alt="Avatar"><span>' + element.hostname + '</span></a></td>';
+		        		trElement +=  '<td><img  src="img/windows.png" class="avatar" alt="Avatar"><span>' + element.hostname + '</span></td>';
 		        	}
 		        	else {
-		        		trElement += '<td><a href="#"><img  src="img/pardus.png" class="avatar" alt="Avatar"><span>' + element.hostname + '</span></a></td>';
+		        		trElement += '<td><img  src="img/pardus.png" class="avatar" alt="Avatar"><span>' + element.hostname + '</span></td>';
 		        	}
 		        	trElement    += '<td>' + element.macAddresses + '</td>'
 		        				  + '<td>' + element.ipAddresses + '</td>';
@@ -286,26 +376,30 @@ function reloadTable(pNumber, pSize, field, text) {
 		        	else {
 		        		trElement    += '<td><span class="status text-danger">&bull;</span> Kapalı</td>';
 		        	}
-		        	trElement     += '<td>' + brand + '</td>'
-		        				  + '<td>' + os + '</td>'
-		        				  + '<td>' + osDistributionVersion + '</td>'
-		        				  + '<td>' + createDate + '</td>'
-		        				  + '<td><a href="javascript:agentDetail(' + element.id + ')"" class="view" title="Detayları Görüntüle" data-toggle="tooltip"><i class="ion-ios-information-outline"></i></a></td>'
-		        				  + '</tr>';
+		        	trElement += '<td>' + brand + '</td>'
+		        			  + '<td>' + os + '</td>'
+		        			  + '<td>' + osDistributionVersion + '</td>'
+		        			  + '<td>' + createDate + '</td>'
+		        			  + '<td><a href="#agentDetailModal" class="view text-center" onclick="agentDetailClicked(' + element.id + ')" data-id="' + element.id
+		        			  + '" data-toggle="modal" data-target="#agentDetailModal">'
+		        			  + '<i class="pe-7s-info"></i>'
+		        			  + '</a></td>'
+		        			  + '</tr>';
 		        	$('#agentsTable').append(trElement);
 		        });
 	    	}
 	    },
 	    error: function (data, errorThrown) {
 	    	var trElement = '<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>';
-				$("#agentsTable").empty();
-				$("#pagingList").empty();
+			$("#agentsTable").empty();
+			$("#pagingList").empty();
 	    	$('#agentsTable').append(trElement);
 	    }
 	});
 }
 
 function search() {
+	status = $("#searchByStatus option:selected").val();
 	var field = $("#searchByAgentProperty option:selected").val();
 	var text = $("#searchText").val();
 	searchText = text;
@@ -356,5 +450,61 @@ function pagination(c, m) {
 			}
 		}
 	}
+}
 
+function rbGroupsChange(status) {
+
+	if(status == "existingGroup") {
+		$("#newGroupInput").hide();
+		$("#existingGroupInput").show();
+		$("#submitGroup").attr("onclick","addAgentsToExistingGroup()");
+		$('#submitGroup').text('İstemcileri Seçili Gruba Ekle');
+	} else {
+		$("#existingGroupInput").hide();
+		$("#newGroupInput").show();
+		$("#submitGroup").attr("onclick","addNewGroup()");
+		$('#submitGroup').text('Yeni Grup Oluştur');
+	}
+}
+
+function addAgentsToExistingGroup() {
+	var selected = $("#selectGroupDN").children("option:selected").val();
+	if(selected != "") {
+		var params = {
+			    "groupDN" : $("#selectGroupDN").children("option:selected").val(),
+			    "checkedList": checkedAgentIDList
+			};
+		$.ajax({ 
+		    type: 'POST', 
+		    url: "/lider/ldap/group/existing",
+		    dataType: 'json',
+		    data: params,
+		    success: function (data) { 
+		    	$.notify("Agents are added to group successfully.", "success");
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Something went wrong.", "error");
+		    }
+		});
+	}
+}
+
+function addNewGroup() {
+	var params = {
+		    "groupName" : $('input[name=groupName]').val(),
+		    "checkedList": checkedAgentIDList
+		};
+	
+	$.ajax({ 
+	    type: 'POST', 
+	    url: "/lider/ldap/group/new",
+	    dataType: 'json',
+	    data: params,
+	    success: function (data) { 
+	    	$.notify("Group is created and agents are added to group successfully.", "success");
+	    },
+	    error: function (data, errorThrown) {
+	    	$.notify("Error occured while adding new group. Group Name " + $('input[name=groupName]').val() + " could not be added.", "error");
+	    }
+	});
 }

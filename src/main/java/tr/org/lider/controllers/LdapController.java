@@ -1,7 +1,9 @@
 package tr.org.lider.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,10 +12,13 @@ import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -68,6 +73,22 @@ public class LdapController {
 		retList.add(ldapService.getLdapSudoGroupsTree());
 		
 		return retList;
+	}
+	
+	//gets tree of groups of names which just has agent members
+	@RequestMapping(value = "/agentGroups")
+	public List<LdapEntry> getAgentGroups() {
+		List<LdapEntry> result = new ArrayList<LdapEntry>();
+		result.add(ldapService.getLdapAgentGroupsTree());
+		return result;
+	}
+	
+	//gets tree of groups of names which just has user members
+	@RequestMapping(value = "/userGroups")
+	public List<LdapEntry> getLdapUserGroupsTree() {
+		List<LdapEntry> result = new ArrayList<LdapEntry>();
+		result.add(ldapService.getLdapAgentGroupsTree());
+		return result;
 	}
 	
 	@RequestMapping(value = "/getGroups")
@@ -188,4 +209,69 @@ public class LdapController {
 		return ret;
 	}
 
+	//add new group and add selected agents
+	@RequestMapping(method=RequestMethod.POST ,value = "/group/new", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Boolean addAgentsToNewGroup(@RequestParam(value = "groupName", required=true) String groupName,
+			@RequestParam(value = "checkedList[]", required=true) String[] checkedList) {
+		System.err.println(groupName);
+		Map<String, String[]> attributes = new HashMap<String,String[]>();
+		attributes.put("objectClass", new String[] {"groupOfNames", "top", "pardusLider"} );
+		attributes.put("liderGroupType", new String[] {"AHENK"} );
+		try {
+			//when single dn comes spring boot takes it as multiple arrays
+			//so dn must be joined with comma
+			//if member dn that will be added to group is cn=agent1,ou=Groups,dn=liderahenk,dc=org
+			//spring boot gets this param as array which has size 4
+			Boolean checkedArraySizeIsOne = true;
+			for (int i = 0; i < checkedList.length; i++) {
+				if(checkedList[i].contains(",")) {
+					checkedArraySizeIsOne = false;
+					break;
+				}
+			}
+			if(checkedArraySizeIsOne ) {
+				attributes.put("member", new String[] {String.join(",", checkedList)} );
+			} else {
+				attributes.put("member", checkedList );
+			}
+			ldapService.addEntry("cn=" +  groupName + ",ou=Gruplar,dc=liderahenk,dc=org", attributes);
+		} catch (LdapException e) {
+			System.out.println("Error occured while adding new group.");
+			return null;
+		}
+		return true;
+	}
+
+	//add agents to existing group
+	@RequestMapping(method=RequestMethod.POST ,value = "/group/existing", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Boolean addAgentsToExistingGroup(@RequestParam(value="groupDN") String groupDN,
+			@RequestParam(value = "checkedList[]", required=true) String[] checkedList) {
+		System.err.println(groupDN);
+		try {
+			//when single dn comes spring boot takes it as multiple arrays
+			//so dn must be joined with comma
+			//if member dn that will be added to group is cn=agent1,ou=Groups,dn=liderahenk,dc=org
+			//spring boot gets this param as array which has size 4
+			Boolean checkedArraySizeIsOne = true;
+			for (int i = 0; i < checkedList.length; i++) {
+				if(checkedList[i].contains(",")) {
+					checkedArraySizeIsOne = false;
+					break;
+				}
+			}
+			if(checkedArraySizeIsOne ) {
+				ldapService.updateEntryAddAtribute(groupDN, "member", String.join(",", checkedList));
+			} else {
+				for (int i = 0; i < checkedList.length; i++) {
+					ldapService.updateEntryAddAtribute(groupDN, "member", checkedList[i]);
+				}
+			}
+		} catch (LdapException e) {
+			System.out.println("Error occured while adding new group.");
+			return null;
+		}
+		return true;
+	}
 }

@@ -46,6 +46,7 @@ public class OnlineRosterListener implements RosterListener {
 
 	private XMPPTCPConnection connection;
 	private List<String> onlineUsers = new ArrayList<String>();
+	private List<String> offlineUsers = new ArrayList<String>();
 	
 	private List<IPresenceSubscriber> presenceSubscribers;
 
@@ -81,6 +82,7 @@ public class OnlineRosterListener implements RosterListener {
 				}
 				try {
 					onlineUsers.add(jid.split("@")[0]);
+					offlineUsers.remove(jid.split("@")[0]);
 				} catch (Exception e) {
 					logger.error(e.getMessage(), e);
 				}
@@ -91,6 +93,7 @@ public class OnlineRosterListener implements RosterListener {
 				}
 				try {
 					onlineUsers.remove(jid.split("@")[0]);
+					offlineUsers.add(jid.split("@")[0]);
 				} catch (Exception e) {
 					logger.error(e.getMessage(), e);
 				}
@@ -116,8 +119,10 @@ public class OnlineRosterListener implements RosterListener {
 						try {
 							if (presence.getType() == Type.available) {
 								onlineUsers.add(jid.substring(0, jid.indexOf('@')));
+								offlineUsers.remove(jid.substring(0, jid.indexOf('@')));
 							} else if (presence.getType() == Type.unavailable) {
 								onlineUsers.remove(jid.substring(0, jid.indexOf('@')));
+								offlineUsers.add(jid.substring(0, jid.indexOf('@')));
 							}
 						} catch (Exception e) {
 							logger.error(e.getMessage(), e);
@@ -137,6 +142,13 @@ public class OnlineRosterListener implements RosterListener {
 		return onlineUsers;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	public List<String> getOfflineUsers() {
+		return offlineUsers;
+	}
 	/**
 	 * 
 	 * @param presenceSubscribers

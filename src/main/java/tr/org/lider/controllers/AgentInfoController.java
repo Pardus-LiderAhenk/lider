@@ -17,10 +17,9 @@ import org.springframework.http.MediaType;
 
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import tr.org.lider.entities.AgentImpl;
@@ -38,55 +37,29 @@ public class AgentInfoController {
 	private XMPPClientImpl messagingService;
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public String getAgents(Model model) {
+	public String getAgents() {
 		return "agent_info";
 	}
 	
-	@RequestMapping(method=RequestMethod.GET ,
-			value = {"/{pageNumber}/{pageSize}", "/{pageNumber}/{pageSize}/{field}/{text}"}, 
+	@RequestMapping(method=RequestMethod.POST ,
+			value = "/", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Page<AgentImpl> findAllAgentsRest(@PathVariable (value = "pageNumber") int pageNumber,
-			@PathVariable (value = "pageSize") int pageSize,
-			@PathVariable (value = "field") Optional<String> field,
-			@PathVariable (value = "text") Optional<String> text) {
-		Page<AgentImpl> agents = null;
-		//if filter area is not empty
-		if(field.isPresent() && text.isPresent()) {
-			if(field.get().equals("jid")) {
-				agents = agentService.findByJID(pageNumber, pageSize, text.get());
-			} else if(field.get().equals("hostname")) {
-				agents = agentService.findByHostname(pageNumber, pageSize, text.get());
-			} else if(field.get().equals("ipAddresses")) {
-				agents = agentService.findByIpAddresses(pageNumber, pageSize, text.get());
-			} else if(field.get().equals("macAddresses")) {
-				agents = agentService.findByMacAddresses(pageNumber, pageSize, text.get());
-			} else if(field.get().equals("dn")) {
-				agents = agentService.findByDN(pageNumber, pageSize, text.get());
-			} else {
-				//if agent property will be filtered
-				agents = agentService.findByAgentProperty(pageNumber, pageSize, field.get(), text.get());
-			}
-		} else {
-			agents = agentService.findAll(pageNumber, pageSize);
-		}
+	public Page<AgentImpl> findAllAgentsRest(@RequestParam (value = "pageNumber") int pageNumber,
+			@RequestParam (value = "pageSize") int pageSize,
+			@RequestParam (value = "status") String status,
+			@RequestParam (value = "field") Optional<String> field,
+			@RequestParam (value = "text") Optional<String> text) {
+		
 		List<String> listOfOnlineUsers = messagingService.getOnlineUsers();
 		System.err.println("--------------------------------------- size:   " + listOfOnlineUsers.size());
-		for (int i = 0; i < agents.getContent().size(); i++) {
-			if(messagingService.isRecipientOnline(agents.getContent().get(i).getJid())) {
-				agents.getContent().get(i).setIsOnline(true);
-			}
-			else {
-				agents.getContent().get(i).setIsOnline(false);
-			}
-		}
-		return agents;
+		return agentService.findAllFiltered(pageNumber, pageSize, status, field, text);
 	}
 	
 	//get agent detail by ID
-	@RequestMapping(method=RequestMethod.GET ,value = "/{agentID}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method=RequestMethod.POST ,value = "/detail", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public AgentImpl findAgentByIDRest(@PathVariable (value = "agentID") Long agentID) {
+	public AgentImpl findAgentByIDRest(@RequestParam (value = "agentID") Long agentID) {
 		Optional<AgentImpl> agent = agentService.findAgentByID(agentID);
 		if(agent.isPresent()) {
 			return agent.get();

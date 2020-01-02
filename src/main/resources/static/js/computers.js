@@ -9,7 +9,6 @@
 connection.addHandler(onPresence2, null, "presence");
 
 var selectedEntries = []; 
-
 var selectedPluginTask;
 
 //creating pluginTask Table on the page
@@ -57,7 +56,8 @@ html += '</table>';
 $('#onlineEntryListHolder').html(html);
 
 $(document).ready(function(){
-	
+	$("#createAgentGroup").hide();
+	$("#newGroupInput").hide();
 	$.ajax({
 		type : 'POST',
 		url : 'lider/ldap/getComputers',
@@ -85,25 +85,29 @@ $(document).ready(function(){
 	});
 });
 
-
 function showSelectedEntries() {
 
-	var html = '<table class="table table-striped table-bordered " id="selectedEntry4TaskTables">';
-
+	var html = '<div><button id="createAgentGroup" data-toggle="modal" onclick="createAgentGroupClicked()" data-target="#createAgentGroupModal" type="button" class="btn btn-info pull-right btn-group" title="İstemcileri Ekle" ><i class="material-icons">add</i> <span>Seçili İstemcilerden Grup Oluştur</span> </button><br></div>';
+	html += '<table class="table table-striped table-bordered " id="selectedEntry4TaskTables">';
+	html += '<tr>';
+	html += '<th style="width: 5%"></th>';
+	html += '<th style="width: 30%">Bilgisayar Adı</th>';
+	html += '<th style="width: 50%">DN</th>';
+	html += '<th style="width: 15%"></th>';
+	html += '</tr>';
+	
 	for (var i = 0; i < selectedEntries.length; i++) {
-
 		html += '<tr>';
-
-		html += '<td style="width: 30%">' + selectedEntries[i].name + '</td>';
-		html += '<td style="width: 60%">' + selectedEntries[i].distinguishedName + '</td>';
-
-		html += '<td style="width: 10%"> <button class="btn btn-xs btn-default removeEntry" type="button" id="' +selectedEntries[i]+ '" data-id="'+ selectedEntries[i]+'" title="Kaldir"> <i class="fa fa-minus fa-w-20"> </i> </button>  </td>';
-
+		html += '<td>' + (i+1) + '</td>';
+		html += '<td>' + selectedEntries[i].name + '</td>';
+		html += '<td>' + selectedEntries[i].distinguishedName + '</td>';
+		html += '<td class="text-center">';
+		html += '<button class="btn btn-danger removeEntry" type="button" id="' +selectedEntries[i]+ '" data-id="'+ selectedEntries[i]+'" title="Kaldir">Kaldır</button>';
+		html += '</td>';
 		html += '</tr>';
 	}
 	html += '</table>';
 	
-
 	$('#selectedEntriesHolder').html(html);
 	
 	if(selectedEntries.length>1){
@@ -581,4 +585,107 @@ function loadComputersTree(data){
 			    $('#tab-c-4-info').click();
 
 	    });
+}
+
+function rbGroupsChange(status) {
+
+	if(status == "existingGroup") {
+		$("#newGroupInput").hide();
+		$("#existingGroupInput").show();
+		$("#submitGroup").attr("onclick","addAgentsToExistingGroup()");
+		$('#submitGroup').text('İstemcileri Seçili Gruba Ekle');
+	} else {
+		$("#existingGroupInput").hide();
+		$("#newGroupInput").show();
+		$("#submitGroup").attr("onclick","addNewGroup()");
+		$('#submitGroup').text('Yeni Grup Oluştur');
+	}
+}
+
+function createAgentGroupClicked () {
+	if(selectedEntries.length > 0) {
+		$.ajax({ 
+		    type: 'GET', 
+		    url: '/lider/ldap/agentGroups',
+		    dataType: 'json',
+		    success: function (data) { 
+		    	//choose existing radio button when modal is reopened
+		    	$("#rbExistingGroup").prop("checked", true);
+		    	$("#rbNewGroup").prop("checked", false);
+		    	$('#groupName').val('');
+				$("#newGroupInput").hide();
+				$("#existingGroupInput").show();
+				$("#submitGroup").attr("onclick","addAgentsToExistingGroup()");
+				$('#submitGroup').text('İstemcileri Seçili Gruba Ekle');
+				
+		    	if(data.length > 0) {
+		    		var options = $("#selectGroupDN");
+		    		options.empty();
+		    		$.each(data, function(index, element) {
+			    		if(element.childEntries.length > 0) {
+			    			$('#selectGroupDN').append('<option value="">Grup Seç</option>');
+			    			$.each(element.childEntries, function(j, child) {
+			    				options.append(new Option(child.name, child.distinguishedName));
+			    			});
+			    		}
+		    		});
+		    	}
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Something went wrong.", "error");
+		    }
+		});
+	}
+	else {
+		$.notify("Please select at lease one agent.", "error");
+	}
+}
+
+function addAgentsToExistingGroup() {
+	var selectedAgentDN = [];
+	for(var i = 0; i < selectedEntries.length; i++) {
+		selectedAgentDN.push(selectedEntries[i].distinguishedName);
+	}
+	var selected = $("#selectGroupDN").children("option:selected").val();
+	if(selected != "") {
+		var params = {
+			    "groupDN" : $("#selectGroupDN").children("option:selected").val(),
+			    "checkedList": selectedAgentDN
+			};
+		$.ajax({ 
+		    type: 'POST', 
+		    url: "/lider/ldap/group/existing",
+		    dataType: 'json',
+		    data: params,
+		    success: function (data) { 
+		    	$.notify("Selected gents are added to group successfully.", "success");
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Something went wrong.", "error");
+		    }
+		});
+	}
+}
+
+function addNewGroup() {
+	var selectedAgentDN = [];
+	for(var i = 0; i < selectedEntries.length; i++) {
+		selectedAgentDN.push(selectedEntries[i].distinguishedName);
+	}
+	var params = {
+		    "groupName" : $('input[name=groupName]').val(),
+		    "checkedList": selectedAgentDN
+		};
+	$.ajax({ 
+	    type: 'POST', 
+	    url: "/lider/ldap/group/new",
+	    dataType: 'json',
+	    data: params,
+	    success: function (data) { 
+	    	$.notify("Group is created and agents are added to group successfully.", "success");
+	    },
+	    error: function (data, errorThrown) {
+	    	$.notify("Error occured while adding new group. Group Name " + $('input[name=groupName]').val() + " could not be added.", "error");
+	    }
+	});
 }

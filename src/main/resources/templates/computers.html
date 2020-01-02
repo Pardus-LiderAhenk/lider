@@ -10,6 +10,18 @@
 	color: black;
 	background-color: white;
 }
+
+.btn-group {
+    margin-bottom: 10px;
+    font-size: 13px;
+	border: none;
+}
+
+.btn span {
+	float: left;
+	margin-top: 3px;
+}
+
 </style>
 
 
@@ -115,7 +127,10 @@
 
 					</div>
 					<div class="tab-pane" id="tab-roster" role="tabpanel">
-							<div id="rosterListHolder"></div>
+							<div id="rosterListHolder">
+								<button id="addSelectedEntry2Box" type="button" 
+									class="btn-shadow btn btn-info" title="İstemcileri Ekle" ><i class="fa fa-plus"></i></button>
+							</div>
 					</div>
 					
 					<div class="tab-pane" id="tab-entry-info" role="tabpanel">

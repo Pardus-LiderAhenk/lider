@@ -480,7 +480,7 @@ function addAgentsToExistingGroup() {
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 
-		    	$.notify("Agents are added to group successfully.", "success");
+		    	$.notify("Selected agents are added to group successfully.", "success");
 		    },
 		    error: function (data, errorThrown) {
 		    	$.notify("Something went wrong.", "error");

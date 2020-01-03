@@ -29,6 +29,7 @@ import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
+import tr.org.lider.services.ConfigurationService;
 
 
 /**
@@ -45,6 +46,9 @@ public class LdapController {
 
 	@Autowired
 	private LDAPServiceImpl ldapService;
+	
+	@Autowired
+	private ConfigurationService configurationService;
 	
 	@Autowired
 	private XMPPClientImpl messagingService;
@@ -235,7 +239,7 @@ public class LdapController {
 			} else {
 				attributes.put("member", checkedList );
 			}
-			ldapService.addEntry("cn=" +  groupName + ",ou=Gruplar,dc=liderahenk,dc=org", attributes);
+			ldapService.addEntry("cn=" +  groupName +","+ configurationService.getGroupLdapBaseDn() , attributes);
 		} catch (LdapException e) {
 			System.out.println("Error occured while adding new group.");
 			return null;

@@ -70,6 +70,7 @@ public class ConfigurationService{
 	private Boolean userAuthorizationEnabled;
 	private String groupLdapObjectClasses;
 	private String userLdapRolesDn;
+	private String groupLdapBaseDn;
 
 	// Task manager configuration
 	private Boolean taskManagerCheckFutureTask;
@@ -164,6 +165,7 @@ public class ConfigurationService{
 		userLdapObjectClasses = env.getProperty("user.ldap.object.classes");
 		userAuthorizationEnabled = Boolean.getBoolean(env.getProperty("user.authorization.enabled"));
 		groupLdapObjectClasses = env.getProperty("group.ldap.object.classes");
+		setGroupLdapBaseDn(env.getProperty("group.ldap.base.dn"));
 		setUserLdapRolesDn(env.getProperty("user.ldap.roles.dn"));
 	}
 
@@ -874,6 +876,14 @@ public class ConfigurationService{
 
 	public void setUserLdapRolesDn(String userLdapRolesDn) {
 		this.userLdapRolesDn = userLdapRolesDn;
+	}
+
+	public String getGroupLdapBaseDn() {
+		return groupLdapBaseDn;
+	}
+
+	public void setGroupLdapBaseDn(String groupLdapBaseDn) {
+		this.groupLdapBaseDn = groupLdapBaseDn;
 	}
 
 }

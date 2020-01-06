@@ -1,5 +1,5 @@
 /**
- * When page loading getting groups from LDAP and ldap users tree fill out on the treegrid that used jqxTreeGrid api..
+ * When page loading getting agents groups from LDAP.
  * M. Edip YILDIZ
  * 
  */
@@ -7,7 +7,7 @@ $(document).ready(function(){
 	
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/getGroups',
+		url : 'lider/ldap/agentGroups',
 		dataType : 'json',
 		success : function(data) {
 			 var source =
@@ -50,9 +50,10 @@ $(document).ready(function(){
 			 
 			 
 			 // create jqxTreeGrid.
-			 $("#treeGridUser").jqxTreeGrid(
+			 $("#treeGridAgentGroups").jqxTreeGrid(
 			 {
-			     source: dataAdapter,
+				 width: '100%',
+				 source: dataAdapter,
 			     altRows: true,
 			     sortable: true,
 			     columnsResize: true,
@@ -76,27 +77,51 @@ $(document).ready(function(){
 			    	 
 			     },
 			     columns: [
-			       { text: "Gruplar", align: "center", dataField: "name", width: 320 }
+			       { text: "İstemci Grupları", align: "center", dataField: "name", width: '100%'}
 			     ]
 			 });
 			 
-				$('#treeGridUser').on('rowDoubleClick', function (event) {
-			        var args = event.args;
-			        var row = args.row;
-			        var name= row.name;
-			        alert(name);
-			        var entries = jQuery.parseJSON(data);
-			        alert(entries.length);
+			 
+			 $('#treeGridAgentGroups').on('rowDoubleClick', function (event) {
+				   var args = event.args;
+			       var row = args.row;
+			       var name= row.name;
+			       var row = $("#treeGridAgentGroups").jqxTreeGrid('getRow', name);
 			        
-			        for (var i = 0; i < entries.length; i++) {
-				          // get a row.
-				          var entry = entries[i];
-				          if(entry.name==name){
-				        	  console.log(entry.attributes);
-				          }
-				      }
+			       var html = '<table class="table table-striped table-bordered " id="attrTable">';
+					html += '<thead>';
+					html += '<tr>';
+					html += '<th style="width: 40%">Öznitelik</th>';
+					html += '<th style="width: 60%">Değer</th>';
+					html += '</tr>';
+					html += '</thead>';
+			        
+			        for (key in row.attributes) {
+			            if (row.attributes.hasOwnProperty(key)) {
+			                console.log(key + " = " + row.attributes[key]);
+			                
+			                html += '<tr>';
+				            html += '<td>' + key + '</td>';
+				            html += '<td>' + row.attributes[key] + '</td>';
+				            html += '</tr>';
+			            }
+			        } 
+			        
+			        html += '</table>';
+			        
+				    $('#selectedDnInfo').html("Seçili Kayıt: "+name);
+				    $('#ldapAttrInfoHolder').html(html);
+				    
+				    $('.nav-link').each(function(){               
+				    	  var $tweet = $(this);                    
+				    	  $tweet.removeClass('active');
+				    });
+				    
+				    $('#tab-c-4-info').addClass('nav-link active');
+				    $('#tab-c-4-info').click();
 
 			    });
+			 
 		}
 
 	});

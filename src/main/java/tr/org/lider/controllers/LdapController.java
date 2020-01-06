@@ -91,7 +91,7 @@ public class LdapController {
 	@RequestMapping(value = "/userGroups")
 	public List<LdapEntry> getLdapUserGroupsTree() {
 		List<LdapEntry> result = new ArrayList<LdapEntry>();
-		result.add(ldapService.getLdapAgentGroupsTree());
+		result.add(ldapService.getLdapUserGroupsTree());
 		return result;
 	}
 	

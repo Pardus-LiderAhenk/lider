@@ -249,18 +249,15 @@
 	<!--All Modals should be add here.. -->
 	
 	
-	
-	<!--Plugin Tasks loading here -->
-
-	<div class="modal fade" id="pluginHtmpPageModal" tabindex="0"
-		role="dialog" aria-labelledby="pluginHtmpPageModalLabel"
+<!--Plugin Tasks loading here. XL-MODAL -->
+	<div class="modal fade" id="pluginHtmlPageLargeModal" tabindex="0"
+		role="dialog" aria-labelledby="pluginHtmlPageModalLabel"
 		aria-hidden="true">
 		<div class="modal-dialog modal-xl" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title w-100 text-center position-absolute" id="pluginHtmpPageModalLabel"></h5>
-<!-- 					<h5 class="modal-title" id="pluginHtmpPageModalLabel"></h5> -->
-					<button type="button" class="close" data-dismiss="modal"
+					<h5 class="modal-title w-100 text-center position-absolute" id="pluginHtmlPageModalLabel"></h5>
+					<button type="button" class="close" id="closePagePlugin" data-dismiss="modal"
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
@@ -268,12 +265,40 @@
 				<div class="modal-body">
 					<div id="pluginPageRender"></div>
 				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" id="closePage" data-dismiss="modal">Kapat</button>
-				</div>
+<!-- 				<div class="modal-footer"> -->
+<!-- 					<div> -->
+<!-- 						<a href="http://liderahenk.org/" target="_blank" class="view text-center" role="button"><i class="fa fa-info-circle"></i></a> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
 			</div>
 		</div>
 	</div>
+	
+<!-- Plugin Tasks loading here. LG-MODAL -->
+	<div class="modal fade" id="pluginHtmlPageNormalModal" tabindex="0"
+		role="dialog" aria-labelledby="pluginHtmlPageModalLabel2"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center position-absolute" id="pluginHtmlPageModalLabel2"></h5>
+					<button type="button" class="close" id="closePagePlugin" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div id="pluginPageRender2"></div>
+				</div>
+<!-- 				<div class="modal-footer"> -->
+<!-- 					<div> -->
+<!-- 						<a href="http://liderahenk.org/" target="_blank" class="view text-center" role="button"><i class="fa fa-info-circle"></i></a> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+			</div>
+		</div>
+	</div>
+
 
 <!--Ldap Entry attributes setting here -->
 	<div id="attributeModal" class="modal fade">

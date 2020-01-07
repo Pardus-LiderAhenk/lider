@@ -1,27 +1,26 @@
 <script type="text/javascript" src="js/computers.js"></script>
 
 <style>
-.green {
-	color: black;
-	background-color: #A2D9CE;
-}
-
-.white {
-	color: black;
-	background-color: white;
-}
-
-.btn-group {
-    margin-bottom: 10px;
-    font-size: 13px;
-	border: none;
-}
-
-.btn span {
-	float: left;
-	margin-top: 3px;
-}
-
+	.green {
+		color: black;
+		background-color: #A2D9CE;
+	}
+	
+	.white {
+		color: black;
+		background-color: white;
+	}
+	
+	.btn-group {
+	    margin-bottom: 10px;
+	    font-size: 13px;
+		border: none;
+	}
+	
+	.btn span {
+		float: left;
+		margin-top: 3px;
+	}
 </style>
 
 
@@ -42,7 +41,7 @@
 			<div class="d-inline-block dropdown">
 				<button type="button" data-toggle="dropdown" aria-haspopup="true"
 					aria-expanded="false"
-					class="btn-shadow dropdown-toggle btn btn-info">
+					class="btn-shadow btn btn-info">
 					<span class="btn-icon-wrapper pr-2 opacity-7"> <i
 						class="fa fa-business-time fa-w-20"> </i>
 					</span> <span class="btn-icon-wrapper pr-2 "> </span> Görev Gönderilecek
@@ -93,7 +92,7 @@
 								Gönder</span>
 					</a></li>
 					<li class="nav-item"><a role="tab" class="nav-link"
-						id="tab-c-1" data-toggle="tab" href="#tab-task-history"> <span>Görev
+						id="tab-task-history" data-toggle="tab" href="#tab-task-history-tab"> <span>Görev
 								Geçmişi</span>
 					</a></li>
 					<li class="nav-item"><a role="tab" class="nav-link"
@@ -118,8 +117,24 @@
 						<input type="text" class="form-control" id="textTaskSearch">
 						<div id="pluginListTableDiv"></div>
 					</div>
-					<div class="tab-pane" id="tab-task-history" role="tabpanel">
-						
+					<div class="tab-pane" id="tab-task-history-tab" role="tabpanel">
+						<table class="table table-striped table-hover">
+							<thead>
+								<tr>
+									<th style="width: 20%">Görev Adı</th>
+									<th style="width: 18%">Sonuç</th>
+									<th style="width: 20%">Gönderen</th>
+									<th style="width: 16%">Oluşturulma Tarihi</th>
+									<th style="width: 16%">Çalıştırılma Tarihi</th>
+									<th class="text-center" style="width: 6%"></th>
+								</tr>
+							</thead>
+							<tbody id="taskHistoryTable">
+								<tr>
+									<td colspan="100%" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 					<div class="tab-pane" id="tab-online-clients" role="tabpanel">
 							<div id="onlineEntryListHolder"></div>

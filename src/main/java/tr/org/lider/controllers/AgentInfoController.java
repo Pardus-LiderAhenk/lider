@@ -41,16 +41,14 @@ public class AgentInfoController {
 		return "agent_info";
 	}
 	
-	@RequestMapping(method=RequestMethod.POST ,
-			value = "/", 
-			produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method=RequestMethod.POST, value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Page<AgentImpl> findAllAgentsRest(@RequestParam (value = "pageNumber") int pageNumber,
 			@RequestParam (value = "pageSize") int pageSize,
 			@RequestParam (value = "status") String status,
 			@RequestParam (value = "field") Optional<String> field,
 			@RequestParam (value = "text") Optional<String> text) {
-		
+
 		List<String> listOfOnlineUsers = messagingService.getOnlineUsers();
 		System.err.println("--------------------------------------- size:   " + listOfOnlineUsers.size());
 		return agentService.findAllFiltered(pageNumber, pageSize, status, field, text);

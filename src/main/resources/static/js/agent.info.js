@@ -380,7 +380,7 @@ function reloadTable(pNumber, pSize, field, text) {
 		        			  + '<td>' + os + '</td>'
 		        			  + '<td>' + osDistributionVersion + '</td>'
 		        			  + '<td>' + createDate + '</td>'
-		        			  + '<td><a href="#agentDetailModal" class="view text-center" onclick="agentDetailClicked(' + element.id + ')" data-id="' + element.id
+		        			  + '<td class="text-center"><a href="#agentDetailModal" class="view text-center" onclick="agentDetailClicked(' + element.id + ')" data-id="' + element.id
 		        			  + '" data-toggle="modal" data-target="#agentDetailModal">'
 		        			  + '<i class="pe-7s-info"></i>'
 		        			  + '</a></td>'

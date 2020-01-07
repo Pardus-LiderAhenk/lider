@@ -1,0 +1,44 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/manage-root.js"></script>
+
+</head>
+<body>
+	<div class="form-group form-check">
+	<div>
+	    <input type="checkbox" class="form-check-input" id="lockRootUserButton">
+	    <label class="form-check-label" for="lockRootUserButton">Root Kullanıcısını Kilitle</label>
+	 </div>
+	 <small id="passwordHelpInline" class="text-muted">
+      		Root Kullanıcısı, Root Parola Yönetimi eklentisinden tekrar parola verilene kadar istemcide kullanılamaz.
+    </small>
+    </div>
+   	<div class="login-form-1">
+		<div class="input-group">
+		  <div class="input-group-prepend">
+		    <span class="input-group-text">Root Parolası Tanımla</span>
+		  </div>
+		  <input type="text" id="inputRootPassword" class="form-control" placeholder="Parola...">
+		  <div class="input-group-append">
+   			 <button id=generateRootPassword type="button" class="btn-shadow btn btn-info" title="Parola Oluştur"><i class="fa fa-undo"></i> Parola Oluştur</button>
+  		  </div>
+		</div>
+	    <small id="passwordHelpInline" class="text-muted">
+      		Parolanız en az 12 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir. İzin verilen özel karakterler: +=.@*!
+    	</small>
+		<br><br>
+		<div id="plugin-result"></div>
+		<br><br>
+		<div class="row">
+		<div class="col-lg-12 text-right">
+				<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+ 	        	<button id=sendTaskCron-manage-root type="button" class="btn-shadow btn btn-info" title="Zamanlı Çalıştır"><i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır</button>
+				<button id=sendTask-manage-root type="button" class="btn-shadow btn btn-info" title="Çalıştır"><i class="fa fa-play"></i> Çalıştır</button>
+	    	</div>
+    	</div>
+	</div>
+</body>
+</html>

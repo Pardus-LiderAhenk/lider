@@ -1,10 +1,10 @@
 /**
- * resource-usage -->
- *  This page get info resource usage from agents -->
- *  Tuncay Çolak -->
- *  tuncay.colak@tubitak.gov.tr -->
+ * resource-usage
+ *  This page get info resource usage from agents
+ *  Tuncay ÇOLAK
+ *  tuncay.colak@tubitak.gov.tr
 
- *  http://www.liderahenk.org/ --> 
+ *  http://www.liderahenk.org/ 
  */
 
 var ref=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
@@ -19,35 +19,40 @@ selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
 
 var params = JSON.stringify(selectedPluginTask);
+getResourceUsage();
 
-$.ajax({
-      type: "POST",
-      url: "/lider/task/execute",
-      headers: {
-          'Content-Type':'application/json',
-          'username':'${sessionScope.userName}',
-          'password':'${sessionScope.userPassword}',
-      }, 
-      data: params,
-      contentType: "application/json",
-      dataType: "json",
-      converters: {
-        'text json': true
-      }, 
-      success: function(result) {
-    	var res = jQuery.parseJSON(result);
-    	console.log("rest response")
-    	console.log(res)
-    	if(res.status=="OK"){
-    		
-    		$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
-    	}   	
-        /* $('#closePage').click(); */
-      },
-      error: function(result) {
-        alert(result);
-      }
-    });
+function getResourceUsage(){
+	$.ajax({
+	      type: "POST",
+	      url: "/lider/task/execute",
+	      headers: {
+	          'Content-Type':'application/json',
+	      }, 
+	      data: params,
+	      contentType: "application/json",
+	      dataType: "json",
+	      converters: {
+	        'text json': true
+	      }, 
+	      success: function(result) {
+	    	var res = jQuery.parseJSON(result);
+	    	console.log("rest response")
+	    	console.log(res)
+	    	if(res.status=="OK"){
+	    		
+	    		$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
+	    	}   	
+	        /* $('#closePage').click(); */
+	      },
+	      error: function(result) {
+	        alert(result);
+	      }
+	    });
+}
+
+$('#sendTask-'+ selectedPluginTask.page).click(function(e){
+	getResourceUsage();
+});
 
 function resourceUsageListener(msg) {
     var to = msg.getAttribute('to');
@@ -90,7 +95,11 @@ function resourceUsageListener(msg) {
     // we must return true to keep the handler alive. returning false would remove it after it finishes.
     return true;
 }
-$('#closePage').click(function(e){
-	$('#pluginHtmpPageModal').modal('hide');
+
+$('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
+	alert("Zamanlı Çalıştır")
+});
+
+$('#closePagePlugin').click(function(e){
 	connection.deleteHandler(ref);
 });

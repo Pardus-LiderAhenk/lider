@@ -4,26 +4,95 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script type="text/javascript" src="js/plugins/task/repositories.js"></script>
+
+<style>
+<!--
+/* Custom checkbox */
+.cb-repo-addr {
+	position: relative;
+}
+.cb-repo-addr input[type="checkbox"] {    
+	opacity: 0;
+	position: absolute;
+	margin: 5px 0 0 3px;
+	z-index: 9;
+}
+.cb-repo-addr label:before{
+	width: 18px;
+	height: 18px;
+}
+.cb-repo-addr label:before {
+	content: '';
+	margin-right: 10px;
+	display: inline-block;
+	vertical-align: text-top;
+	background: white;
+	border: 1px solid #bbb;
+	border-radius: 2px;
+	box-sizing: border-box;
+	z-index: 2;
+}
+.cb-repo-addr input[type="checkbox"]:checked + label:after {
+	content: '';
+	position: absolute;
+	left: 6px;
+	top: 3px;
+	width: 6px;
+	height: 11px;
+	border: solid #000;
+	border-width: 0 3px 3px 0;
+	transform: inherit;
+	z-index: 3;
+	transform: rotateZ(45deg);
+}
+.cb-repo-addr input[type="checkbox"]:checked + label:before {
+	border-color: #03A9F4;
+	background: #03A9F4;
+}
+.cb-repo-addr input[type="checkbox"]:checked + label:after {
+	border-color: #fff;
+}
+.cb-repo-addr input[type="checkbox"]:disabled + label:before {
+	color: #b8b8b8;
+	cursor: auto;
+	box-shadow: none;
+	background: #ddd;
+}
+-->
+</style>
 </head>
 <body>
 	<div class="login-form-1">
-	
-		<button id=sendTask type="button" class="btn-shadow btn btn-info" title="Çalıştır"><i class="fa fa-play"></i> Çalıştır</button>
-<!-- 		<input type="text" id="email" placeholder="Email Address"> -->
-<!-- 		<button id="addRepo" type="button" class="btn-shadow btn btn-info float-right" title="Ekle"><i class="fa fa-plus"></i></button> -->
-		<p></p>
-<!-- 		<button id="deleteRepo" type="button" class="btn-shadow btn btn-info" title="Sil"><i class="fa fa-times"></i></button> -->
-		<div class="login-group">				
+		<div class="row">
+			<div class="input-group mb-3 col-lg-10">
+				<div class="input-group-prepend">
+				    <span class="input-group-text">Depo Adresi Tanımla</span>
+				 </div>
+				 <input type="text" id="inputRepoAddrId" class="form-control" placeholder="deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main">
+			</div>
+			<div class="col-lg-2 text-right">
+				<button id="addRepoButtonId" type="button" class="btn-shadow btn btn-info" title="Depo Ekle"><i class="fa fa-plus"></i> Ekle</button>
+       			<button id="deleteRepo" type="button" class="btn-shadow btn btn-info" title="Depo Sil"><i class="fa fa-times"></i> Sil</button>
+   			</div>
+		</div>
+		<div class="login-group">
 			<div class="form-group">
 				<div class="row">
-					<input type="text" id="email" placeholder="Email Address"><button id="addRepo" type="button" class="btn-shadow btn btn-info float-right" title="Ekle"><i class="fa fa-plus"></i></button>
 					<div class="col-lg-12">
-					<div id=repositoriesList></div>
+						<br>
+						<div id=repositoriesList></div>
 					</div>
 				</div>
-				<div class="progress"></div>
 				<br>
 				<div id="plugin-result"></div>
+				<br><br>
+				<div class="row">
+					<div class="col-lg-12 text-right">
+					<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+ 	        			<button id=sendTaskCron-repositories type="button" class="btn-shadow btn btn-info" title="Zamanlı Çalıştır"><i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır</button>
+						<button id=sendTask-repositories type="button" class="btn-shadow btn btn-info" title="Çalıştır"><i class="fa fa-play"></i> Çalıştır</button>
+	    			</div>
+    			</div>
 			</div>
 		</div>			
 	</div>

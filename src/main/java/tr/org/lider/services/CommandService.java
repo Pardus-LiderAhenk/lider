@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tr.org.lider.entities.CommandExecutionImpl;
+import tr.org.lider.entities.CommandExecutionResultImpl;
 import tr.org.lider.entities.CommandImpl;
 import tr.org.lider.entities.TaskImpl;
 import tr.org.lider.repositories.CommandExecutionRepository;
+import tr.org.lider.repositories.CommandExecutionResultRepository;
 import tr.org.lider.repositories.CommandRepository;
 
 @Service
@@ -20,6 +22,9 @@ public class CommandService {
 	
 	@Autowired
 	private CommandExecutionRepository commandExecutionRepository;	
+	
+	@Autowired
+	private CommandExecutionResultRepository commandExecutionResultRepository;
 
 	public List<CommandImpl> findAllCommands() {
 		return commandRepository.findAll() ;
@@ -80,6 +85,15 @@ public class CommandService {
 				
 				commandExecution = new CommandExecutionImpl();
 				commandExecution = (CommandExecutionImpl)result.get(i)[1];
+				if(commandExecution.getCommandExecutionResults().size() > 0) {
+					if(commandExecution.getCommandExecutionResults().get(0).getResponseData() != null) {
+						commandExecution.getCommandExecutionResults().get(0).setResponseDataStr(
+								new String(commandExecution.getCommandExecutionResults().get(0).getResponseData()));
+					}
+					else {
+						commandExecution.getCommandExecutionResults().get(0).setResponseDataStr(null);
+					}
+				} 
 				listCommandExecution.add(commandExecution);
 				
 				command = new CommandImpl();
@@ -87,12 +101,16 @@ public class CommandService {
 				command.setId((Long) result.get(i)[3]);
 				command.setTask(task);
 				command.setCommandExecutions(listCommandExecution);
-				
+
 				listCommand.add(command);
 			}
 			return listCommand;
 		} else {
 			return null;
 		}
+	}
+	
+	public CommandExecutionResultImpl getCommandExecutionResultByID(Long id) {
+		return commandExecutionResultRepository.findOne(id);
 	}
 }

@@ -22,5 +22,5 @@ public interface CommandRepository extends BaseJpaRepository<CommandImpl, Long>{
 			+ "WHERE ce.dn =?1 "
 			+ "AND c.task IS NOT NULL "
 			+ "ORDER BY c.createDate DESC")
-	List<Object[]> test(String dn);
+	List<Object[]> findCommandsOfAgent(String dn);
 }

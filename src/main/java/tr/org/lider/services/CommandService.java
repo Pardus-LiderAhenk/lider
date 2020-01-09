@@ -70,7 +70,7 @@ public class CommandService {
 	public List<CommandImpl> getExecutedTasks(String dn) {
 		List<CommandImpl> listCommand;
 		List<CommandExecutionImpl> listCommandExecution;
-		List<Object[]> result = commandRepository.test(dn);
+		List<Object[]> result = commandRepository.findCommandsOfAgent(dn);
 		if(result != null) {
 			listCommand = new ArrayList<CommandImpl>();
 			

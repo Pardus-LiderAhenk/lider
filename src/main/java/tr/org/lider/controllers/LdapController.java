@@ -69,6 +69,40 @@ public class LdapController {
 		selectedEntry.setChildEntries(subEntries);
 		return subEntries;
 	}
+	
+	@RequestMapping(value = "/getOu")
+	public List<LdapEntry> getOu(HttpServletRequest request, Model model, LdapEntry selectedEntry) {
+		
+		List<LdapEntry> subEntries = null;
+		try {
+			subEntries = ldapService.findSubEntries(selectedEntry.getUid(), "(&(objectclass=organizationalUnit)(objectclass=pardusLider))",
+					new String[] { "*" }, SearchScope.ONELEVEL);
+			
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		selectedEntry.setChildEntries(subEntries);
+		return subEntries;
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, value = "/addOu",produces = MediaType.APPLICATION_JSON_VALUE)
+	public LdapEntry addOu(HttpServletRequest request, Model model, LdapEntry selectedEntry) {
+		try {
+			Map<String, String[]> attributes = new HashMap<String,String[]>();
+			attributes.put("objectClass", new String[] {"organizationalUnit", "top", "pardusLider"} );
+			attributes.put("objectClass", new String[] { "top", "organizationalUnit" , "pardusLider"});
+			attributes.put("ou", new String[] { selectedEntry.getOu() });
+			
+			String dn="ou="+selectedEntry.getOu()+","+selectedEntry.getParentName();
+			
+			ldapService.addEntry(dn, attributes);
+			logger.info("OU created successfully RDN ="+dn);
+			return selectedEntry;
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	@RequestMapping(value = "/getSudoGroups")
 	public List<LdapEntry> getSudoGroups(HttpServletRequest request, Model model) {
@@ -218,7 +252,6 @@ public class LdapController {
 	@ResponseBody
 	public Boolean addAgentsToNewGroup(@RequestParam(value = "groupName", required=true) String groupName,
 			@RequestParam(value = "checkedList[]", required=true) String[] checkedList) {
-		System.err.println(groupName);
 		Map<String, String[]> attributes = new HashMap<String,String[]>();
 		attributes.put("objectClass", new String[] {"groupOfNames", "top", "pardusLider"} );
 		attributes.put("liderGroupType", new String[] {"AHENK"} );
@@ -252,7 +285,6 @@ public class LdapController {
 	@ResponseBody
 	public Boolean addAgentsToExistingGroup(@RequestParam(value="groupDN") String groupDN,
 			@RequestParam(value = "checkedList[]", required=true) String[] checkedList) {
-		System.err.println(groupDN);
 		try {
 			//when single dn comes spring boot takes it as multiple arrays
 			//so dn must be joined with comma
@@ -277,5 +309,53 @@ public class LdapController {
 			return null;
 		}
 		return true;
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, value = "/addUser",produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry addUser(HttpServletRequest request, Model model, LdapEntry selectedEntry) {
+		try {
+			String gidNumber="6000";
+			int randomInt = (int)(1000000.0 * Math.random());
+			String uidNumber= Integer.toString(randomInt);
+			String home="/home/"+selectedEntry.getUid();
+			
+			Map<String, String[]> attributes = new HashMap<String, String[]>();
+			attributes.put("objectClass", new String[] { "top", "posixAccount",
+					"person","pardusLider","pardusAccount","organizationalPerson","inetOrgPerson"});
+			attributes.put("cn", new String[] { selectedEntry.getCn() });
+			attributes.put("gidNumber", new String[] { gidNumber });
+			attributes.put("homeDirectory", new String[] { home });
+			attributes.put("sn", new String[] { selectedEntry.getSn() });
+			attributes.put("uid", new String[] { selectedEntry.getUid() });
+			attributes.put("uidNumber", new String[] { uidNumber });
+			attributes.put("loginShell", new String[] { "/bin/bash" });
+			attributes.put("userPassword", new String[] { selectedEntry.getUserPassword() });
+			
+			String rdn="uid="+selectedEntry.getUid()+","+selectedEntry.getParentName();
+			
+			ldapService.addEntry(rdn, attributes);
+			
+			logger.info("User created successfully RDN ="+rdn);
+			return selectedEntry;
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, value = "/deleteUser")
+	@ResponseBody
+	public Boolean deleteUser(HttpServletRequest request, Model model, @RequestBody LdapEntry[] selectedEntryArr) {
+			try {
+				for (LdapEntry ldapEntry : selectedEntryArr) {
+					ldapService.deleteEntry(ldapEntry.getDistinguishedName());
+					logger.info("User deleted successfully RDN ="+ldapEntry.getDistinguishedName());
+				}
+				return true;
+			} catch (LdapException e) {
+				e.printStackTrace();
+				return null;
+			}
 	}
 }

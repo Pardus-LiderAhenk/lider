@@ -4,7 +4,6 @@
  * 
  */
 $(document).ready(function(){
-	
 	$.ajax({
 		type : 'POST',
 		url : 'lider/ldap/agentGroups',
@@ -81,7 +80,6 @@ $(document).ready(function(){
 			     ]
 			 });
 			 
-			 
 			 $('#treeGridAgentGroups').on('rowDoubleClick', function (event) {
 				   var args = event.args;
 			       var row = args.row;
@@ -117,12 +115,8 @@ $(document).ready(function(){
 				    	  $tweet.removeClass('active');
 				    });
 				    
-				    $('#tab-c-4-info').addClass('nav-link active');
-				    $('#tab-c-4-info').click();
-
+				    $('#tab-c-4-info').tab('show');
 			    });
-			 
 		}
-
 	});
 });

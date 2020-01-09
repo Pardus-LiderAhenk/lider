@@ -618,8 +618,8 @@ function loadComputersTree(data){
 			var $tweet = $(this);                    
 			$tweet.removeClass('active');
 		});
-		$('#tab-c-4-info').addClass('nav-link active');
-		$('#tab-c-4-info').click();
+		
+		$('#tab-c-4-info').tab('show');
 
 	});
 	$('#treegrid').on('rowClick', function (event) {

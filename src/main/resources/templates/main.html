@@ -42,8 +42,8 @@
 }
 </style>
 <script type="text/javascript" src="assets/scripts/main.js"></script>
-<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 
 <script type="text/javascript" src="js/strophe.js"></script>
 <script type="text/javascript">
@@ -488,6 +488,110 @@
 	</div>
 	<!-- End Executed Task Detail Modal -->
 
+<!-- Add User Modal -->
+<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-hidden="true" id="addUserModal" >
+    <div class="modal-dialog modal-lg " >
+        <div class="modal-content" style="width:1000px;">
+            <div class="modal-header">
+                <h5 class="modal-title">Kullanıcı Ekle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="addUserModalCloseBtn">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+			<div class="modal-body">
+						<div class="row">
+							<div class="col-lg-6">
+								<div class="main-card mb-3 card">
+									<div class="card-header">
+										<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+											<div class="col-lg-6"> 
+												<input class="form-control" type="text" id="ouName" name="ouName" placeholder="Klasör Adı " /> 
+											</div>
+											<div class="col-lg-6 pull-left"> 
+												<button id="addOu" type="button" class="btn-shadow btn btn-info " title="Klasor Ekle"><i class="fa fa-folder-open"></i></button> 
+											</div>
+								
+									</div>
+									<div class="card-body">
+										<div id="treeGridAddUserHolderDiv">
+											<div id="treeGridAddUserModal"></div>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+							    <div class="main-card mb-3 card">
+									<div class="card-header">
+											<h6>Kullanıcı Bilgileri</h6>
+									</div>
+									<div class="card-body">
+										<div class="form-group">
+											<label>Kullanıcı Adı</label>
+											<input class="form-control" type="text" id="uid" name="uid" placeholder="ID Giriniz..(uid) " />
+										</div>
+										<div class="form-group">
+											<label>Kullanıcı Adı</label>
+											<input class="form-control" type="text" id="cn" name="cn" placeholder="Ad Giriniz.." />
+										</div>
+										<div class="form-group">
+											<label>Kullanıcı Soyadı</label>
+											<input class="form-control" type="text" id="sn" name="sn" placeholder="Soyad Giriniz.." />
+										</div>
+										<div class="form-group">
+											<label>Parola</label>
+											<input class="form-control" type="password" id="userPassword" name="userPassword" placeholder="Parola" />
+										</div>
+										<div class="form-group">
+											<label>Parola</label>
+											<input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="Parola Onayla" />
+										</div>
+										<div class="form-group">
+											<a href="#" class="btn btn-primary submit-button" id="addUserBtn" onclick="addUser()">
+												<span>Kaydet</span>
+											</a>
+										</div>
+									</div>
+								</div>
+						</div>
+					</div>
+			</div>
+        </div>
+    </div>
+</div>
+<!-- End Add User Modal -->
+<!-- Delete User Modal -->
+<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-hidden="true" id="deleteUserModal" >
+    <div class="modal-dialog " >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kullanıcı Sil</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="addUserModalCloseBtn">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+			<div class="modal-body">
+						<div class="row">
+							<div class="col-ld-6"> 
+								<img class="rounded-circle" src="img/users4_delete.png" alt=""> 
+							</div>
+							<div class="col-ld-6">
+								<div id="userInfoDelete">
+								</div>
+								<div> secili kayıtlar silinecektir. Emin misiniz?</div>
+								<div class="form-group text-right">
+									<a href="#" class="btn btn-primary submit-button" id="deleteUserBtn" onclick="deleteUsers()">
+										<span>Sil</span>
+									</a>
+								</div>
+							
+							</div>
+						</div>
+			</div>
+        </div>
+    </div>
+</div>
+<!-- End Delete User Modal -->
 	<script type="text/javascript" src="js/notify.min.js"></script>
 	<script type="text/javascript" src="js/messaging.js"></script> <!-- for xmmp connection send message -->
 	<script type="text/javascript" src="js/main.js"></script>

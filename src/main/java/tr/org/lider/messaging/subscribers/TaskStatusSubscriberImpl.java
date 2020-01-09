@@ -31,7 +31,6 @@ import tr.org.lider.utils.FileCopyUtils;
 
 
 /**
- * 
  * handle task result and send result to lider console
  */
 @Component
@@ -159,9 +158,6 @@ public class TaskStatusSubscriberImpl implements ITaskStatusSubscriber {
 								result = new CommandExecutionResultImpl(result.getId(), c, agent.getId(),
 										message.getResponseCode(), message.getResponseMessage(), null,
 										message.getContentType(), new Date(), mailSubject, mailContent);
-								
-								
-
 							} else {
 								logger.info("Sending the result with data!");
 							}
@@ -183,9 +179,6 @@ public class TaskStatusSubscriberImpl implements ITaskStatusSubscriber {
 
 								ObjectMapper mapper = new ObjectMapper();
 								mapper.setDateFormat(new SimpleDateFormat("dd-MM-yyyy HH:mm"));
-								
-							String resultData= new String(notification.getResult().getResponseData());
-								
 								messagingService.sendChatMessage(mapper.writeValueAsString(notification),
 										notification.getRecipient());
 
@@ -200,7 +193,6 @@ public class TaskStatusSubscriberImpl implements ITaskStatusSubscriber {
 						logger.error(e.getMessage(), e);
 					}
 				}
-
 			}
 		}
 	}

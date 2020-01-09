@@ -8,7 +8,7 @@
  * 
  */
 
-var ref=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null);
+var ref=connection.addHandler(getPackagesListener, null, 'message', null, null,  null);
 $("#entrySize").html(selectedEntries.length);
 var deletedItems = [];
 var addedItems = [];
@@ -23,7 +23,6 @@ selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
 selectedPluginTask.commandId = "INSTALLED_PACKAGES";
 var params = JSON.stringify(selectedPluginTask);
-console.log(selectedPluginTask.commandId);
 
 // get REPOSITORIES from agent when page opened. This action default parameterMap is null. CommanID is REPOSITORIES
 
@@ -59,7 +58,7 @@ function sendRepositoryTask(params){
 	    });
 }
 
-function resourceUsageListener(msg) {
+function getPackagesListener(msg) {
 	var num;
     var to = msg.getAttribute('to');
     var from = msg.getAttribute('from');
@@ -70,32 +69,30 @@ function resourceUsageListener(msg) {
     	var body = elems[0];
     	var data=Strophe.xmlunescape(Strophe.getText(body));
     	var xmppResponse=JSON.parse(data);
-//		console.log(xmppResponse.commandClsId)
     	var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-		var repo_addr = arrg["packageSource"].split("\n");
-		$("#plugin-result").html(xmppResponse.result.responseMessage);
-		
-//		var html = '<table class="table table-striped table-bordered" id="repoListTable">';
-//		html += '<thead>';
-//		html += '<tr>';
-//		html += '<th style="width: 5%">Seç</th>';
-//		html += '<th style="width: 95%">Depo Adresleri</th>';
-//		html += '</thead>';
-//		for (var i = 0; i < repo_addr.length ; i++){
-//			num = i+1;
-//			if(repo_addr[i] != ""){
-//				html += '<tr>';
-//	            html += '<td><span class="cb-repo-addr">'
-//					  + '<input onclick="repositoryChecked()" type="checkbox" name="repo-addr" value="' +  repo_addr[i] +'">'
-//					  + '<label for="checkbox1"></label>'
-//					  + '</span>'
-//					  + '</td>'
-//				html += '<td class="repoAdrr">'+ repo_addr[i] +'</td>';
-//	            html += '</tr>';
-//			}				  								
-//		}				
-//		html += '</table>';
-//		$('#repositoriesList').html(html);
+		if(xmppResponse.commandClsId =='INSTALLED_PACKAGES'){
+			var params = {
+				    "id" : xmppResponse.result.id
+			};
+			alert(xmppResponse.result.id)
+				$.ajax({
+					 	type: 'POST', 
+					    url: "/command/commandexecutionresult",
+					    dataType: 'json',
+					    data: params,
+					    success: function(data) {
+					    	if(data != null) {
+						    	if(data.responseDataStr != null) {
+						    		console.log(data.responseDataStr);
+						    	}
+						    }
+					       
+					    },
+				       error: function(result) {
+				        alert(result);
+				      }
+				    });
+		}
     }
     // we must return true to keep the handler alive. returning false would remove it after it finishes.
     return true;
@@ -152,30 +149,6 @@ $('#deleteRepo').click(function(e){
 	}
 });
 
-function addRepoAddr(repoAddr){
-	var newRow = $("<tr>");
-    var cols = "";
-    cols += '<td><span class="cb-repo-addr">'
-		  + '<input onclick="repositoryChecked()" type="checkbox" name="repo-addr" value="' +  repoAddr +'">'
-		  + '<label for="checkbox1"></label>'
-		  + '</span>'
-		  + '</td>'
-    cols += '<td class="repoAdrr">' + repoAddr +'</td>';
-    newRow.append(cols);
-    $("#repoListTable").append(newRow);
-	addedItems.push(repoAddr);
-	$("#inputRepoAddrId").val("");
-	console.log(addedItems);
-}
-
-$('#addRepoButtonId').click(function(e){
-	var repoAddr = $("#inputRepoAddrId").val();
-	if (repoAddr != "") {
-		addRepoAddr(repoAddr);
-	} else {
-		$.notify("Lütfen eklemek istediğiniz depo adresini tanımlayınız.", "warn")
-	}
-});
 
 $('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
 	alert("Zamanlı Çalıştır")

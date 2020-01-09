@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -167,6 +168,20 @@ public class ConfigurationService{
 		groupLdapObjectClasses = env.getProperty("group.ldap.object.classes");
 		setGroupLdapBaseDn(env.getProperty("group.ldap.base.dn"));
 		setUserLdapRolesDn(env.getProperty("user.ldap.roles.dn"));
+		
+		// File server configuration
+		if(env.getProperty("file.server.protocol").equalsIgnoreCase(Protocol.SSH.toString())) {
+			fileServerProtocol = Protocol.SSH;
+		}else if(env.getProperty("file.server.protocol").equalsIgnoreCase(Protocol.HTTP.toString()))
+			fileServerProtocol = Protocol.HTTP;
+		fileServerHost = env.getProperty("file.server.host");
+		fileServerUsername = env.getProperty("file.server.username");
+		fileServerPassword = env.getProperty("file.server.password");
+		fileServerPluginPath = env.getProperty("file.server.plugin.path");
+		fileServerAgreementPath = env.getProperty("file.server.agreement.path");
+		fileServerAgentFilePath = env.getProperty("file.server.agent.file.path");
+		fileServerUrl = env.getProperty("file.server.agent.fileServerUrl");
+		fileServerPort = new Integer(env.getProperty("file.server.port"));
 	}
 
 	public void refresh() {

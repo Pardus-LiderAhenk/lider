@@ -89,11 +89,7 @@ public class TaskService {
 		CommandImpl command=null;
 		
 		try {
-			command= new CommandImpl(null, null, task, 
-					request.getDnList(), 
-					request.getDnType(), 
-					uidList,
-					"lider_console", 
+			command= new CommandImpl(null, null, task, request.getDnList(), request.getDnType(), uidList,"lider_console", 
 					((PluginTask) request).getActivationDate(), 
 					null, new Date(), null, false);
 		} catch (JsonGenerationException e) {
@@ -127,13 +123,10 @@ public class TaskService {
 				
 				command.addCommandExecution(execution);
 
-				String cronStr = task.getCronExpression();
-			
 				// Task message
 				ILiderMessage message = null;
 				if (isAhenk) {
-					// Set agent JID
-					// (the JID is UID of the LDAP entry)
+					// Set agent JID (the JID is UID of the LDAP entry)
 					if (uid == null || uid.isEmpty()) {
 						logger.error("JID was null. Ignoring task: {} for agent: {}",	new Object[] { task.toJson(), entry.getDistinguishedName() });
 						continue;

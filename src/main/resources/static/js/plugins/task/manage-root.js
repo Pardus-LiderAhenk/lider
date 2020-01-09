@@ -49,7 +49,6 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	    }
 	    else{
 	    	$.notify("Parola en az 12 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
-	    	$("#plugin-result").html("Parola en az 12 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.");
 	    }
 	}
 	else{

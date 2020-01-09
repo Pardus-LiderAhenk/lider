@@ -8,7 +8,7 @@
  * 
  */
 
-var ref=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null);
+var ref=connection.addHandler(repositoryListener, null, 'message', null, null,  null);
 $("#entrySize").html(selectedEntries.length);
 var deletedItems = [];
 var addedItems = [];
@@ -21,12 +21,12 @@ selectedPluginTask.dnList=dnlist;
 selectedPluginTask.parameterMap={};
 selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
+selectedPluginTask.commandId = "REPOSITORIES";
 var params = JSON.stringify(selectedPluginTask);
-console.log(selectedPluginTask.commandId);
 
 // get REPOSITORIES from agent when page opened. This action default parameterMap is null. CommanID is REPOSITORIES
 sendRepositoryTask(params);
-console.log(params);
+//console.log(params);
 function sendRepositoryTask(params){
 	
 	$.ajax({
@@ -56,7 +56,7 @@ function sendRepositoryTask(params){
 	    });
 }
 
-function resourceUsageListener(msg) {
+function repositoryListener(msg) {
 	var num;
     var to = msg.getAttribute('to');
     var from = msg.getAttribute('from');
@@ -83,7 +83,7 @@ function resourceUsageListener(msg) {
 			if(repo_addr[i] != ""){
 				html += '<tr>';
 	            html += '<td><span class="cb-repo-addr">'
-					  + '<input onclick="repositoryChecked()" type="checkbox" name="repo-addr" value="' +  repo_addr[i] +'">'
+					  + '<input type="checkbox" name="repo-addr" value="' +  repo_addr[i] +'">'
 					  + '<label for="checkbox1"></label>'
 					  + '</span>'
 					  + '</td>'
@@ -104,7 +104,6 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 		selectedPluginTask.commandId = "PACKAGE_SOURCES";  		
 		selectedPluginTask.parameterMap={"deletedItems":deletedItems, "addedItems":addedItems};
 		var params = JSON.stringify(selectedPluginTask);
-//		console.log(params);
 		sendRepositoryTask(params);
 		
 		deletedItems = [];
@@ -113,17 +112,14 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	else{
 		$.notify("Lütfen görev göndermek için işlem seçiniz. Ekle veya Sil işlemi yapınız.","warn");
 	}
-	selectedPluginTask.commandId = "REPOSITORIES";
 });
 
-
-function repositoryChecked() {
+$('#deleteRepo').click(function(e){
 	$('input:checkbox[name=repo-addr]').each(function() {
 		var selectRepoAddr = $(this).val();
 	    if($(this).is(':checked')) {
 	    	if(deletedItems.includes(selectRepoAddr) != true ){
 	    		deletedItems.push(selectRepoAddr);
-//	    		console.log(deletedItems);
 	    	}
 	    }
 	    else {
@@ -137,12 +133,8 @@ function repositoryChecked() {
 	    	}
 	    }
 	});
-}
-
-$('#deleteRepo').click(function(e){
 	if($('input:checkbox[name=repo-addr]').is(':checked')) {
 		$('input:checkbox[name=repo-addr]:checked').closest("tr").remove();
-//		console.log(deletedItems);
 	}
 	else {
 		$.notify("Lütfen silmek için depo adresi seçiniz.", "warn")
@@ -162,7 +154,6 @@ function addRepoAddr(repoAddr){
     $("#repoListTable").append(newRow);
 	addedItems.push(repoAddr);
 	$("#inputRepoAddrId").val("");
-	console.log(addedItems);
 }
 
 $('#addRepoButtonId').click(function(e){

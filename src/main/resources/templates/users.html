@@ -38,29 +38,61 @@
 
 	<div class="col-lg-4">
 		<div class="main-card mb-3 card">
-			<div class="card-header">
-				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-
-				<div>
-					<button id="userInfo" type="button"
-						class="btn-shadow btn btn-info" title="Kullanıcı Detay" ><i class="fa fa-info"></i></button>
-						
-					<button id="addUser" type="button"
-						class="btn-shadow btn btn-info" title="Kullanıcı Ekle" ><i class="fa fa-plus"></i></button>
-						
-					<button id="editUser" type="button"
-						class="btn-shadow btn btn-info"   title="Kullanıcı Düzenle"><i class="fa fa-edit"></i></button>
-						
-					<button id="deleteUser" type="button"
-						class="btn-shadow btn btn-info"   title="Kullanıcı Sil"><i class="fa fa-times"></i></button>
-						
-				</div>
-
-			</div>
 			<div class="card-body">
-				<div id="treeGridUser"></div>
+			
+						<div>
+					<div class="d-inline-block dropdown">
+                                        <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+                                            <span class="btn-icon-wrapper pr-2 opacity-7">
+                                                <i class="fa fa-business-time fa-w-20"></i>
+                                            </span>
+                                            Buttons
+                                        </button>
+                                        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+                                            <ul class="nav flex-column">
+                                                <li class="nav-item">
+                                                    <a href="javascript:void(0);" class="nav-link" >
+                                                        <i class="nav-link-icon lnr-inbox"></i>
+                                                        <span>
+                                                            Inbox
+                                                        </span>
+                                                        <div class="ml-auto badge badge-pill badge-secondary">86</div>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="javascript:void(0);" class="nav-link">
+                                                        <i class="nav-link-icon lnr-book"></i>
+                                                        <span>
+                                                            Book
+                                                        </span>
+                                                        <div class="ml-auto badge badge-pill badge-danger">5</div>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="javascript:void(0);" class="nav-link">
+                                                        <i class="nav-link-icon lnr-picture"></i>
+                                                        <span>
+                                                            Picture
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a disabled href="javascript:void(0);" class="nav-link disabled">
+                                                        <i class="nav-link-icon lnr-file-empty"></i>
+                                                        <span>
+                                                            File Disabled
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+				</div>
+				<hr>
+				<div id="treeGridUserHolderDiv">
+					<div id="treeGridUser"></div>
+				</div>
 			</div>
-
 		</div>
 	</div>
 
@@ -72,6 +104,8 @@
 						<a role="tab" class="nav-link active"
 							id="tab-c-1" data-toggle="tab" href="#tab-new-policy"> 
 							<span>Politika Gönder</span>
+							
+							
 						</a>
 					</li>
 					
@@ -89,7 +123,8 @@
 				<div class="tab-content">
 					<div class="tab-pane active" id="tab-new-policy" role="tabpanel">
 						<p class="mb-0"></p>
-
+						
+				
 					</div>
 					<div class="tab-pane" id="tab-entry-info" role="tabpanel">
 					
@@ -102,7 +137,5 @@
 
 	</div>
 </div>
-
-
 
 

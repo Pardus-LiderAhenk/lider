@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tr.org.lider.ldap.DNType;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
@@ -65,7 +66,6 @@ public class LdapController {
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
-
 		selectedEntry.setChildEntries(subEntries);
 		return subEntries;
 	}
@@ -348,10 +348,25 @@ public class LdapController {
 	@ResponseBody
 	public Boolean deleteUser(HttpServletRequest request, Model model, @RequestBody LdapEntry[] selectedEntryArr) {
 			try {
+				List<LdapEntry> ouList4Delete=new ArrayList<>();
+				
 				for (LdapEntry ldapEntry : selectedEntryArr) {
-					ldapService.deleteEntry(ldapEntry.getDistinguishedName());
-					logger.info("User deleted successfully RDN ="+ldapEntry.getDistinguishedName());
+					if(ldapEntry.getType().equals(DNType.USER)) {
+						ldapService.deleteEntry(ldapEntry.getDistinguishedName());
+						logger.info("User deleted successfully RDN ="+ldapEntry.getDistinguishedName());
+					}
+					else if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
+						ouList4Delete.add(ldapEntry);
+					}
 				}
+				
+				for (LdapEntry ldapEntry : ouList4Delete) {
+					List<LdapEntry> subEntries = ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(&(objectclass=inetOrgPerson)(objectclass=pardusAccount))",	new String[] { "*" }, SearchScope.ONELEVEL);
+					if(subEntries.size()==0) {
+						ldapService.deleteEntry(ldapEntry.getDistinguishedName());
+					}
+				}
+				
 				return true;
 			} catch (LdapException e) {
 				e.printStackTrace();

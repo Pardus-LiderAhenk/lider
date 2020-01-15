@@ -8,6 +8,10 @@
  * 
  */
 
+if (ref) {
+	connection.deleteHandler(ref);
+}
+
 var ref=connection.addHandler(repositoryListener, null, 'message', null, null,  null);
 $("#entrySize").html(selectedEntries.length);
 var deletedItems = [];
@@ -26,7 +30,6 @@ var params = JSON.stringify(selectedPluginTask);
 
 // get REPOSITORIES from agent when page opened. This action default parameterMap is null. CommanID is REPOSITORIES
 sendRepositoryTask(params);
-//console.log(params);
 function sendRepositoryTask(params){
 	
 	$.ajax({
@@ -45,15 +48,15 @@ function sendRepositoryTask(params){
 	    	var res = jQuery.parseJSON(result);
 	    	console.log("rest response")
 	    	console.log(res)
-	    	if(res.status=="OK"){				    		
+	    	if(res.status=="OK"){		    		
 	    		$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 	    	}   	
 	        /* $('#closePage').click(); */
 	      },
 	      error: function(result) {
-	        alert(result);
+	    	  $.notify(result, "error");
 	      }
-	    });
+	});
 }
 
 function repositoryListener(msg) {
@@ -67,52 +70,42 @@ function repositoryListener(msg) {
     	var body = elems[0];
     	var data=Strophe.xmlunescape(Strophe.getText(body));
     	var xmppResponse=JSON.parse(data);
-//					    	console.log(xmppResponse.commandClsId)
     	var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		var repo_addr = arrg["packageSource"].split("\n");
-		$("#plugin-result").html(xmppResponse.result.responseMessage);
 		
-		var html = '<table class="table table-striped table-bordered" id="repoListTable">';
-		html += '<thead>';
-		html += '<tr>';
-		html += '<th style="width: 5%">Seç</th>';
-		html += '<th style="width: 95%">Depo Adresleri</th>';
-		html += '</thead>';
-		for (var i = 0; i < repo_addr.length ; i++){
-			num = i+1;
-			if(repo_addr[i] != ""){
-				html += '<tr>';
-	            html += '<td><span class="cb-repo-addr">'
-					  + '<input type="checkbox" name="repo-addr" value="' +  repo_addr[i] +'">'
-					  + '<label for="checkbox1"></label>'
-					  + '</span>'
-					  + '</td>'
-				html += '<td class="repoAdrr">'+ repo_addr[i] +'</td>';
-	            html += '</tr>';
-			}				  								
-		}				
-		html += '</table>';
-		$('#repositoriesList').html(html);
+		if (xmppResponse.result.responseCode != "TASK_ERROR") {
+			var html = '<table class="table table-striped table-bordered" id="repoListTable">';
+			html += '<thead>';
+			html += '<tr>';
+			html += '<th style="width: 5%">Seç</th>';
+			html += '<th style="width: 95%">Depo Adresleri</th>';
+			html += '</thead>';
+			for (var i = 0; i < repo_addr.length ; i++){
+				num = i+1;
+				if(repo_addr[i] != ""){
+					html += '<tr>';
+		            html += '<td><span class="cb-repo-addr">'
+						  + '<input type="checkbox" name="repo-addr" value="' +  repo_addr[i] +'">'
+						  + '<label for="checkbox1"></label>'
+						  + '</span>'
+						  + '</td>'
+					html += '<td class="repoAdrr">'+ repo_addr[i] +'</td>';
+		            html += '</tr>';
+				}				  								
+			}				
+			html += '</table>';
+			$('#repositoriesList').html(html);
+			$("#plugin-result").html("");
+			$.notify(xmppResponse.result.responseMessage, "success");
+		}
+		else {
+			$("#plugin-result").html(xmppResponse.result.responseMessage);
+			$.notify(xmppResponse.result.responseMessage, "error");
+		}
     }
     // we must return true to keep the handler alive. returning false would remove it after it finishes.
     return true;
 }
-
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
-	if(addedItems.length != 0 || deletedItems.length != 0){
-		// commandId is PACKAGE_SOURCES. This command id is used to add and delete repositories
-		selectedPluginTask.commandId = "PACKAGE_SOURCES";  		
-		selectedPluginTask.parameterMap={"deletedItems":deletedItems, "addedItems":addedItems};
-		var params = JSON.stringify(selectedPluginTask);
-		sendRepositoryTask(params);
-		
-		deletedItems = [];
-		addedItems = [];
-	}
-	else{
-		$.notify("Lütfen görev göndermek için işlem seçiniz. Ekle veya Sil işlemi yapınız.","warn");
-	}
-});
 
 $('#deleteRepo').click(function(e){
 	$('input:checkbox[name=repo-addr]').each(function() {
@@ -145,7 +138,7 @@ function addRepoAddr(repoAddr){
 	var newRow = $("<tr>");
     var cols = "";
     cols += '<td><span class="cb-repo-addr">'
-		  + '<input onclick="repositoryChecked()" type="checkbox" name="repo-addr" value="' +  repoAddr +'">'
+		  + '<input type="checkbox" name="repo-addr" value="' +  repoAddr +'">'
 		  + '<label for="checkbox1"></label>'
 		  + '</span>'
 		  + '</td>'
@@ -165,10 +158,30 @@ $('#addRepoButtonId').click(function(e){
 	}
 });
 
-$('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
-	alert("Zamanlı Çalıştır")
+$('#sendTask-'+ selectedPluginTask.page).click(function(e){
+	if(addedItems.length != 0 || deletedItems.length != 0){
+		// commandId is PACKAGE_SOURCES. This command id is used to add and delete repositories
+		selectedPluginTask.commandId = "PACKAGE_SOURCES";  		
+		selectedPluginTask.parameterMap={"deletedItems":deletedItems, "addedItems":addedItems};
+		var params = JSON.stringify(selectedPluginTask);
+		sendRepositoryTask(params);
+		deletedItems = [];
+		addedItems = [];
+	}
+	else{
+		$.notify("Lütfen Ekle veya Sil işleminden sonra Çalıştır butonuna tıklayınız.","warn");
+	}
 });
 
-$('#closePagePlugin').click(function(e){
-	connection.deleteHandler(ref);
+$('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
+	if (addedItems.length != 0 || deletedItems.length != 0) {
+		alert("Zamanlı Çalıştır");
+	} 
+	else {
+		$.notify("Lütfen Ekle veya Sil işleminden sonra Zamanlı Çalıştır butonuna tıklayınız.","warn");
+	}
+});
+
+$('#closePage-'+ selectedPluginTask.page).click(function(e){
+	connection.deleteHandler(ref);	
 });

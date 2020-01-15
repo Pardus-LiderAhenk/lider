@@ -8,6 +8,10 @@
 * 
 */
 
+if (ref) {
+	connection.deleteHandler(ref);
+}
+
 var ref=connection.addHandler(manageRootListener, null, 'message', null, null,  null);
 
 $("#entrySize").html(selectedEntries.length);		
@@ -30,32 +34,6 @@ var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 var digits = "0123456789";
 var splChars = "+=.@*!";
 
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
-	var entry=onlineEntryList[0];
-	var rootEntity = entry.jid;
-	rootPassword = $("#inputRootPassword").val();
-	selectedPluginTask.commandId = "SET_ROOT_PASSWORD";  		
-	selectedPluginTask.parameterMap={"RootPassword":rootPassword, "lockRootUser":lockRootUser, "rootEntity":rootEntity};
-	var params = JSON.stringify(selectedPluginTask);
-//	console.log(params);
-	if(lockRootUser != true){
-		
-		var ucaseFlag = contains(rootPassword, upperCase);
-	    var lcaseFlag = contains(rootPassword, lowerCase);
-	    var digitsFlag = contains(rootPassword, digits);
-	    var splCharsFlag = contains(rootPassword, splChars);
-	    if(rootPassword.length>=12 && ucaseFlag && lcaseFlag && digitsFlag && splCharsFlag){
-	    	setRootPassword(params);
-	    }
-	    else{
-	    	$.notify("Parola en az 12 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
-	    }
-	}
-	else{
-		setRootPassword(params);
-	}
-});
-
 function contains(rootPassword, allowedChars) {
     for (i = 0; i < rootPassword.length; i++) {
             var char = rootPassword.charAt(i);
@@ -63,7 +41,7 @@ function contains(rootPassword, allowedChars) {
             	 return true;
              }
          }
-     return false;
+    return false;
 }
 
 function setRootPassword(params){
@@ -83,15 +61,41 @@ function setRootPassword(params){
 	    	var res = jQuery.parseJSON(result);
 	    	console.log("rest response")
 	    	console.log(res)
-	    	if(res.status=="OK"){				    		
+	    	if(res.status=="OK"){
 	    		$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 	    	}   	
 	        /* $('#closePage').click(); */
 	      },
 	      error: function(result) {
-	        alert(result);
+	    	  $.notify(result, "error");
 	      }
-	    });
+	});
+}
+
+function manageRootListener(msg) {
+    var to = msg.getAttribute('to');
+    var from = msg.getAttribute('from');
+    var type = msg.getAttribute('type');
+    var elems = msg.getElementsByTagName('body');
+    
+    if (type == "chat" && elems.length > 0) {
+    	var body = elems[0];
+    	var data=Strophe.xmlunescape(Strophe.getText(body));
+    	var xmppResponse=JSON.parse(data);
+//    	console.log(xmppResponse.commandClsId);
+    	var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+		if(xmppResponse.commandClsId == "SET_ROOT_PASSWORD"){
+			if (xmppResponse.result.responseCode != "TASK_ERROR") {
+				$("#plugin-result").html("");
+				$.notify(xmppResponse.result.responseMessage, "success");
+			} else {
+				$("#plugin-result").html(xmppResponse.result.responseMessage);
+				$.notify(xmppResponse.result.responseMessage, "error");
+			}
+		}						 
+    }
+    // we must return true to keep the handler alive. returning false would remove it after it finishes.
+    return true;
 }
 
 $('#generateRootPassword').click(function(e){
@@ -114,7 +118,6 @@ $('#generateRootPassword').click(function(e){
 	    var splCharsFlag2 = contains(pwd, splChars);
 	}
 	$("#inputRootPassword").val(pwd);
-
 });
 
 function generatePassword(){
@@ -134,7 +137,6 @@ $('#lockRootUserButton').click(function(e){
 		$("#generateRootPassword").prop('disabled', true);
 		$("#inputRootPassword").val("");
 		lockRootUser = true;
-
 	}
 	else{
 		$("#inputRootPassword").prop("readonly", false);
@@ -143,33 +145,36 @@ $('#lockRootUserButton').click(function(e){
 	}
 });
 
-function manageRootListener(msg) {
-    var to = msg.getAttribute('to');
-    var from = msg.getAttribute('from');
-    var type = msg.getAttribute('type');
-    var elems = msg.getElementsByTagName('body');
-    
-    if (type == "chat" && elems.length > 0) {
-    	var body = elems[0];
-    	var data=Strophe.xmlunescape(Strophe.getText(body));
-    	var xmppResponse=JSON.parse(data);
-//    	console.log(xmppResponse.commandClsId);
-    	var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-		if(xmppResponse.commandClsId == "SET_ROOT_PASSWORD"){
-			$("#plugin-result").html(xmppResponse.result.responseMessage);
-		}						 
-    }
-    // we must return true to keep the handler alive. returning false would remove it after it finishes.
-    return true;
-}
+$('#sendTask-'+ selectedPluginTask.page).click(function(e){
+	var entry=onlineEntryList[0];
+	var rootEntity = entry.jid;
+	rootPassword = $("#inputRootPassword").val();
+	selectedPluginTask.commandId = "SET_ROOT_PASSWORD";
+	selectedPluginTask.parameterMap={"RootPassword":rootPassword, "lockRootUser":lockRootUser, "rootEntity":rootEntity};
+	var params = JSON.stringify(selectedPluginTask);
+	if(lockRootUser != true){
+		var ucaseFlag = contains(rootPassword, upperCase);
+	    var lcaseFlag = contains(rootPassword, lowerCase);
+	    var digitsFlag = contains(rootPassword, digits);
+	    var splCharsFlag = contains(rootPassword, splChars);
+	    if(rootPassword.length>=12 && ucaseFlag && lcaseFlag && digitsFlag && splCharsFlag){
+	    	setRootPassword(params);
+	    }
+	    else{
+	    	$.notify("Parola en az 12 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
+	    }
+	}
+	else{
+		setRootPassword(params);
+	}
+});
 
 //scheduled task to be added 
 $('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
 	alert("Zamanlı Çalıştır")
 });
 
-$('#closePagePlugin').click(function(e){
-	connection.deleteHandler(ref);
-	
+$('#closePage-'+ selectedPluginTask.page).click(function(e){
+	connection.deleteHandler(ref);	
 });
 

@@ -55,7 +55,7 @@ function sendPackageManagementTask(params){
 	    	}   	
 	      },
 	      error: function(result) {
-	        alert(result);
+	    	  $.notify(result, "error");
 	      }
 	});
 }
@@ -100,9 +100,6 @@ function getPackagesListener(msg) {
     						    		html += '<th style="width: 40%">Versiyon</th>';
     						    		html += '</thead>';
     						    		var parser_packages = [];
-    						    		var packageNames = [];
-  						    		  	var packageVersions = [];
-  						    		  	
     						    		for (var i = 0; i < packages.length; i++) {
     						    			parser_packages.push(packages[i].split(","));
 										}
@@ -110,9 +107,6 @@ function getPackagesListener(msg) {
     						    		for (var j = 0; j < parser_packages.length; j++) {
 						    				var package_name = parser_packages[j][1];
 						    				var package_version = parser_packages[j][2];
-						    				
-						    				packageNames.push(package_name);
-						    				packageVersions.push(package_version);
 						    				
 						    				var num = j+1;
 						    				html += '<tr>';
@@ -130,8 +124,6 @@ function getPackagesListener(msg) {
     						    		$('#installedPackagesList').html(html);
     						    		
     						    		var parser_packages = [];
-    						    		var packageNames = [];
-  						    		  	var packageVersions = [];
     						    		$("#plugin-result").html("");
     						    		$.notify(responseMessage, "success");
     						    		var table = $('#installedPackagesListTableId').DataTable( {
@@ -155,7 +147,7 @@ function getPackagesListener(msg) {
     						    }
     					    },
     				       error: function(result) {
-    				        alert(result);
+    				    	   $.notify(result, "error");
     				      }
     				 });
     	 		}

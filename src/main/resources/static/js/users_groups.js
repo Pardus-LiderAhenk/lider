@@ -145,8 +145,7 @@ $(document).ready(function(){
 				   var args = event.args;
 			       var row = args.row;
 			       var name= row.name;
-			       var row = $("#treeGridUserGroups").jqxTreeGrid('getRow', name);
-			        
+			       
 			       var html = '<table class="table table-striped table-bordered " id="attrTable">';
 					html += '<thead>';
 					html += '<tr>';

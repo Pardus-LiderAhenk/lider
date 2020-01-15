@@ -177,7 +177,7 @@ function loadPluginTaskTable(isMulti) {
 						var description = $(this).data('description');
 						var id = $(this).data('id');
 						
-						if (page == "manage-root" || page == "end-session") {
+						if (page == "manage-root" || page == "end-session" || page == "package-management") {
 							pageModalLabel = "#pluginHtmlPageModalLabel2";
 							pageModalRender = "#pluginPageRender2";
 							$(".sendTaskButton").attr("data-target", "#pluginHtmlPageNormalModal");

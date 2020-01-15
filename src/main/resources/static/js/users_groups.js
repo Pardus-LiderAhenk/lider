@@ -23,7 +23,7 @@ $(document).ready(function(){
 			           { name: "parent", type: "string" },
 			           { name: "distinguishedName", type: "string" },
 			           { name: "hasSubordinates", type: "string" },
-			           { name: "expanded", type: "string" },
+			           { name: "expandedUser", type: "string" },
 			           { name: "entryUUID", type: "string" },
 			           { name: "childEntries", type: "array" }
 			      ],
@@ -75,11 +75,71 @@ $(document).ready(function(){
 			    	},
 			     ready: function () {
 			    	 
+			    	 var allrows =$("#treeGridUserGroups").jqxTreeGrid('getRows');
+						if(allrows.length==1){
+							var row=allrows[0];
+							if(row.childEntries==null){
+
+								$("#treeGridUserGroups").jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.name);
+							}
+						}
+						$("#treeGridUserGroups").jqxTreeGrid('collapseAll');
+			    	 
 			     },
 			     columns: [
-			       { text: "Kullanıcı Grupları", align: "center", dataField: "name", width: '100%' }
+			       { text: "Kullanıcı Grup Ağacı", align: "center", dataField: "name", width: '100%' }
 			     ]
 			 });
+			 
+			 $('#treeGridUserGroups').on('rowExpand', function (event) {
+					var args = event.args;
+					var row = args.row;
+
+					if(row.expandedUser=="FALSE") {
+						var nameList=[];
+						for (var m = 0; m < row.records.length; m++) {
+							var childRow = row.records[m];
+							nameList.push(childRow.name);      
+						}
+						for (var k = 0; k < nameList.length; k++) {
+							// get a row.
+							var childRowname = nameList[k];
+							$("#treeGridUserGroups").jqxTreeGrid('deleteRow', childRowname); 
+						}  
+						$.ajax({
+							type : 'POST',
+							url : 'lider/ldap/getOuDetails',
+							data : 'uid=' + row.distinguishedName + '&type=' + row.type
+							+ '&name=' + row.name + '&parent=' + row.parent,
+							dataType : 'text',
+							success : function(ldapResult) {
+								var childs = jQuery.parseJSON(ldapResult);
+								var onlineCount=0;
+								for (var m = 0; m < childs.length; m++) {
+									// get a row.
+									var childRow = childs[m];
+									if(childRow.online){
+										onlineCount++;
+									}
+									$("#treeGridUserGroups").jqxTreeGrid('addRow', childRow.name, childRow, 'last', row.name);
+									if(childRow.hasSubordinates=="TRUE"){
+										$("#treeGridUserGroups").jqxTreeGrid('addRow', childRow.name+"1" , {}, 'last', childRow.name); 
+									}
+									$("#treeGridUserGroups").jqxTreeGrid('collapseRow', childRow.name);
+								} 
+								row.expandedUser="TRUE"
+									if(onlineCount == 0){
+										newName=row.ou+" ("+childs.length+")";
+									}
+									else{
+										newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
+									}
+								$("#treeGridUserGroups").jqxTreeGrid('updateRow',row.name, {name:newName });
+							}
+						});  
+					}
+				}); 
+			 
 			 
 			 $('#treeGridUserGroups').on('rowDoubleClick', function (event) {
 				   var args = event.args;

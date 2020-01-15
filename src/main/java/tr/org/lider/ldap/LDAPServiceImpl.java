@@ -1090,8 +1090,6 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 	}
 	
-	
-	
 	public LdapEntry getLdapUserTree() {
 		String globalUserOu = configurationService.getUserLdapBaseDn(); //"ou=Kullanıcılar,dc=mys,dc=pardus,dc=org";
 		LdapEntry usersDn = null;
@@ -1112,10 +1110,25 @@ public class LDAPServiceImpl implements ILDAPService {
 		
 	}
 	
+	public LdapEntry getLdapUsersGroupTree() {
+		String globalUserOu = configurationService.getUserGroupLdapBaseDn(); 
+		LdapEntry usersGroupDn = null;
+		try {
+			List<LdapEntry> usersGroupEntrylist = findSubEntries(globalUserOu, "(objectclass=*)", new String[] { "*" }, SearchScope.OBJECT);
+			if (usersGroupEntrylist.size() > 0) {
+				usersGroupDn = usersGroupEntrylist.get(0);
+				usersGroupDn.setExpandedUser("FALSE");
+			}
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return usersGroupDn;
+	}
+	
 	public LdapEntry getLdapComputersTree() {
 		LdapEntry computersDn = null;
 		try {
-			String globalUserOu =  configurationService.getAgentLdapBaseDn(); //"ou=Ahenkler,dc=mys,dc=pardus,dc=org";
+			String globalUserOu =  configurationService.getAgentLdapBaseDn(); 
 			logger.info("Getting computers");
 			List<LdapEntry> retList = findSubEntries(globalUserOu, "(objectclass=*)",
 					new String[] { "*" }, SearchScope.OBJECT);
@@ -1130,6 +1143,26 @@ public class LDAPServiceImpl implements ILDAPService {
 			e.printStackTrace();
 		}
 		return computersDn;
+	}
+	
+	public LdapEntry getLdapAgentsGroupTree() {
+		LdapEntry computersGroupDn = null;
+		try {
+			String globalUserOu =  configurationService.getAhenkGroupLdapBaseDn(); 
+			logger.info("Getting computers group");
+			List<LdapEntry> retList = findSubEntries(globalUserOu, "(objectclass=*)",
+					new String[] { "*" }, SearchScope.OBJECT);
+			
+			logger.info("Ldap Computers Group Node listed.");
+			if (retList.size() > 0) {
+				computersGroupDn = retList.get(0);
+				computersGroupDn.setExpandedUser("FALSE");
+			}
+			
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return computersGroupDn;
 	}
 	
 	
@@ -1175,33 +1208,33 @@ public class LDAPServiceImpl implements ILDAPService {
 		return rolesDn;
 	}
 	
-	//gets tree of groups of names which just has agent members
-	public LdapEntry getLdapAgentGroupsTree() {
-		List<LdapEntry> allGorups = null;
-		LdapEntry groupDn= new LdapEntry("Gruplar",null,DNType.ORGANIZATIONAL_UNIT);
-		try {
-			String globalUserOu =  configurationService.getLdapRootDn(); 
-			allGorups = findSubEntries(globalUserOu, "(&(objectClass=groupOfNames)(liderGroupType=AHENK))",new String[] { "*" }, SearchScope.SUBTREE);
-			groupDn.setChildEntries(allGorups);
-		} catch (LdapException e) {
-			e.printStackTrace();
-		}
-		return groupDn;
-	}
-	
-	//gets tree of groups of names which just has user members
-	public LdapEntry getLdapUserGroupsTree() {
-		List<LdapEntry> allGorups = null;
-		LdapEntry groupDn= new LdapEntry("Gruplar",null,DNType.ORGANIZATIONAL_UNIT);
-		try {
-			String globalUserOu =  configurationService.getLdapRootDn(); 
-			allGorups = findSubEntries(globalUserOu, "(&(objectClass=groupOfNames)(liderGroupType=USER))",new String[] { "*" }, SearchScope.SUBTREE);
-			groupDn.setChildEntries(allGorups);
-		} catch (LdapException e) {
-			e.printStackTrace();
-		}
-		return groupDn;
-	}
+//	//gets tree of groups of names which just has agent members
+//	public LdapEntry getLdapAgentGroupsTree() {
+//		List<LdapEntry> allGorups = null;
+//		LdapEntry groupDn= new LdapEntry("İstemci Grupları",null,DNType.ORGANIZATIONAL_UNIT);
+//		try {
+//			String globalUserOu =  configurationService.getAhenkGroupLdapBaseDn(); 
+//			allGorups = findSubEntries(globalUserOu, "(|(objectClass=organizationalUnit)(&(objectClass=groupOfNames)(liderGroupType=AHENK)))",new String[] { "*" }, SearchScope.ONELEVEL);
+//			groupDn.setChildEntries(allGorups);
+//		} catch (LdapException e) {
+//			e.printStackTrace();
+//		}
+//		return groupDn;
+//	}
+//	
+//	//gets tree of groups of names which just has user members
+//	public LdapEntry getLdapUserGroupsTree() {
+//		List<LdapEntry> allGorups = null;
+//		LdapEntry groupDn= new LdapEntry("Kullanıcı Grupları",null,DNType.ORGANIZATIONAL_UNIT);
+//		try {
+//			String globalUserOu =  configurationService.getUserGroupLdapBaseDn(); 
+//			allGorups = findSubEntries(globalUserOu, "(|(objectClass=organizationalUnit)(&(objectClass=groupOfNames)(liderGroupType=USER)))",new String[] { "*" }, SearchScope.ONELEVEL);
+//			groupDn.setChildEntries(allGorups);
+//		} catch (LdapException e) {
+//			e.printStackTrace();
+//		}
+//		return groupDn;
+//	}
 
 	private static final int SALT_LENGTH = 4;
 

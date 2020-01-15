@@ -120,6 +120,10 @@ public class ConfigurationService{
 	@Autowired
 	private Environment env;
 
+	private String userGroupLdapBaseDn;
+
+	private String ahenkGroupLdapBaseDn;
+
 	@PostConstruct
 	public void init() throws Exception {
 
@@ -182,6 +186,12 @@ public class ConfigurationService{
 		fileServerAgentFilePath = env.getProperty("file.server.agent.file.path");
 		fileServerUrl = env.getProperty("file.server.agent.fileServerUrl");
 		fileServerPort = new Integer(env.getProperty("file.server.port"));
+		
+		setUserGroupLdapBaseDn(env.getProperty("user.group.ldap.base.dn"));
+		setAhenkGroupLdapBaseDn(env.getProperty("agent.group.ldap.base.dn"));
+		
+		
+		
 	}
 
 	public void refresh() {
@@ -899,6 +909,22 @@ public class ConfigurationService{
 
 	public void setGroupLdapBaseDn(String groupLdapBaseDn) {
 		this.groupLdapBaseDn = groupLdapBaseDn;
+	}
+
+	public String getUserGroupLdapBaseDn() {
+		return userGroupLdapBaseDn;
+	}
+
+	public void setUserGroupLdapBaseDn(String userGroupLdapBaseDn) {
+		this.userGroupLdapBaseDn = userGroupLdapBaseDn;
+	}
+
+	public String getAhenkGroupLdapBaseDn() {
+		return ahenkGroupLdapBaseDn;
+	}
+
+	public void setAhenkGroupLdapBaseDn(String ahenkGroupLdapBaseDn) {
+		this.ahenkGroupLdapBaseDn = ahenkGroupLdapBaseDn;
 	}
 
 }

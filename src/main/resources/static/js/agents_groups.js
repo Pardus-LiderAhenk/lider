@@ -23,6 +23,7 @@ $(document).ready(function(){
 			           { name: "distinguishedName", type: "string" },
 			           { name: "hasSubordinates", type: "string" },
 			           { name: "expanded", type: "string" },
+			           { name: "expandedUser", type: "string" },
 			           { name: "entryUUID", type: "string" },
 			           { name: "childEntries", type: "array" }
 			      ],
@@ -74,11 +75,70 @@ $(document).ready(function(){
 			    	},
 			     ready: function () {
 			    	 
+			    	 var allrows =$("#treeGridAgentGroups").jqxTreeGrid('getRows');
+						if(allrows.length==1){
+							var row=allrows[0];
+							if(row.childEntries==null){
+
+								$("#treeGridAgentGroups").jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.name);
+							}
+						}
+						$("#treeGridAgentGroups").jqxTreeGrid('collapseAll');
+			    	 
 			     },
 			     columns: [
-			       { text: "İstemci Grupları", align: "center", dataField: "name", width: '100%'}
+			       { text: "İstemci Grup Ağacı", align: "center", dataField: "name", width: '100%'}
 			     ]
 			 });
+			 
+			 $('#treeGridAgentGroups').on('rowExpand', function (event) {
+					var args = event.args;
+					var row = args.row;
+
+					if(row.expandedUser=="FALSE") {
+						var nameList=[];
+						for (var m = 0; m < row.records.length; m++) {
+							var childRow = row.records[m];
+							nameList.push(childRow.name);      
+						}
+						for (var k = 0; k < nameList.length; k++) {
+							// get a row.
+							var childRowname = nameList[k];
+							$("#treeGridAgentGroups").jqxTreeGrid('deleteRow', childRowname); 
+						}  
+						$.ajax({
+							type : 'POST',
+							url : 'lider/ldap/getOuDetails',
+							data : 'uid=' + row.distinguishedName + '&type=' + row.type
+							+ '&name=' + row.name + '&parent=' + row.parent,
+							dataType : 'text',
+							success : function(ldapResult) {
+								var childs = jQuery.parseJSON(ldapResult);
+								var onlineCount=0;
+								for (var m = 0; m < childs.length; m++) {
+									// get a row.
+									var childRow = childs[m];
+									if(childRow.online){
+										onlineCount++;
+									}
+									$("#treeGridAgentGroups").jqxTreeGrid('addRow', childRow.name, childRow, 'last', row.name);
+									if(childRow.hasSubordinates=="TRUE"){
+										$("#treeGridAgentGroups").jqxTreeGrid('addRow', childRow.name+"1" , {}, 'last', childRow.name); 
+									}
+									$("#treeGridAgentGroups").jqxTreeGrid('collapseRow', childRow.name);
+								} 
+								row.expandedUser="TRUE"
+									if(onlineCount == 0){
+										newName=row.ou+" ("+childs.length+")";
+									}
+									else{
+										newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
+									}
+								$("#treeGridAgentGroups").jqxTreeGrid('updateRow',row.name, {name:newName });
+							}
+						});  
+					}
+				}); 
 			 
 			 $('#treeGridAgentGroups').on('rowDoubleClick', function (event) {
 				   var args = event.args;

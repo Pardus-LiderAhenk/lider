@@ -117,7 +117,7 @@ public class LdapController {
 	@RequestMapping(value = "/agentGroups")
 	public List<LdapEntry> getAgentGroups() {
 		List<LdapEntry> result = new ArrayList<LdapEntry>();
-		result.add(ldapService.getLdapAgentGroupsTree());
+		result.add(ldapService.getLdapAgentsGroupTree());
 		return result;
 	}
 	
@@ -125,7 +125,7 @@ public class LdapController {
 	@RequestMapping(value = "/userGroups")
 	public List<LdapEntry> getLdapUserGroupsTree() {
 		List<LdapEntry> result = new ArrayList<LdapEntry>();
-		result.add(ldapService.getLdapUserGroupsTree());
+		result.add(ldapService.getLdapUsersGroupTree());
 		return result;
 	}
 	
@@ -146,6 +146,8 @@ public class LdapController {
 		retList.add(ldapService.getLdapUserTree());
 		return retList;
 	}
+	
+
 
 	@RequestMapping(value = "/getComputers")
 	public List<LdapEntry> getComputers(HttpServletRequest request, Model model) {

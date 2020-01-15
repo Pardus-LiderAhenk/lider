@@ -162,7 +162,8 @@ function loadPluginTaskTable(isMulti) {
 		    	
 				if(selectedEntries.length ==0){
 					 $.notify("Lütfen Görev Gönderilecek İstemci Seçiniz.","warn");
-					 $('#pluginHtmlPageLargeModalLabel').html("Lütfen Görev Gönderilecek İstemci Seçiniz.");
+					 $(this).removeAttr("data-target");
+					 $(this).removeAttr("data-toggle");
 				}
 				else{
 						$(".sendTaskButton").attr("data-target", "#pluginHtmlPageLargeModal");

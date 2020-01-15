@@ -122,6 +122,7 @@ function getPackagesListener(msg) {
 										}
     						    		html += '</table>';
     						    		$('#installedPackagesList').html(html);
+    						    		$('#package-management-info').html('<small>Silmek istediğini paket/leri seçerek Çalıştır ya da Zamanlı Çalıştır butonuna tıklayınız.</small>');
     						    		
     						    		var parser_packages = [];
     						    		$("#plugin-result").html("");

@@ -1,0 +1,31 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/end-sessions.js"></script>
+</head>
+<body>
+
+   	<div class="login-form-1">
+   		<small>
+    		<a>İstemcide açık olan kullanıcı oturumlarını sonlandırır.</a><br>
+     		<a>Açık olan oturumları sonlandırmak için Çalıştır ya da ileri bir zamanda sonlandırmak için Zamanlı Çalıştır butonuna tıklayınız.</a>
+     	</small>
+		<br><br>
+		<div id="plugin-result"></div>
+		<br><br>
+    	<div class="row">
+			<div class="col-lg-7">
+			<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+				<button id=sendTask-end-sessions type="button" class="btn-shadow btn btn-info" title="Çalıştır"><i class="fa fa-play"></i> Çalıştır</button>
+				<button id=sendTaskCron-end-sessions type="button" class="btn-shadow btn btn-info" title="Zamanlı Çalıştır"><i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır</button>
+			</div>
+			<div class="col-lg-5 text-right">
+<!-- 			ids of the following buttons must be closePage-{plugin-page} -->
+				<button id=closePage-end-sessions type="button" class="btn-shadow btn btn-info" data-dismiss="modal" title="Kapat"><i class="fa fa-window-close"></i> Kapat</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

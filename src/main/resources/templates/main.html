@@ -586,6 +586,45 @@
     </div>
 </div>
 <!-- End Delete User Modal -->
+<!--Open Ou management modal for different pages -->
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="ouManagerModal" >
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Klasor Yönetimi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="ouManagerModalCloseBtn">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+			<div class="modal-body">
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="main-card mb-3 card">
+									<div class="card-header">
+										<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+											<div class="col-lg-6"> 
+												<input class="form-control" type="text" id="ouName" name="ouName" placeholder="Klasör Adı " /> 
+											</div>
+											<div class="col-lg-6 pull-left"> 
+												<button id="addOu" type="button" class="btn-shadow btn btn-info " title="Klasor Ekle"><i class="fa fa-folder-open"></i></button> 
+											</div>
+								
+									</div>
+									<div class="card-body">
+										<div id="treeGridOuManagerHolderDiv">
+											<div id="treeGridOuManager"></div>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+				
+					</div>
+			</div>
+        </div>
+    </div>
+</div>
+<!-- End Add OU Modal -->
 	<script type="text/javascript" src="js/notify.min.js"></script>
 	<script type="text/javascript" src="js/messaging.js"></script> <!-- for xmmp connection send message -->
 	<script type="text/javascript" src="js/main.js"></script>

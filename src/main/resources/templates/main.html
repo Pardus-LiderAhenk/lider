@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="css/jqx.base.css" type="text/css" />
 <link rel="stylesheet" type="text/css" href="css/main_b.css" />
 <link rel="stylesheet" id="css-font-awesome" href="css/agent.info.css" />
+<link rel="stylesheet" type="text/css" href="/css/jquery.dataTables.min.css">
 
 
 <style type="text/css">
@@ -50,6 +51,7 @@
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script> 
  <script type="text/javascript" src="assets/scripts/main.js"></script> 
 <script type="text/javascript" src="js/strophe.js"></script>
+<script src="js/jquery.dataTables.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	var username = '[[${userNameJid}]]';
 	var password = '[[${password}]]';
@@ -251,7 +253,6 @@
 
 	<!--All Modals should be add here.. -->
 	
-	
 <!--Plugin Tasks loading here. XL-MODAL -->
 	<div class="modal fade" id="pluginHtmlPageLargeModal" tabindex="0"
 		role="dialog" aria-labelledby="pluginHtmlPageModalLabel"
@@ -259,20 +260,15 @@
 		<div class="modal-dialog modal-xl" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title w-100 text-center position-absolute" id="pluginHtmlPageModalLabel"></h5>
-					<button type="button" class="close" id="closePagePlugin" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
+					<h5 class="modal-title w-100 text-center" id="pluginHtmlPageModalLabel"></h5>
+<!-- 					<button type="button" class="close" id="closePagePluginLarge" data-dismiss="modal" -->
+<!-- 						aria-label="Close"> -->
+<!-- 						<span aria-hidden="true">&times;</span> -->
+<!-- 					</button> -->
 				</div>
 				<div class="modal-body">
 					<div id="pluginPageRender"></div>
 				</div>
-<!-- 				<div class="modal-footer"> -->
-<!-- 					<div> -->
-<!-- 						<a href="http://liderahenk.org/" target="_blank" class="view text-center" role="button"><i class="fa fa-info-circle"></i></a> -->
-<!-- 					</div> -->
-<!-- 				</div> -->
 			</div>
 		</div>
 	</div>
@@ -284,20 +280,15 @@
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title w-100 text-center position-absolute" id="pluginHtmlPageModalLabel2"></h5>
-					<button type="button" class="close" id="closePagePlugin" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
+					<h5 class="modal-title w-100 text-center" id="pluginHtmlPageModalLabel2"></h5>
+<!-- 					<button type="button" class="close" id="closePagePluginNormal" data-dismiss="modal" -->
+<!-- 						aria-label="Close"> -->
+<!-- 						<span aria-hidden="true">&times;</span> -->
+<!-- 					</button> -->
 				</div>
 				<div class="modal-body">
 					<div id="pluginPageRender2"></div>
 				</div>
-<!-- 				<div class="modal-footer"> -->
-<!-- 					<div> -->
-<!-- 						<a href="http://liderahenk.org/" target="_blank" class="view text-center" role="button"><i class="fa fa-info-circle"></i></a> -->
-<!-- 					</div> -->
-<!-- 				</div> -->
 			</div>
 		</div>
 	</div>

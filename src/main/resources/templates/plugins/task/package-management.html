@@ -4,24 +4,23 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script type="text/javascript" src="js/plugins/task/package-management.js"></script>
-
 <style>
 <!--
 /* Custom checkbox */
-.cb-repo-addr {
+.cb-package-name {
 	position: relative;
 }
-.cb-repo-addr input[type="checkbox"] {    
+.cb-package-name input[type="checkbox"] {    
 	opacity: 0;
 	position: absolute;
 	margin: 5px 0 0 3px;
 	z-index: 9;
 }
-.cb-repo-addr label:before{
+.cb-package-name label:before{
 	width: 18px;
 	height: 18px;
 }
-.cb-repo-addr label:before {
+.cb-package-name label:before {
 	content: '';
 	margin-right: 10px;
 	display: inline-block;
@@ -32,7 +31,7 @@
 	box-sizing: border-box;
 	z-index: 2;
 }
-.cb-repo-addr input[type="checkbox"]:checked + label:after {
+.cb-package-name input[type="checkbox"]:checked + label:after {
 	content: '';
 	position: absolute;
 	left: 6px;
@@ -45,14 +44,14 @@
 	z-index: 3;
 	transform: rotateZ(45deg);
 }
-.cb-repo-addr input[type="checkbox"]:checked + label:before {
+.cb-package-name input[type="checkbox"]:checked + label:before {
 	border-color: #03A9F4;
 	background: #03A9F4;
 }
-.cb-repo-addr input[type="checkbox"]:checked + label:after {
+.cb-package-name input[type="checkbox"]:checked + label:after {
 	border-color: #fff;
 }
-.cb-repo-addr input[type="checkbox"]:disabled + label:before {
+.cb-package-name input[type="checkbox"]:disabled + label:before {
 	color: #b8b8b8;
 	cursor: auto;
 	box-shadow: none;
@@ -63,36 +62,23 @@
 </head>
 <body>
 	<div class="login-form-1">
-<!-- 		<div class="row"> -->
-<!-- 			<div class="input-group mb-3 col-lg-10"> -->
-<!-- 				<div class="input-group-prepend"> -->
-<!-- 				    <span class="input-group-text">Depo Adresi Tanımla</span> -->
-<!-- 				 </div> -->
-<!-- 				 <input type="text" id="inputRepoAddrId" class="form-control" placeholder="deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main"> -->
-<!-- 			</div> -->
-<!-- 			<div class="col-lg-2 text-right"> -->
-<!-- 				<button id="addRepoButtonId" type="button" class="btn-shadow btn btn-info" title="Depo Ekle"><i class="fa fa-plus"></i> Ekle</button> -->
-<!--        			<button id="deleteRepo" type="button" class="btn-shadow btn btn-info" title="Depo Sil"><i class="fa fa-times"></i> Sil</button> -->
-<!--    			</div> -->
-<!-- 		</div> -->
 		<div class="login-group">
 			<div class="form-group">
-				<div class="row">
-					<div class="col-lg-12">
-						<br>
-						<div id=repositoriesList></div>
-					</div>
-				</div>
+				<div id=installedPackagesList></div>
 				<br>
 				<div id="plugin-result"></div>
 				<br><br>
 				<div class="row">
-					<div class="col-lg-12 text-right">
+					<div class="col-lg-7">
 					<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
- 	        			<button id=sendTaskCron-repositories type="button" class="btn-shadow btn btn-info" title="Zamanlı Çalıştır"><i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır</button>
-						<button id=sendTask-repositories type="button" class="btn-shadow btn btn-info" title="Çalıştır"><i class="fa fa-play"></i> Çalıştır</button>
-	    			</div>
-    			</div>
+						<button id=sendTask-package-management type="button" class="btn-shadow btn btn-info" title="Çalıştır"><i class="fa fa-play"></i> Çalıştır</button>
+						<button id=sendTaskCron-package-management type="button" class="btn-shadow btn btn-info" title="Zamanlı Çalıştır"><i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır</button>
+					</div>
+					<div class="col-lg-5 text-right">
+<!-- 					ids of the following buttons must be closePage-{plugin-page} -->
+						<button id=closePage-package-management type="button" class="btn-shadow btn btn-info" data-dismiss="modal" title="Kapat"><i class="fa fa-window-close"></i> Kapat</button>
+  					</div>
+				</div>
 			</div>
 		</div>			
 	</div>

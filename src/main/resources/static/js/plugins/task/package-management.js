@@ -1,6 +1,6 @@
 /**
  * Task is packages-sources and repositeries
- * This task get REPOSITORIES from agents. This task is used add and delete repository 
+ * This task get installed packages from agents. This task used to remove selected packages from agent
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
  * 
@@ -8,10 +8,14 @@
  * 
  */
 
+
+if (ref) {
+	connection.deleteHandler(ref);
+}
 var ref=connection.addHandler(getPackagesListener, null, 'message', null, null,  null);
 $("#entrySize").html(selectedEntries.length);
-var deletedItems = [];
-var addedItems = [];
+
+var packageInfoList = [];
 var dnlist = []
 
 for (var i = 0; i < selectedEntries.length; i++) {
@@ -23,13 +27,12 @@ selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
 selectedPluginTask.commandId = "INSTALLED_PACKAGES";
 var params = JSON.stringify(selectedPluginTask);
+//get installed packages from agent when page opened. This action default parameterMap is null. CommanID is INSTALLED_PACKAGES
 
-// get REPOSITORIES from agent when page opened. This action default parameterMap is null. CommanID is REPOSITORIES
+sendPackageManagementTask(params);
+//console.log(params);
 
-sendRepositoryTask(params);
-console.log(params);
-
-function sendRepositoryTask(params){
+function sendPackageManagementTask(params){
 	
 	$.ajax({
 	      type: "POST",
@@ -47,15 +50,14 @@ function sendRepositoryTask(params){
 	    	var res = jQuery.parseJSON(result);
 	    	console.log("rest response")
 	    	console.log(res)
-	    	if(res.status=="OK"){				    		
+	    	if(res.status=="OK"){		    		
 	    		$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 	    	}   	
-	        /* $('#closePage').click(); */
 	      },
 	      error: function(result) {
 	        alert(result);
 	      }
-	    });
+	});
 }
 
 function getPackagesListener(msg) {
@@ -70,90 +72,193 @@ function getPackagesListener(msg) {
     	var data=Strophe.xmlunescape(Strophe.getText(body));
     	var xmppResponse=JSON.parse(data);
     	var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-		if(xmppResponse.commandClsId =='INSTALLED_PACKAGES'){
-			var params = {
-				    "id" : xmppResponse.result.id
-			};
-			alert(xmppResponse.result.id)
-				$.ajax({
-					 	type: 'POST', 
-					    url: "/command/commandexecutionresult",
-					    dataType: 'json',
-					    data: params,
-					    success: function(data) {
-					    	if(data != null) {
-						    	if(data.responseDataStr != null) {
-						    		console.log(data.responseDataStr);
-						    	}
-						    }
-					       
-					    },
-				       error: function(result) {
-				        alert(result);
-				      }
-				    });
-		}
+//    	console.log(xmppResponse);
+    	var responseMessage = xmppResponse.result.responseMessage;
+    	if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+    		if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+    			if(xmppResponse.result.contentType =="TEXT_PLAIN"){
+        			var params = {
+        				    "id" : xmppResponse.result.id
+        			};
+//        			connection.deleteHandler(ref);
+    				$.ajax({
+    					 	type: 'POST', 
+    					    url: "/command/commandexecutionresult",
+    					    dataType: 'json',
+    					    data: params,
+    					    success: function(data) {
+    					    	if(data != null) {
+    						    	if(data.responseDataStr != null) {
+    						    		var packages = data.responseDataStr.split("\n");
+    						    		
+    						    		var html = '<table class="table table-striped table-bordered display" id="installedPackagesListTableId" border="1">';
+    						    		html += '<thead>';
+    						    		html += '<tr>';
+    						    		html += '<th style="width: 10%">Seç</th>';
+    						    		html += '<th style="width: 10%">#</th>';
+    						    		html += '<th style="width: 40%">Adı</th>';
+    						    		html += '<th style="width: 40%">Versiyon</th>';
+    						    		html += '</thead>';
+    						    		var parser_packages = [];
+    						    		var packageNames = [];
+  						    		  	var packageVersions = [];
+  						    		  	
+    						    		for (var i = 0; i < packages.length; i++) {
+    						    			parser_packages.push(packages[i].split(","));
+										}
+    						    		
+    						    		for (var j = 0; j < parser_packages.length; j++) {
+						    				var package_name = parser_packages[j][1];
+						    				var package_version = parser_packages[j][2];
+						    				
+						    				packageNames.push(package_name);
+						    				packageVersions.push(package_version);
+						    				
+						    				var num = j+1;
+						    				html += '<tr>';
+						    	            html += '<td class="text-center"><span class="cb-package-name">'
+						    					  + '<input type="checkbox" name="package_name" id="'+ package_version +'" value="' + package_name +'">'
+						    					  + '<label for="checkbox1"></label>'
+						    					  + '</span>'
+						    					  + '</td>';
+						    				html += '<td>'+ num +'</td>';
+						    				html += '<td>'+ package_name +'</td>';
+						    	            html += '<td>'+ package_version +'</td>';
+						    	            html += '</tr>';
+										}
+    						    		html += '</table>';
+    						    		$('#installedPackagesList').html(html);
+    						    		
+    						    		var parser_packages = [];
+    						    		var packageNames = [];
+  						    		  	var packageVersions = [];
+    						    		$("#plugin-result").html("");
+    						    		$.notify(responseMessage, "success");
+    						    		var table = $('#installedPackagesListTableId').DataTable( {
+    						    	        "scrollY": "600px",
+    						    	        "paging": false,
+    						    	        "scrollCollapse": true,
+    						    	        "oLanguage": {
+    						    	            "sLengthMenu": 'Görüntüle <select>'+
+    						    	              '<option value="20">20</option>'+
+    						    	              '<option value="30">30</option>'+
+    						    	              '<option value="40">40</option>'+
+    						    	              '<option value="50">50</option>'+
+    						    	              '<option value="-1">Tümü</option>'+
+    						    	              '</select> kayıtları',
+    						    	             "sSearch": "Paket Ara:",
+    						    	             "sInfo": "Toplam paket sayısı: _TOTAL_",
+    						    	             "sInfoFiltered": " - _MAX_ kayıt arasından",
+    						    	          },
+    						    	    } );
+    						    	}
+    						    }
+    					    },
+    				       error: function(result) {
+    				        alert(result);
+    				      }
+    				 });
+    	 		}
+    			else {
+    				$("#plugin-result").html(responseMessage);
+    				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+    					$.notify(responseMessage, "success");
+    					$("#plugin-result").html("");
+//    					return send task "INSTALLED_PACKAGES" for updated installed packages list after task uninstalled packages 
+    					selectedPluginTask.dnList=dnlist;
+    					selectedPluginTask.parameterMap={};
+    					selectedPluginTask.entryList=selectedEntries;
+    					selectedPluginTask.dnType="AHENK";
+    					selectedPluginTask.commandId = "INSTALLED_PACKAGES";
+    					var params = JSON.stringify(selectedPluginTask);
+    					sendPackageManagementTask(params);
+					}
+    				else {
+    					$.notify(responseMessage, "error");
+    					$("#plugin-result").html(responseMessage);
+					}
+    			}
+			}
+    		else {
+    			if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+    				$.notify(responseMessage, "success");
+    				$("#plugin-result").html("");
+				}
+    			else {
+    				$.notify(responseMessage, "error");
+    				$("#plugin-result").html(responseMessage);
+				}
+			}
+    	}
     }
     // we must return true to keep the handler alive. returning false would remove it after it finishes.
     return true;
 }
 
 $('#sendTask-'+ selectedPluginTask.page).click(function(e){
-	if(addedItems.length != 0 || deletedItems.length != 0){
-		// commandId is PACKAGE_SOURCES. This command id is used to add and delete repositories
-		selectedPluginTask.commandId = "PACKAGE_SOURCES";
-		selectedPluginTask.parameterMap={"deletedItems":deletedItems, "addedItems":addedItems};
-		var params = JSON.stringify(selectedPluginTask);
-//		console.log(params);
-		sendRepositoryTask(params);
+	
+	if($('input:checkbox[name=package_name]').is(':checked')) {
+		var packageInfo = {};
+		$('input:checkbox[name=package_name]').each(function() {
+			var pName = $(this).val();
+			var pVersion = $(this).attr('id');
+			
+		    if($(this).is(':checked')) {
+		    	packageInfo = {
+		    			"packageName": pName,
+		    			"version": pVersion,
+		    			"installed": true,
+		    			"desiredStatus": "UNINSTALL", //NA and UNINSTALL
+		    			"tag": "u", // i and u
+		    			"installedSize": null,
+		    			"maintainer": null,
+		    			"architecture": null,
+		    			"depends": null,
+		    			"recommends": null,
+		    			"breaks": null,
+		    			"descriptionMd5": null,
+		    			"homepage": null,
+		    			"suggests": null,
+		    			"multiArch": null,
+		    			"md5Sum": null,
+		    			"sha1": null,
+		    			"sha256": null,
+		    			"replaces": null,
+		    			"preDepends": null,
+		    			"provides": null,
+		    			"description": null,
+		    			"section": null,
+		    			"source": null,
+		    			"conflicts": null,
+		    			"filename": null,
+		    			"priority": null,
+		    			"size": null
+		    	};
+		    	packageInfoList.push(packageInfo);
+		    }
+		});
+//		$('input:checkbox[name=package_name]:checked').closest("tr").remove();
 		
-		deletedItems = [];
-		addedItems = [];
-	}
-	else{
-		$.notify("Lütfen görev göndermek için işlem seçiniz. Ekle veya Sil işlemi yapınız.","warn");
-	}
-	selectedPluginTask.commandId = "REPOSITORIES";
-});
-
-
-function repositoryChecked() {
-	$('input:checkbox[name=repo-addr]').each(function() {
-		var selectRepoAddr = $(this).val();
-	    if($(this).is(':checked')) {
-	    	if(deletedItems.includes(selectRepoAddr) != true ){
-	    		deletedItems.push(selectRepoAddr);
-//	    		console.log(deletedItems);
-	    	}
-	    }
-	    else {
-	    	if(deletedItems.includes(selectRepoAddr)){
-	    		for(var i in deletedItems){
-	    		    if(deletedItems[i] == selectRepoAddr){
-	    		    	deletedItems.splice(i,1);
-	    		        break;
-	    		    }
-	    		}
-	    	}
-	    }
-	});
-}
-
-$('#deleteRepo').click(function(e){
-	if($('input:checkbox[name=repo-addr]').is(':checked')) {
-		$('input:checkbox[name=repo-addr]:checked').closest("tr").remove();
-//		console.log(deletedItems);
+		selectedPluginTask.commandId = "PACKAGE_MANAGEMENT";
+		selectedPluginTask.parameterMap={"packageInfoList":packageInfoList};
+		var params = JSON.stringify(selectedPluginTask);
+		sendPackageManagementTask(params);
+		packageInfoList = [];
 	}
 	else {
-		$.notify("Lütfen silmek için depo adresi seçiniz.", "warn")
+		$.notify("Lütfen silmek istediğiniz paketi/leri seçerek Çalıştır butonuna tıklayınız.", "warn");
 	}
 });
 
-
 $('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
-	alert("Zamanlı Çalıştır")
+	if ($('input:checkbox[name=package_name]').is(':checked')) {
+		alert("Zamanlı Çalıştır");
+	}
+	else {
+		$.notify("Lütfen silmek istediğiniz paketi/leri seçerek Zamanlı Çalıştır butonuna tıklayınız.", "warn");
+	}
 });
 
-$('#closePagePlugin').click(function(e){
-	connection.deleteHandler(ref);
+$('#closePage-'+ selectedPluginTask.page).click(function(e){
+	connection.deleteHandler(ref);	
 });

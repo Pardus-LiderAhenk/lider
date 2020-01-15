@@ -7,6 +7,10 @@
  *  http://www.liderahenk.org/ 
  */
 
+if (ref) {
+	connection.deleteHandler(ref);
+}
+
 var ref=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
 $("#entrySize").html(selectedEntries.length);
 var dnlist=[]
@@ -39,13 +43,12 @@ function getResourceUsage(){
 	    	console.log("rest response")
 	    	console.log(res)
 	    	if(res.status=="OK"){
-	    		
 	    		$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 	    	}   	
 	        /* $('#closePage').click(); */
 	      },
 	      error: function(result) {
-	        alert(result);
+	    	  $.notify(result, "error");
 	      }
 	    });
 }
@@ -66,30 +69,41 @@ function resourceUsageListener(msg) {
     	var xmppResponse=JSON.parse(data);
     	console.log(xmppResponse.commandClsId)
     	var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-		if(xmppResponse.commandClsId == "RESOURCE_INFO_FETCHER"){					    	
-			var phase = "";
-			if(arrg["Phase"]){
-				phase = arrg["Phase"]
+		if(xmppResponse.commandClsId == "RESOURCE_INFO_FETCHER"){
+			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+					var phase = "";
+					if(arrg["Phase"]){
+						phase = arrg["Phase"]
+					}
+					else {
+						phase = "Faz Bilgisi Alınamadı"
+					}
+					$("#system").html(arrg["System"]);
+					$("#release").html(arrg["Release"]);
+					$("#version").html(arrg["Version"]);
+					$("#machine").html(arrg["Machine"]);
+					$("#processor").html(arrg["Processor"]);
+					$("#phase").html(phase);
+					$("#physical_core_count").html(arrg["CPU Physical Core Count"]);
+					$("#logical_core_count").html(arrg["CPU Logical Core Count"]);
+					$("#cpu_advertised").html(arrg["CPU Advertised Hz"]);
+					$("#cpu_actual").html(arrg["CPU Actual Hz"]);
+					$("#total_memory").html(arrg["Total Memory"]+" MB");
+					$("#usage_memory").html(arrg["Usage"]+" MB");
+					$("#device").html(arrg["Device"]);
+					$("#total_disk").html(arrg["Total Disc"]+" MB");
+					$("#usage_disk").html(arrg["Usage Disc"]+" MB");
+					$("#plugin-result").html("");
+					$.notify(xmppResponse.result.responseMessage, "success");
+					
+				} else {
+					$("#plugin-result").html(xmppResponse.result.responseMessage);
+					$.notify(xmppResponse.result.responseMessage, "error");
+				}
+				
 			}
-			else {
-				phase = "Faz Bilgisi Alınamadı"
-			}
-			$("#plugin-result").html(xmppResponse.result.responseMessage);
-			$("#system").html(arrg["System"]);
-			$("#release").html(arrg["Release"]);
-			$("#version").html(arrg["Version"]);
-			$("#machine").html(arrg["Machine"]);
-			$("#processor").html(arrg["Processor"]);
-			$("#phase").html(phase);
-			$("#physical_core_count").html(arrg["CPU Physical Core Count"]);
-			$("#logical_core_count").html(arrg["CPU Logical Core Count"]);
-			$("#cpu_advertised").html(arrg["CPU Advertised Hz"]);
-			$("#cpu_actual").html(arrg["CPU Actual Hz"]);
-			$("#total_memory").html(arrg["Total Memory"]+" MB");
-			$("#usage_memory").html(arrg["Usage"]+" MB");
-			$("#device").html(arrg["Device"]);
-			$("#total_disk").html(arrg["Total Disc"]+" MB");
-			$("#usage_disk").html(arrg["Usage Disc"]+" MB");
+			
 		}						 
     }
     // we must return true to keep the handler alive. returning false would remove it after it finishes.
@@ -100,6 +114,6 @@ $('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
 	alert("Zamanlı Çalıştır")
 });
 
-$('#closePagePlugin').click(function(e){
-	connection.deleteHandler(ref);
+$('#closePage-'+ selectedPluginTask.page).click(function(e){
+	connection.deleteHandler(ref);	
 });

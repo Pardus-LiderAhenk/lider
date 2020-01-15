@@ -27,6 +27,7 @@ $(document).ready(function(){
 						{ name: "hasSubordinates", type: "string" },
 						{ name: "expanded", type: "string" },
 						{ name: "expandedUser", type: "string" },
+						{ name: "attributes", type: "array" },
 						{ name: "entryUUID", type: "string" },
 						{ name: "childEntries", type: "array" }
 					],
@@ -53,19 +54,18 @@ $(document).ready(function(){
 
 			// create jqxTreeGrid.
 			$("#treeGridAgentGroups").jqxTreeGrid({
-				width: '100%',
-				source: dataAdapter,
-				altRows: true,
-				sortable: true,
-				columnsResize: true,
-				filterable: true,
-				pageable: true,
-				pagerMode: 'default',
-				filterMode: "simple",
-				localization: getLocalization(),
-				pageSize: 50,
-				selectionMode: "singleRow",
-				pageSizeOptions: ['15', '25', '50'],
+				 width: '100%',
+				 source: dataAdapter,
+			     altRows: true,
+			     sortable: true,
+			     columnsResize: true,
+		         filterable: true,
+			     pageable: true,
+		         pagerMode: 'default',
+			     filterMode: "simple",
+			     localization: getLocalization(),
+			     pageSize: 50,
+			     pageSizeOptions: ['15', '25', '50'],
 				icons: function (rowKey, dataRow) {
 					var level = dataRow.level;
 					if(dataRow.type == "ORGANIZATIONAL_UNIT"){
@@ -94,7 +94,6 @@ $(document).ready(function(){
 	});
 	
 	$('#treeGridAgentGroups').on('rowExpand', function (event) {
-		alert("1");
 		var args = event.args;
 		var row = args.row;
 
@@ -156,7 +155,7 @@ $(document).ready(function(){
 	     html += '<th style="width: 60%">Değer</th>';
 	     html += '</tr>';
 	     html += '</thead>';
-	        
+	     
 	     for (key in row.attributes) {
 	    	 if (row.attributes.hasOwnProperty(key)) {
 	    		 console.log(key + " = " + row.attributes[key]);
@@ -171,10 +170,6 @@ $(document).ready(function(){
 	     html += '</table>';
 	     $('#selectedDnInfo').html("Seçili Kayıt: "+name);
 	     $('#ldapAttrInfoHolder').html(html);
-	    
-	     
-		var options = $("#groupOperationType");
-		options.empty();
 		
 		var selectedRows = $("#treeGridAgentGroups").jqxTreeGrid('getSelection');
 		var selectedRowData=selectedRows[0];
@@ -190,8 +185,7 @@ $(document).ready(function(){
 			 html += '<div class="dropdown-divider"></div>';
 			 html += '<a class="dropdown-item" href="#deleteOrganizationalUnitModal"' 
 				 + 'onclick="dropdownButtonClicked(\'deleteOrganizationalUnit\')">Organizasyon Birimini Sil</a>';
-			if(selectedRowData.childEntries.length == 0) {
-			}
+			
 			 $('#operationDropDown').html(html);
 		} else if(selectedRowData.type == "GROUP"){
 			 html = '<a class="dropdown-item" href="#addNewAgentGroupModal"' 

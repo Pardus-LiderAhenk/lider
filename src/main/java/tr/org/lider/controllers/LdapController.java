@@ -47,10 +47,10 @@ public class LdapController {
 
 	@Autowired
 	private LDAPServiceImpl ldapService;
-	
+
 	@Autowired
 	private ConfigurationService configurationService;
-	
+
 	@Autowired
 	private XMPPClientImpl messagingService;
 
@@ -69,34 +69,37 @@ public class LdapController {
 		selectedEntry.setChildEntries(subEntries);
 		return subEntries;
 	}
-	
+
 	@RequestMapping(value = "/getOu")
 	public List<LdapEntry> getOu(HttpServletRequest request, Model model, LdapEntry selectedEntry) {
-		
+
 		List<LdapEntry> subEntries = null;
 		try {
 			subEntries = ldapService.findSubEntries(selectedEntry.getUid(), "(&(objectclass=organizationalUnit)(objectclass=pardusLider))",
 					new String[] { "*" }, SearchScope.ONELEVEL);
-			
+
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
 		selectedEntry.setChildEntries(subEntries);
 		return subEntries;
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST, value = "/addOu",produces = MediaType.APPLICATION_JSON_VALUE)
 	public LdapEntry addOu(HttpServletRequest request, Model model, LdapEntry selectedEntry) {
 		try {
 			Map<String, String[]> attributes = new HashMap<String,String[]>();
 			attributes.put("objectClass", new String[] {"organizationalUnit", "top", "pardusLider"} );
-			attributes.put("objectClass", new String[] { "top", "organizationalUnit" , "pardusLider"});
 			attributes.put("ou", new String[] { selectedEntry.getOu() });
-			
+
 			String dn="ou="+selectedEntry.getOu()+","+selectedEntry.getParentName();
 			
 			ldapService.addEntry(dn, attributes);
 			logger.info("OU created successfully RDN ="+dn);
+			
+			//get full of ou details after creation
+			selectedEntry = ldapService.getOuDetail(selectedEntry.getDistinguishedName());
+			
 			return selectedEntry;
 		} catch (LdapException e) {
 			e.printStackTrace();
@@ -109,10 +112,10 @@ public class LdapController {
 
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		retList.add(ldapService.getLdapSudoGroupsTree());
-		
+
 		return retList;
 	}
-	
+
 	//gets tree of groups of names which just has agent members
 	@RequestMapping(value = "/agentGroups")
 	public List<LdapEntry> getAgentGroups() {
@@ -120,7 +123,7 @@ public class LdapController {
 		result.add(ldapService.getLdapAgentsGroupTree());
 		return result;
 	}
-	
+
 	//gets tree of groups of names which just has user members
 	@RequestMapping(value = "/userGroups")
 	public List<LdapEntry> getLdapUserGroupsTree() {
@@ -128,51 +131,51 @@ public class LdapController {
 		result.add(ldapService.getLdapUsersGroupTree());
 		return result;
 	}
-	
+
 	@RequestMapping(value = "/getGroups")
 	public List<LdapEntry> getGroups(HttpServletRequest request, Model model) {
-		
+
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		retList.add(ldapService.getLdapGroupsTree());
-		
-		
+
+
 		return retList;
 	}
-	
+
 	@RequestMapping(value = "/getUsers")
 	public List<LdapEntry> getUsers(HttpServletRequest request, Model model) {
-		
+
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		retList.add(ldapService.getLdapUserTree());
 		return retList;
 	}
-	
+
 
 
 	@RequestMapping(value = "/getComputers")
 	public List<LdapEntry> getComputers(HttpServletRequest request, Model model) {
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
-		
+
 		retList.add(ldapService.getLdapComputersTree());
 		return retList;
 
 	}
-	
+
 	@RequestMapping(value = "/getAhenks", method = { RequestMethod.POST })
 	public List<LdapEntry> getAhenks(HttpServletRequest request,Model model, @RequestBody LdapEntry[] selectedEntryArr) {
-		
+
 		List<LdapEntry> ahenkList=new ArrayList<>();
-		
+
 		for (LdapEntry ldapEntry : selectedEntryArr) {
-			
+
 			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
-			
+
 			LdapSearchFilterAttribute fAttr = new LdapSearchFilterAttribute("objectClass", "pardusDevice",	SearchFilterEnum.EQ);
 			filterAttributes.add(fAttr);
-			
+
 			try {
 				List<LdapEntry> retList=ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
-				
+
 				for (LdapEntry ldapEntry2 : retList) {
 					boolean isExist=false;
 					for (LdapEntry ldapEntryAhenk : ahenkList) {
@@ -189,32 +192,32 @@ public class LdapController {
 				e.printStackTrace();
 			}
 		}
-		
-//		ObjectMapper mapper = new ObjectMapper();
-//		String ret = null;
-//		try {
-//			ret = mapper.writeValueAsString(ahenkList);
-//		} catch (JsonProcessingException e) {
-//			e.printStackTrace();
-//		}
+
+		//		ObjectMapper mapper = new ObjectMapper();
+		//		String ret = null;
+		//		try {
+		//			ret = mapper.writeValueAsString(ahenkList);
+		//		} catch (JsonProcessingException e) {
+		//			e.printStackTrace();
+		//		}
 		return ahenkList;
 	}
-	
+
 	@RequestMapping(value = "/getOnlineAhenks", method = { RequestMethod.POST })
 	public String getOnlyOnlineAhenks(HttpServletRequest request,Model model, @RequestBody LdapEntry[] selectedEntryArr) {
-		
+
 		List<LdapEntry> ahenkList=new ArrayList<>();
-		
+
 		for (LdapEntry ldapEntry : selectedEntryArr) {
-			
+
 			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
-			
+
 			LdapSearchFilterAttribute fAttr = new LdapSearchFilterAttribute("objectClass", "pardusDevice",	SearchFilterEnum.EQ);
 			filterAttributes.add(fAttr);
-			
+
 			try {
 				List<LdapEntry> retList=ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
-				
+
 				for (LdapEntry ldapEntry2 : retList) {
 					boolean isExist=false;
 					for (LdapEntry ldapEntryAhenk : ahenkList) {
@@ -223,13 +226,13 @@ public class LdapController {
 							break;
 						}
 					}
-//					boolean isOnline=false;
-//					for (String online : messagingService.getOnlineUsers()) {
-//						if(ldapEntry2.getUid().equals(online)) {
-//							isOnline=true;
-//							break;
-//						}
-//					}
+					//					boolean isOnline=false;
+					//					for (String online : messagingService.getOnlineUsers()) {
+					//						if(ldapEntry2.getUid().equals(online)) {
+					//							isOnline=true;
+					//							break;
+					//						}
+					//					}
 					if(!isExist && messagingService.isRecipientOnline(ldapEntry2.getUid())) {
 						ahenkList.add(ldapEntry2);
 					}
@@ -238,7 +241,7 @@ public class LdapController {
 				e.printStackTrace();
 			}
 		}
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 		String ret = null;
 		try {
@@ -312,7 +315,21 @@ public class LdapController {
 		}
 		return true;
 	}
-	
+
+	//returns root dn of agent group(groupOfNames)
+	@RequestMapping(method=RequestMethod.GET ,value = "/group/rootdnofagent", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public String getRootDNOfAgentGroup() {
+		return configurationService.getAhenkGroupLdapBaseDn();
+	}
+
+	//returns root dn of user group(groupOfNames)
+	@RequestMapping(method=RequestMethod.GET ,value = "/group/rootdnofuser", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public String getRootDNOfUserGroup() {
+		return configurationService.getUserGroupLdapBaseDn();
+	}
+
 	@RequestMapping(method=RequestMethod.POST, value = "/addUser",produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public LdapEntry addUser(HttpServletRequest request, Model model, LdapEntry selectedEntry) {
@@ -321,7 +338,7 @@ public class LdapController {
 			int randomInt = (int)(1000000.0 * Math.random());
 			String uidNumber= Integer.toString(randomInt);
 			String home="/home/"+selectedEntry.getUid();
-			
+
 			Map<String, String[]> attributes = new HashMap<String, String[]>();
 			attributes.put("objectClass", new String[] { "top", "posixAccount",
 					"person","pardusLider","pardusAccount","organizationalPerson","inetOrgPerson"});
@@ -333,11 +350,11 @@ public class LdapController {
 			attributes.put("uidNumber", new String[] { uidNumber });
 			attributes.put("loginShell", new String[] { "/bin/bash" });
 			attributes.put("userPassword", new String[] { selectedEntry.getUserPassword() });
-			
+
 			String rdn="uid="+selectedEntry.getUid()+","+selectedEntry.getParentName();
-			
+
 			ldapService.addEntry(rdn, attributes);
-			
+
 			logger.info("User created successfully RDN ="+rdn);
 			return selectedEntry;
 		} catch (LdapException e) {
@@ -345,34 +362,34 @@ public class LdapController {
 			return null;
 		}
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST, value = "/deleteUser")
 	@ResponseBody
 	public Boolean deleteUser(HttpServletRequest request, Model model, @RequestBody LdapEntry[] selectedEntryArr) {
-			try {
-				List<LdapEntry> ouList4Delete=new ArrayList<>();
-				
-				for (LdapEntry ldapEntry : selectedEntryArr) {
-					if(ldapEntry.getType().equals(DNType.USER)) {
-						ldapService.deleteEntry(ldapEntry.getDistinguishedName());
-						logger.info("User deleted successfully RDN ="+ldapEntry.getDistinguishedName());
-					}
-					else if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
-						ouList4Delete.add(ldapEntry);
-					}
+		try {
+			List<LdapEntry> ouList4Delete=new ArrayList<>();
+
+			for (LdapEntry ldapEntry : selectedEntryArr) {
+				if(ldapEntry.getType().equals(DNType.USER)) {
+					ldapService.deleteEntry(ldapEntry.getDistinguishedName());
+					logger.info("User deleted successfully RDN ="+ldapEntry.getDistinguishedName());
 				}
-				
-				for (LdapEntry ldapEntry : ouList4Delete) {
-					List<LdapEntry> subEntries = ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(&(objectclass=inetOrgPerson)(objectclass=pardusAccount))",	new String[] { "*" }, SearchScope.ONELEVEL);
-					if(subEntries.size()==0) {
-						ldapService.deleteEntry(ldapEntry.getDistinguishedName());
-					}
+				else if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
+					ouList4Delete.add(ldapEntry);
 				}
-				
-				return true;
-			} catch (LdapException e) {
-				e.printStackTrace();
-				return null;
 			}
+
+			for (LdapEntry ldapEntry : ouList4Delete) {
+				List<LdapEntry> subEntries = ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(&(objectclass=inetOrgPerson)(objectclass=pardusAccount))",	new String[] { "*" }, SearchScope.ONELEVEL);
+				if(subEntries.size()==0) {
+					ldapService.deleteEntry(ldapEntry.getDistinguishedName());
+				}
+			}
+
+			return true;
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

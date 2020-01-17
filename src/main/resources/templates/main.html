@@ -482,6 +482,115 @@
 	</div>
 	<!-- End Executed Task Detail Modal -->
 
+	<!-- Start Add Agent To Group -->
+	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="addNewAgentGroupModal">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">İstemci Grubuna Ahenk Ekle</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+				<div class="modal-body">
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!--  End Add Agent To Group -->
+	
+	<!-- Start Delete Agent Group And Members of the Group Modal -->
+	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="deleteAgentGroupAndMembersModal">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">İstemci Grubunu ve Üyelerini Sil</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+				<div class="modal-body">
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!--  End Delete Agent Group And Members of the Group Modal -->
+	
+	<!-- Start Create New GroupOfNames for Agents Modal -->
+	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="createNewAgentGroupModal">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">Yeni İstemci Grubu Oluştur</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+				<div class="modal-body">
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!--  End Create New GroupOfNames for Agents Modal -->
+	
+	<!-- Start Create New Organizational Unit Modal-->
+	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="createNewOrganizationalUnitModal">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">Yeni Organizasyon Birimi Oluştur</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+				<div class="modal-body">
+					<div class="form-group" id="newGroupInput">
+						<label>Yeni Organizasyon Birimi Adı</label>
+						<input class="form-control" type="text" id="ouNamecreateNewOrganizationalUnitModal" 
+							name="ouNamecreateNewOrganizationalUnitModal" placeholder="Yeni Organizasyon Birimi Adı Giriniz..." />
+					</div>
+					<div class="form-group" id="newGroupInput">
+						<a href="#" class="btn btn-primary submit-button" id="submitGroup" onclick="createNewOrganizationalUnitClicked()">
+							<span>Oluştur</span>
+						</a>
+					</div>
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary close" data-dismiss="modal">Kapat</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!--  End  Create New Organizational Unit Modal-->
+	
+	<!-- Start Delete Organizational Unit Modal -->
+	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="deleteOrganizationalUnitModal">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">Organizasyon Birimini Sil</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+				<div class="modal-body">
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!--  End Delete Organizational Unit Modal-->
 <!-- Add User Modal -->
 <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-hidden="true" id="addUserModal" >
     <div class="modal-dialog modal-lg " >

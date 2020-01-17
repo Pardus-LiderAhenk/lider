@@ -3,6 +3,9 @@
  * M. Edip YILDIZ
  * 
  */
+var selectedDN = "";
+var selectedName = "";
+var treeSource;
 $(document).ready(function(){
 	var html = '<a class="dropdown-item" href="#addNewAgentGroupModal"' 
 		+ 'onclick="dropdownButtonClicked(\'addNewAgentGroup\')">Yeni İstemci Grubu Oluştur</a>';
@@ -12,6 +15,7 @@ $(document).ready(function(){
 		url : 'lider/ldap/agentGroups',
 		dataType : 'json',
 		success : function(data) {
+			
 			var source =
 			{
 				dataType: "json",
@@ -33,12 +37,12 @@ $(document).ready(function(){
 					],
 					hierarchy:
 					{
-						root: "childEntries"
+						root: "childEntries",
 					},
 					localData: data,
-					id: "name"
+					id: "distinguishedName"
 			};
-
+			treeSource = source;
 			var dataAdapter = new $.jqx.dataAdapter(source, {
 				loadComplete: function () {
 
@@ -143,10 +147,14 @@ $(document).ready(function(){
 	}); 
 	
 	$('#treeGridAgentGroups').on('rowSelect', function (event) {
+		
 		 var args = event.args;
 	     var row = args.row;
 	     var name= row.name;
-	     
+	     selectedDN = row.distinguishedName;
+	     selectedName = row.uid;
+	     //console.log(row);
+	     //alert(selectedName);
 	     var html = '<table class="table table-striped table-bordered " id="attrTable">';
 	     html += '<thead>';
 	     html += '<tr>';
@@ -157,7 +165,7 @@ $(document).ready(function(){
 	     
 	     for (key in row.attributes) {
 	    	 if (row.attributes.hasOwnProperty(key)) {
-	    		 console.log(key + " = " + row.attributes[key]);
+	    		 //console.log(key + " = " + row.attributes[key]);
 	                
 	    		 html += '<tr>';
 	    		 html += '<td>' + key + '</td>';
@@ -177,27 +185,77 @@ $(document).ready(function(){
 		
 
 		if(selectedRowData.type == "ORGANIZATIONAL_UNIT"){
-			 html = '<a class="dropdown-item" href="#addNewAgentGroupModal"' 
-				 + 'onclick="dropdownButtonClicked(\'addNewAgentGroup\')">Yeni İstemci Grubu Oluştur</a>';
-			 html += '<a class="dropdown-item" href="#addNewOrganizationalUnitModal"' 
-				 + 'onclick="dropdownButtonClicked(\'addNewOrganizationalUnit\')">Yeni Organizasyon Birimi Oluştur</a>';
-			 html += '<div class="dropdown-divider"></div>';
-			 html += '<a class="dropdown-item" href="#deleteOrganizationalUnitModal"' 
-				 + 'onclick="dropdownButtonClicked(\'deleteOrganizationalUnit\')">Organizasyon Birimini Sil</a>';
+			html = '<a class="dropdown-item" href="#createNewAgentGroupModal" data-toggle="modal" data-target="#createNewAgentGroupModal"' 
+				+ 'onclick="dropdownButtonClicked(\'createNewAgentGroup\')">Yeni İstemci Grubu Oluştur</a>';
+			html += '<a class="dropdown-item" href="#createNewOrganizationalUnitModal" data-toggle="modal" data-target="#createNewOrganizationalUnitModal"' 
+				+ 'onclick="dropdownButtonClicked(\'createNewOrganizationalUnit\')">Yeni Organizasyon Birimi Oluştur</a>';
+			var html2 = "";
+			//if root dn is selected dont allow user to delete it
+			$.ajax({ 
+			    type: 'GET', 
+			    url: '/lider/ldap/group/rootdnofagent',
+			    dataType: 'text',
+			    success: function (data) {
+			    	if(data != row.distinguishedName){
+			    		
+			    		html += '<div class="dropdown-divider"></div>';
+						html += '<a class="dropdown-item" href="#deleteOrganizationalUnitModal" data-toggle="modal" data-target="#deleteOrganizationalUnitModal"' 
+							+ 'onclick="dropdownButtonClicked(\'deleteOrganizationalUnit\')">Organizasyon Birimini Sil</a>';
+						
+			    	}
+			    	$('#operationDropDown').html(html);
+			    },
+			    error: function (data, errorThrown) {
+			    	$.notify("Something went wrong.", "error");
+			    }
+			});
 			
-			 $('#operationDropDown').html(html);
 		} else if(selectedRowData.type == "GROUP"){
-			 html = '<a class="dropdown-item" href="#addNewAgentGroupModal"' 
-				 + 'onclick="dropdownButtonClicked(\'addAgentsToAgentGroup\')">İstemci Ekle</a>';
-			 html += '<div class="dropdown-divider"></div>';
-			 html += '<a class="dropdown-item" href="#deleteAgentGroupAndMembersModal"' 
-				 + 'onclick="dropdownButtonClicked(\'deleteAgentGroupAndMembers\')">İstemci Grubunu ve Üyelerini Sil</a>';
-			 $('#operationDropDown').html(html);
+			html = '<a class="dropdown-item" href="#addNewAgentGroupModal" data-toggle="modal" data-target="#addNewAgentGroupModal"' 
+				+ 'onclick="dropdownButtonClicked(\'addAgentsToAgentGroup\')">İstemci Ekle</a>';
+			html += '<div class="dropdown-divider"></div>';
+			html += '<a class="dropdown-item" href="#deleteAgentGroupAndMembersModal" data-toggle="modal" data-target="#deleteAgentGroupAndMembersModal"' 
+				+ 'onclick="dropdownButtonClicked(\'deleteAgentGroupAndMembers\')">İstemci Grubunu ve Üyelerini Sil</a>';
+			$('#operationDropDown').html(html);
 		}
 	});
 	
 });
 
+function createNewOrganizationalUnitClicked() {
+	var ouName = $("#ouNamecreateNewOrganizationalUnitModal").val();
+	//alert("ou=" + ouName + "," + selectedDN);
+	var params = {
+		    "parentName" : selectedDN,
+		    "ou": ouName,
+		    "type": 'ORGANIZATIONAL_UNIT',
+		    "distinguishedName": 'ou=' + ouName + ',' + selectedDN,
+		    "name": ouName
+		};
+	$.ajax({ 
+	    type: 'POST', 
+	    url: '/lider/ldap/addOu',
+	    dataType: 'json',
+	    data: params,
+	    success: function (data) {
+	    	console.log("------>");
+	    	console.log(data);
+            
+            // add new empty row.
+            $("#treeGridAgentGroups").jqxTreeGrid('addRow', ouName, data, 'last', selectedName);
+            $("#treeGridAgentGroups").jqxTreeGrid('expandRow', selectedName);
+            $("#createNewOrganizationalUnitModal .close").click();
+            $.notify("Organizasyon Birimi Oluşturuldu.", "success");
+	    },
+	    error: function (data, errorThrown) {
+	    	$.notify("Something went wrong.", "error");
+	    }
+	});
+	
+     
+}
+
 function dropdownButtonClicked(operation) {
-	alert(operation);
+	//alert(operation);
+	
 }

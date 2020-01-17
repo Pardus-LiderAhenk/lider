@@ -40,7 +40,7 @@ $(document).ready(function(){
 						root: "childEntries",
 					},
 					localData: data,
-					id: "distinguishedName"
+					id: "entryUUID"
 			};
 			treeSource = source;
 			var dataAdapter = new $.jqx.dataAdapter(source, {
@@ -83,8 +83,7 @@ $(document).ready(function(){
 					if(allrows.length==1){
 						var row=allrows[0];
 						if(row.childEntries==null){
-	
-							$("#treeGridAgentGroups").jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.name);
+							$("#treeGridAgentGroups").jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.entryUUID);
 						}
 					}
 					$("#treeGridAgentGroups").jqxTreeGrid('collapseAll');
@@ -100,12 +99,13 @@ $(document).ready(function(){
 	$('#treeGridAgentGroups').on('rowExpand', function (event) {
 		var args = event.args;
 		var row = args.row;
+		console.log(row)
 
 		if(row.expandedUser=="FALSE") {
 			var nameList=[];
 			for (var m = 0; m < row.records.length; m++) {
 				var childRow = row.records[m];
-				nameList.push(childRow.name);      
+				nameList.push(childRow.uid);      
 			}
 			for (var k = 0; k < nameList.length; k++) {
 				// get a row.
@@ -120,27 +120,23 @@ $(document).ready(function(){
 				dataType : 'text',
 				success : function(ldapResult) {
 					var childs = jQuery.parseJSON(ldapResult);
-					var onlineCount=0;
 					for (var m = 0; m < childs.length; m++) {
 						// get a row.
 						var childRow = childs[m];
-						if(childRow.online){
-							onlineCount++;
-						}
-						$("#treeGridAgentGroups").jqxTreeGrid('addRow', childRow.name, childRow, 'last', row.name);
+						$("#treeGridAgentGroups").jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
 						if(childRow.hasSubordinates=="TRUE"){
-							$("#treeGridAgentGroups").jqxTreeGrid('addRow', childRow.name+"1" , {}, 'last', childRow.name); 
+							$("#treeGridAgentGroups").jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
 						}
-						$("#treeGridAgentGroups").jqxTreeGrid('collapseRow', childRow.name);
+						$("#treeGridAgentGroups").jqxTreeGrid('collapseRow', childRow.entryUUID);
 					} 
 					row.expandedUser="TRUE"
-					if(onlineCount == 0){
-						newName=row.ou+" ("+childs.length+")";
-					}
-					else{
-						newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
-					}
-					$("#treeGridAgentGroups").jqxTreeGrid('updateRow',row.name, {name:newName });
+//					if(onlineCount == 0){
+//						newName=row.ou+" ("+childs.length+")";
+//					}
+//					else{
+//						newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
+//					}
+//					$("#treeGridAgentGroups").jqxTreeGrid('updateRow',row.entryUUID, {name:newName });
 				}
 			});  
 		}

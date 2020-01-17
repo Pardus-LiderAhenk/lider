@@ -8,31 +8,6 @@ $(document).ready(function(){
 	
 	hideButtons()
 	
-	$('#addOu').on('click', function (event) {
-		var checkedRows = $("#treeGridAddUserModal").jqxTreeGrid('getCheckedRows');
-		if(checkedRows.length==0){
-			$.notify("Lütfen Kayıt Seçiniz",{className: 'warn',position:"right top"}  );
-			return
-		}
-		if(checkedRows.length>1){
-			$.notify("Lütfen Tek Kayıt Seçiniz",{className: 'warn',position:"right top"}  );
-			return
-		}
-		
-		var parentDn=checkedRows[0].distinguishedName; 
-		var ouName= $('#ouName').val();
-		$.ajax({
-			type : 'POST',
-			url : 'lider/ldap/addOu',
-			data: 'parentName='+parentDn +'&ou='+ouName,
-			dataType : 'json',
-			success : function(data) {
-				 
-				getOus();
-			}
-		});
-	});
-	
 	$('#btnOpenAddUserModal').on('click',
 			function(event) {
 		$('#ouName').val("")
@@ -200,8 +175,7 @@ function createUserTreeGrid(source) {
 	     rendered: function () {
 	   	},
 	     columns: [
-	       { text: "Kullanıcılar", align: "center", dataField: "name", width: '70%' },
-	       { text: "", align: "center", dataField: "online", width: '30%' }
+	       { text: "Kullanıcılar", align: "center", dataField: "name", width: '100%' }
 	     ]
 	 });
 	 
@@ -209,8 +183,7 @@ function createUserTreeGrid(source) {
 	        var args = event.args;
 		    var row = args.row;
 		    var name= row.name;
-	        var row = $("#treeGridUser").jqxTreeGrid('getRow', name);
-	       
+	        	       
 	        var html = '<table class="table table-striped table-bordered " id="attrTable">';
 			html += '<thead>';
 			html += '<tr>';
@@ -405,7 +378,7 @@ function createUserTreeGridForUserAdd(source) {
 function addUser() {
 	var checkedRows = $("#treeGridAddUserModal").jqxTreeGrid('getCheckedRows');
 	if(checkedRows.length==0){
-		$.notify("Lütfen Kayıt Seçiniz",{className: 'warn',position:"right top"}  );
+		$.notify("Lütfen Klasör Seçiniz",{className: 'warn',position:"right top"}  );
 		return
 	}
 	

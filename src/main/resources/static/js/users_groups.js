@@ -122,14 +122,6 @@ $(document).ready(function(){
 									}
 									$("#treeGridUserGroups").jqxTreeGrid('collapseRow', childRow.entryUUID);
 								} 
-//								row.expandedUser="TRUE"
-//									if(onlineCount == 0){
-//										newName=row.ou+" ("+childs.length+")";
-//									}
-//									else{
-//										newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
-//									}
-//								$("#treeGridUserGroups").jqxTreeGrid('updateRow',row.name, {name:newName });
 							}
 						});  
 					}

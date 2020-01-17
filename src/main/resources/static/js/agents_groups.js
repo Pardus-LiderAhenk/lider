@@ -83,7 +83,7 @@ $(document).ready(function(){
 					if(allrows.length==1){
 						var row=allrows[0];
 						if(row.childEntries==null){
-							$("#treeGridAgentGroups").jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.entryUUID);
+							$("#treeGridAgentGroups").jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
 						}
 					}
 					$("#treeGridAgentGroups").jqxTreeGrid('collapseAll');
@@ -240,7 +240,7 @@ function createNewOrganizationalUnitClicked() {
             // add new empty row.
             $("#treeGridAgentGroups").jqxTreeGrid('addRow', ouName, data, 'last', selectedName);
             $("#treeGridAgentGroups").jqxTreeGrid('expandRow', selectedName);
-            $("#createNewOrganizationalUnitModal .close").click();
+            $("#createNewOrganizationalUnitModal.close").click();
             $.notify("Organizasyon Birimi Oluşturuldu.", "success");
 	    },
 	    error: function (data, errorThrown) {

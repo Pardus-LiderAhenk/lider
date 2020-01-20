@@ -55,7 +55,7 @@ public class LdapController {
 	private XMPPClientImpl messagingService;
 
 	@RequestMapping(value = "/getOuDetails")
-	public List<LdapEntry> task(HttpServletRequest request, Model model, LdapEntry selectedEntry) {
+	public List<LdapEntry> task(LdapEntry selectedEntry) {
 
 		List<LdapEntry> subEntries = null;
 		try {
@@ -71,7 +71,7 @@ public class LdapController {
 	}
 
 	@RequestMapping(value = "/getOu")
-	public List<LdapEntry> getOu(HttpServletRequest request, Model model, LdapEntry selectedEntry) {
+	public List<LdapEntry> getOu(LdapEntry selectedEntry) {
 
 		List<LdapEntry> subEntries = null;
 		try {
@@ -86,7 +86,7 @@ public class LdapController {
 	}
 
 	@RequestMapping(method=RequestMethod.POST, value = "/addOu",produces = MediaType.APPLICATION_JSON_VALUE)
-	public LdapEntry addOu(HttpServletRequest request, Model model, LdapEntry selectedEntry) {
+	public LdapEntry addOu(LdapEntry selectedEntry) {
 		try {
 			Map<String, String[]> attributes = new HashMap<String,String[]>();
 			attributes.put("objectClass", new String[] {"organizationalUnit", "top", "pardusLider"} );
@@ -332,7 +332,7 @@ public class LdapController {
 
 	@RequestMapping(method=RequestMethod.POST, value = "/addUser",produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public LdapEntry addUser(HttpServletRequest request, Model model, LdapEntry selectedEntry) {
+	public LdapEntry addUser(LdapEntry selectedEntry) {
 		try {
 			String gidNumber="6000";
 			int randomInt = (int)(1000000.0 * Math.random());
@@ -365,9 +365,9 @@ public class LdapController {
 
 	@RequestMapping(method=RequestMethod.POST, value = "/deleteUser")
 	@ResponseBody
-	public Boolean deleteUser(HttpServletRequest request, Model model, @RequestBody LdapEntry[] selectedEntryArr) {
+	public Boolean deleteUser(@RequestBody LdapEntry[] selectedEntryArr) {
 		try {
-			List<LdapEntry> ouList4Delete=new ArrayList<>();
+			List<LdapEntry> ouList=new ArrayList<>();
 
 			for (LdapEntry ldapEntry : selectedEntryArr) {
 				if(ldapEntry.getType().equals(DNType.USER)) {
@@ -375,11 +375,11 @@ public class LdapController {
 					logger.info("User deleted successfully RDN ="+ldapEntry.getDistinguishedName());
 				}
 				else if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
-					ouList4Delete.add(ldapEntry);
+					ouList.add(ldapEntry);
 				}
 			}
 
-			for (LdapEntry ldapEntry : ouList4Delete) {
+			for (LdapEntry ldapEntry : ouList) {
 				List<LdapEntry> subEntries = ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(&(objectclass=inetOrgPerson)(objectclass=pardusAccount))",	new String[] { "*" }, SearchScope.ONELEVEL);
 				if(subEntries.size()==0) {
 					ldapService.deleteEntry(ldapEntry.getDistinguishedName());
@@ -390,6 +390,56 @@ public class LdapController {
 		} catch (LdapException e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, value = "/deleteEntry")
+	@ResponseBody
+	public Boolean deleteEntry(@RequestParam(value = "dn") String dn) {
+		try {
+			if(dn != configurationService.getAgentLdapBaseDn()) {
+				deleteNodes(ldapService.getOuAndOuSubTreeDetail(dn));
+				return true;
+			} else {
+				return false;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	private Boolean deleteNodes(LdapEntry entry) {
+		if(entry.getHasSubordinates().equals("FALSE")) {
+			try {
+				ldapService.deleteEntry(entry.getDistinguishedName());
+				return true;
+			} catch (LdapException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		while(true) {
+			for(LdapEntry child : entry.getChildEntries()){
+				if(child.getHasSubordinates().equals("FALSE")) {
+					try {
+						ldapService.deleteEntry(child.getDistinguishedName());
+					} catch (LdapException e) {
+						e.printStackTrace();
+						return false;
+					}
+				}
+		    }
+			entry = ldapService.getOuAndOuSubTreeDetail(entry.getDistinguishedName());
+			if(entry.getChildEntries() == null || entry.getChildEntries().size() == 0) {
+				try {
+					ldapService.deleteEntry(entry.getDistinguishedName());
+				} catch (LdapException e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
 		}
 	}
 }

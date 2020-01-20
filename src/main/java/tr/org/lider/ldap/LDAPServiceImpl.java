@@ -1177,6 +1177,37 @@ public class LDAPServiceImpl implements ILDAPService {
 				ouEntry = retList.get(0);
 				ouEntry.setExpandedUser("FALSE");
 			}
+			List<LdapEntry> entries=findSubEntries(dn, "(objectclass=*)",
+					new String[]{"*"}, SearchScope.SUBTREE);
+			
+			ouEntry.setChildEntries(entries);
+			
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return ouEntry;
+	}
+	
+	public LdapEntry getOuAndOuSubTreeDetail(String dn) {
+		LdapEntry ouEntry = null;
+		try {
+			logger.info("Getting ou detail");
+			List<LdapEntry> retList = findSubEntries(dn, "(objectclass=*)",
+					new String[] { "*" }, SearchScope.OBJECT);
+			
+			logger.info("Ldap Computers Group Node listed.");
+			if (retList.size() > 0) {
+				ouEntry = retList.get(0);
+				ouEntry.setExpandedUser("FALSE");
+			}
+			List<LdapEntry> entries=findSubEntries(dn, "(objectclass=*)",
+					new String[]{"*"}, SearchScope.SUBTREE);
+			//first entrie is itself
+			if(entries.size() >= 1) {
+				entries.remove(0);
+			}
+			
+			ouEntry.setChildEntries(entries);
 			
 		} catch (LdapException e) {
 			e.printStackTrace();

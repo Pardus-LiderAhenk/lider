@@ -4,7 +4,7 @@
  * 
  */
 var selectedDN = "";
-var selectedName = "";
+var selectedUID = "";
 var treeSource;
 $(document).ready(function(){
 	var html = '<a class="dropdown-item" href="#addNewAgentGroupModal"' 
@@ -69,6 +69,7 @@ $(document).ready(function(){
 			     filterMode: "simple",
 			     localization: getLocalization(),
 			     pageSize: 50,
+			     selectionMode: "singleRow",
 			     pageSizeOptions: ['15', '25', '50'],
 				icons: function (rowKey, dataRow) {
 					var level = dataRow.level;
@@ -148,9 +149,9 @@ $(document).ready(function(){
 	     var row = args.row;
 	     var name= row.name;
 	     selectedDN = row.distinguishedName;
-	     selectedName = row.uid;
-	     //console.log(row);
-	     //alert(selectedName);
+	     selectedUID = row.entryUUID;
+	     console.log("selected row uid: " + selectedUID);
+	     
 	     var html = '<table class="table table-striped table-bordered " id="attrTable">';
 	     html += '<thead>';
 	     html += '<tr>';
@@ -161,8 +162,6 @@ $(document).ready(function(){
 	     
 	     for (key in row.attributes) {
 	    	 if (row.attributes.hasOwnProperty(key)) {
-	    		 //console.log(key + " = " + row.attributes[key]);
-	                
 	    		 html += '<tr>';
 	    		 html += '<td>' + key + '</td>';
 	    		 html += '<td>' + row.attributes[key] + '</td>';
@@ -176,9 +175,6 @@ $(document).ready(function(){
 		
 		var selectedRows = $("#treeGridAgentGroups").jqxTreeGrid('getSelection');
 		var selectedRowData=selectedRows[0];
-		//alert(selectedRowData.childEntries.length);
-		//alert(selectedRowData.distinguishedName + " type: " + selectedRowData.type);
-		
 
 		if(selectedRowData.type == "ORGANIZATIONAL_UNIT"){
 			html = '<a class="dropdown-item" href="#createNewAgentGroupModal" data-toggle="modal" data-target="#createNewAgentGroupModal"' 
@@ -220,38 +216,71 @@ $(document).ready(function(){
 
 function createNewOrganizationalUnitClicked() {
 	var ouName = $("#ouNamecreateNewOrganizationalUnitModal").val();
-	//alert("ou=" + ouName + "," + selectedDN);
 	var params = {
 		    "parentName" : selectedDN,
 		    "ou": ouName,
 		    "type": 'ORGANIZATIONAL_UNIT',
 		    "distinguishedName": 'ou=' + ouName + ',' + selectedDN,
 		    "name": ouName
-		};
+	};
 	$.ajax({ 
 	    type: 'POST', 
 	    url: '/lider/ldap/addOu',
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) {
-	    	console.log("------>");
-	    	console.log(data);
-            
             // add new empty row.
-            $("#treeGridAgentGroups").jqxTreeGrid('addRow', ouName, data, 'last', selectedName);
-            $("#treeGridAgentGroups").jqxTreeGrid('expandRow', selectedName);
-            $("#createNewOrganizationalUnitModal.close").click();
+            $("#treeGridAgentGroups").jqxTreeGrid('addRow', data.entryUUID, data, 'last', selectedUID);
+            $("#treeGridAgentGroups").jqxTreeGrid('expandRow', selectedUID);
+            $("#createNewOrganizationalUnitModal .close").click();
             $.notify("Organizasyon Birimi Oluşturuldu.", "success");
 	    },
 	    error: function (data, errorThrown) {
 	    	$.notify("Something went wrong.", "error");
 	    }
 	});
-	
-     
+}
+
+function deleteOrganizationalUnitClicked() {
+	var params = {
+		    "dn": selectedDN,
+	};
+	$.ajax({ 
+	    type: 'POST', 
+	    url: '/lider/ldap/deleteEntry',
+	    dataType: 'json',
+	    data: params,
+	    success: function (data) {
+	    	$("#treeGridAgentGroups").jqxTreeGrid('deleteRow', selectedUID);
+	    	$("#deleteOrganizationalUnitModal .close").click();
+            $.notify("Organizasyon Birimi Silindi.", "success");
+	    },
+	    error: function (data, errorThrown) {
+	    	$.notify("Something went wrong.", "error");
+	    }
+	});
+}
+
+function deleteAgentGroupAndMembersClicked() {
+	var params = {
+		    "dn": selectedDN,
+	};
+	$.ajax({ 
+	    type: 'POST', 
+	    url: '/lider/ldap/deleteEntry',
+	    dataType: 'json',
+	    data: params,
+	    success: function (data) {
+	    	$("#treeGridAgentGroups").jqxTreeGrid('deleteRow', selectedUID);
+	    	$("#deleteAgentGroupAndMembersModal .close").click();
+            $.notify("İstemci Grubu Silindi.", "success");
+	    },
+	    error: function (data, errorThrown) {
+	    	$.notify("Something went wrong.", "error");
+	    }
+	});
 }
 
 function dropdownButtonClicked(operation) {
-	//alert(operation);
 	
 }

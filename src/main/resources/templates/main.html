@@ -513,9 +513,17 @@
 	                </button>
 	            </div>
 				<div class="modal-body">
+					<div class="form-group" id="newGroupInput">
+						<p>Bu işlem seçili olan istemci grubunu ve bu grubun içerisinde yer alan tüm istemcileri silecektir. Bu işlem geri alınamaz.</p>
+					</div>
+					<div class="form-group" id="newGroupInput">
+						<a href="#" class="btn btn-primary submit-button" id="submitGroup" onclick="deleteAgentGroupAndMembersClicked()">
+							<span>İstemci Grubunu Sil</span>
+						</a>
+					</div>
 				</div>
 	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+	                <button type="button" class="btn btn-secondary close" data-dismiss="modal">Kapat</button>
 	            </div>
 	        </div>
 	    </div>
@@ -583,9 +591,17 @@
 	                </button>
 	            </div>
 				<div class="modal-body">
+					<div class="form-group" id="newGroupInput">
+						<p>Bu işlem seçili olan klasörü ve bu klasörün altında yer alan tüm klasör ve grupları silecektir. Bu işlem geri alınamaz.</p>
+					</div>
+					<div class="form-group" id="newGroupInput">
+						<a href="#" class="btn btn-primary submit-button" id="submitGroup" onclick="deleteOrganizationalUnitClicked()">
+							<span>Organizasyon Birimini Sil</span>
+						</a>
+					</div>
 				</div>
 	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+	                <button type="button" class="btn btn-secondary close" data-dismiss="modal">Kapat</button>
 	            </div>
 	        </div>
 	    </div>

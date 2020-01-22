@@ -84,7 +84,7 @@ function repositoryListener(msg) {
 				num = i+1;
 				if(repo_addr[i] != ""){
 					html += '<tr>';
-					html += '<td><span class="cb-repo-addr">'
+					html += '<td><span class="cb-package-name">'
 						+ '<input type="checkbox" name="repo-addr" value="' +  repo_addr[i] +'">'
 						+ '<label for="checkbox1"></label>'
 						+ '</span>'
@@ -95,6 +95,7 @@ function repositoryListener(msg) {
 			}				
 			html += '</table>';
 			$('#repositoriesList').html(html);
+			$('#repository-info').html('<small>Silmek istediğiniz repo/ları seçerek Sil butonunda tıklayınız. Depo eklemek için Depo Adresi tanımlayarak Ekle butonuna tıklayınız. Çalıştır ya da Zamanlı Çalıştır butonuna tıklayarak Sil ve/veya Ekle görevini gönderiniz.</small>');
 			$("#plugin-result").html("");
 			$.notify(xmppResponse.result.responseMessage, "success");
 		}
@@ -137,7 +138,7 @@ $('#deleteRepo').click(function(e){
 function addRepoAddr(repoAddr){
 	var newRow = $("<tr>");
 	var cols = "";
-	cols += '<td><span class="cb-repo-addr">'
+	cols += '<td><span class="cb-package-name">'
 		+ '<input type="checkbox" name="repo-addr" value="' +  repoAddr +'">'
 		+ '<label for="checkbox1"></label>'
 		+ '</span>'

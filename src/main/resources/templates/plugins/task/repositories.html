@@ -4,76 +4,28 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script type="text/javascript" src="js/plugins/task/repositories.js"></script>
-
-<style>
-<!--
-/* Custom checkbox */
-.cb-repo-addr {
-	position: relative;
-}
-.cb-repo-addr input[type="checkbox"] {    
-	opacity: 0;
-	position: absolute;
-	margin: 5px 0 0 3px;
-	z-index: 9;
-}
-.cb-repo-addr label:before{
-	width: 18px;
-	height: 18px;
-}
-.cb-repo-addr label:before {
-	content: '';
-	margin-right: 10px;
-	display: inline-block;
-	vertical-align: text-top;
-	background: white;
-	border: 1px solid #bbb;
-	border-radius: 2px;
-	box-sizing: border-box;
-	z-index: 2;
-}
-.cb-repo-addr input[type="checkbox"]:checked + label:after {
-	content: '';
-	position: absolute;
-	left: 6px;
-	top: 3px;
-	width: 6px;
-	height: 11px;
-	border: solid #000;
-	border-width: 0 3px 3px 0;
-	transform: inherit;
-	z-index: 3;
-	transform: rotateZ(45deg);
-}
-.cb-repo-addr input[type="checkbox"]:checked + label:before {
-	border-color: #03A9F4;
-	background: #03A9F4;
-}
-.cb-repo-addr input[type="checkbox"]:checked + label:after {
-	border-color: #fff;
-}
-.cb-repo-addr input[type="checkbox"]:disabled + label:before {
-	color: #b8b8b8;
-	cursor: auto;
-	box-shadow: none;
-	background: #ddd;
-}
--->
-</style>
+<link rel="stylesheet" href="css/package.manager.css" />
 </head>
 <body>
 	<div class="login-form-1">
 		<div class="row">
 			<div class="input-group mb-3 col-lg-10">
 				<div class="input-group-prepend">
-				    <span class="input-group-text">Depo Adresi Tanımla</span>
-				 </div>
-				 <input type="text" id="inputRepoAddrId" class="form-control" placeholder="deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main">
+					<span class="input-group-text">Depo Adresi Tanımla</span>
+				</div>
+				<input type="text" id="inputRepoAddrId" class="form-control"
+					placeholder="deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main">
 			</div>
 			<div class="col-lg-2 text-right">
-				<button id="addRepoButtonId" type="button" class="btn-shadow btn btn-info" title="Depo Ekle"><i class="fa fa-plus"></i> Ekle</button>
-       			<button id="deleteRepo" type="button" class="btn-shadow btn btn-info" title="Depo Sil"><i class="fa fa-times"></i> Sil</button>
-   			</div>
+				<button id="addRepoButtonId" type="button"
+					class="btn-shadow btn btn-info" title="Depo Ekle">
+					<i class="fa fa-plus"></i> Ekle
+				</button>
+				<button id="deleteRepo" type="button"
+					class="btn-shadow btn btn-info" title="Depo Sil">
+					<i class="fa fa-times"></i> Sil
+				</button>
+			</div>
 		</div>
 		<div class="login-group">
 			<div class="form-group">
@@ -84,21 +36,34 @@
 					</div>
 				</div>
 				<br>
+				<div id="repository-info"></div>
+				<br>
 				<div id="plugin-result"></div>
-				<br><br>
-    			<div class="row">
+				<br>
+				<br>
+				<div class="row">
 					<div class="col-lg-7">
-					<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-						<button id=sendTask-repositories type="button" class="btn-shadow btn btn-info" title="Çalıştır"><i class="fa fa-play"></i> Çalıştır</button>
-						<button id=sendTaskCron-repositories type="button" class="btn-shadow btn btn-info" title="Zamanlı Çalıştır"><i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır</button>
+						<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+						<button id=sendTask-repositories type="button"
+							class="btn-shadow btn btn-info" title="Çalıştır">
+							<i class="fa fa-play"></i> Çalıştır
+						</button>
+						<button id=sendTaskCron-repositories type="button"
+							class="btn-shadow btn btn-info" title="Zamanlı Çalıştır">
+							<i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır
+						</button>
 					</div>
 					<div class="col-lg-5 text-right">
-<!-- 					ids of the following buttons must be closePage-{plugin-page} -->
-						<button id=closePage-repositories type="button" class="btn-shadow btn btn-info" data-dismiss="modal" title="Kapat"><i class="fa fa-window-close"></i> Kapat</button>
-  					</div>
+						<!-- 					ids of the following buttons must be closePage-{plugin-page} -->
+						<button id=closePage-repositories type="button"
+							class="btn-shadow btn btn-info" data-dismiss="modal"
+							title="Kapat">
+							<i class="fa fa-window-close"></i> Kapat
+						</button>
+					</div>
 				</div>
 			</div>
-		</div>			
+		</div>
 	</div>
 </body>
 </html>

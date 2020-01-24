@@ -53,18 +53,24 @@ function getPackagesList(params){
 					var name = data[i]["packageName"];
 					var version =  data[i]["version"];
 					var size =  data[i]["size"];
+					size = (size / 1048576).toFixed(3) + " MB";
 					var description =  data[i]["description"];
-
-					cb_row = '<td class="text-center"><span class="cb-package-name">'
+					var cb_row = '<td class="text-center"><span class="cb-package-name">'
 						+ '<input type="checkbox" onclick="packageChecked()" name="package_name" id="'+ version +'" value="' + name +'">'
 						+ '<label for="checkbox1"></label>'
 						+ '</span>'
 						+ '</td>';
-					packages_list_table.push( [ cb_row, name, version, size, description] );
+					var toogle_btn_tag = '<select onchange="selectTagPackage(this)" disabled class="custom-select selectTag" id="' + name +'" name="'+ version +'">'
+					+ '<option selected>İşlem Seç</option>'
+					+ '<option value="Install">Yükle</option>'
+					+ '<option value="Uninstall">Kaldır</option>'
+					+ '</select>';
+
+					packages_list_table.push( [ cb_row, name, version, size, description, toogle_btn_tag] );
 				}
 			}
 			else {
-				packages_list_table.push( [ null, null, null, null, null] );
+				packages_list_table.push( [ null, null, null, null, null, null] );
 			}
 			$("#plugin-result").html("");
 			var table = $('#packagesListTableId').DataTable( {
@@ -95,7 +101,6 @@ function getPackagesList(params){
 						"sLast": "Son Sayfa", // This is the link to the last page
 					},
 				},
-
 			} );
 		},
 		error: function(data){
@@ -133,7 +138,6 @@ function packagesListener(msg) {
 
 //used to add another package store when click btnAddRepoId
 $('#btnAddRepoId').click(function(e){
-
 	var html = '<div class="input-group mb-3" id="descField">';
 	html += '<div class="input-group-prepend">';
 	html += '<select class="custom-select" id="packageStyleId">';
@@ -153,69 +157,85 @@ $(wrapper).on("click",".remove_field", function(e){ //user click on remove input
 	e.preventDefault(); $(this).parent('div').remove(); x--;
 })
 
-function packageChecked() {
-	var tag = $('input[name="packageTagRadioOptions"]:checked').val();
+function selectTagPackage(sel){
+	var tag = sel.value;
+	var pName = sel.id;
+	var pVersion = sel.name;
+	var status = checkPackageListInfo(pName, pVersion, tag);
 	var packageInfo = {};
-	$('input:checkbox[name=package_name]').each(function() {
-		if($(this).is(':checked')){
-			var pName = $(this).val();
-			var pVersion = $(this).attr('id');
-			var status = checkPackageListInfo(pName, pVersion);
-			if (status == false) {
-				for (var i = 0; i < packages_data.length; i++) {
-					if (pName == packages_data[i]["packageName"] && pVersion == packages_data[i]["version"]) {
-						packageInfo = {
-								"packageName": packages_data[i]["packageName"],
-								"version": packages_data[i]["version"],
-								"installed": packages_data[i]["installed"],
-								"desiredStatus": packages_data[i]["desiredStatus"], //NA and UNINSTALL
-								"tag": tag, // i and u(Yükle, Kaldır)
-								"installedSize": packages_data[i]["installedSize"],
-								"maintainer": packages_data[i]["maintainer"],
-								"architecture": packages_data[i]["architecture"],
-								"depends": packages_data[i]["depends"],
-								"recommends": packages_data[i]["recommends"],
-								"breaks": packages_data[i]["breaks"],
-								"descriptionMd5": packages_data[i]["descriptionMd5"],
-								"homepage": packages_data[i]["homepage"],
-								"suggests": packages_data[i]["suggests"],
-								"multiArch": packages_data[i]["multiArch"],
-								"md5Sum": packages_data[i]["md5Sum"],
-								"sha1": packages_data[i]["sha1"],
-								"sha256": packages_data[i]["sha256"],
-								"replaces": packages_data[i]["replaces"],
-								"preDepends": packages_data[i]["preDepends"],
-								"provides": packages_data[i]["provides"],
-								"description": packages_data[i]["description"],
-								"section": packages_data[i]["section"],
-								"source": packages_data[i]["source"],
-								"conflicts": packages_data[i]["conflicts"],
-								"filename": packages_data[i]["filename"],
-								"priority": packages_data[i]["priority"],
-								"size": packages_data[i]["size"]
-						};
-						packageInfoList.push(packageInfo);
-					}
+	if (tag == "Install" || tag == "Uninstall") {
+		if (status == false) {
+			for (var i = 0; i < packages_data.length; i++) {
+				if (pName == packages_data[i]["packageName"] && pVersion == packages_data[i]["version"]) {
+					packageInfo = {
+							"packageName": packages_data[i]["packageName"],
+							"version": packages_data[i]["version"],
+							"installed": packages_data[i]["installed"],
+							"desiredStatus": packages_data[i]["desiredStatus"], //NA and UNINSTALL
+							"tag": tag, // i and u(Yükle, Kaldır)
+							"installedSize": packages_data[i]["installedSize"],
+							"maintainer": packages_data[i]["maintainer"],
+							"architecture": packages_data[i]["architecture"],
+							"depends": packages_data[i]["depends"],
+							"recommends": packages_data[i]["recommends"],
+							"breaks": packages_data[i]["breaks"],
+							"descriptionMd5": packages_data[i]["descriptionMd5"],
+							"homepage": packages_data[i]["homepage"],
+							"suggests": packages_data[i]["suggests"],
+							"multiArch": packages_data[i]["multiArch"],
+							"md5Sum": packages_data[i]["md5Sum"],
+							"sha1": packages_data[i]["sha1"],
+							"sha256": packages_data[i]["sha256"],
+							"replaces": packages_data[i]["replaces"],
+							"preDepends": packages_data[i]["preDepends"],
+							"provides": packages_data[i]["provides"],
+							"description": packages_data[i]["description"],
+							"section": packages_data[i]["section"],
+							"source": packages_data[i]["source"],
+							"conflicts": packages_data[i]["conflicts"],
+							"filename": packages_data[i]["filename"],
+							"priority": packages_data[i]["priority"],
+							"size": packages_data[i]["size"]
+					};
+					packageInfoList.push(packageInfo);
 				}
-			} 
-		}else if(!$(this).is(':checked')){
-			var pName = $(this).val();
-			var pVersion = $(this).attr('id');
-			var status = checkPackageListInfo(pName, pVersion);
-			if (status == true) {
-				var status = removePackageList(pName, pVersion);
 			}
 		}
+	}else {
+		removePackageList(pName, pVersion);
+	}
+}
 
+function packageChecked() {
+	$('input:checkbox[name=package_name]').each(function() {
+		if($(this).is(':checked')){
+			pName = $(this).val();
+			pVersion = $(this).attr('id');
+			var selectTag = $("#"+pName).prop('disabled', false);
+
+		}else if(!$(this).is(':checked')){
+			pName = $(this).val();
+			pVersion = $(this).attr('id');
+			$("#"+pName).prop('disabled', true);
+			var status = checkPackageListInfo(pName, pVersion, null);
+			if (status == true) {
+				removePackageList(pName, pVersion);
+			}
+		}
 	});
 }
 
-function checkPackageListInfo(pName, pVersion) {
+function checkPackageListInfo(pName, pVersion, tag) {
 	var isExists = false;
 	if (packageInfoList.length > 0) {
 		for (var i = 0; i < packageInfoList.length; i++) {
 			if (pName == packageInfoList[i]["packageName"] && pVersion == packageInfoList[i]["version"]) {
-				isExists = true;
+				if (tag == packageInfoList[i]["tag"] || tag == null ) {
+					isExists = true;
+				}else {
+					removePackageList(pName, pVersion);
+					isExists = false;
+				}
 			}
 		}
 	}
@@ -252,7 +272,6 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 			success: function(result) {
 				var res = jQuery.parseJSON(result);
 				console.log("rest response")
-//				console.log(res)
 				if(res.status=="OK"){		    		
 					$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 				}   	
@@ -261,10 +280,9 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 				$.notify(result, "error");
 			}
 		});
-
 	}
 	else {
-		$.notify("Lütfen yüklemek ve kaldırmak istediğiniz paketi/leri seçerek Çalıştır butonuna tıklayınız.", "warn");
+		$.notify("Lütfen yüklemek ve/veya kaldırmak istediğiniz paketi/leri seçerek Çalıştır butonuna tıklayınız.", "warn");
 	}
 });
 

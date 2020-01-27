@@ -3,6 +3,7 @@ $(document).ready(function(){
 	$("#subentryDiv").hide();
 	//page menu action.. getting inner html page content and render.. 
 	$('.dizin').on('click', function(e) {
+		$('#mainArea').empty();
 		var page = $(this).data("page");
 		$.ajax({
 			type : 'POST',
@@ -22,5 +23,7 @@ $(document).ready(function(){
 		});
 	
 	});
+	
+	
 });
 

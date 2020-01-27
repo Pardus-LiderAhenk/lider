@@ -2,8 +2,10 @@
 $(document).ready(function(){ 
 // Create ou for selected parent node. Ou modal will be open for all releated pages..
 $('#btnOpenOuManagerModal').on('click',function(event) {
-	var parentNode=$(this).data('parentnode');
-	getOus(parentNode);
+	
+//	var parentNode=$(this).data('parentnode');
+//	getOus(parentNode);
+	
 });
 
 $('#addOu').on('click', function (event) {

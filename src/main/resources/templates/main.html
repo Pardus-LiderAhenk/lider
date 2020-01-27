@@ -63,6 +63,8 @@
 	var onlineEntryList = [];
 	var childEntryList = [];
 </script>
+
+<script type="text/javascript" src="js/modal.js"></script>
 </head>
 <body>
 	<div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
@@ -618,55 +620,7 @@
                 </button>
             </div>
 			<div class="modal-body">
-						<div class="row">
-							<div class="col-lg-6">
-								<div class="main-card mb-3 card">
-									<div class="card-header">
-										<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-									</div>
-									<div class="card-body">
-										<div id="treeGridAddUserHolderDiv">
-											<div id="treeGridAddUserModal"></div>
-										</div>
-										
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-6">
-							    <div class="main-card mb-3 card">
-									<div class="card-header">
-											<h6>Kullanıcı Bilgileri</h6>
-									</div>
-									<div class="card-body">
-										<div class="form-group">
-											<label>Kullanıcı Adı</label>
-											<input class="form-control" type="text" id="uid" name="uid" placeholder="ID Giriniz..(uid) " />
-										</div>
-										<div class="form-group">
-											<label>Kullanıcı Adı</label>
-											<input class="form-control" type="text" id="cn" name="cn" placeholder="Ad Giriniz.." />
-										</div>
-										<div class="form-group">
-											<label>Kullanıcı Soyadı</label>
-											<input class="form-control" type="text" id="sn" name="sn" placeholder="Soyad Giriniz.." />
-										</div>
-										<div class="form-group">
-											<label>Parola</label>
-											<input class="form-control" type="password" id="userPassword" name="userPassword" placeholder="Parola" />
-										</div>
-										<div class="form-group">
-											<label>Parola</label>
-											<input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="Parola Onayla" />
-										</div>
-										<div class="form-group">
-											<a href="#" class="btn btn-primary submit-button" id="addUserBtn" onclick="addUser()">
-												<span>Kaydet</span>
-											</a>
-										</div>
-									</div>
-								</div>
-						</div>
-					</div>
+					
 			</div>
         </div>
     </div>
@@ -743,6 +697,22 @@
     </div>
 </div>
 <!-- End Add OU Modal -->
+
+	<div class="modal fade" id="genericModal" tabindex="0"
+		role="dialog" aria-labelledby="genericModal"
+		aria-hidden="true">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" id="genericModalHeader"></h5>
+				</div>
+				<div class="modal-body">
+					<div id="genericModalBodyRender"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script type="text/javascript" src="js/notify.min.js"></script>
 	<script type="text/javascript" src="js/messaging.js"></script> <!-- for xmmp connection send message -->
 	<script type="text/javascript" src="js/main.js"></script>

@@ -8,16 +8,26 @@ $(document).ready(function(){
 	
 	hideButtons()
 	
-	$('#btnOpenAddUserModal').on('click',
-			function(event) {
-		$('#ouName').val("")
-		$('#uid').val("")
-		$('#cn').val("")
-		$('#sn').val("")
-		$('#userPassword').val("")
-		$('#confirm_password').val("")
-		$('#addUserBtn').removeClass('disabled');
-		getOus();
+	$('#btnOpenAddUserModal').on('click',function(event) {
+		
+			getModalContent("modals/addUserModal", function content(data){
+				$('#genericModalHeader').html("Kullanıcı Ekle")
+				$('#genericModalBodyRender').html(data);
+				
+				$('#ouName').val("")
+				$('#uid').val("")
+				$('#cn').val("")
+				$('#sn').val("")
+				$('#userPassword').val("")
+				$('#confirm_password').val("")
+				$('#addUserBtn').removeClass('disabled');
+				getOus();
+				
+			} 
+		);
+		
+
+		
 	});
 	
 	$('#btnOpenDeleteUserModal').on('click',function(event) {

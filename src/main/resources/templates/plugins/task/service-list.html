@@ -1,0 +1,62 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/service-list.js"></script>
+<link rel="stylesheet" href="css/plugin.task.css" />
+</head>
+<body>
+	<div class="login-form-1">
+		<div class="login-group">
+			<div class="form-group">
+				<table class="table table-striped table-bordered display"
+					id="servicesListTableId" border="1">
+					<tbody>
+					<thead>
+						<tr>
+							<th style="width: 5%">#</th>
+							<th style="width: 25%">Servis Adı</th>
+							<th style="width: 15%">Servis Durumu</th>
+							<th style="width: 20%">İstenen Durum</th>
+							<th style="width: 15%">Otomaik Başlat</th>
+							<th style="width: 20%">İstenen Durum</th>
+						</tr>
+					</thead>
+					</tbody>
+				</table>
+				<br>
+				<div id="serviceList-info"></div>
+				<br>
+				<div id="plugin-result"></div>
+				<br> <br>
+				<div class="row">
+					<div class="col-lg-7">
+						<button id=serviceExportPdf type="button"
+							class="btn-shadow btn btn-info" title="Dışa Aktar">
+							<i class="fa fa-file"></i> Dışa Aktar
+						</button>
+						<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+						<button id=sendTask-service-list type="button"
+							class="btn-shadow btn btn-info" title="Çalıştır">
+							<i class="fa fa-play"></i> Çalıştır
+						</button>
+						<button id=sendTaskCron-service-list type="button"
+							class="btn-shadow btn btn-info" title="Zamanlı Çalıştır">
+							<i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır
+						</button>
+					</div>
+					<div class="col-lg-5 text-right">
+						<!-- ids of the following buttons must be closePage-{plugin-page} -->
+						<button id=closePage-service-list type="button"
+							class="btn-shadow btn btn-info" data-dismiss="modal"
+							title="Kapat">
+							<i class="fa fa-window-close"></i> Kapat
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

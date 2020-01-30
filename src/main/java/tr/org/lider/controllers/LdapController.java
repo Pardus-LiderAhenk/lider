@@ -98,7 +98,7 @@ public class LdapController {
 			logger.info("OU created successfully RDN ="+dn);
 			
 			//get full of ou details after creation
-			selectedEntry = ldapService.getOuDetail(selectedEntry.getDistinguishedName());
+			selectedEntry = ldapService.getOuDetail(dn);
 			
 			return selectedEntry;
 		} catch (LdapException e) {
@@ -350,6 +350,8 @@ public class LdapController {
 			attributes.put("uidNumber", new String[] { uidNumber });
 			attributes.put("loginShell", new String[] { "/bin/bash" });
 			attributes.put("userPassword", new String[] { selectedEntry.getUserPassword() });
+			attributes.put("homePostalAddress", new String[] { selectedEntry.getHomePostalAddress() });
+			attributes.put("telephoneNumber", new String[] { selectedEntry.getTelephoneNumber() });
 
 			String rdn="uid="+selectedEntry.getUid()+","+selectedEntry.getParentName();
 
@@ -378,14 +380,9 @@ public class LdapController {
 					ouList.add(ldapEntry);
 				}
 			}
-
 			for (LdapEntry ldapEntry : ouList) {
-				List<LdapEntry> subEntries = ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(&(objectclass=inetOrgPerson)(objectclass=pardusAccount))",	new String[] { "*" }, SearchScope.ONELEVEL);
-				if(subEntries.size()==0) {
-					ldapService.deleteEntry(ldapEntry.getDistinguishedName());
-				}
+				deleteNodes(ldapService.getOuAndOuSubTreeDetail(ldapEntry.getDistinguishedName()));
 			}
-
 			return true;
 		} catch (LdapException e) {
 			e.printStackTrace();
@@ -440,6 +437,32 @@ public class LdapController {
 				}
 				return true;
 			}
+		}
+	}
+	@RequestMapping(method=RequestMethod.POST, value = "/editUser",produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry editUser(LdapEntry selectedEntry) {
+		try {
+//			if(!"".equals(selectedEntry.getUid())){
+//				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "uid", selectedEntry.getUid());
+//			}
+			if(!"".equals(selectedEntry.getCn())){
+				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "cn", selectedEntry.getCn());
+			}
+			if(!"".equals(selectedEntry.getSn())){
+				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "sn", selectedEntry.getSn());
+			}
+			if(!"".equals(selectedEntry.getTelephoneNumber())){
+				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "telephoneNumber", selectedEntry.getTelephoneNumber());
+			}
+			if(!"".equals(selectedEntry.getHomePostalAddress())){
+				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "homePostalAddress", selectedEntry.getHomePostalAddress());
+			}
+			
+			return selectedEntry;
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 }

@@ -295,38 +295,6 @@
 		</div>
 	</div>
 
-
-<!--Ldap Entry attributes setting here -->
-	<div id="attributeModal" class="modal fade">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-
-				<div class="card-header bg-green bg-inverse">
-					<h4>Attributes</h4>
-					<ul class="card-actions">
-						<li>
-							<button data-dismiss="modal" type="button">
-								<i class="ion-close"></i>
-							</button>
-						</li>
-					</ul>
-				</div>
-
-				<div class="modal-body">
-					<span id="attributes_dn"></span>
-					<div id="attributes_attributes"></div>
-
-				</div>
-
-				<div class="modal-footer">
-					<input type="submit" class="btn btn-success"
-						value="Özellikleri Guncelle" id="btnAttributes" name="bnt_gonder">
-					<button type="button" class="btn" data-dismiss="modal">Vazgeç</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
 <!-- Selected ldap entries searching and ahenks listing here-->
 	<div id="selectedEntryListModal" class="modal fade">
 		<div class="modal-dialog modal-lg" role="document">
@@ -351,9 +319,6 @@
 			</div>
 		</div>
 	</div>
-
-
-
 
 	<!-- Start Agent Detail Modal -->
 	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="agentDetailModal">
@@ -609,105 +574,39 @@
 	    </div>
 	</div>
 	<!--  End Delete Organizational Unit Modal-->
-<!-- Add User Modal -->
-<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-hidden="true" id="addUserModal" >
-    <div class="modal-dialog modal-lg " >
-        <div class="modal-content" style="width:1000px;">
-            <div class="modal-header">
-                <h5 class="modal-title">Kullanıcı Ekle</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="addUserModalCloseBtn">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-			<div class="modal-body">
-					
-			</div>
-        </div>
-    </div>
-</div>
-<!-- End Add User Modal -->
-<!-- Delete User Modal -->
-<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-hidden="true" id="deleteUserModal" >
-    <div class="modal-dialog " >
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Kullanıcı Sil</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="addUserModalCloseBtn">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-			<div class="modal-body">
-						<div class="row" style="background-color: red;">
-							<div class="col-lg-6" style="display: table-cell; vertical-align: middle;"> 
-								<img  src="img/users4_delete.png" alt=""> 
-							</div>
-							<div class="col-lg-6" style="background-color: yellow;">
-								<div id="userInfoDelete">
-								</div>
-								<div> secili kayıtlar silinecektir. Emin misiniz?</div>
-								<div class="form-group text-right">
-									<a href="#" class="btn btn-primary submit-button" id="deleteUserBtn" onclick="deleteUsers()">
-										<span>Sil</span>
-									</a>
-								</div>
-							
-							</div>
-						</div>
-			</div>
-        </div>
-    </div>
-</div>
-<!-- End Delete User Modal -->
-<!--Open Ou management modal for different pages -->
-<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="ouManagerModal" >
-    <div class="modal-dialog" >
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Klasor Yönetimi</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="ouManagerModalCloseBtn">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-			<div class="modal-body">
-						<div class="row">
-							<div class="col-lg-12">
-								<div class="main-card mb-3 card">
-									<div class="card-header">
-										<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-											<div class="col-lg-6"> 
-												<input class="form-control" type="text" id="ouName" name="ouName" placeholder="Klasör Adı " /> 
-											</div>
-											<div class="col-lg-6 pull-left"> 
-												<button id="addOu" type="button" class="btn-shadow btn btn-info " title="Klasor Ekle"><i class="fa fa-folder-open"></i></button> 
-											</div>
-								
-									</div>
-									<div class="card-body">
-										<div id="treeGridOuManagerHolderDiv">
-											<div id="treeGridOuManager"></div>
-										</div>
-										
-									</div>
-								</div>
-							</div>
-				
-					</div>
-			</div>
-        </div>
-    </div>
-</div>
-<!-- End Add OU Modal -->
 
 	<div class="modal fade" id="genericModal" tabindex="0"
 		role="dialog" aria-labelledby="genericModal"
 		aria-hidden="true">
-		<div class="modal-dialog modal-xl" role="document">
+		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title w-100 text-center" id="genericModalHeader"></h5>
 				</div>
 				<div class="modal-body">
 					<div id="genericModalBodyRender"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Kapat</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="genericModalLarge" tabindex="0"
+		role="dialog" aria-labelledby="genericModalLarge"
+		aria-hidden="true">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" id="genericModalLargeHeader"></h5>
+				</div>
+				<div class="modal-body">
+					<div id="genericModalLargeBodyRender"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Kapat</button>
 				</div>
 			</div>
 		</div>

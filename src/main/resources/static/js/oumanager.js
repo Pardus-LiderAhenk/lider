@@ -2,36 +2,46 @@
 $(document).ready(function(){ 
 // Create ou for selected parent node. Ou modal will be open for all releated pages..
 $('#btnOpenOuManagerModal').on('click',function(event) {
-	
-//	var parentNode=$(this).data('parentnode');
-//	getOus(parentNode);
-	
+		
+		getModalContent("modals/addOuModal", function content(data){
+			$('#genericModalHeader').html("Klasör Yönetimi")
+			$('#genericModalBodyRender').html(data);
+			getOus("users");
+			
+				$('#addOu').on('click', function (event) {
+					
+					var checkedRows = $("#treeGridOuManager").jqxTreeGrid('getSelection');
+					if(checkedRows.length==0){
+						$.notify("Lütfen Kayıt Seçiniz",{className: 'warn',position:"right top"}  );
+						return
+					}
+					if(checkedRows.length>1){
+						$.notify("Lütfen Tek Kayıt Seçiniz",{className: 'warn',position:"right top"}  );
+						return
+					}
+					
+					var parentDn=checkedRows[0].distinguishedName; 
+					var parentName= checkedRows[0].name;
+					var ouName= $('#ouName').val();
+					$.ajax({
+						type : 'POST',
+						url : 'lider/ldap/addOu',
+						data: 'parentName='+parentDn +'&ou='+ouName,
+						dataType : 'json',
+						success : function(data) {
+							console.log(data)
+							alert(parentDn)
+							$("#treeGridOuManager").jqxTreeGrid('addRow' , data.name , data , 'last' , parentName);
+							$("#treeGridOuManager").jqxTreeGrid('expandRow' , parentName);
+							$.notify("Klasör Başarı İle Eklendi.", "success");
+							
+						}
+					});
+				});
+			} 
+		);
 });
 
-$('#addOu').on('click', function (event) {
-	var checkedRows = $("#treeGridOuManager").jqxTreeGrid('getCheckedRows');
-	if(checkedRows.length==0){
-		$.notify("Lütfen Kayıt Seçiniz",{className: 'warn',position:"right top"}  );
-		return
-	}
-	if(checkedRows.length>1){
-		$.notify("Lütfen Tek Kayıt Seçiniz",{className: 'warn',position:"right top"}  );
-		return
-	}
-	
-	var parentDn=checkedRows[0].distinguishedName; 
-	var ouName= $('#ouName').val();
-	$.ajax({
-		type : 'POST',
-		url : 'lider/ldap/addOu',
-		data: 'parentName='+parentDn +'&ou='+ouName,
-		dataType : 'json',
-		success : function(data) {
-			$.notify("Klasör Başarı İle Eklendi.", "success");
-			getOus();
-		}
-	});
-});
 
 //Create ou for selected parent node. Treegrid show only ou when treegrid rowexpand event triggered. 
 function getOus(parentNode){
@@ -73,7 +83,6 @@ function getOus(parentNode){
 						localData: data,
 						id: "name"
 			};
-			console.log(source)
 			
 			$("#treeGridOuManager").jqxTreeGrid('destroy');
 			$("#treeGridOuManagerHolderDiv").append('<div id="treeGridOuManager"></div> ')
@@ -105,10 +114,8 @@ function createUserTreeGridForUserAdd(source) {
 				altRows: true,
 				sortable: true,
 				columnsResize: true,
-				hierarchicalCheckboxes: false,
 				pageable: true,
 				pagerMode: 'default',
-				checkboxes: true,
 				localization: getLocalization(),
 				pageSize: 50,
 				selectionMode: "singleRow",
@@ -143,7 +150,6 @@ function createUserTreeGridForUserAdd(source) {
 	$('#treeGridOuManager').on('rowExpand', function (event) {
 		var args = event.args;
 		var row = args.row;
-		console.log(row)
 		if(row.expandedUser=="FALSE") {
 			var nameList=[];
 			for (var m = 0; m < row.records.length; m++) {

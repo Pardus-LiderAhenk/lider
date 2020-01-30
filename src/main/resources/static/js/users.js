@@ -5,29 +5,56 @@
  */
 $(document).ready(function(){
 	getUsers();
-	
 	hideButtons()
-	
 	$('#btnOpenAddUserModal').on('click',function(event) {
-		
-			getModalContent("modals/addUserModal", function content(data){
-				$('#genericModalHeader').html("Kullanıcı Ekle")
-				$('#genericModalBodyRender').html(data);
-				
-				$('#ouName').val("")
-				$('#uid').val("")
-				$('#cn').val("")
-				$('#sn').val("")
-				$('#userPassword').val("")
-				$('#confirm_password').val("")
-				$('#addUserBtn').removeClass('disabled');
-				getOus();
-				
-			} 
+		getModalContent("modals/user/addUserModal", function content(data){
+			$('#genericModalLargeHeader').html("Kullanıcı Ekle")
+			$('#genericModalLargeBodyRender').html(data);
+			
+			$('#ouName').val("")
+			$('#uid').val("")
+			$('#cn').val("")
+			$('#sn').val("")
+			$('#userPassword').val("")
+			$('#confirm_password').val("")
+			$('#addUserBtn').removeClass('disabled');
+			getOus();
+			
+			$('#addUserBtn').on('click',function(event) {
+				addUser()
+			});
+		} 
 		);
+	});
+	
+	$('#btnOpenEditUserModal').on('click',function(event) {
 		
-
-		
+		getModalContent("modals//user/editUserModal", function content(data){
+			$('#genericModalHeader').html("Kullanıcı Düzenle")
+			$('#genericModalBodyRender').html(data);
+			var entry;
+			var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
+			
+			for (var k = 0; k < checkedRows.length; k++) { 
+				var row= checkedRows[k];
+				if(row.type=="USER"){
+					entry=row;
+				}
+			}
+			console.log(entry)
+			$('#uidEdit').val(entry.attributes.uid)
+			$('#cnEdit').val(entry.name)
+			$('#snEdit').val(entry.sn)
+			$('#telephoneNumberEdit').val(entry.attributes.telephoneNumber)
+			$('#homePostalAddressEdit').val(entry.attributes.homePostalAddress)
+			$('#userPasswordEdit').val(entry.userPassword)
+			
+			$('#editUserBtn').on('click',function(event) {
+				editUser(entry.distinguishedName)
+			});
+			
+		} 
+		);
 	});
 	
 	$('#btnOpenDeleteUserModal').on('click',function(event) {
@@ -36,16 +63,35 @@ $(document).ready(function(){
 			$.notify("Lütfen Kullanıcı Ağacından Kayıt Seçiniz.", "warn");
 			return
 		}
-		var entryNames="<ul>";
-		for (var k = 0; k < checkedRows.length; k++) { 
-			var row= checkedRows[k];
-			if(row.type){
-				entryNames+="<li> "+row.name +"</li>"
-			}
+		getModalContent("modals/user/deleteUserModal", function content(data){
+				$('#genericModalHeader').html("Kullanıcı Sil")
+				$('#genericModalBodyRender').html(data);
+				
+				var entryNames="<ul>";
+				for (var k = 0; k < checkedRows.length; k++) { 
+					var row= checkedRows[k];
+					if(row.type){
+						entryNames+="<li> "+row.name +"</li>"
+					}
+				}
+				entryNames+="</ul>"
+				$('#userInfoDelete').html(entryNames);
+		});
+	});
+	
+	$('#btnOpenChangePasswordUserModal').on('click',function(event) {
+		var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
+		if(checkedRows.length==0){
+			$.notify("Lütfen Kullanıcı Ağacından Kayıt Seçiniz.", "warn");
+			return
 		}
-		entryNames+="</ul>"
-		$('#deleteUserModal').modal('show');
-		$('#userInfoDelete').html(entryNames);
+		getModalContent("modals/user/changePasswordUserModal", function content(data){
+			$('#genericModalHeader').html("Parola Güncelle")
+			$('#genericModalBodyRender').html(data);
+			
+			
+			
+		});
 	});
 });
 
@@ -79,17 +125,13 @@ function getUsers(){
 			              root: "childEntries"
 			          },
 			      localData: data,
-			      id: "name"
+			      id: "entryUUID"
 			  };
-			 
-			 //create userTreeGrid
 			 createUserTreeGrid(source);
 		}
-
 	});
 }
 function getOus(){
-	
 	$.ajax({
 		type : 'POST',
 		url : 'lider/ldap/getUsers',
@@ -145,8 +187,7 @@ function createUserTreeGrid(source) {
            return localizationobj;
 	}
 	 // create jqxTreeGrid.
-	 $("#treeGridUser").jqxTreeGrid(
-	 {
+	 $("#treeGridUser").jqxTreeGrid({
 		 theme :"Orange",
 		 width: '100%',
 		 source: dataAdapter,
@@ -167,7 +208,7 @@ function createUserTreeGrid(source) {
 	    	    if(dataRow.type == "USER"){
 	    	        return "img/checked-user-32.png";
 	    	    }
-	    	    else return "img/entry_org.gif";
+	    	    else return "img/folder.png";
 	    	},
 	     ready: function () {
 	    	 var allrows =$("#treeGridUser").jqxTreeGrid('getRows');
@@ -175,7 +216,7 @@ function createUserTreeGrid(source) {
 	    		 var row=allrows[0];
 	    		 if(row.childEntries==null ){
 	    			 
-	    			 $("#treeGridUser").jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.name);
+	    			 $("#treeGridUser").jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
 	    		 }
 	    	 }
 	    	 $("#treeGridUser").jqxTreeGrid('collapseAll');
@@ -189,7 +230,7 @@ function createUserTreeGrid(source) {
 	     ]
 	 });
 	 
-	 $('#treeGridUser').on('rowDoubleClick', function (event) {
+	 $('#treeGridUser').on('rowSelect', function (event) {
 	        var args = event.args;
 		    var row = args.row;
 		    var name= row.name;
@@ -206,10 +247,21 @@ function createUserTreeGrid(source) {
 	            if (row.attributes.hasOwnProperty(key)) {
 	                console.log(key + " = " + row.attributes[key]);
 	                
-	                html += '<tr>';
-		            html += '<td>' + key + '</td>';
-		            html += '<td>' + row.attributes[key] + '</td>';
-		            html += '</tr>';
+	                if( (   key =="homeDirectory") 
+	                		|| (key =="cn") 
+	                		|| (key =="uid") 
+	                		|| (key =="uidNumber") 
+	                		|| (key =="gidNumber") 
+	                		|| (key =="sn") 
+	                		|| (key =="homePostalAddress") 
+	                		|| (key =="telephoneNumber") 
+	                		|| (key =="entryDN") 
+	                		){
+	                	html += '<tr>';
+			            html += '<td>' + key + '</td>';
+			            html += '<td>' + row.attributes[key] + '</td>';
+			            html += '</tr>';
+	                }
 	            }
 	        } 
 	        html += '</table>';
@@ -226,34 +278,69 @@ function createUserTreeGrid(source) {
 
 	    });
 	 
-		  $('#treeGridUser').on('rowCheck', function (event) {
+		$('#treeGridUser').on('rowCheck', function (event) {
 		      var args = event.args;
 		      var row = args.row;
-		      console.log(row)
-		      showButtons()
-		  });
+		      var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
+		      if(checkedRows.length==0){
+					hideButtons()
+			  }
+		      if(checkedRows.length>0  ){
+		    	  var userList=[]
+		    	  for (var m = 0; m < checkedRows.length; m++) {
+			    	  var row = checkedRows[m];
+			    	  if(row.type == "USER"){
+			    		  userList.push(row)
+			    	  }
+				  }
+		    	  if(userList.length ==1){
+		    		  showButtons()
+		    	  }
+		    	  else{
+		    		  hideButtons()
+		    	  }
+		      }
+		      else{
+		    	  hideButtons()
+		      }
+		 });
 		
-		  $('#treeGridUser').on('rowUncheck', function (event) {
+		$('#treeGridUser').on('rowUncheck', function (event) {
 			  var args = event.args;
 			  var row = args.row;
 			  var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
-				if(checkedRows.length==0){
-					hideButtons()
-				}
-		  });
-		
+				
+			  if(checkedRows.length>0  ){
+		    	  var userList=[]
+		    	  
+		    	  for (var m = 0; m < checkedRows.length; m++) {
+			    	  var row = checkedRows[m];
+			    	  if(row.type == "USER"){
+			    		  userList.push(row)
+			    	  }
+				  }
+		    	  if(userList.length ==1){
+		    		  showButtons()
+		    	  }
+		    	  else{
+		    		  hideButtons()
+		    	  }
+		      }
+			  else{
+				  hideButtons()
+			  }
+		});
 		  
 		$('#treeGridUser').on('rowExpand', function (event) {
 		     var args = event.args;
 		     var row = args.row;
-		      console.log(row)
 		     if(row.expandedUser=="FALSE") {
 			     
 			      var nameList=[];
 			      
 			      for (var m = 0; m < row.records.length; m++) {
 			    	  var childRow = row.records[m];
-						nameList.push(childRow.name);      
+						nameList.push(childRow.uid);      
 				  }
 			      
 			      for (var k = 0; k < nameList.length; k++) {
@@ -272,9 +359,10 @@ function createUserTreeGrid(source) {
 							 for (var m = 0; m < childs.length; m++) {
 								 	// get a row.
 						          	var childRow = childs[m];
-							          $("#treeGridUser").jqxTreeGrid('addRow', childRow.name, childRow, 'last', row.name);
+						          		console.log(childRow)
+							          $("#treeGridUser").jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
 							          if(childRow.hasSubordinates=="TRUE"){
-							           $("#treeGridUser").jqxTreeGrid('addRow', childRow.name+"1" , {}, 'last', childRow.name); 
+							           $("#treeGridUser").jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
 							          }
 							           $("#treeGridUser").jqxTreeGrid('collapseRow', childRow.name);
 						      } 
@@ -397,6 +485,8 @@ function addUser() {
 	var uid=$('#uid').val();
 	var cn=$('#cn').val();
 	var sn=$('#sn').val();
+	var homePostalAddress=$('#homePostalAddress').val();
+	var telephoneNumber=$('#telephoneNumber').val();
 	var userPassword=$('#userPassword').val();
 	var confirm_password=$('#confirm_password').val();
 	
@@ -423,7 +513,9 @@ function addUser() {
 			"cn": cn,
 			"sn": sn,
 			"userPassword": userPassword,
-			"parentName": parentDn
+			"parentName": parentDn,
+			"telephoneNumber": telephoneNumber,
+			"homePostalAddress": homePostalAddress,
 	};
     
     $.ajax({
@@ -485,12 +577,42 @@ function deleteUsers() {
 	});  
 }
 
+function editUser(userId) {
+    var params = {
+    	"distinguishedName" :	userId,
+		"uid" : $('#uidEdit').val(),
+		"cn": $('#cnEdit').val(),
+		"sn": $('#snEdit').val(), 
+		"telephoneNumber": $('#telephoneNumberEdit').val(),
+		"homePostalAddress": $('#homePostalAddressEdit').val()
+	};
+    console.log(params)
+	$.ajax({
+		type : 'POST',
+		url : 'lider/ldap/editUser',
+		data : params,
+		dataType : 'json',
+		success : function(ldapResult) {
+			$.notify("Kullanıcı Başarı ile güncellendi.",{className: 'success',position:"right top"}  );
+			$('#editUserBtn').addClass('disabled');
+			getUsers();
+		},
+	    error: function (data, errorThrown) {
+			$.notify("Kullanıcı Güncellenirken Hata Oluştu.", "error");
+		}
+	});  
+}
+
 function hideButtons(){
 	$("#btnEditUserModal").hide();
 	$("#btnOpenDeleteUserModal").hide();
+	$("#btnOpenEditUserModal").hide();
+	$("#btnOpenChangePasswordUserModal").hide();
 }
 
 function showButtons(){
 	$("#btnEditUserModal").show();
 	$("#btnOpenDeleteUserModal").show();
+	$("#btnOpenEditUserModal").show();
+	$("#btnOpenChangePasswordUserModal").show();
 }

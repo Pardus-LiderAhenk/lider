@@ -25,6 +25,7 @@ public class LdapEntry implements Serializable{
 	private String userPassword;
 	
 	private String parent;
+	
 	private String parentName;
 	
 	private String entryUUID;
@@ -46,11 +47,13 @@ public class LdapEntry implements Serializable{
 	
 	private boolean isOnline;
 	
-	
 	private List<String> priviliges;
 	
-	
 	private List<LdapEntry> childEntries;
+	
+	private String telephoneNumber;
+	
+	private String homePostalAddress;
 
 	public LdapEntry() {
 		// TODO Auto-generated constructor stub
@@ -241,6 +244,18 @@ public class LdapEntry implements Serializable{
 	}
 	public void setPriviliges(List<String> priviliges) {
 		this.priviliges = priviliges;
+	}
+	public String getTelephoneNumber() {
+		return telephoneNumber;
+	}
+	public void setTelephoneNumber(String telephoneNumber) {
+		this.telephoneNumber = telephoneNumber;
+	}
+	public String getHomePostalAddress() {
+		return homePostalAddress;
+	}
+	public void setHomePostalAddress(String homePostalAddress) {
+		this.homePostalAddress = homePostalAddress;
 	}
 	
 

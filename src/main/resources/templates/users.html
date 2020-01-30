@@ -53,35 +53,43 @@
                         	<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
                                             <ul class="nav flex-column">
                                                 <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnOpenOuManagerModal" data-target="#ouManagerModal" data-toggle="modal" data-parentnode="users" >
-                                                        <i class="nav-link-icon lnr-inbox"></i>
+                                                    <a href="#" class="nav-link" id="btnOpenOuManagerModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+                                                        <i class="fa fa-folder-open"> &nbsp;</i>
                                                         <span>
                                                             Klasör Ekle
                                                         </span>
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnOpenAddUserModal" title="Kullanıcı Ekle" data-target="#genericModal" data-toggle="modal">
-                                                        <i class="nav-link-icon lnr-book"></i>
-                                                        <span>
-                                                            Kullanıcı Ekle
-                                                        </span>
-                                                    </a>
+                                                   <div class="dropdown-divider"></div>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnOpenDeleteUserModal" title="Kullanıcı Sil" data-target="#deleteUserModal" data-toggle="modal">
-                                                        <i class="nav-link-icon lnr-picture"></i>
-                                                        <span>
-                                                            Kullanıcı Sil
-                                                        </span>
+                                                    <a href="#" class="nav-link" id="btnOpenAddUserModal" title="Kullanıcı Ekle" data-target="#genericModalLarge" data-toggle="modal">
+                                                        <i class="fa fa-user-plus"> &nbsp;</i>
+                                                        <span> Kullanıcı Ekle </span>
                                                     </a>
                                                 </li>
+                                                
                                                 <li class="nav-item">
-                                                    <a href="#" class="nav-link">
-                                                        <i class="nav-link-icon lnr-picture"></i>
-                                                        <span>
-                                                            Kullanıcı Düzenle
-                                                        </span>
+                                                    <a href="#" class="nav-link" id="btnOpenEditUserModal" title="Kullanıcı Düzenle" data-target="#genericModal" data-toggle="modal">
+                                                        <i class="fa fa-user-md"> &nbsp;</i>
+                                                        <span> Kullanıcı Düzenle </span>
+                                                    </a>
+                                                </li>
+                                                
+                                                <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnOpenDeleteUserModal" title="Kullanıcı Sil" data-target="#genericModal" data-toggle="modal">
+                                                        <i class="fa fa-user-times"> &nbsp;</i>
+                                                        <span> Kullanıcı Sil </span>
+                                                    </a>
+                                                </li>
+                                                 <li class="nav-item">
+                                                   <div class="dropdown-divider"></div>
+                                                </li>
+                                                 <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnOpenChangePasswordUserModal" title="Parola Degiştir" data-target="#genericModal" data-toggle="modal">
+                                                        <i class="fa fa-user-times"> &nbsp;</i>
+                                                        <span> Parola Değiştir </span>
                                                     </a>
                                                 </li>
                                             </ul>
@@ -100,15 +108,6 @@
 		<div class="main-card mb-3 card">
 			<div class="card-header card-header-tab-animation">
 				<ul class="nav nav-justified">
-					<li class="nav-item">
-						<a role="tab" class="nav-link active"
-							id="tab-c-1" data-toggle="tab" href="#tab-new-policy"> 
-							<span>Politika Gönder</span>
-							
-							
-						</a>
-					</li>
-					
 					<li class="nav-item">
 						<a role="tab" class="nav-link "
 							id="tab-c-0" data-toggle="tab" href="#tab-entry-info"> 

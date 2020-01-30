@@ -1,4 +1,4 @@
-/* Custom checkbox */
+/* Custom checkbox. All plugins using checkbox use this css. Example package-manager, service*/
 .cb-package-name {
 	position: relative;
 }

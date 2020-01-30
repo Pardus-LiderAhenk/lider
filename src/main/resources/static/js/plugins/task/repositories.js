@@ -17,6 +17,7 @@ $("#entrySize").html(selectedEntries.length);
 var deletedItems = [];
 var addedItems = [];
 var dnlist = []
+var table;
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -25,11 +26,17 @@ selectedPluginTask.dnList=dnlist;
 selectedPluginTask.parameterMap={};
 selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
-selectedPluginTask.commandId = "REPOSITORIES";
-var params = JSON.stringify(selectedPluginTask);
 
 //get REPOSITORIES from agent when page opened. This action default parameterMap is null. CommanID is REPOSITORIES
-sendRepositoryTask(params);
+getRepositories()
+
+function getRepositories() {
+	selectedPluginTask.commandId = "REPOSITORIES";
+	selectedPluginTask.parameterMap={};
+	var params = JSON.stringify(selectedPluginTask);
+	sendRepositoryTask(params);
+}
+
 function sendRepositoryTask(params){
 
 	$.ajax({
@@ -51,7 +58,6 @@ function sendRepositoryTask(params){
 			if(res.status=="OK"){		    		
 				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 			}   	
-			/* $('#closePage').click(); */
 		},
 		error: function(result) {
 			$.notify(result, "error");
@@ -60,7 +66,6 @@ function sendRepositoryTask(params){
 }
 
 function repositoryListener(msg) {
-	var num;
 	var to = msg.getAttribute('to');
 	var from = msg.getAttribute('from');
 	var type = msg.getAttribute('type');
@@ -70,42 +75,69 @@ function repositoryListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
-		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-		var repo_addr = arrg["packageSource"].split("\n");
+		var responseMessage = xmppResponse.result.responseMessage;
+		if (xmppResponse.commandClsId == "REPOSITORIES" || xmppResponse.commandClsId == "PACKAGE_SOURCES") {
+			if(xmppResponse.result.responseCode == "TASK_PROCESSED") {
+				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+				var repo_addr = arrg["packageSource"].split("\n");
 
-		if (xmppResponse.result.responseCode != "TASK_ERROR") {
-			var html = '<table class="table table-striped table-bordered" id="repoListTable">';
-			html += '<thead>';
-			html += '<tr>';
-			html += '<th style="width: 5%">Seç</th>';
-			html += '<th style="width: 95%">Depo Adresleri</th>';
-			html += '</thead>';
-			for (var i = 0; i < repo_addr.length ; i++){
-				num = i+1;
-				if(repo_addr[i] != ""){
-					html += '<tr>';
-					html += '<td><span class="cb-package-name">'
-						+ '<input type="checkbox" name="repo-addr" value="' +  repo_addr[i] +'">'
-						+ '<label for="checkbox1"></label>'
-						+ '</span>'
-						+ '</td>'
-						html += '<td class="repoAdrr">'+ repo_addr[i] +'</td>';
-					html += '</tr>';
-				}				  								
-			}				
-			html += '</table>';
-			$('#repositoriesList').html(html);
-			$('#repository-info').html('<small>Silmek istediğiniz repo/ları seçerek Sil butonunda tıklayınız. Depo eklemek için Depo Adresi tanımlayarak Ekle butonuna tıklayınız. Çalıştır ya da Zamanlı Çalıştır butonuna tıklayarak Sil ve/veya Ekle görevini gönderiniz.</small>');
-			$("#plugin-result").html("");
-			$.notify(xmppResponse.result.responseMessage, "success");
+				if (xmppResponse.commandClsId == "PACKAGE_SOURCES") {
+					table.clear().draw();
+					table.destroy();
+				}
+				for (var i = 0; i < repo_addr.length ; i++){
+					var newRow = $("<tr>");
+					if(repo_addr[i] != ""){
+						var html = '<td><span class="cb-package-name">'
+							+ '<input type="checkbox" name="repo-addr" value="' +  repo_addr[i] +'">'
+							+ '<label for="checkbox1"></label>'
+							+ '</span>'
+							+ '</td>'
+							html += '<td class="repoAdrr">'+ repo_addr[i] +'</td>';
+						newRow.append(html);
+						$("#repositoriesListTable").append(newRow);
+					}				  								
+				}
+				createTable();
+				$("#plugin-result").html("");
+				$.notify(responseMessage, "success");
+				$('#repository-info').html('<small style="color:red;">Silmek istediğiniz repo/ları seçerek Sil butonunda tıklayınız. Depo eklemek için Depo Adresi tanımlayarak Ekle butonuna tıklayınız. Çalıştır ya da Zamanlı Çalıştır butonuna tıklayarak Sil ve/veya Ekle görevini gönderiniz.</small>');
+
+			}else {
+				createTable();
+				$("#plugin-result").html(("HATA:" + responseMessage).fontcolor("red"));
+				$.notify(responseMessage, "error");
+			}
 		}
-		else {
-			$("#plugin-result").html(xmppResponse.result.responseMessage);
-			$.notify(xmppResponse.result.responseMessage, "error");
-		}
+		// we must return true to keep the handler alive. returning false would remove it after it finishes.
+		return true;
 	}
-	// we must return true to keep the handler alive. returning false would remove it after it finishes.
-	return true;
+}
+
+function createTable() {
+
+	table = $('#repositoriesListTable').DataTable( {
+		"scrollY": "600px",
+		"paging": false,
+		"searching": false,
+		"scrollCollapse": true,
+//		"info": false,
+		"oLanguage": {
+			"sLengthMenu": 'Görüntüle <select>'+
+			'<option value="20">20</option>'+
+			'<option value="30">30</option>'+
+			'<option value="40">40</option>'+
+			'<option value="50">50</option>'+
+			'<option value="-1">Tümü</option>'+
+			'</select> kayıtları',
+			"sSearch": "Depo Ara:",
+			"sInfo": "Toplam depo sayısı: _TOTAL_",
+			"sInfoEmpty": "Gösterilen depo sayısı: 0",
+			"sZeroRecords" : "Depo bulunamadı",
+			"sInfoFiltered": " - _MAX_ depo arasından",
+		},
+	} );
+
 }
 
 $('#deleteRepo').click(function(e){
@@ -145,7 +177,7 @@ function addRepoAddr(repoAddr){
 		+ '</td>'
 		cols += '<td class="repoAdrr">' + repoAddr +'</td>';
 	newRow.append(cols);
-	$("#repoListTable").append(newRow);
+	$("#repositoriesListTable").append(newRow);
 	addedItems.push(repoAddr);
 	$("#inputRepoAddrId").val("");
 }

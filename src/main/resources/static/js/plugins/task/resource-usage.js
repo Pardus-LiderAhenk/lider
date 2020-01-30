@@ -27,30 +27,30 @@ getResourceUsage();
 
 function getResourceUsage(){
 	$.ajax({
-	      type: "POST",
-	      url: "/lider/task/execute",
-	      headers: {
-	          'Content-Type':'application/json',
-	      }, 
-	      data: params,
-	      contentType: "application/json",
-	      dataType: "json",
-	      converters: {
-	        'text json': true
-	      }, 
-	      success: function(result) {
-	    	var res = jQuery.parseJSON(result);
-	    	console.log("rest response")
-	    	console.log(res)
-	    	if(res.status=="OK"){
-	    		$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
-	    	}   	
-	        /* $('#closePage').click(); */
-	      },
-	      error: function(result) {
-	    	  $.notify(result, "error");
-	      }
-	    });
+		type: "POST",
+		url: "/lider/task/execute",
+		headers: {
+			'Content-Type':'application/json',
+		}, 
+		data: params,
+		contentType: "application/json",
+		dataType: "json",
+		converters: {
+			'text json': true
+		}, 
+		success: function(result) {
+			var res = jQuery.parseJSON(result);
+			console.log("rest response")
+			console.log(res)
+			if(res.status=="OK"){
+				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
+			}   	
+			/* $('#closePage').click(); */
+		},
+		error: function(result) {
+			$.notify(result, "error");
+		}
+	});
 }
 
 $('#sendTask-'+ selectedPluginTask.page).click(function(e){
@@ -58,17 +58,17 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 });
 
 function resourceUsageListener(msg) {
-    var to = msg.getAttribute('to');
-    var from = msg.getAttribute('from');
-    var type = msg.getAttribute('type');
-    var elems = msg.getElementsByTagName('body');
-    
-    if (type == "chat" && elems.length > 0) {
-    	var body = elems[0];
-    	var data=Strophe.xmlunescape(Strophe.getText(body));
-    	var xmppResponse=JSON.parse(data);
-    	console.log(xmppResponse.commandClsId)
-    	var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+	var to = msg.getAttribute('to');
+	var from = msg.getAttribute('from');
+	var type = msg.getAttribute('type');
+	var elems = msg.getElementsByTagName('body');
+
+	if (type == "chat" && elems.length > 0) {
+		var body = elems[0];
+		var data=Strophe.xmlunescape(Strophe.getText(body));
+		var xmppResponse=JSON.parse(data);
+		console.log(xmppResponse.commandClsId)
+		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		if(xmppResponse.commandClsId == "RESOURCE_INFO_FETCHER"){
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
@@ -96,18 +96,18 @@ function resourceUsageListener(msg) {
 					$("#usage_disk").html(arrg["Usage Disc"]+" MB");
 					$("#plugin-result").html("");
 					$.notify(xmppResponse.result.responseMessage, "success");
-					
+
 				} else {
-					$("#plugin-result").html(xmppResponse.result.responseMessage);
+					$("#plugin-result").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
 					$.notify(xmppResponse.result.responseMessage, "error");
 				}
-				
+
 			}
-			
+
 		}						 
-    }
-    // we must return true to keep the handler alive. returning false would remove it after it finishes.
-    return true;
+	}
+	// we must return true to keep the handler alive. returning false would remove it after it finishes.
+	return true;
 }
 
 $('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){

@@ -127,10 +127,10 @@ function packagesListener(msg) {
 				$("#plugin-result").html("");
 				$.notify(xmppResponse.result.responseMessage, "success");
 			} else {
-				$("#plugin-result").html(xmppResponse.result.responseMessage);
+				$("#plugin-result").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
 				$.notify(xmppResponse.result.responseMessage, "error");
 			}
-		}						 
+		}
 	}
 	// we must return true to keep the handler alive. returning false would remove it after it finishes.
 	return true;

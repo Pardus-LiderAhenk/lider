@@ -1,5 +1,5 @@
 /**
- * Task is packages-sources and repositeries
+ * Task is package-management
  * This task get installed packages from agents. This task used to remove selected packages from agent
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
@@ -17,6 +17,7 @@ $("#entrySize").html(selectedEntries.length);
 
 var packageInfoList = [];
 var dnlist = []
+var table;
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -27,10 +28,9 @@ selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
 selectedPluginTask.commandId = "INSTALLED_PACKAGES";
 var params = JSON.stringify(selectedPluginTask);
-//get installed packages from agent when page opened. This action default parameterMap is null. CommanID is INSTALLED_PACKAGES
+//get installed packages from agent when page opened. This action default parameterMap is null. CommandID is INSTALLED_PACKAGES
 
 sendPackageManagementTask(params);
-//console.log(params);
 
 function sendPackageManagementTask(params){
 
@@ -50,7 +50,7 @@ function sendPackageManagementTask(params){
 			var res = jQuery.parseJSON(result);
 			console.log("rest response")
 			console.log(res)
-			if(res.status=="OK"){		    		
+			if(res.status=="OK"){
 				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 			}   	
 		},
@@ -72,15 +72,13 @@ function getPackagesListener(msg) {
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
 		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-//		console.log(xmppResponse);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-				if(xmppResponse.result.contentType =="TEXT_PLAIN"){
+			if (xmppResponse.commandClsId == "INSTALLED_PACKAGES") {
+				if (xmppResponse.result.responseCode == "TASK_PROCESSED" && xmppResponse.result.contentType =="TEXT_PLAIN") {
 					var params = {
 							"id" : xmppResponse.result.id
 					};
-//					connection.deleteHandler(ref);
 					$.ajax({
 						type: 'POST', 
 						url: "/command/commandexecutionresult",
@@ -90,44 +88,29 @@ function getPackagesListener(msg) {
 							if(data != null) {
 								if(data.responseDataStr != null) {
 									var packages = data.responseDataStr.split("\n");
-
-									var html = '<table class="table table-striped table-bordered display" id="installedPackagesListTableId" border="1">';
-									html += '<thead>';
-									html += '<tr>';
-									html += '<th style="width: 10%">Seç</th>';
-									html += '<th style="width: 10%">#</th>';
-									html += '<th style="width: 40%">Adı</th>';
-									html += '<th style="width: 40%">Versiyon</th>';
-									html += '</thead>';
 									var parser_packages = [];
 									for (var i = 0; i < packages.length; i++) {
 										parser_packages.push(packages[i].split(","));
 									}
-
 									for (var j = 0; j < parser_packages.length; j++) {
 										var package_name = parser_packages[j][1];
 										var package_version = parser_packages[j][2];
 
-										var num = j+1;
-										html += '<tr>';
-										html += '<td class="text-center"><span class="cb-package-name">'
-											+ '<input type="checkbox" name="package_name" id="'+ package_version +'" value="' + package_name +'">'
+										var newRow = $("<tr>");
+										var html = '<td class="text-center"><span class="cb-package-name">'
+											+ '<input class="text-center" type="checkbox" name="package_name" id="'+ package_version +'" value="' + package_name +'">'
 											+ '<label for="checkbox1"></label>'
 											+ '</span>'
 											+ '</td>';
-										html += '<td>'+ num +'</td>';
 										html += '<td>'+ package_name +'</td>';
 										html += '<td>'+ package_version +'</td>';
-										html += '</tr>';
+
+										newRow.append(html);
+										$("#installedPackagesTable").append(newRow);
 									}
-									html += '</table>';
-									$('#installedPackagesList').html(html);
-									$('#package-management-info').html('<small>Silmek istediğiniz paket/leri seçerek Çalıştır ya da Zamanlı Çalıştır butonuna tıklayınız.</small>');
 
 									var parser_packages = [];
-									$("#plugin-result").html("");
-									$.notify(responseMessage, "success");
-									var table = $('#installedPackagesListTableId').DataTable( {
+									table = $('#installedPackagesTable').DataTable( {
 										"scrollY": "600px",
 										"paging": false,
 										"scrollCollapse": true,
@@ -141,47 +124,46 @@ function getPackagesListener(msg) {
 											'</select> kayıtları',
 											"sSearch": "Paket Ara:",
 											"sInfo": "Toplam paket sayısı: _TOTAL_",
-											"sInfoEmpty": "Gösterilen kayıt sayısı: 0",
+											"sInfoEmpty": "Gösterilen paket sayısı: 0",
 											"sZeroRecords" : "Paket bulunamadı",
-											"sInfoFiltered": " - _MAX_ kayıt arasından",
+											"sInfoFiltered": " - _MAX_ paket arasından",
 										},
 									} );
+									$("#plugin-result").html("");
+									$.notify(responseMessage, "success");
+									$('#package-management-info').html('<small style="color:red;">Silmek istediğiniz paket/leri seçerek Çalıştır ya da Zamanlı Çalıştır butonuna tıklayınız.</small>');
 								}
 							}
 						},
 						error: function(result) {
 							$.notify(result, "error");
+							$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
 						}
 					});
-				}
-				else {
-					$("#plugin-result").html(responseMessage);
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-						$.notify(responseMessage, "success");
-						$("#plugin-result").html("");
-//						return send task "INSTALLED_PACKAGES" for updated installed packages list after task uninstalled packages 
-						selectedPluginTask.dnList=dnlist;
-						selectedPluginTask.parameterMap={};
-						selectedPluginTask.entryList=selectedEntries;
-						selectedPluginTask.dnType="AHENK";
-						selectedPluginTask.commandId = "INSTALLED_PACKAGES";
-						var params = JSON.stringify(selectedPluginTask);
-						sendPackageManagementTask(params);
-					}
-					else {
-						$.notify(responseMessage, "error");
-						$("#plugin-result").html(responseMessage);
-					}
+				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
+					$.notify(responseMessage, "error");
+					$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}
-			else {
+			if (xmppResponse.commandClsId == "PACKAGE_MANAGEMENT") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+
 					$.notify(responseMessage, "success");
 					$("#plugin-result").html("");
-				}
-				else {
+//					return send task "INSTALLED_PACKAGES" for updated installed packages list after task uninstalled packages 
+					selectedPluginTask.dnList=dnlist;
+					selectedPluginTask.parameterMap={};
+					selectedPluginTask.entryList=selectedEntries;
+					selectedPluginTask.dnType="AHENK";
+					selectedPluginTask.commandId = "INSTALLED_PACKAGES";
+					var params = JSON.stringify(selectedPluginTask);
+					table.clear().draw();
+					table.destroy();
+					sendPackageManagementTask(params);
+
+				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
 					$.notify(responseMessage, "error");
-					$("#plugin-result").html(responseMessage);
+					$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}
 		}
@@ -191,7 +173,6 @@ function getPackagesListener(msg) {
 }
 
 $('#sendTask-'+ selectedPluginTask.page).click(function(e){
-
 	if($('input:checkbox[name=package_name]').is(':checked')) {
 		var packageInfo = {};
 		$('input:checkbox[name=package_name]').each(function() {
@@ -232,8 +213,6 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 				packageInfoList.push(packageInfo);
 			}
 		});
-//		$('input:checkbox[name=package_name]:checked').closest("tr").remove();
-
 		selectedPluginTask.commandId = "PACKAGE_MANAGEMENT";
 		selectedPluginTask.parameterMap={"packageInfoList":packageInfoList};
 		var params = JSON.stringify(selectedPluginTask);

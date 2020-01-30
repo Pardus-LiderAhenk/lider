@@ -4,17 +4,28 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script type="text/javascript" src="js/plugins/task/package-management.js"></script>
-<link rel="stylesheet" href="css/package.manager.css" />
+<link rel="stylesheet" href="css/plugin.task.css" />
 </head>
 <body>
 	<div class="login-form-1">
 		<div class="login-group">
 			<div class="form-group">
-				<div id=installedPackagesList></div>
+				<table class="table table-striped table-bordered display"
+					id="installedPackagesTable" border="1">
+					<tbody>
+					<thead>
+						<tr>
+							<th style="width: 7%">#</th>
+							<th style="width: 48%">Paket Adı</th>
+							<th style="width: 45%">Paket Versiyonu</th>
+						</tr>
+					</thead>
+					</tbody>
+				</table>
 				<br>
 				<div id="plugin-result"></div>
 				<div id="package-management-info"></div>
-				<br><br>
+				<br>
 				<div class="row">
 					<div class="col-lg-7">
 					<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->

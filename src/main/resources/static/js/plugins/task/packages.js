@@ -120,8 +120,7 @@ function packagesListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
-//		console.log(xmppResponse.commandClsId);
-		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+//		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		if(xmppResponse.commandClsId == "PACKAGES"){
 			if (xmppResponse.result.responseCode != "TASK_ERROR") {
 				$("#plugin-result").html("");

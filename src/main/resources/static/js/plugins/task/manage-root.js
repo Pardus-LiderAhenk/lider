@@ -82,8 +82,6 @@ function manageRootListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
-//		console.log(xmppResponse.commandClsId);
-		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		if(xmppResponse.commandClsId == "SET_ROOT_PASSWORD"){
 			if (xmppResponse.result.responseCode != "TASK_ERROR") {
 				$("#plugin-result").html("");
@@ -100,7 +98,6 @@ function manageRootListener(msg) {
 
 $('#generateRootPassword').click(function(e){
 	var pwd = generatePassword();
-
 	var ucaseFlag2 = contains(pwd, upperCase);
 	var lcaseFlag2 = contains(pwd, lowerCase);
 	var digitsFlag2 = contains(pwd, digits);

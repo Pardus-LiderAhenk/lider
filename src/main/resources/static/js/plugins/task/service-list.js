@@ -17,6 +17,7 @@ $("#entrySize").html(selectedEntries.length);
 
 var serviceRequestParameters = [];
 var dnlist = []
+var table;
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -26,7 +27,6 @@ selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
 
 getServices();
-var table;
 
 function getServices() {
 	selectedPluginTask.commandId = "GET_SERVICES";
@@ -74,11 +74,10 @@ function getServiceListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
-		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 			if (xmppResponse.commandClsId == "GET_SERVICES") {
-
+				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					if(xmppResponse.result.contentType =="TEXT_PLAIN"){
 						var params = {
@@ -150,8 +149,9 @@ function getServiceListener(msg) {
 										$.notify(responseMessage, "success");
 										$("#serviceList-info").html("<small style='color:red;'>İşlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır ya da Zamanlı Çalıştır butonuna tıklayınız.</small>");
 									}
+								}else {
+									createTable();
 								}
-								createTable();
 							},
 							error: function(result) {
 								$.notify(result, "error");

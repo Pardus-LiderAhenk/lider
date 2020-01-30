@@ -36,15 +36,13 @@ function endSessionsListener(msg) {
     	var body = elems[0];
     	var data=Strophe.xmlunescape(Strophe.getText(body));
     	var xmppResponse=JSON.parse(data);
-//    	console.log(xmppResponse.commandClsId);
-    	var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		if(xmppResponse.commandClsId == "MANAGE"){
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					$("#plugin-result").html("");
 					$.notify(xmppResponse.result.responseMessage, "success");
 				} else {
-					$("#plugin-result").html(xmppResponse.result.responseMessage);
+					$("#plugin-result").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
 					$.notify(xmppResponse.result.responseMessage, "error");
 				}
 			}

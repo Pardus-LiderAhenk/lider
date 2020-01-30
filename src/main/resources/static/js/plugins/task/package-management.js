@@ -71,7 +71,6 @@ function getPackagesListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
-		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 			if (xmppResponse.commandClsId == "INSTALLED_PACKAGES") {
@@ -110,29 +109,13 @@ function getPackagesListener(msg) {
 									}
 
 									var parser_packages = [];
-									table = $('#installedPackagesTable').DataTable( {
-										"scrollY": "600px",
-										"paging": false,
-										"scrollCollapse": true,
-										"oLanguage": {
-											"sLengthMenu": 'Görüntüle <select>'+
-											'<option value="20">20</option>'+
-											'<option value="30">30</option>'+
-											'<option value="40">40</option>'+
-											'<option value="50">50</option>'+
-											'<option value="-1">Tümü</option>'+
-											'</select> kayıtları',
-											"sSearch": "Paket Ara:",
-											"sInfo": "Toplam paket sayısı: _TOTAL_",
-											"sInfoEmpty": "Gösterilen paket sayısı: 0",
-											"sZeroRecords" : "Paket bulunamadı",
-											"sInfoFiltered": " - _MAX_ paket arasından",
-										},
-									} );
+									createTable();
 									$("#plugin-result").html("");
 									$.notify(responseMessage, "success");
 									$('#package-management-info').html('<small style="color:red;">Silmek istediğiniz paket/leri seçerek Çalıştır ya da Zamanlı Çalıştır butonuna tıklayınız.</small>');
 								}
+							}else {
+								createTable();
 							}
 						},
 						error: function(result) {
@@ -170,6 +153,29 @@ function getPackagesListener(msg) {
 	}
 	// we must return true to keep the handler alive. returning false would remove it after it finishes.
 	return true;
+}
+
+function createTable() {
+	table = $('#installedPackagesTable').DataTable( {
+		"scrollY": "600px",
+		"paging": false,
+		"scrollCollapse": true,
+		"oLanguage": {
+			"sLengthMenu": 'Görüntüle <select>'+
+			'<option value="20">20</option>'+
+			'<option value="30">30</option>'+
+			'<option value="40">40</option>'+
+			'<option value="50">50</option>'+
+			'<option value="-1">Tümü</option>'+
+			'</select> kayıtları',
+			"sSearch": "Paket Ara:",
+			"sInfo": "Toplam paket sayısı: _TOTAL_",
+			"sInfoEmpty": "Gösterilen paket sayısı: 0",
+			"sZeroRecords" : "Paket bulunamadı",
+			"sInfoFiltered": " - _MAX_ paket arasından",
+		},
+	} );
+	
 }
 
 $('#sendTask-'+ selectedPluginTask.page).click(function(e){

@@ -67,11 +67,10 @@ function resourceUsageListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
-		console.log(xmppResponse.commandClsId)
-		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		if(xmppResponse.commandClsId == "RESOURCE_INFO_FETCHER"){
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 					var phase = "";
 					if(arrg["Phase"]){
 						phase = arrg["Phase"]

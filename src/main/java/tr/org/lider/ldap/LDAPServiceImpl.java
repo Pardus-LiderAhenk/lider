@@ -509,19 +509,19 @@ public class LDAPServiceImpl implements ILDAPService {
 		try {
 			entry = connection.lookup(entryDn);
 			if (entry != null) {
-//
-//				for (Attribute a : entry.getAttributes()) {
-//					if (a.contains(value)) {
-//						a.remove(value);
-//					}
-//				}
+
+				for (Attribute a : entry.getAttributes()) {
+					if (a.contains(value)) {
+						a.remove(value);
+					}
+				}
 
 				
-				if (entry.get(attribute) != null) {
-					Value<?> oldValue = entry.get(attribute).get();
-					entry.remove(attribute, oldValue);
-				}
-				entry.add(attribute, value);
+//				if (entry.get(attribute) != null) {
+//					Value<?> oldValue = entry.get(attribute).get();
+//					entry.remove(attribute, oldValue);
+//				}
+//				entry.add(attribute, value);
 				
 				connection.modify(entry, ModificationOperation.REPLACE_ATTRIBUTE);
 			}
@@ -643,6 +643,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		LdapConnection connection = null;
 
 		Map<String, String> attrs = null;
+		Map<String, String[]> attributesMultiValues = null;
 
 		try {
 			connection = getConnection();
@@ -675,6 +676,7 @@ public class LDAPServiceImpl implements ILDAPService {
 			while (searchCursor.next()) {
 				Response response = searchCursor.get();
 				attrs = new HashMap<String, String>();
+				attributesMultiValues = new HashMap<String, String[]>();
 				if (response instanceof SearchResultEntry) {
 					Entry entry = ((SearchResultEntry) response).getEntry();
 					if (returningAttributes != null) {
@@ -729,6 +731,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		List<LdapEntry> result = new ArrayList<LdapEntry>();
 		LdapConnection connection = null;
 		Map<String, String> attrs = null;
+		Map<String, String[]> attributesMultiValues = null;
 		try {
 			connection = getConnection();
 			SearchRequest request= new SearchRequestImpl();
@@ -750,6 +753,7 @@ public class LDAPServiceImpl implements ILDAPService {
 			while (searchCursor.next()) {
 				Response response = searchCursor.get();
 				attrs = new HashMap<String, String>();
+				attributesMultiValues = new HashMap<String, String[]>();
 				if (response instanceof SearchResultEntry) {
 					
 					Entry entry = ((SearchResultEntry) response).getEntry();
@@ -779,9 +783,20 @@ public class LDAPServiceImpl implements ILDAPService {
 						Attribute attr = (Attribute) iterator.next();
 						String attrName= attr.getUpId();
 						String value=attr.get().getString();
-						
-						attrs.put(attrName, value);
-						
+
+						if(attr.size() > 1) {
+							Iterator<Value<?>> iter2 = entry.get(attrName).iterator();
+							String [] values = new String[attr.size()];
+							int counter = 0;
+							while (iter2.hasNext()) {
+								value = iter2.next().getValue().toString();
+								values[counter++] = value;
+							}
+							attributesMultiValues.put(attrName, values);
+						} else {
+							attrs.put(attrName, value);
+							attributesMultiValues.put(attrName, new String[] {value});
+						}
 					}
 					
 					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs, convertObjectClass2DNType(entry.get("objectClass")));
@@ -809,19 +824,16 @@ public class LDAPServiceImpl implements ILDAPService {
 					if(priviliges!=null) {
 						ldapEntry.setPriviliges(priviliges);
 					}
+					ldapEntry.setAttributesMultiValues(attributesMultiValues);
 					result.add(ldapEntry);
-
-					
 				}
 			}
-			
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			throw new LdapException(e);
 		} finally {
 			releaseConnection(connection);
 		}
-
 		return result;
 	}
 	
@@ -1165,7 +1177,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		return computersGroupDn;
 	}
 	
-	public LdapEntry getOuDetail(String dn) {
+	public LdapEntry getEntryDetail(String dn) {
 		LdapEntry ouEntry = null;
 		try {
 			logger.info("Getting ou detail");
@@ -1308,5 +1320,17 @@ public class LDAPServiceImpl implements ILDAPService {
 	            .toString();
 	}
 	
-
+	public void moveEntry(String sourceDN, String destinationDN) throws LdapException {
+		logger.info("Moving entryDn :" + sourceDN + "  newSuperiorDn " + destinationDN);
+		LdapConnection connection = null;
+		connection = getConnection();
+		try {
+			connection.move(sourceDN,destinationDN);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+	}
 }

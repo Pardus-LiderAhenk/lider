@@ -56,13 +56,10 @@ public class LdapController {
 
 	@RequestMapping(value = "/getOuDetails")
 	public List<LdapEntry> task(LdapEntry selectedEntry) {
-
 		List<LdapEntry> subEntries = null;
 		try {
-
 			subEntries = ldapService.findSubEntries(selectedEntry.getUid(), "(objectclass=*)",
 					new String[] { "*" }, SearchScope.ONELEVEL);
-
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
@@ -72,12 +69,10 @@ public class LdapController {
 
 	@RequestMapping(value = "/getOu")
 	public List<LdapEntry> getOu(LdapEntry selectedEntry) {
-
 		List<LdapEntry> subEntries = null;
 		try {
 			subEntries = ldapService.findSubEntries(selectedEntry.getUid(), "(&(objectclass=organizationalUnit)(objectclass=pardusLider))",
 					new String[] { "*" }, SearchScope.ONELEVEL);
-
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
@@ -98,7 +93,7 @@ public class LdapController {
 			logger.info("OU created successfully RDN ="+dn);
 			
 			//get full of ou details after creation
-			selectedEntry = ldapService.getOuDetail(dn);
+			selectedEntry = ldapService.getEntryDetail(selectedEntry.getDistinguishedName());
 			
 			return selectedEntry;
 		} catch (LdapException e) {
@@ -108,11 +103,9 @@ public class LdapController {
 	}
 
 	@RequestMapping(value = "/getSudoGroups")
-	public List<LdapEntry> getSudoGroups(HttpServletRequest request, Model model) {
-
+	public List<LdapEntry> getSudoGroups() {
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		retList.add(ldapService.getLdapSudoGroupsTree());
-
 		return retList;
 	}
 
@@ -133,49 +126,35 @@ public class LdapController {
 	}
 
 	@RequestMapping(value = "/getGroups")
-	public List<LdapEntry> getGroups(HttpServletRequest request, Model model) {
-
+	public List<LdapEntry> getGroups() {
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		retList.add(ldapService.getLdapGroupsTree());
-
-
 		return retList;
 	}
 
 	@RequestMapping(value = "/getUsers")
-	public List<LdapEntry> getUsers(HttpServletRequest request, Model model) {
-
+	public List<LdapEntry> getUsers() {
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		retList.add(ldapService.getLdapUserTree());
 		return retList;
 	}
 
-
-
 	@RequestMapping(value = "/getComputers")
-	public List<LdapEntry> getComputers(HttpServletRequest request, Model model) {
+	public List<LdapEntry> getComputers() {
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
-
 		retList.add(ldapService.getLdapComputersTree());
 		return retList;
-
 	}
 
 	@RequestMapping(value = "/getAhenks", method = { RequestMethod.POST })
 	public List<LdapEntry> getAhenks(HttpServletRequest request,Model model, @RequestBody LdapEntry[] selectedEntryArr) {
-
 		List<LdapEntry> ahenkList=new ArrayList<>();
-
 		for (LdapEntry ldapEntry : selectedEntryArr) {
-
 			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
-
 			LdapSearchFilterAttribute fAttr = new LdapSearchFilterAttribute("objectClass", "pardusDevice",	SearchFilterEnum.EQ);
 			filterAttributes.add(fAttr);
-
 			try {
 				List<LdapEntry> retList=ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
-
 				for (LdapEntry ldapEntry2 : retList) {
 					boolean isExist=false;
 					for (LdapEntry ldapEntryAhenk : ahenkList) {
@@ -192,32 +171,18 @@ public class LdapController {
 				e.printStackTrace();
 			}
 		}
-
-		//		ObjectMapper mapper = new ObjectMapper();
-		//		String ret = null;
-		//		try {
-		//			ret = mapper.writeValueAsString(ahenkList);
-		//		} catch (JsonProcessingException e) {
-		//			e.printStackTrace();
-		//		}
 		return ahenkList;
 	}
 
 	@RequestMapping(value = "/getOnlineAhenks", method = { RequestMethod.POST })
-	public String getOnlyOnlineAhenks(HttpServletRequest request,Model model, @RequestBody LdapEntry[] selectedEntryArr) {
-
+	public String getOnlyOnlineAhenks(@RequestBody LdapEntry[] selectedEntryArr) {
 		List<LdapEntry> ahenkList=new ArrayList<>();
-
 		for (LdapEntry ldapEntry : selectedEntryArr) {
-
 			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
-
 			LdapSearchFilterAttribute fAttr = new LdapSearchFilterAttribute("objectClass", "pardusDevice",	SearchFilterEnum.EQ);
 			filterAttributes.add(fAttr);
-
 			try {
 				List<LdapEntry> retList=ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
-
 				for (LdapEntry ldapEntry2 : retList) {
 					boolean isExist=false;
 					for (LdapEntry ldapEntryAhenk : ahenkList) {
@@ -226,13 +191,6 @@ public class LdapController {
 							break;
 						}
 					}
-					//					boolean isOnline=false;
-					//					for (String online : messagingService.getOnlineUsers()) {
-					//						if(ldapEntry2.getUid().equals(online)) {
-					//							isOnline=true;
-					//							break;
-					//						}
-					//					}
 					if(!isExist && messagingService.isRecipientOnline(ldapEntry2.getUid())) {
 						ahenkList.add(ldapEntry2);
 					}
@@ -241,7 +199,6 @@ public class LdapController {
 				e.printStackTrace();
 			}
 		}
-
 		ObjectMapper mapper = new ObjectMapper();
 		String ret = null;
 		try {
@@ -255,8 +212,17 @@ public class LdapController {
 	//add new group and add selected agents
 	@RequestMapping(method=RequestMethod.POST ,value = "/group/new", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Boolean addAgentsToNewGroup(@RequestParam(value = "groupName", required=true) String groupName,
+	public LdapEntry addAgentsToNewGroup(@RequestParam(value = "selectedOUDN", required=false) String selectedOUDN,
+			@RequestParam(value = "groupName", required=true) String groupName,
 			@RequestParam(value = "checkedList[]", required=true) String[] checkedList) {
+		String newGroupDN = "";
+		//to return newly added entry with its details
+		LdapEntry entry;
+		if(selectedOUDN == null || selectedOUDN.equals("")) {
+			newGroupDN = "cn=" +  groupName +","+ configurationService.getAhenkGroupLdapBaseDn();
+		} else {
+			newGroupDN = "cn=" +  groupName +","+ selectedOUDN;
+		}
 		Map<String, String[]> attributes = new HashMap<String,String[]>();
 		attributes.put("objectClass", new String[] {"groupOfNames", "top", "pardusLider"} );
 		attributes.put("liderGroupType", new String[] {"AHENK"} );
@@ -277,19 +243,20 @@ public class LdapController {
 			} else {
 				attributes.put("member", checkedList );
 			}
-			ldapService.addEntry("cn=" +  groupName +","+ configurationService.getGroupLdapBaseDn() , attributes);
+			ldapService.addEntry(newGroupDN , attributes);
+			entry = ldapService.getEntryDetail(newGroupDN);
 		} catch (LdapException e) {
 			System.out.println("Error occured while adding new group.");
 			return null;
 		}
-		return true;
+		return entry;
 	}
 
 	//add agents to existing group
 	@RequestMapping(method=RequestMethod.POST ,value = "/group/existing", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public Boolean addAgentsToExistingGroup(@RequestParam(value="groupDN") String groupDN,
+	public LdapEntry addAgentsToExistingGroup(@RequestParam(value="groupDN") String groupDN,
 			@RequestParam(value = "checkedList[]", required=true) String[] checkedList) {
+		LdapEntry entry;
 		try {
 			//when single dn comes spring boot takes it as multiple arrays
 			//so dn must be joined with comma
@@ -309,13 +276,68 @@ public class LdapController {
 					ldapService.updateEntryAddAtribute(groupDN, "member", checkedList[i]);
 				}
 			}
+			entry = ldapService.getEntryDetail(groupDN);
 		} catch (LdapException e) {
 			System.out.println("Error occured while adding new group.");
 			return null;
 		}
-		return true;
+		return entry;
+	}
+	
+	//get members of group
+	@RequestMapping(method=RequestMethod.POST ,value = "/group/members", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<LdapEntry> getMembersOfGroup(@RequestParam(value="dn", required=true) String dn) {
+		LdapEntry entry = ldapService.getEntryDetail(dn);
+		List<LdapEntry> listOfMembers = new ArrayList<>();
+
+		for(String memberDN: entry.getAttributesMultiValues().get("member")) {
+			listOfMembers.add(ldapService.getEntryDetail(memberDN));
+		}
+		return listOfMembers;
 	}
 
+	//get entry
+	@RequestMapping(method=RequestMethod.GET ,value = "/entry/", produces = MediaType.APPLICATION_JSON_VALUE)
+	public LdapEntry getEntry(@RequestParam(value="dn", required=true) String dn) {
+		return ldapService.getEntryDetail(dn);
+	}
+	
+	//delete member from group
+	@RequestMapping(method=RequestMethod.POST ,value = "/delete/group/members", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry deleteMembersOfGroup(@RequestParam(value="dn", required=true) String dn, 
+			@RequestParam(value="dnList[]", required=true) List<String> dnList) {
+		//when single dn comes spring boot takes it as multiple arrays
+		//so dn must be joined with comma
+		//if member dn that will be added to group is cn=agent1,ou=Groups,dn=liderahenk,dc=org
+		//spring boot gets this param as array which has size 4
+		Boolean checkedArraySizeIsOne = true;
+		for (int i = 0; i < dnList.size(); i++) {
+			if(dnList.get(i).contains(",")) {
+				checkedArraySizeIsOne = false;
+				break;
+			}
+		}
+		if(checkedArraySizeIsOne) {
+			try {
+				ldapService.updateEntryRemoveAttributeWithValue(dn, "member", String.join(",", dnList));
+			} catch (LdapException e) {
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			for (int i = 0; i < dnList.size(); i++) {
+				try {
+					ldapService.updateEntryRemoveAttributeWithValue(dn, "member", dnList.get(i));
+				} catch (LdapException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+		}
+		return ldapService.getEntryDetail(dn);
+	}
+	
 	//returns root dn of agent group(groupOfNames)
 	@RequestMapping(method=RequestMethod.GET ,value = "/group/rootdnofagent", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
@@ -391,7 +413,6 @@ public class LdapController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value = "/deleteEntry")
-	@ResponseBody
 	public Boolean deleteEntry(@RequestParam(value = "dn") String dn) {
 		try {
 			if(dn != configurationService.getAgentLdapBaseDn()) {
@@ -464,5 +485,18 @@ public class LdapController {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	//get members of group
+	@RequestMapping(method=RequestMethod.POST ,value = "/move/entry", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Boolean moveEntry(@RequestParam(value="sourceDN", required=true) String sourceDN,
+			@RequestParam(value="destinationDN", required=true) String destinationDN) {
+		try {
+			ldapService.moveEntry(sourceDN, destinationDN);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

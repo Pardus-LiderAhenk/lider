@@ -42,6 +42,11 @@ public class LdapEntry implements Serializable{
 	 * single valued attributes
 	 */
 	private Map<String, String> attributes;
+	
+	/**
+	 * multiple valued attributes
+	 */
+	private Map<String, String[]> attributesMultiValues;
 
 	private DNType type;
 	
@@ -233,30 +238,44 @@ public class LdapEntry implements Serializable{
 	public void setIconPath(String iconPath) {
 		this.iconPath = iconPath;
 	}
+	
 	public String getExpandedUser() {
 		return expandedUser;
 	}
+	
 	public void setExpandedUser(String expandedUser) {
 		this.expandedUser = expandedUser;
 	}
+	
 	public List<String> getPriviliges() {
 		return priviliges;
 	}
+	
 	public void setPriviliges(List<String> priviliges) {
 		this.priviliges = priviliges;
 	}
+	
 	public String getTelephoneNumber() {
 		return telephoneNumber;
 	}
+	
 	public void setTelephoneNumber(String telephoneNumber) {
 		this.telephoneNumber = telephoneNumber;
 	}
 	public String getHomePostalAddress() {
 		return homePostalAddress;
 	}
+	
 	public void setHomePostalAddress(String homePostalAddress) {
 		this.homePostalAddress = homePostalAddress;
 	}
 	
+	public Map<String, String[]> getAttributesMultiValues() {
+		return attributesMultiValues;
+	}
+	
+	public void setAttributesMultiValues(Map<String, String[]> attributesMultiValues) {
+		this.attributesMultiValues = attributesMultiValues;
+	}
 
 }

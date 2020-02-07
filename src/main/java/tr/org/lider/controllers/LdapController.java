@@ -132,12 +132,7 @@ public class LdapController {
 		return retList;
 	}
 
-	@RequestMapping(value = "/getUsers")
-	public List<LdapEntry> getUsers() {
-		List<LdapEntry> retList = new ArrayList<LdapEntry>();
-		retList.add(ldapService.getLdapUserTree());
-		return retList;
-	}
+	
 
 	@RequestMapping(value = "/getComputers")
 	public List<LdapEntry> getComputers() {
@@ -351,72 +346,12 @@ public class LdapController {
 	public String getRootDNOfUserGroup() {
 		return configurationService.getUserGroupLdapBaseDn();
 	}
-
-	@RequestMapping(method=RequestMethod.POST, value = "/addUser",produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public LdapEntry addUser(LdapEntry selectedEntry) {
-		try {
-			String gidNumber="6000";
-			int randomInt = (int)(1000000.0 * Math.random());
-			String uidNumber= Integer.toString(randomInt);
-			String home="/home/"+selectedEntry.getUid();
-
-			Map<String, String[]> attributes = new HashMap<String, String[]>();
-			attributes.put("objectClass", new String[] { "top", "posixAccount",
-					"person","pardusLider","pardusAccount","organizationalPerson","inetOrgPerson"});
-			attributes.put("cn", new String[] { selectedEntry.getCn() });
-			attributes.put("gidNumber", new String[] { gidNumber });
-			attributes.put("homeDirectory", new String[] { home });
-			attributes.put("sn", new String[] { selectedEntry.getSn() });
-			attributes.put("uid", new String[] { selectedEntry.getUid() });
-			attributes.put("uidNumber", new String[] { uidNumber });
-			attributes.put("loginShell", new String[] { "/bin/bash" });
-			attributes.put("userPassword", new String[] { selectedEntry.getUserPassword() });
-			attributes.put("homePostalAddress", new String[] { selectedEntry.getHomePostalAddress() });
-			attributes.put("telephoneNumber", new String[] { selectedEntry.getTelephoneNumber() });
-
-			String rdn="uid="+selectedEntry.getUid()+","+selectedEntry.getParentName();
-
-			ldapService.addEntry(rdn, attributes);
-
-			logger.info("User created successfully RDN ="+rdn);
-			return selectedEntry;
-		} catch (LdapException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@RequestMapping(method=RequestMethod.POST, value = "/deleteUser")
-	@ResponseBody
-	public Boolean deleteUser(@RequestBody LdapEntry[] selectedEntryArr) {
-		try {
-			List<LdapEntry> ouList=new ArrayList<>();
-
-			for (LdapEntry ldapEntry : selectedEntryArr) {
-				if(ldapEntry.getType().equals(DNType.USER)) {
-					ldapService.deleteEntry(ldapEntry.getDistinguishedName());
-					logger.info("User deleted successfully RDN ="+ldapEntry.getDistinguishedName());
-				}
-				else if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
-					ouList.add(ldapEntry);
-				}
-			}
-			for (LdapEntry ldapEntry : ouList) {
-				deleteNodes(ldapService.getOuAndOuSubTreeDetail(ldapEntry.getDistinguishedName()));
-			}
-			return true;
-		} catch (LdapException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 	
 	@RequestMapping(method=RequestMethod.POST, value = "/deleteEntry")
 	public Boolean deleteEntry(@RequestParam(value = "dn") String dn) {
 		try {
 			if(dn != configurationService.getAgentLdapBaseDn()) {
-				deleteNodes(ldapService.getOuAndOuSubTreeDetail(dn));
+				ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(dn));
 				return true;
 			} else {
 				return false;
@@ -428,38 +363,7 @@ public class LdapController {
 		}
 	}
 	
-	private Boolean deleteNodes(LdapEntry entry) {
-		if(entry.getHasSubordinates().equals("FALSE")) {
-			try {
-				ldapService.deleteEntry(entry.getDistinguishedName());
-				return true;
-			} catch (LdapException e) {
-				e.printStackTrace();
-				return false;
-			}
-		}
-		while(true) {
-			for(LdapEntry child : entry.getChildEntries()){
-				if(child.getHasSubordinates().equals("FALSE")) {
-					try {
-						ldapService.deleteEntry(child.getDistinguishedName());
-					} catch (LdapException e) {
-						e.printStackTrace();
-						return false;
-					}
-				}
-		    }
-			entry = ldapService.getOuAndOuSubTreeDetail(entry.getDistinguishedName());
-			if(entry.getChildEntries() == null || entry.getChildEntries().size() == 0) {
-				try {
-					ldapService.deleteEntry(entry.getDistinguishedName());
-				} catch (LdapException e) {
-					e.printStackTrace();
-				}
-				return true;
-			}
-		}
-	}
+	
 	@RequestMapping(method=RequestMethod.POST, value = "/editUser",produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public LdapEntry editUser(LdapEntry selectedEntry) {

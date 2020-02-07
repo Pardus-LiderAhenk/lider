@@ -1,6 +1,6 @@
 
-<script type="text/javascript" src="js/users.js"></script>
-<script type="text/javascript" src="js/oumanager.js"></script>
+<script type="text/javascript" src="js/user/users.js"></script>
+<script type="text/javascript" src="js/user/ouManager.js"></script>
 
 <div class="app-page-title">
 	<div class="page-title-wrapper">
@@ -72,14 +72,14 @@
                                                 
                                                 <li class="nav-item">
                                                     <a href="#" class="nav-link" id="btnOpenEditUserModal" title="Kullanıcı Düzenle" data-target="#genericModal" data-toggle="modal">
-                                                        <i class="fa fa-user-md"> &nbsp;</i>
+                                                        <i class="fa fa-edit"> &nbsp;</i>
                                                         <span> Kullanıcı Düzenle </span>
                                                     </a>
                                                 </li>
                                                 
                                                 <li class="nav-item">
                                                     <a href="#" class="nav-link" id="btnOpenDeleteUserModal" title="Kullanıcı Sil" data-target="#genericModal" data-toggle="modal">
-                                                        <i class="fa fa-user-times"> &nbsp;</i>
+                                                        <i class="fa fa-minus-circle"> &nbsp;</i>
                                                         <span> Kullanıcı Sil </span>
                                                     </a>
                                                 </li>
@@ -88,8 +88,14 @@
                                                 </li>
                                                  <li class="nav-item">
                                                     <a href="#" class="nav-link" id="btnOpenChangePasswordUserModal" title="Parola Degiştir" data-target="#genericModal" data-toggle="modal">
-                                                        <i class="fa fa-user-times"> &nbsp;</i>
+                                                        <i class="fa fa-lock"> &nbsp;</i>
                                                         <span> Parola Değiştir </span>
+                                                    </a>
+                                                </li>
+                                                 <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnSetPasswordPolicyModal" title="Parola Politikası Ata" data-target="#genericModal" data-toggle="modal">
+                                                        <i class="fa fa-user-times"> &nbsp;</i>
+                                                        <span> Parola Politikası Ata </span>
                                                     </a>
                                                 </li>
                                             </ul>
@@ -98,7 +104,7 @@
 				</div>
 				<hr>
 				<div id="treeGridUserHolderDiv">
-					<div id="treeGridUser"></div>
+					
 				</div>
 			</div>
 		</div>

@@ -1333,4 +1333,37 @@ public class LDAPServiceImpl implements ILDAPService {
 			releaseConnection(connection);
 		}
 	}
+	
+	public Boolean deleteNodes(LdapEntry entry) {
+		if(entry.getHasSubordinates().equals("FALSE")) {
+			try {
+				deleteEntry(entry.getDistinguishedName());
+				return true;
+			} catch (LdapException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		while(true) {
+			for(LdapEntry child : entry.getChildEntries()){
+				if(child.getHasSubordinates().equals("FALSE")) {
+					try {
+						deleteEntry(child.getDistinguishedName());
+					} catch (LdapException e) {
+						e.printStackTrace();
+						return false;
+					}
+				}
+		    }
+			entry = getOuAndOuSubTreeDetail(entry.getDistinguishedName());
+			if(entry.getChildEntries() == null || entry.getChildEntries().size() == 0) {
+				try {
+					deleteEntry(entry.getDistinguishedName());
+				} catch (LdapException e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
+		}
+	}
 }

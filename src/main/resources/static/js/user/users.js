@@ -193,7 +193,7 @@ $(document).ready(function(){
 				}
 				$.ajax({
 					type : 'POST',
-					url : 'lider/ldap/getPasswordPolices',
+					url : 'lider/user/getPasswordPolices',
 					dataType : 'json',
 					success : function(data) {
 						
@@ -265,7 +265,7 @@ $(document).ready(function(){
 								
 								$.ajax({
 									type : 'POST',
-									url : 'lider/ldap/setPasswordPolicy',
+									url : 'lider/user/setPasswordPolicy',
 									data : params,
 									dataType : 'json',
 									success : function(data) {
@@ -285,388 +285,9 @@ $(document).ready(function(){
 	});
 	/**
 	 * end set password policy modal
-	 * @returns
 	 */
 });
 
-function getUsers(){
-//	$.ajax({
-//		type : 'POST',
-//		url : 'lider/ldap/getUsers',
-//		dataType : 'json',
-//		success : function(data) {
-//			 var source =
-//			  {
-//			      dataType: "json",
-//			      dataFields: [
-//			           { name: "name", type: "string" },
-//			           { name: "online", type: "string" },
-//			           { name: "uid", type: "string" },
-//			           { name: "type", type: "string" },
-//			           { name: "cn", type: "string" },
-//			           { name: "ou", type: "string" },
-//			           { name: "parent", type: "string" },
-//			           { name: "distinguishedName", type: "string" },
-//			           { name: "hasSubordinates", type: "string" },
-//			           { name: "expandedUser", type: "string" },
-//			           { name: "entryUUID", type: "string" },
-//			           { name: "attributes", type: "array" },
-//			           { name: "childEntries", type: "array" }
-//			      ],
-//			      hierarchy:
-//			          {
-//			              root: "childEntries"
-//			          },
-//			      localData: data,
-//			      id: "entryUUID"
-//			  };
-//			 createUserTreeGrid(source);
-//		}
-//	});
-}
-//function getOus(){
-//	$.ajax({
-//		type : 'POST',
-//		url : 'lider/ldap/getUsers',
-//		dataType : 'json',
-//		success : function(data) {
-//			var source =
-//			{
-//					dataType: "json",
-//					dataFields: [
-//						{ name: "name", type: "string" },
-//						{ name: "online", type: "string" },
-//						{ name: "uid", type: "string" },
-//						{ name: "type", type: "string" },
-//						{ name: "cn", type: "string" },
-//						{ name: "ou", type: "string" },
-//						{ name: "parent", type: "string" },
-//						{ name: "distinguishedName", type: "string" },
-//						{ name: "hasSubordinates", type: "string" },
-//						{ name: "expandedUser", type: "string" },
-//						{ name: "entryUUID", type: "string" },
-//						{ name: "attributes", type: "array" },
-//						{ name: "childEntries", type: "array" }
-//						],
-//						hierarchy:
-//						{
-//							root: "childEntries"
-//						},
-//						localData: data,
-//						id: "name"
-//			};
-//			//create UserTreeGridForUserAdd..show only ou and single selection
-//			createUserTreeGridForUserAdd(source);
-//		}
-//	});
-//}
-
-//function createUserTreeGrid(source) {
-//	
-//	$("#treeGridUser").jqxTreeGrid('destroy');
-//	$("#treeGridUserHolderDiv").append('<div id="treeGridUser"></div> ')
-//	
-//	var dataAdapter = new $.jqx.dataAdapter(source, {
-//	     loadComplete: function () {
-//	     }
-//	 });
-//	 
-//	 var getLocalization = function () {
-//           var localizationobj = {};
-//           localizationobj.filterSearchString = "Ara :";
-//           return localizationobj;
-//	}
-//	 // create jqxTreeGrid.
-//	 $("#treeGridUser").jqxTreeGrid({
-//		 theme :"Orange",
-//		 width: '100%',
-//		 source: dataAdapter,
-//	     altRows: true,
-//	     sortable: true,
-//	     columnsResize: true,
-//         filterable: true,
-//	     hierarchicalCheckboxes: true,
-//	     pageable: true,
-//         pagerMode: 'default',
-//	     checkboxes: true,
-//	     filterMode: "simple",
-//	     localization: getLocalization(),
-//	     pageSize: 50,
-//	     pageSizeOptions: ['15', '25', '50'],
-//	     icons: function (rowKey, dataRow) {
-//	    	    var level = dataRow.level;
-//	    	    if(dataRow.type == "USER"){
-//	    	        return "img/checked-user-32.png";
-//	    	    }
-//	    	    else return "img/folder.png";
-//	    	},
-//	     ready: function () {
-//	    	 var allrows =$("#treeGridUser").jqxTreeGrid('getRows');
-//	    	 if(allrows.length==1){
-//	    		 var row=allrows[0];
-//	    		 if(row.childEntries==null ){
-//	    			 $("#treeGridUser").jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
-//	    		 }
-//	    	 }
-//	    	 $("#treeGridUser").jqxTreeGrid('collapseAll');
-//	     },
-//	     rendered: function () {
-//	   	},
-//	     columns: [
-//	       { text: "Kullanıcılar", align: "center", dataField: "name", width: '100%' }
-//	     ]
-//	 });
-//	 
-//	 $('#treeGridUser').on('rowSelect', function (event) {
-//	        var args = event.args;
-//		    var row = args.row;
-//		    var name= row.name;
-//	        	       
-//	        var html = '<table class="table table-striped table-bordered " id="attrTable">';
-//			html += '<thead>';
-//			html += '<tr>';
-//			html += '<th style="width: 40%"></th>';
-//			html += '<th style="width: 60%"></th>';
-//			html += '</tr>';
-//			html += '</thead>';
-//	        
-//	        for (key in row.attributes) {
-//	            if (row.attributes.hasOwnProperty(key)) {
-//	                console.log(key + " = " + row.attributes[key]);
-//	                
-//	                if( (   key =="homeDirectory") 
-//	                		|| (key =="cn") 
-//	                		|| (key =="uid") 
-//	                		|| (key =="sn") 
-//	                		|| (key =="homePostalAddress") 
-//	                		|| (key =="telephoneNumber") 
-//	                		|| (key =="entryDN") 
-//	                		|| (key =="pwdPolicySubentry") 
-//	                		){
-//	                	html += '<tr>';
-//	                	var keyStr="";
-//	                	if(key =="pwdPolicySubentry"){keyStr="Parola Politikası"}
-//	                	if(key =="homeDirectory"){keyStr="Ev Dizini"}
-//	                	if(key =="cn"){keyStr="Kullanıcı Adı"}
-//	                	if(key =="uid"){keyStr="Kimlik"}
-//	                	if(key =="sn"){keyStr="Kullanıcı Soyadı"}
-//	                	if(key =="telephoneNumber"){keyStr="Telefon"}
-//	                	if(key =="entryDN"){keyStr="Kayıt DN"}
-//	                	if(key =="homePostalAddress"){keyStr="Adres"}
-//			            html += '<td>' + keyStr + '</td>';
-//			            html += '<td>' + row.attributes[key] + '</td>';
-//			            html += '</tr>';
-//	                }
-//	            }
-//	        } 
-//	        html += '</table>';
-//	        
-//		    $('#selectedDnInfo').html("Seçili Kayıt: "+name);
-//		    $('#ldapAttrInfoHolder').html(html);
-//		    
-//		    $('.nav-link').each(function(){               
-//		    	  var $tweet = $(this);                    
-//		    	  $tweet.removeClass('active');
-//		    	});
-//		 
-//		    $('#tab-c-0').tab('show');
-//
-//	    });
-//	 
-//		$('#treeGridUser').on('rowCheck', function (event) {
-//		      var args = event.args;
-//		      var row = args.row;
-//		      var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
-//		      if(checkedRows.length==0){
-//					hideButtons()
-//			  }
-//		      if(checkedRows.length>0  ){
-//		    	  var userList=[]
-//		    	  for (var m = 0; m < checkedRows.length; m++) {
-//			    	  var row = checkedRows[m];
-//			    	  if(row.type == "USER"){
-//			    		  userList.push(row)
-//			    	  }
-//				  }
-//		    	  if(userList.length ==1){
-//		    		  showButtons()
-//		    	  }
-//		    	  else{
-//		    		  hideButtons()
-//		    	  }
-//		      }
-//		      else{
-//		    	  hideButtons()
-//		      }
-//		 });
-//		
-//		$('#treeGridUser').on('rowUncheck', function (event) {
-//			  var args = event.args;
-//			  var row = args.row;
-//			  var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
-//				
-//			  if(checkedRows.length>0  ){
-//		    	  var userList=[]
-//		    	  
-//		    	  for (var m = 0; m < checkedRows.length; m++) {
-//			    	  var row = checkedRows[m];
-//			    	  if(row.type == "USER"){
-//			    		  userList.push(row)
-//			    	  }
-//				  }
-//		    	  if(userList.length ==1){
-//		    		  showButtons()
-//		    	  }
-//		    	  else{
-//		    		  hideButtons()
-//		    	  }
-//		      }
-//			  else{
-//				  hideButtons()
-//			  }
-//		});
-//		  
-//		$('#treeGridUser').on('rowExpand', function (event) {
-//		     var args = event.args;
-//		     var row = args.row;
-//		     if(row.expandedUser=="FALSE") {
-//			     
-//			      var nameList=[];
-//			      
-//			      for (var m = 0; m < row.records.length; m++) {
-//			    	  var childRow = row.records[m];
-//						nameList.push(childRow.uid);      
-//				  }
-//			      
-//			      for (var k = 0; k < nameList.length; k++) {
-//						          // get a row.
-//					  var childRowname = nameList[k];
-//					  $("#treeGridUser").jqxTreeGrid('deleteRow', childRowname); 
-//				  }  
-//			      $.ajax({
-//						type : 'POST',
-//						url : 'lider/ldap/getOuDetails',
-//						data : 'uid=' + row.distinguishedName + '&type=' + row.type
-//								+ '&name=' + row.name + '&parent=' + row.parent,
-//						dataType : 'text',
-//						success : function(ldapResult) {
-//							var childs = jQuery.parseJSON(ldapResult);
-//							 for (var m = 0; m < childs.length; m++) {
-//								 	// get a row.
-//						          	var childRow = childs[m];
-//						          		console.log(childRow)
-//							          $("#treeGridUser").jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
-//							          if(childRow.hasSubordinates=="TRUE"){
-//							           $("#treeGridUser").jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
-//							          }
-//							           $("#treeGridUser").jqxTreeGrid('collapseRow', childRow.name);
-//						      } 
-//							 row.expandedUser="TRUE"
-//						}
-//			
-//					});  
-//		      }
-//		 }); 
-//}
-
-//function createUserTreeGridForUserAdd(source) {
-//	$("#treeGridAddUserModal").jqxTreeGrid('destroy');
-//	
-//	$("#treeGridAddUserHolderDiv").append('<div id="treeGridAddUserModal"></div> ')
-//	
-//	var dataAdapter = new $.jqx.dataAdapter(source, {
-//		loadComplete: function () {
-//		}
-//	});
-//	
-//	var getLocalization = function () {
-//		var localizationobj = {};
-//		localizationobj.filterSearchString = "Ara :";
-//		return localizationobj;
-//	}
-//	// create jqxTreeGrid.
-//	$("#treeGridAddUserModal").jqxTreeGrid(
-//			{
-//				theme :"Orange",
-//				width: '100%',
-//				source: dataAdapter,
-//				altRows: true,
-//				sortable: true,
-//				columnsResize: true,
-//				hierarchicalCheckboxes: false,
-//				pageable: true,
-//				pagerMode: 'default',
-//				checkboxes: true,
-//				localization: getLocalization(),
-//				pageSize: 50,
-//				selectionMode: "singleRow",
-//				pageSizeOptions: ['15', '25', '50'],
-//				icons: function (rowKey, dataRow) {
-//					var level = dataRow.level;
-//					if(dataRow.type == "USER"){
-//						return "img/checked-user-32.png";
-//					}
-//					else return "img/folder.png";
-//				},
-//				ready: function () {
-//					var allrows =$("#treeGridAddUserModal").jqxTreeGrid('getRows');
-//					if(allrows.length==1){
-//						var row=allrows[0];
-//						if(row.childEntries==null ){
-//							
-//							$("#treeGridAddUserModal").jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.name);
-//						}
-//					}
-//					$("#treeGridAddUserModal").jqxTreeGrid('collapseAll');
-//					
-//				},
-//				
-//				rendered: function () {
-//				},
-//				columns: [
-//					{ text: "Eklenecek Klasör", align: "center", dataField: "name", width: '100%', height:'100%'}
-//					]
-//			});
-//	
-//	
-//	$('#treeGridAddUserModal').on('rowExpand', function (event) {
-//		var args = event.args;
-//		var row = args.row;
-//		console.log(row)
-//		if(row.expandedUser=="FALSE") {
-//			var nameList=[];
-//			for (var m = 0; m < row.records.length; m++) {
-//				var childRow = row.records[m];
-//				nameList.push(childRow.name);      
-//			}
-//			for (var k = 0; k < nameList.length; k++) {
-//				// get a row.
-//				var childRowname = nameList[k];
-//				$("#treeGridAddUserModal").jqxTreeGrid('deleteRow', childRowname); 
-//			}  
-//			$.ajax({
-//				type : 'POST',
-//				url : 'lider/ldap/getOu',
-//				data : 'uid=' + row.distinguishedName + '&type=' + row.type+ '&name=' + row.name + '&parent=' + row.parent,
-//				dataType : 'text',
-//				success : function(ldapResult) {
-//					var childs = jQuery.parseJSON(ldapResult);
-//					for (var m = 0; m < childs.length; m++) {
-//						// get a row.
-//						var childRow = childs[m];
-//						$("#treeGridAddUserModal").jqxTreeGrid('addRow', childRow.name, childRow, 'last', row.name);
-//						if(childRow.hasSubordinates=="TRUE"){
-//							$("#treeGridAddUserModal").jqxTreeGrid('addRow', childRow.name+"1" , {}, 'last', childRow.name); 
-//						}
-//						$("#treeGridAddUserModal").jqxTreeGrid('collapseRow', childRow.name);
-//					} 
-//					row.expandedUser="TRUE"
-//				}
-//			
-//			});  
-//		}
-//	}); 
-//}
 
 function addUser() {
 	var checkedRows = $("#treeGridUserHolderDiv").jqxTreeGrid('getCheckedRows');
@@ -715,7 +336,7 @@ function addUser() {
     
     $.ajax({
 		type : 'POST',
-		url : 'lider/ldap/addUser',
+		url : 'lider/user/addUser',
 		data : params,
 		dataType : 'json',
 		success : function(ldapResult) {
@@ -756,7 +377,7 @@ function deleteUsers() {
 	}
     $.ajax({
 		type : 'POST',
-		url : 'lider/ldap/deleteUser',
+		url : 'lider/user/deleteUser',
 		data : JSON.stringify(dnList),
 		dataType: "json",
 		contentType: "application/json",
@@ -784,7 +405,7 @@ function editUser(userId) {
     console.log(params)
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/editUser',
+		url : 'lider/user/editUser',
 		data : params,
 		dataType : 'json',
 		success : function(ldapResult) {
@@ -804,7 +425,7 @@ function updateUserPassword(userId) {
 	};
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/updateUserPassword',
+		url : 'lider/user/updateUserPassword',
 		data : params,
 		dataType : 'json',
 		success : function(ldapResult) {

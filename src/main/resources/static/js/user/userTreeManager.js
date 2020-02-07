@@ -16,7 +16,7 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowCheckAction, 
 	
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/getUsers',
+		url : 'lider/user/getUsers',
 		dataType : 'json',
 		success : function(data) {
 			 var source =

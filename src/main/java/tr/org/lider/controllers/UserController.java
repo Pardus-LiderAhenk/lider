@@ -24,7 +24,7 @@ import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.services.ConfigurationService;
 
 @RestController()
-@RequestMapping("/lider/ldap")
+@RequestMapping("/lider/user")
 public class UserController {
 	
 	Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -179,10 +179,7 @@ public class UserController {
 	 */
 	@RequestMapping(method=RequestMethod.POST, value = "/setPasswordPolicy",produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Boolean setPasswordPolicy(@RequestParam(value = "dn", required=true) String dn, 
-			@RequestParam(value = "passwordPolicy", required=true) String passwordPolicy
-			) {
-		
+	public Boolean setPasswordPolicy(@RequestParam(value = "dn", required=true) String dn,@RequestParam(value = "passwordPolicy", required=true) String passwordPolicy) {
 		try {
 			ldapService.updateEntry(dn, "pwdPolicySubentry", passwordPolicy);
 			

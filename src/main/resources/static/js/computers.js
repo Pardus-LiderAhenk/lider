@@ -408,13 +408,18 @@ function loadComputersTree(data){
 		for (var i = 0; i < checkedRows.length; i++) {
 			// get a row.
 			var rowData = checkedRows[i];
-			checkedEntryArray.push({
-				distinguishedName :rowData.distinguishedName, 
-				entryUUID: rowData.entryUUID, 
-				name: rowData.name,
-				type: rowData.type,
-				uid: rowData.uid
-			});
+			if(rowData.type=="ORGANIZATIONAL_UNIT"){
+				checkedEntryArray.push({
+					distinguishedName :rowData.distinguishedName, 
+					entryUUID: rowData.entryUUID, 
+					name: rowData.name,
+					type: rowData.type,
+					uid: rowData.uid
+				});
+			}
+			else if(rowData.type=="AHENK"){
+				selectedEntries.push(rowData)
+			}
 		}
 
 		$.ajax({

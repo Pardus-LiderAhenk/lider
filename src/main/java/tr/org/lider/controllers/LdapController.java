@@ -93,7 +93,7 @@ public class LdapController {
 			logger.info("OU created successfully RDN ="+dn);
 			
 			//get full of ou details after creation
-			selectedEntry = ldapService.getEntryDetail(selectedEntry.getDistinguishedName());
+			selectedEntry = ldapService.getEntryDetail(dn);
 			
 			return selectedEntry;
 		} catch (LdapException e) {

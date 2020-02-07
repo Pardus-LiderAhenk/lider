@@ -27,20 +27,52 @@ function dropdownButtonClicked(operation) {
 		checkedAgents = [];
 		checkedOUList = [];
 		$('#selectedAgentCountCreateNewAgentGroup').html(checkedAgents.length);
-		createComputersModalForCreatingGroup();
+		getModalContent("modals/groups/agent/creategroup", function content(data){
+			$('#genericModalHeader').html("Organizasyon Birimini Sil");
+			$('#genericModalBodyRender').html(data);
+			createComputersModalForCreatingGroup();
+		});
+	} else if(operation == "deleteAgentGroup") {
+		checkedAgents = [];
+		checkedOUList = [];
+		$('#selectedAgentCountCreateNewAgentGroup').html(checkedAgents.length);
+		getModalContent("modals/groups/agent/deletegroup", function content(data){
+			$('#genericModalHeader').html("İstemci Grubunu Sil");
+			$('#genericModalBodyRender').html(data);
+		});
 	} else if(operation == "deleteMembersFromGroup") {
 		groupMemberDNListForDelete = [];
 		groupMemberDNList = [];
-		deleteMembersOfGroup();
+		getModalContent("modals/groups/agent/deletemember", function content(data){
+			$('#genericModalLargeHeader').html("Üye Sil");
+			$('#genericModalLargeBodyRender').html(data);
+			deleteMembersOfGroup();
+		});
 	} else if(operation == "createNewOrganizationalUnit") {
-		$("#ouNamecreateNewOrganizationalUnitModal").val('');
+		getModalContent("modals/groups/agent/createou", function content(data){
+			$('#genericModalHeader').html("Yeni Organizasyon Birimi Oluştur");
+			$('#genericModalBodyRender').html(data);
+		});
+	} else if(operation == "deleteOrganizationalUnit") {
+		getModalContent("modals/groups/agent/deleteou", function content(data){
+			$('#genericModalHeader').html("Organizasyon Birimini Sil");
+			$('#genericModalBodyRender').html(data);
+		});
 	} else if(operation == "addMembersToAgentGroupModal") {
 		checkedAgents = [];
 		checkedOUList = [];
-		$('#selectedAgentCountAddMembersToExistingGroup').html(checkedAgents.length);
-		generateTreeToAddMembersToExistingGroup();
+		getModalContent("modals/groups/agent/addmember", function content(data){
+			$('#genericModalHeader').html("İstemci Grubuna Üye Ekle");
+			$('#genericModalBodyRender').html(data);
+			$('#selectedAgentCount').html(checkedAgents.length);
+			generateTreeToAddMembersToExistingGroup();
+		});
 	} else if(operation == "moveEntry") {
-		generateTreeToMoveEntry();
+		getModalContent("modals/groups/agent/moveentry", function content(data){
+			$('#genericModalHeader').html("Kayıt Taşı");
+			$('#genericModalBodyRender').html(data);
+			generateTreeToMoveEntry();
+		});
 	}
 }
 
@@ -50,9 +82,9 @@ function dropdownButtonClicked(operation) {
 function createMainTree() {
 	$("#treeGridAgentGroups").jqxTreeGrid('destroy');
 	$("#treeGridAgentGroupsDiv").append('<div id="treeGridAgentGroups"></div> ');
-	var html = '<a class="dropdown-item" href="#createNewAgentGroupModal" data-toggle="modal" data-target="#createNewAgentGroupModal"' 
+	var html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 		+ 'onclick="dropdownButtonClicked(\'createNewAgentGroup\')">Yeni İstemci Grubu Oluştur</a>';
-	html += '<a class="dropdown-item" href="#createNewOrganizationalUnitModal" data-toggle="modal" data-target="#createNewOrganizationalUnitModal"' 
+	html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 		+ 'onclick="dropdownButtonClicked(\'createNewOrganizationalUnit\')">Yeni Organizasyon Birimi Oluştur</a>';
 	$('#operationDropDown').html(html);
 	$.ajax({
@@ -242,29 +274,29 @@ function createMainTree() {
 		var selectedRowData=selectedRows[0];
 
 		if(selectedRowData.type == "ORGANIZATIONAL_UNIT"){
-			html = '<a class="dropdown-item" href="#createNewAgentGroupModal" data-toggle="modal" data-target="#createNewAgentGroupModal"' 
+			html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 				+ 'onclick="dropdownButtonClicked(\'createNewAgentGroup\')">Yeni İstemci Grubu Oluştur</a>';
-			html += '<a class="dropdown-item" href="#createNewOrganizationalUnitModal" data-toggle="modal" data-target="#createNewOrganizationalUnitModal"' 
+			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 				+ 'onclick="dropdownButtonClicked(\'createNewOrganizationalUnit\')">Yeni Organizasyon Birimi Oluştur</a>';
 			//if root dn is selected dont allow user to delete it
 			if(rootDNForAgentGroups != row.distinguishedName){
-				html += '<a class="dropdown-item" href="#moveEntryModal" data-toggle="modal" data-target="#moveEntryModal"' 
+				html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 					+ 'onclick="dropdownButtonClicked(\'moveEntry\')">Kaydı Taşı</a>';
 				html += '<div class="dropdown-divider"></div>';
-				html += '<a class="dropdown-item" href="#deleteOrganizationalUnitModal" data-toggle="modal" data-target="#deleteOrganizationalUnitModal"' 
+				html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 					+ 'onclick="dropdownButtonClicked(\'deleteOrganizationalUnit\')">Organizasyon Birimini Sil</a>';
 			}
 			$('#operationDropDown').html(html);
 		} else if(selectedRowData.type == "GROUP"){
-			html = '<a class="dropdown-item" href="#addMembersToAgentGroupModal" data-toggle="modal" data-target="#addMembersToAgentGroupModal"' 
+			html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 				+ 'onclick="dropdownButtonClicked(\'addMembersToAgentGroupModal\')">İstemci Ekle</a>';
-			html += '<a class="dropdown-item" href="#moveEntryModal" data-toggle="modal" data-target="#moveEntryModal"' 
+			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 				+ 'onclick="dropdownButtonClicked(\'moveEntry\')">Kaydı Taşı</a>';
 			html += '<div class="dropdown-divider"></div>';
-			html += '<a class="dropdown-item" href="#deleteMembersFromGroupModal" data-toggle="modal" data-target="#deleteMembersFromGroupModal"' 
+			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModalLarge"' 
 				+ 'onclick="dropdownButtonClicked(\'deleteMembersFromGroup\')">İstemci Sil</a>';
-			html += '<a class="dropdown-item" href="#deleteAgentGroupAndMembersModal" data-toggle="modal" data-target="#deleteAgentGroupAndMembersModal"' 
-				+ 'onclick="dropdownButtonClicked(\'deleteAgentGroupAndMembers\')">İstemci Grubunu ve Üyelerini Sil</a>';
+			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
+				+ 'onclick="dropdownButtonClicked(\'deleteAgentGroup\')">İstemci Grubunu Sil</a>';
 			$('#operationDropDown').html(html);
 		}
 	});
@@ -273,34 +305,40 @@ function createMainTree() {
 /*
  * create, delete operations for Organizational Unit
  */
-function createNewOrganizationalUnitClicked() {
-	var ouName = $("#ouNamecreateNewOrganizationalUnitModal").val();
-	var params = {
-		    "parentName" : selectedDN,
-		    "ou": ouName,
-		    "type": 'ORGANIZATIONAL_UNIT',
-		    "distinguishedName": 'ou=' + ouName + ',' + selectedDN,
-		    "name": ouName
-	};
-	$.ajax({ 
-	    type: 'POST', 
-	    url: '/lider/ldap/addOu',
-	    dataType: 'json',
-	    data: params,
-	    success: function (data) {
-            // add new empty row.
-            $("#treeGridAgentGroups").jqxTreeGrid('addRow', data.entryUUID, data, 'last', selectedEntryUUID);
-            $("#treeGridAgentGroups").jqxTreeGrid('expandRow', selectedEntryUUID);
-            $("#createNewOrganizationalUnitModal .close").click();
-            $.notify("Organizasyon Birimi Oluşturuldu.", "success");
-	    },
-	    error: function (data, errorThrown) {
-	    	$.notify("Something went wrong.", "error");
-	    }
-	});
+function btnCreateNewOUClicked() {
+	alert("btnCreateNewOUClicked");
+	var ouName = $("#ouName").val();
+	if(ouName == "") {
+		$.notify("Organizasyon birimi adı giriniz.", "error");
+	} else {
+		var params = {
+			    "parentName" : selectedDN,
+			    "ou": ouName,
+			    "type": 'ORGANIZATIONAL_UNIT',
+			    "distinguishedName": 'ou=' + ouName + ',' + selectedDN,
+			    "name": ouName
+		};
+		$.ajax({ 
+		    type: 'POST', 
+		    url: '/lider/ldap/addOu',
+		    dataType: 'json',
+		    data: params,
+		    success: function (data) {
+	            // add new empty row.
+	            $("#treeGridAgentGroups").jqxTreeGrid('addRow', data.entryUUID, data, 'last', selectedEntryUUID);
+	            $("#treeGridAgentGroups").jqxTreeGrid('expandRow', selectedEntryUUID);
+	            $("#createNewOrganizationalUnitModal .close").click();
+	            $.notify("Organizasyon Birimi Oluşturuldu.", "success");
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Organizasyon birimi oluşturulurken hata oluştu.", "error");
+		    }
+		});
+	}
 }
 
-function deleteOrganizationalUnitClicked() {
+function btnDeleteOUClicked() {
+	alert("btnDeleteOUClicked called");
 	var params = {
 		    "dn": selectedDN,
 	};
@@ -323,7 +361,7 @@ function deleteOrganizationalUnitClicked() {
 /*
  * delete agent group members
  */
-function deleteAgentGroupAndMembersClicked() {
+function btnDeleteGroupClicked() {
 	var params = {
 		    "dn": selectedDN,
 	};
@@ -559,7 +597,7 @@ function rowCheckAndUncheckOperationForCreatingGroup(event) {
 	}
 }
 
-function addNewAgentGroupClicked() {
+function btnCreateAgentGroupClicked() {
 	if($('#agentGroupsNewAgentGroupName').val() == "") {
 		$.notify("Lütfen grup adı giriniz.", "error");
 		return;
@@ -855,18 +893,18 @@ function rowCheckAndUncheckOperationToAddMembersToExistingGroup(event) {
 					});
 				},
 				complete: function() {
-					$('#selectedAgentCountAddMembersToExistingGroup').html(checkedAgents.length);
+					$('#selectedAgentCount').html(checkedAgents.length);
 				}
 			});
 		} else {
-			$('#selectedAgentCountAddMembersToExistingGroup').html(checkedAgents.length);
+			$('#selectedAgentCount').html(checkedAgents.length);
 		}
 	} else {
-		$('#selectedAgentCountAddMembersToExistingGroup').html(checkedAgents.length);
+		$('#selectedAgentCount').html(checkedAgents.length);
 	}
 }
 
-function addMembersToExistingAgentGroupClicked() {
+function btnAddMemberClicked() {
 	if(checkedAgents.length == 0) {
 		$.notify("Lütfen en az bir istemci seçiniz.", "error");
 		return;
@@ -960,7 +998,7 @@ function removeAgentFromMemberList(dn) {
 	}
 }
 
-function deleteMembers() {
+function btnDeleteMembersClicked() {
 	if(groupMemberDNList.length >= 1) {
 		var params = {
 			    "dnList" : groupMemberDNListForDelete,
@@ -1133,7 +1171,7 @@ function createTreeToMoveEntry(source) {
 	});
 }
 
-function moveEntryButtonClicked() {
+function btnMoveEntryClicked() {
 	if(selectedDN != destinationDNToMoveRecord) {
 		var params = {
 			    "sourceDN" : selectedDN,
@@ -1147,7 +1185,7 @@ function moveEntryButtonClicked() {
 		    success: function (data) {
 	            $.notify("Kayıt taşındı.", "success");
 	            createMainTree();
-	            $("#moveEntryModal .close").click();
+	            $('#genericModal').trigger('click');
 		    },
 		    error: function (data, errorThrown) {
 		    	$.notify("Kayıt taşınırken hata oluştu.", "error");
@@ -1156,5 +1194,4 @@ function moveEntryButtonClicked() {
 	} else {
 		$.notify("Bir kayıt kendi altına taşınamaz.", "error");
 	}
-
 }

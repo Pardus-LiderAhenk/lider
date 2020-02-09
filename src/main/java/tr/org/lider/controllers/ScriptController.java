@@ -33,7 +33,11 @@ public class ScriptController {
 
 	@RequestMapping(method=RequestMethod.POST ,value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ScriptFile scriptAdd(@RequestBody ScriptFile file){
-		scriptService.add(file);
 		return scriptService.add(file);
+	}
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/del", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ScriptFile scriptDel(@RequestBody ScriptFile file){
+		return scriptService.del(file);
 	}
 }

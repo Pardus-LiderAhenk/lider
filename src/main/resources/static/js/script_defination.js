@@ -71,7 +71,7 @@ $('#scriptTableTemp tbody').on( 'click', 'tr', function () {
 		$("#scriptNameTemp").val("");
 		$('#scriptType').val("bash").change();
 		$("#scriptSaveBtn").html("Kaydet");
-		
+
 	}
 	else {
 		table.$('tr.selected').removeClass('selected');
@@ -158,7 +158,7 @@ $('#scriptSaveBtn').click(function(e){
 						if (data != null) {
 							$.notify("Betik başarıyla kaydedildi.", "success");
 							scriptFileList.push(data);
-							
+
 							// the table is refreshed after the script is saved
 							table.clear().draw();
 							table.destroy();
@@ -177,7 +177,7 @@ $('#scriptSaveBtn').click(function(e){
 								html += '<td>'+ modifyDate +'</td>';
 								newRow.append(html);
 								$("#scriptTableTemp").append(newRow);
-								
+
 								$("#scriptNameTemp").val("");
 								$('#scriptType').val("bash").change();
 							}
@@ -192,6 +192,7 @@ $('#scriptSaveBtn').click(function(e){
 				});
 			}else {
 				$.notify("Betik adı aynı olamaz.", "warn");
+				$("#scriptNameTemp").focus();
 			}
 		}else {
 			$.notify("Betik adı ve içeriği boş bırakılamaz.", "warn");
@@ -208,3 +209,85 @@ function checkedScriptName(sName) {
 	}
 	return isExist;
 }
+
+$('#scriptDelBtn').click(function(e){
+	var rows = table.$('tr.selected');
+	if(rows.length){
+		var rowData = table.rows('.selected').data()[0];
+		for (var i = 0; i < scriptFileList.length; i++) {
+			if (scriptFileList[i]['label'] == rowData[0]) {
+				var id = scriptFileList[i]['id'];
+			}
+		}
+
+		file = {
+				id: id
+		};
+
+		$.ajax({
+			type: 'POST', 
+			url: "/script/del",
+			data: JSON.stringify(file),
+			dataType: "json",
+			contentType: "application/json",
+			success: function(data) {
+				if (data != null) {
+					$.notify("Betik başarıyla silindi.", "success");
+					removeScriptList(id)
+					table.clear().draw();
+					table.destroy();
+					for (var i = 0; i < scriptFileList.length; i++) {
+						var scriptName = scriptFileList[i]['label'];
+						var scriptType = scriptFileList[i]['scriptType'];
+						var createDate = scriptFileList[i]['createDate'];
+						var modifyDate = scriptFileList[i]['modifyDate'];
+						if (modifyDate == null) {
+							modifyDate = ""; 
+						}
+						var newRow = $("<tr>");
+						var html = '<td>'+ scriptName +'</td>';
+						html += '<td>'+ scriptType +'</td>';
+						html += '<td>'+ createDate +'</td>';
+						html += '<td>'+ modifyDate +'</td>';
+						newRow.append(html);
+						$("#scriptTableTemp").append(newRow);
+
+						$("#scriptNameTemp").val("");
+						$('#scriptType').val("bash").change();
+					}
+					createScriptTable();
+					$("#scriptNameTemp").val("");
+					$('#scriptType').val("bash").change();
+					$("#scriptSaveBtn").html("Kaydet");
+				}else {
+					$.notify("Betik silinirken hata oluştu.", "error");
+				}
+			}
+		});
+	}else {
+		$.notify("Lütfen silmek için betik seçiniz.", "warn");
+	}
+});
+
+function removeScriptList(id) {
+	var index = scriptFileList.findIndex(function(item, i){
+		return item.id === id;
+	});
+	if (index > -1) {
+		scriptFileList.splice(index, 1);
+	}
+}
+
+
+$('#scriptAddBtn').click(function(e){
+	var rows = table.$('tr.selected');
+	if(rows.length){
+		table.$('tr.selected').removeClass('selected');
+		$("#scriptNameTemp").val("");
+		$('#scriptType').val("bash").change();
+		$("#scriptSaveBtn").html("Kaydet");
+	}
+	$("#scriptNameTemp").focus();
+
+});
+

@@ -1,5 +1,6 @@
 package tr.org.lider.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +26,10 @@ public class ScriptService {
 	public ScriptFile del(ScriptFile file) {
 		scriptRepository.deleteById(file.getId());
 		return file;
+	}
+	
+	public ScriptFile update(ScriptFile file) {
+		file.setModifyDate(new Date());
+		return scriptRepository.save(file);
 	}
 }

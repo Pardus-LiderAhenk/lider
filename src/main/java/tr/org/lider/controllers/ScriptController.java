@@ -40,4 +40,9 @@ public class ScriptController {
 	public ScriptFile scriptDel(@RequestBody ScriptFile file){
 		return scriptService.del(file);
 	}
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ScriptFile scriptUpdate(@RequestBody ScriptFile file){
+		return scriptService.update(file);
+	}
 }

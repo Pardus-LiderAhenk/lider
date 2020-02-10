@@ -160,7 +160,7 @@ function dropdownButtonClicked(operation) {
 			$('#genericModalHeader').html("Seçili İstemcileri Gruba Ekle");
 			$('#genericModalBodyRender').html(data);
 			generateAddToExistingGroupTreeGrid();
-			$("#addToNewGroupButtonDiv").hide();
+			$("#btnAddToExistingGroup").hide();
 			
 		});
 	} else if(operation == "addToNewGroup") {
@@ -171,7 +171,6 @@ function dropdownButtonClicked(operation) {
 			
 		});
 	}
-
 }
 
 function exportToExcel () {
@@ -573,9 +572,9 @@ function generateAddToExistingGroupTreeGrid() {
 		var selectedRowData=selectedRows[0];
 
 		if(selectedRowData.type == "GROUP"){
-			$("#addToNewGroupButtonDiv").show();
+			$("#btnAddToExistingGroup").show();
 		} else {
-			$("#addToNewGroupButtonDiv").hide();
+			$("#btnAddToExistingGroup").hide();
 		}
 	});
 }
@@ -716,7 +715,6 @@ function generateAddToNewGroupTreeGrid() {
 }
 
 function btnAddToExistingGroupClicked() {
-	alert("btnAddToExistingGroupClicked: " + selectedAgentGroupDN);
 	var selected = $("#selectGroupDN").children("option:selected").val();
 	if(selected != "") {
 		var params = {
@@ -730,6 +728,7 @@ function btnAddToExistingGroupClicked() {
 		    data: params,
 		    success: function (data) { 
 		    	$.notify("Seçili istemciler gruba başarıyla eklendi", "success");
+		    	$('#genericModal').trigger('click');
 		    },
 		    error: function (data, errorThrown) {
 		    	$.notify("Seçili istemciler gruba eklenirken hata oluştu.", "error");
@@ -739,23 +738,28 @@ function btnAddToExistingGroupClicked() {
 }
 
 function btnAddToNewGroupClicked() {
-	alert("btnAddToNewGroupClicked: " + selectedOUDN);
-	var params = {
-		    "selectedOUDN" : selectedOUDN,
-		    "groupName": $('input[name=newAgentGroupName]').val(),
-		    "checkedList": checkedAgentIDList
-		};
-	
-	$.ajax({ 
-	    type: 'POST', 
-	    url: "/lider/ldap/group/new",
-	    dataType: 'json',
-	    data: params,
-	    success: function (data) { 
-	    	$.notify("Yeni grup oluşturuldu ve istemciler gruba eklendi.", "success");
-	    },
-	    error: function (data, errorThrown) {
-	    	$.notify("Yeni grup oluşturulurken hata oluştu." + $('input[name=newAgentGroupName]').val() + " oluşturulamadı.", "error");
-	    }
-	});
+	var groupName = $('input[name=newAgentGroupName]').val();
+	if(groupName != "") {
+		var params = {
+			    "selectedOUDN" : selectedOUDN,
+			    "groupName": $('input[name=newAgentGroupName]').val(),
+			    "checkedList": checkedAgentIDList
+			};
+		
+		$.ajax({ 
+		    type: 'POST', 
+		    url: "/lider/ldap/group/new",
+		    dataType: 'json',
+		    data: params,
+		    success: function (data) { 
+		    	$.notify("Yeni grup oluşturuldu ve istemciler gruba eklendi.", "success");
+		    	$('#genericModal').trigger('click');
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Yeni grup oluşturulurken hata oluştu." + $('input[name=newAgentGroupName]').val() + " oluşturulamadı.", "error");
+		    }
+		});
+	} else {
+		$.notify("Lütfen grup adı giriniz.", "error");
+	}
 }

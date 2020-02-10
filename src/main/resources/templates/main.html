@@ -311,6 +311,20 @@
 				</div>
 
 				<div class="modal-body">
+
+					<div class="d-block dropdown pull-right mb-1">
+	                    <button type="button" id="dropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+	                        <span class="btn-icon-wrapper pr-1">
+	                            <i class="fa fa-bars fa-w-20 mr-2"></i> İstemci Grubu Oluştur
+	                        </span>
+	                    </button>
+	                    <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+						    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#genericModal"
+						    	onclick="dropdownButtonClicked('addToExistingGroup')">Mevcut Gruba Ekle</a>
+						    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#genericModal"
+						    	onclick="dropdownButtonClicked('addToNewGroup')">Yeni İstemci Grubu Oluştur</a>
+	                    </div>
+	                </div>
 					<div id="selectedEntriesHolder"></div>
 				</div>
 				<div class="modal-footer">
@@ -381,52 +395,6 @@
 	</div>
 	<!--END Agent Detail Modal -->
 	
-	<!-- Start Create Agent Group Modal -->
-	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="createAgentGroupModal">
-	    <div class="modal-dialog modal-lg">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title">Seçili Ahenkleri İstemci Grubuna Ekle</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-				<div class="modal-body">
-					<div class="input-group">
-						<label class="radio-inline" for="rbExistingGroup">
-							<input type="radio" id="rbExistingGroup" name="rbGroups" value="rbExistingGroup"  onchange="rbGroupsChange('existingGroup')" checked/> 
-							Mevcut Gruba Ekle
-						</label>&nbsp;&nbsp;&nbsp;
-						<label class="radio-inline" for="rbNewGroup">
-							<input type="radio" id="rbNewGroup" name="rbGroups" value="rbNewGroup" onchange="rbGroupsChange('newGroup')"/> 
-							Yeni Grup Oluştur
-						</label>
-					</div>
-					<div class="form-group" id="existingGroupInput">
-						<label>Grup Seç</label>
-						<select class="form-control" id="selectGroupDN" name="selectGroupDN">
-							<option value="1">Grup Seç</option>
-						</select>
-					</div>
-					<div class="form-group" id="newGroupInput">
-						<label>Yeni Grup Adı</label>
-						<input class="form-control" type="text" id="groupName" name="groupName" placeholder="Grup Adı Giriniz..." />
-					</div>
-					<div class="form-group" id="newGroupInput">
-						<a href="#" class="btn btn-primary submit-button" id="submitGroup" onclick="addAgentsToExistingGroup()">
-							<span>İstemcileri Seçili Gruba Ekle</span>
-						</a>
-					</div>
-				</div>
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<!-- End Create Agent Group Modal -->
-	
-	
 	<!-- Start Executed Task Detail Modal -->
 	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="executedTaskDetail">
 	    <div class="modal-dialog modal-lg">
@@ -449,28 +417,7 @@
 	        </div>
 	    </div>
 	</div>
-	<!-- End Executed Task Detail Modal -->
-
-	<!-- Start Add Agent To Group -->
-	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="addNewAgentGroupModal">
-	    <div class="modal-dialog modal-lg">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                <h5 class="modal-title">İstemci Grubuna Ahenk Ekle</h5>
-	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                    <span aria-hidden="true">&times;</span>
-	                </button>
-	            </div>
-				<div class="modal-body">
-				</div>
-	            <div class="modal-footer">
-	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<!--  End Add Agent To Group -->
-	
+	<!-- End Executed Task Detail Modal -->	
 
 	<div class="modal fade" id="genericModal" tabindex="0" role="dialog" aria-labelledby="genericModal" aria-hidden="true">
 		<div class="modal-dialog" role="document">

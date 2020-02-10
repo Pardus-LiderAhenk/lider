@@ -1,5 +1,5 @@
 /**
- * This page Script defination. Get script files from database. Save script and edit, delete registered scripts
+ * This page Script definition. Get script files from database. Save script and edit, delete registered scripts
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
  * 
@@ -13,7 +13,6 @@ var sId = null;
 
 $(document).ready(function(){
 	$("#scriptDelBtn").hide();
-//	$('#scriptDelBtn').attr("disabled", true);
 	$("#scriptContentTemp").val("#!/bin/bash\nset -e");
 	getScriptFile()
 });

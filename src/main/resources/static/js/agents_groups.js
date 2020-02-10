@@ -6,7 +6,6 @@
  * 
  */
 var selectedDN = "";
-var treeSource;
 var checkedAgents = [];
 var checkedOUList = [];
 var rootDNForAgentGroups = "";
@@ -120,8 +119,7 @@ function createMainTree() {
 					id: "entryUUID"
 			};
 			rootDNForAgentGroups = source.localData[0].distinguishedName;
-			selectedEntryUUID = source.localData[0].entryUUID,
-			treeSource = source;
+			selectedEntryUUID = source.localData[0].entryUUID;
 			var dataAdapter = new $.jqx.dataAdapter(source, {
 			});
 
@@ -173,10 +171,6 @@ function createMainTree() {
 		}
 	});
 	
-	$('#createNewAgentGroupTreeGridAgent').on('rowCheck', function (event) {
-		rowCheckAndUncheckOperationForCreatingGroup(event);
-	});
-	
 	$('#treeGridAgentGroups').on('rowExpand', function (event) {
 		var args = event.args;
 		var row = args.row;
@@ -210,7 +204,10 @@ function createMainTree() {
 						$("#treeGridAgentGroups").jqxTreeGrid('collapseRow', childRow.entryUUID);
 					} 
 					row.expandedUser="TRUE"
-				}
+				},
+			    error: function (data, errorThrown) {
+			    	$.notify("Grup bilgisi getirilirken hata oluştu.", "error");
+			    }
 			});  
 		}
 	}); 
@@ -520,7 +517,10 @@ function createComputerTreeGridForCreatingGroup(source) {
 						$("#createNewAgentGroupTreeGridAgent").jqxTreeGrid('collapseRow', childRow.name);
 					}
 					row.expandedUser="TRUE";
-				}
+				},
+			    error: function (data, errorThrown) {
+			    	$.notify("Bilgi getirilirken hata oluştu.", "error");
+			    }
 			});  
     	}
 	});
@@ -584,6 +584,9 @@ function rowCheckAndUncheckOperationForCreatingGroup(event) {
 						}
 					});
 				},
+				error: function (data, errorThrown) {
+			    	$.notify("İstemciler getirilirken hata oluştu.", "error");
+			    },
 				complete: function() {
 					$('#selectedAgentCountCreateNewAgentGroup').html(checkedAgents.length);
 				}
@@ -770,7 +773,10 @@ function createTreeToAddMembersToExistingGroup(source) {
 						$("#addMembersToExistingAgentGroupTreeGrid").jqxTreeGrid('collapseRow', childRow.entryUUID);
 					}
 					row.expandedUser="TRUE";
-				}
+				},
+			    error: function (data, errorThrown) {
+			    	$.notify("Bilgi getirilirken hata oluştu.", "error");
+			    }
 			});  
     	}
 	});
@@ -892,6 +898,9 @@ function rowCheckAndUncheckOperationToAddMembersToExistingGroup(event) {
 						}
 					});
 				},
+			    error: function (data, errorThrown) {
+			    	$.notify("İstemci bilgileri getirilirken hata oluştu.", "error");
+			    },
 				complete: function() {
 					$('#selectedAgentCount').html(checkedAgents.length);
 				}
@@ -970,7 +979,10 @@ function deleteMembersOfGroup(){
 				});
 				$('#deleteMembersFromGroupTable').html(html);
 			}
-		}
+		},
+	    error: function (data, errorThrown) {
+	    	$.notify("Seçili grubun üyeleri getirilirken hata oluştu.", "error");
+	    }
 	}); 
 }
 
@@ -1022,7 +1034,7 @@ function btnDeleteMembersClicked() {
 				}
 			},
 		    error: function (data, errorThrown) {
-		    	$.notify("Something went wrong.", "error");
+		    	$.notify("Grup üyeleri silinirken hata oluştu.", "error");
 		    }
 		}); 
 	} else {
@@ -1067,7 +1079,10 @@ function generateTreeToMoveEntry(){
 			  };
 			 //create computer tree grid
 			 createTreeToMoveEntry(source);
-		}
+		},
+	    error: function (data, errorThrown) {
+	    	$.notify("İstemci grup verileri alınırken hata oluştu.", "error");
+	    }
 	});
 }
 
@@ -1159,7 +1174,10 @@ function createTreeToMoveEntry(source) {
 
 					}
 					row.expandedUser="TRUE";
-				}
+				},
+			    error: function (data, errorThrown) {
+			    	$.notify("Bilgi getirilirken hata oluştu.", "error");
+			    }
 			});  
     	}
 	});

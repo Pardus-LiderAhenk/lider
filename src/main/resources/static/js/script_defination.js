@@ -12,11 +12,14 @@ var scriptFileList = [];
 var sId = null;
 
 $(document).ready(function(){
+	$("#scriptDelBtn").hide();
+//	$('#scriptDelBtn').attr("disabled", true);
+	$("#scriptContentTemp").val("#!/bin/bash\nset -e");
 	getScriptFile()
 });
 
 function getScriptFile() {
-	$("#scriptContentTemp").val("#!/bin/bash\nset -e");
+	
 	$.ajax({
 		type: 'POST', 
 		url: "/script/list",
@@ -78,6 +81,7 @@ $('#scriptTableTemp tbody').on( 'click', 'tr', function () {
 		$("#scriptNameTemp").val("");
 		$('#scriptType').val("bash").change();
 		$("#scriptSaveBtn").html("Kaydet");
+		$("#scriptDelBtn").hide();
 	}
 	else {
 		table.$('tr.selected').removeClass('selected');
@@ -85,6 +89,7 @@ $('#scriptTableTemp tbody').on( 'click', 'tr', function () {
 		$("#scriptSaveBtn").html("Güncelle");
 		var rowData = table.rows('.selected').data()[0];
 		$("#scriptNameTemp").val(rowData[0]);
+		$("#scriptDelBtn").show();
 		var sType = null;
 
 		if (rowData[1] == "BASH" || rowData[1] == "Bash" || rowData[1] == "bash") {
@@ -174,6 +179,7 @@ $('#scriptSaveBtn').click(function(e){
 					$("#scriptNameTemp").val("");
 					$('#scriptType').val("bash").change();
 					$("#scriptSaveBtn").html("Kaydet");
+					$("#scriptDelBtn").hide();
 				}else {
 					$.notify("Betik güncellenirken hata oluştu.", "error");
 				}
@@ -306,5 +312,6 @@ $('#scriptAddBtn').click(function(e){
 		$("#scriptSaveBtn").html("Kaydet");
 	}
 	$("#scriptNameTemp").focus();
+	$("#scriptDelBtn").hide();
 });
 

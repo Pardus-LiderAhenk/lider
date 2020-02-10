@@ -1,0 +1,46 @@
+<div class="mb-3 card">
+	<div class="card-header">
+		<ul class="nav nav-justified">
+			<li class="nav-item"><a data-toggle="tab" href="#tabExistingGroupDiv"
+				class="active nav-link">Mevcut İstemci Grubuna Ekle</a></li>
+			
+			<li class="nav-item"><a data-toggle="tab" href="#tabNewGroupDiv"
+				class="nav-link">Yeni İstemci Grubuna Ekle</a></li>
+		</ul>
+	</div>
+	<div class="card-body">
+		<div class="tab-content">
+			<div class="tab-pane active" id="tabExistingGroupDiv" role="tabpanel">
+			    <div>
+					<label>İstemcileri ekleyeceğiniz grubu seçiniz</label>
+			    </div>
+
+			    <div id="newTreeGridDiv">
+			    	<div id="newTreeGrid"></div>
+			    </div>
+				<div class="form-group float-right  mt-3 mr-2" id="addToExistingGroupButtonDiv">
+					<button type="button" class="btn btn-primary p-2" id="btnAddToExistingGroup" 
+						onclick="btnAddToExistingGroupClicked()">İstemcileri Gruba Ekle</button>
+				</div>
+			</div>
+			
+			<div class="tab-pane" id="tabNewGroupDiv" role="tabpanel">
+				<div>
+					<div class="card-header-title"><span>Yeni İstemci Grubu Adı</span></div>
+					<input class="form-control block" type="text" id="newAgentGroupName" 
+						name="newAgentGroupName" placeholder="Yeni grup adı giriniz..." />
+				</div><br>
+			    <div>
+					<label>Grubu hangi klasörün altında oluşturmak istediğinizi seçiniz.</label>
+			    </div>
+			    <div id="existingTreeGridDiv">
+				    <div id="existingTreeGrid"></div>
+			    </div>
+				<div class="form-group float-right  mt-3 mr-2" id="addToNewGroupButtonDiv">
+					<button type="button" class="btn btn-primary p-2" id="btnAddToNewGroup" 
+						onclick="btnAddToNewGroupClicked()">İstemcileri Gruba Ekle</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

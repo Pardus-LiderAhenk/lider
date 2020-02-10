@@ -16,10 +16,12 @@ var searchText = "";
 var agentList = "";
 var status = "all";
 var checkedAgentIDList = [];
+var selectedAgentGroupDN = "";
+var selectedOUDN = "";
 
 $(document).ready(function(){
-	$("#createAgentGroup").hide();
-	$("#newGroupInput").hide();
+	$("#dropdownButton").hide();
+	
 	//load table data when page opened
 	//1st page and selectedPageSize amount will be retrieved from service
 	reloadTable(1, selectedPageSize);
@@ -141,10 +143,10 @@ function checkedAgentListChange() {
 	    }
 	});
 	if(checkedAgentIDList.length > 0) {
-		$("#createAgentGroup").show();
+		$("#dropdownButton").show();
 	}
 	else{
-		$("#createAgentGroup").hide();
+		$("#dropdownButton").hide();
 	}
 }
 
@@ -152,40 +154,24 @@ function agentChecked() {
 	checkedAgentListChange();
 }
 
-function createAgentGroup() {
-	if(checkedAgentIDList.length > 0) {
-		$.ajax({ 
-		    type: 'GET', 
-		    url: '/lider/ldap/agentGroups',
-		    dataType: 'json',
-		    success: function (data) { 
-		    	//choose existing radio button when modal is reopened
-		    	$("#rbExistingGroup").prop("checked", true);
-		    	$("#rbNewGroup").prop("checked", false);
-		    	$('#groupName').val('');
-				$("#newGroupInput").hide();
-				$("#existingGroupInput").show();
-				$("#submitGroup").attr("onclick","addAgentsToExistingGroup()");
-				$('#submitGroup').text('İstemcileri Seçili Gruba Ekle');
-				
-		    	if(data.length > 0) {
-		    		var options = $("#selectGroupDN");
-		    		options.empty();
-		    		$.each(data, function(index, element) {
-			    		if(element.childEntries.length > 0) {
-			    			$('#selectGroupDN').append('<option value="">Grup Seç</option>');
-			    			$.each(element.childEntries, function(j, child) {
-			    				options.append(new Option(child.name, child.distinguishedName));
-			    			});
-			    		}
-		    		});
-		    	}
-		    },
-		    error: function (data, errorThrown) {
-		    	$.notify("Something went wrong.", "error");
-		    }
+function dropdownButtonClicked(operation) {
+	if(operation == "addToExistingGroup") {
+		getModalContent("modals/reports/agentinfo/addtoexistinggroup", function content(data){
+			$('#genericModalHeader').html("Seçili İstemcileri Gruba Ekle");
+			$('#genericModalBodyRender').html(data);
+			generateAddToExistingGroupTreeGrid();
+			$("#addToNewGroupButtonDiv").hide();
+			
+		});
+	} else if(operation == "addToNewGroup") {
+		getModalContent("modals/reports/agentinfo/addtonewgroup", function content(data){
+			$('#genericModalHeader').html("Seçili İstemcileri Gruba Ekle");
+			$('#genericModalBodyRender').html(data);
+			generateAddToNewGroupTreeGrid();
+			
 		});
 	}
+
 }
 
 function exportToExcel () {
@@ -452,26 +438,289 @@ function pagination(c, m) {
 	}
 }
 
-function rbGroupsChange(status) {
+function generateAddToExistingGroupTreeGrid() {
+	$("#existingTreeGrid").jqxTreeGrid('destroy');
+	$("#existingTreeGridDiv").append('<div id="existingTreeGrid"></div> ');
+	
+	$.ajax({
+		type : 'POST',
+		url : 'lider/ldap/agentGroups',
+		dataType : 'json',
+		success : function(data) {
+			var source =
+			{
+				dataType: "json",
+				dataFields: [
+						{ name: "name", type: "string" },
+						{ name: "online", type: "string" },
+						{ name: "uid", type: "string" },
+						{ name: "type", type: "string" },
+						{ name: "cn", type: "string" },
+						{ name: "ou", type: "string" },
+						{ name: "parent", type: "string" },
+						{ name: "distinguishedName", type: "string" },
+						{ name: "hasSubordinates", type: "string" },
+						{ name: "expanded", type: "string" },
+						{ name: "expandedUser", type: "string" },
+						{ name: "attributes", type: "array" },
+						{ name: "attributesMultiValues", type: "array" },
+						{ name: "entryUUID", type: "string" },
+						{ name: "childEntries", type: "array" }
+					],
+					hierarchy:
+					{
+						root: "childEntries",
+					},
+					localData: data,
+					id: "entryUUID"
+			};
+			selectedEntryUUID = source.localData[0].entryUUID;
+			var dataAdapter = new $.jqx.dataAdapter(source, {
+			});
 
-	if(status == "existingGroup") {
-		$("#newGroupInput").hide();
-		$("#existingGroupInput").show();
-		$("#submitGroup").attr("onclick","addAgentsToExistingGroup()");
-		$('#submitGroup').text('İstemcileri Seçili Gruba Ekle');
-	} else {
-		$("#existingGroupInput").hide();
-		$("#newGroupInput").show();
-		$("#submitGroup").attr("onclick","addNewGroup()");
-		$('#submitGroup').text('Yeni Grup Oluştur');
-	}
+			var getLocalization = function () {
+				var localizationobj = {};
+				localizationobj.filterSearchString = "Ara :";
+
+				return localizationobj;
+			}
+
+			// create jqxTreeGrid.
+			$("#existingTreeGrid").jqxTreeGrid({
+				width: '100%',
+				source: dataAdapter,
+				altRows: true,
+				sortable: true,
+				columnsResize: true,
+				filterable: true,
+				pageable: true,
+				pagerMode: 'default',
+				filterMode: "simple",
+				localization: getLocalization(),
+				pageSize: 50,
+				selectionMode: "singleRow",
+				pageSizeOptions: ['15', '25', '50'],
+				icons: function (rowKey, dataRow) {
+					var level = dataRow.level;
+					if(dataRow.type == "ORGANIZATIONAL_UNIT"){
+						return "img/folder.png";
+					}
+					else return "img/entry_group.gif";
+				},
+				ready: function () {
+	
+					var allrows =$("#existingTreeGrid").jqxTreeGrid('getRows');
+					if(allrows.length==1){
+						var row=allrows[0];
+						if(row.childEntries==null){
+							$("#existingTreeGrid").jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
+						}
+					}
+					$("#existingTreeGrid").jqxTreeGrid('collapseAll');
+					$("#existingTreeGrid").jqxTreeGrid('selectRow', selectedEntryUUID);
+				},
+				columns: [
+					{ text: "İstemci Grup Ağacı", align: "center", dataField: "name", width: '100%'}
+					]
+			});
+		}
+	});
+	
+	$('#existingTreeGrid').on('rowExpand', function (event) {
+		var args = event.args;
+		var row = args.row;
+
+		if(row.expandedUser=="FALSE") {
+			var nameList=[];
+			for (var m = 0; m < row.records.length; m++) {
+				var childRow = row.records[m];
+				nameList.push(childRow.uid);      
+			}
+			for (var k = 0; k < nameList.length; k++) {
+				// get a row.
+				var childRowname = nameList[k];
+				$("#existingTreeGrid").jqxTreeGrid('deleteRow', childRowname); 
+			}  
+			$.ajax({
+				type : 'POST',
+				url : 'lider/ldap/getOuDetails',
+				data : 'uid=' + row.distinguishedName + '&type=' + row.type
+				+ '&name=' + row.name + '&parent=' + row.parent,
+				dataType : 'text',
+				success : function(ldapResult) {
+					var childs = jQuery.parseJSON(ldapResult);
+					for (var m = 0; m < childs.length; m++) {
+						// get a row.
+						var childRow = childs[m];
+						$("#existingTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
+						if(childRow.hasSubordinates=="TRUE"){
+							$("#existingTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
+						}
+						$("#existingTreeGrid").jqxTreeGrid('collapseRow', childRow.entryUUID);
+					} 
+					row.expandedUser="TRUE"
+				}
+			});  
+		}
+	}); 
+	
+	$('#existingTreeGrid').on('rowSelect', function (event) {
+		var args = event.args;
+		var row = args.row;
+		var name= row.name;
+		selectedAgentGroupDN = row.distinguishedName;
+		var selectedRows = $("#existingTreeGrid").jqxTreeGrid('getSelection');
+		var selectedRowData=selectedRows[0];
+
+		if(selectedRowData.type == "GROUP"){
+			$("#addToNewGroupButtonDiv").show();
+		} else {
+			$("#addToNewGroupButtonDiv").hide();
+		}
+	});
 }
 
-function addAgentsToExistingGroup() {
+function generateAddToNewGroupTreeGrid() {
+	$("#newTreeGrid").jqxTreeGrid('destroy');
+	$("#newTreeGridDiv").append('<div id="newTreeGrid"></div> ');
+	
+	$.ajax({
+		type : 'POST',
+		url : 'lider/ldap/agentGroups',
+		dataType : 'json',
+		success : function(data) {
+			var source =
+			{
+				dataType: "json",
+				dataFields: [
+						{ name: "name", type: "string" },
+						{ name: "online", type: "string" },
+						{ name: "uid", type: "string" },
+						{ name: "type", type: "string" },
+						{ name: "cn", type: "string" },
+						{ name: "ou", type: "string" },
+						{ name: "parent", type: "string" },
+						{ name: "distinguishedName", type: "string" },
+						{ name: "hasSubordinates", type: "string" },
+						{ name: "expanded", type: "string" },
+						{ name: "expandedUser", type: "string" },
+						{ name: "attributes", type: "array" },
+						{ name: "attributesMultiValues", type: "array" },
+						{ name: "entryUUID", type: "string" },
+						{ name: "childEntries", type: "array" }
+					],
+					hierarchy:
+					{
+						root: "childEntries",
+					},
+					localData: data,
+					id: "entryUUID"
+			};
+			selectedEntryUUID = source.localData[0].entryUUID;
+			var dataAdapter = new $.jqx.dataAdapter(source, {
+			});
+			var getLocalization = function () {
+				var localizationobj = {};
+				localizationobj.filterSearchString = "Ara :";
+
+				return localizationobj;
+			}
+
+			// create jqxTreeGrid.
+			$("#newTreeGrid").jqxTreeGrid({
+				width: '100%',
+				source: dataAdapter,
+				altRows: true,
+				sortable: true,
+				columnsResize: true,
+				filterable: true,
+				pageable: true,
+				pagerMode: 'default',
+				filterMode: "simple",
+				localization: getLocalization(),
+				pageSize: 50,
+				selectionMode: "singleRow",
+			    pageSizeOptions: ['15', '25', '50'],
+			    icons: function (rowKey, dataRow) {
+					var level = dataRow.level;
+					if(dataRow.type == "ORGANIZATIONAL_UNIT"){
+						return "img/folder.png";
+					}
+					else return "img/entry_group.gif";
+				},
+				ready: function () {
+	
+					var allrows =$("#newTreeGrid").jqxTreeGrid('getRows');
+					if(allrows.length==1){
+						var row=allrows[0];
+						if(row.childEntries==null){
+							$("#newTreeGrid").jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
+						}
+					}
+					$("#newTreeGrid").jqxTreeGrid('collapseAll');
+					$("#newTreeGrid").jqxTreeGrid('selectRow', selectedEntryUUID);
+				},
+				columns: [
+					{ text: "İstemci Grup Ağacı", align: "center", dataField: "name", width: '100%'}
+					]
+			});
+		}
+	});
+	
+	$('#newTreeGrid').on('rowExpand', function (event) {
+		var args = event.args;
+		var row = args.row;
+
+		if(row.expandedUser=="FALSE") {
+			var nameList=[];
+			for (var m = 0; m < row.records.length; m++) {
+				var childRow = row.records[m];
+				nameList.push(childRow.uid);      
+			}
+			for (var k = 0; k < nameList.length; k++) {
+				// get a row.
+				var childRowname = nameList[k];
+				$("#newTreeGrid").jqxTreeGrid('deleteRow', childRowname); 
+			}  
+			$.ajax({
+				type : 'POST',
+				url : 'lider/ldap/getOuDetails',
+				data : 'uid=' + row.distinguishedName + '&type=' + row.type
+				+ '&name=' + row.name + '&parent=' + row.parent,
+				dataType : 'text',
+				success : function(ldapResult) {
+					var childs = jQuery.parseJSON(ldapResult);
+					for (var m = 0; m < childs.length; m++) {
+						// get a row.
+						var childRow = childs[m];
+						if(childRow.type == "ORGANIZATIONAL_UNIT") {
+							$("#newTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
+							if(childRow.hasSubordinates=="TRUE"){
+								$("#newTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
+							}
+							$("#newTreeGrid").jqxTreeGrid('collapseRow', childRow.entryUUID);
+						}
+					} 
+					row.expandedUser="TRUE";
+				}
+			});  
+		}
+	}); 
+	
+	$('#newTreeGrid').on('rowSelect', function (event) {
+		var args = event.args;
+		var row = args.row;
+		var name= row.name;
+		selectedOUDN = row.distinguishedName;
+	});
+}
+
+function btnAddToExistingGroupClicked() {
+	alert("btnAddToExistingGroupClicked: " + selectedAgentGroupDN);
 	var selected = $("#selectGroupDN").children("option:selected").val();
 	if(selected != "") {
 		var params = {
-			    "groupDN" : $("#selectGroupDN").children("option:selected").val(),
+			    "groupDN" : selectedAgentGroupDN,
 			    "checkedList": checkedAgentIDList
 			};
 		$.ajax({ 
@@ -480,18 +729,20 @@ function addAgentsToExistingGroup() {
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 
-		    	$.notify("Selected agents are added to group successfully.", "success");
+		    	$.notify("Seçili istemciler gruba başarıyla eklendi", "success");
 		    },
 		    error: function (data, errorThrown) {
-		    	$.notify("Something went wrong.", "error");
+		    	$.notify("Seçili istemciler gruba eklenirken hata oluştu.", "error");
 		    }
 		});
 	}
 }
 
-function addNewGroup() {
+function btnAddToNewGroupClicked() {
+	alert("btnAddToNewGroupClicked: " + selectedOUDN);
 	var params = {
-		    "groupName" : $('input[name=groupName]').val(),
+		    "selectedOUDN" : selectedOUDN,
+		    "groupName": $('input[name=newAgentGroupName]').val(),
 		    "checkedList": checkedAgentIDList
 		};
 	
@@ -501,10 +752,10 @@ function addNewGroup() {
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) { 
-	    	$.notify("Group is created and agents are added to group successfully.", "success");
+	    	$.notify("Yeni grup oluşturuldu ve istemciler gruba eklendi.", "success");
 	    },
 	    error: function (data, errorThrown) {
-	    	$.notify("Error occured while adding new group. Group Name " + $('input[name=groupName]').val() + " could not be added.", "error");
+	    	$.notify("Yeni grup oluşturulurken hata oluştu." + $('input[name=newAgentGroupName]').val() + " oluşturulamadı.", "error");
 	    }
 	});
 }

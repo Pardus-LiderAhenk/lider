@@ -27,9 +27,17 @@
 					<h2>Ahenk Bilgisi</h2>
 				</div>
 				<div class="col-sm-8">
-					<a href="#createAgentGroupModal" class="btn btn-primary"  id="createAgentGroup" onclick="createAgentGroup()" data-toggle="modal" data-target="#createAgentGroupModal">
-						<i class="material-icons">add</i> <span>İstemci Grubu Oluştur</span>
-					</a>
+					<div class="d-block dropdown"  >
+	                    <button type="button" id="dropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-primary">
+	                        <i class="material-icons">add</i> <span>İstemci Grubu Oluştur</span>
+	                    </button>
+	                    <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+						    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#genericModal"
+						    	onclick="dropdownButtonClicked('addToExistingGroup')">Mevcut Gruba Ekle</a>
+						    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#genericModal"
+						    	onclick="dropdownButtonClicked('addToNewGroup')">Yeni İstemci Grubu Oluştur</a>
+	                    </div>
+	                </div>
 					<a href="#" class="btn btn-primary" onclick="exportButtonClicked()">
 						<i class="material-icons">&#xE24D;</i><span>Dışa Aktar</span>
 					</a>

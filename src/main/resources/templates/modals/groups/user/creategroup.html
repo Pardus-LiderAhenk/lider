@@ -1,0 +1,26 @@
+<!-- Start Create New User Group Modal-->
+<div class="row">
+	<div class="col-12">
+		<div class="card-header-title"><span>Kullanıcı Grubu Adı</span></div>
+		<input class="form-control block" type="text" id="userGroupsNewUserGroupName" 
+			name="userGroupsNewUserGroupName" placeholder="Kullanıcı grubu adını giriniz..." />
+	</div>
+
+	<div class="card-header-title ml-2 mt-2"><span class="ml-2">Kullanıcılar</span></div>
+	
+    <div class="col-12" id="createNewUserGroupTreeDiv">
+	    <div id="createNewUserGroupTreeGrid"></div>
+    </div>
+	<div class="col-12">
+		<div><i>*Grup oluşturmak için en az bir kullanıcı seçmelisiniz.</i></div><br>
+    </div>
+    <div class="col-12">
+		<div>Seçilen kullanıcı sayısı: <b id="selectedUserCountCreateNewUserGroup">0</b></div>
+    </div>
+    <div class="col-12">
+		<div class="form-group float-right  mt-3 mr-2" id="newGroupInput">
+			<button type="button" class="btn btn-primary p-2" id="btnCreateUserGroup" onclick="btnCreateUserGroupClicked()">Kullanıcı Grubunu Oluştur</button>
+		</div>
+    </div>
+</div>
+<!--  End Create New User Group Modal-->

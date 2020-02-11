@@ -205,9 +205,9 @@ public class LdapController {
 	}
 
 	//add new group and add selected agents
-	@RequestMapping(method=RequestMethod.POST ,value = "/group/new", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method=RequestMethod.POST ,value = "/createNewAgentGroup", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public LdapEntry addAgentsToNewGroup(@RequestParam(value = "selectedOUDN", required=false) String selectedOUDN,
+	public LdapEntry createNewAgentGroup(@RequestParam(value = "selectedOUDN", required=false) String selectedOUDN,
 			@RequestParam(value = "groupName", required=true) String groupName,
 			@RequestParam(value = "checkedList[]", required=true) String[] checkedList) {
 		String newGroupDN = "";

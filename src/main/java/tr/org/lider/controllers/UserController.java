@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import tr.org.lider.ldap.DNType;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
+import tr.org.lider.ldap.LdapSearchFilterAttribute;
+import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.services.ConfigurationService;
 
 @RestController()
@@ -189,5 +194,80 @@ public class UserController {
 		}
 		return true;
 	}
+	
+	/**
+	 * get users under sent ORGANIZATIONAL_UNIT 
+	 * @param selectedEntryArr
+	 * @return
+	 */
+	@RequestMapping(value = "/getUsersUnderOU", method = { RequestMethod.POST })
+	public List<LdapEntry> getUsersUnderOU(HttpServletRequest request,Model model, @RequestBody LdapEntry[] selectedEntryArr) {
+		List<LdapEntry> userList=new ArrayList<>();
+		for (LdapEntry ldapEntry : selectedEntryArr) {
+			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+			LdapSearchFilterAttribute fAttr = new LdapSearchFilterAttribute("objectClass", "pardusAccount",	SearchFilterEnum.EQ);
+			filterAttributes.add(fAttr);
+			try {
+				List<LdapEntry> retList=ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(objectclass=pardusAccount)", new String[] { "*" }, SearchScope.SUBTREE);
+				for (LdapEntry ldapEntry2 : retList) {
+					boolean isExist=false;
+					for (LdapEntry ldapEntryAhenk : userList) {
+						if(ldapEntry2.getEntryUUID().equals(ldapEntryAhenk.getEntryUUID())) {
+							isExist=true;
+							break;
+						}
+					}
+					if(!isExist) {
+						userList.add(ldapEntry2);
+					}
+				}
+			} catch (LdapException e) {
+				e.printStackTrace();
+			}
+		}
+		return userList;
+	}
 
+	//add new group and add selected agents
+	@RequestMapping(method=RequestMethod.POST ,value = "/createNewGroup", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry createNewUserGroup(@RequestParam(value = "selectedOUDN", required=false) String selectedOUDN,
+			@RequestParam(value = "groupName", required=true) String groupName,
+			@RequestParam(value = "checkedList[]", required=true) String[] checkedList) {
+		String newGroupDN = "";
+		//to return newly added entry with its details
+		LdapEntry entry;
+		if(selectedOUDN == null || selectedOUDN.equals("")) {
+			newGroupDN = "cn=" +  groupName +","+ configurationService.getAhenkGroupLdapBaseDn();
+		} else {
+			newGroupDN = "cn=" +  groupName +","+ selectedOUDN;
+		}
+		Map<String, String[]> attributes = new HashMap<String,String[]>();
+		attributes.put("objectClass", new String[] {"groupOfNames", "top", "pardusLider"} );
+		attributes.put("liderGroupType", new String[] {"USER"} );
+		try {
+			//when single dn comes spring boot takes it as multiple arrays
+			//so dn must be joined with comma
+			//if member dn that will be added to group is cn=user1,ou=Groups,dn=liderahenk,dc=org
+			//spring boot gets this param as array which has size 4
+			Boolean checkedArraySizeIsOne = true;
+			for (int i = 0; i < checkedList.length; i++) {
+				if(checkedList[i].contains(",")) {
+					checkedArraySizeIsOne = false;
+					break;
+				}
+			}
+			if(checkedArraySizeIsOne ) {
+				attributes.put("member", new String[] {String.join(",", checkedList)} );
+			} else {
+				attributes.put("member", checkedList );
+			}
+			ldapService.addEntry(newGroupDN , attributes);
+			entry = ldapService.getEntryDetail(newGroupDN);
+		} catch (LdapException e) {
+			System.out.println("Error occured while adding new group.");
+			return null;
+		}
+		return entry;
+	}
 }

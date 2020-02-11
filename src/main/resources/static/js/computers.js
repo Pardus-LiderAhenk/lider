@@ -1034,7 +1034,7 @@ function btnAddToNewGroupClicked() {
 		
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/lider/ldap/group/new",
+		    url: "/lider/ldap/createNewAgentGroup",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 
@@ -1140,7 +1140,7 @@ function addNewGroup() {
 	};
 	$.ajax({ 
 		type: 'POST', 
-		url: "/lider/ldap/group/new",
+		url: "/lider/ldap/createNewAgentGroup",
 		dataType: 'json',
 		data: params,
 		success: function (data) { 

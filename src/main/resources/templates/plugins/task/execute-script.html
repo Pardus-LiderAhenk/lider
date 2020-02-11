@@ -1,0 +1,58 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/execute-script.js"></script>
+<link rel="stylesheet" href="css/plugin.task.css"/>
+</head>
+<body>
+	<div class="login-form-1">
+		<div class="login-group">
+			<div class="form-group">
+				<div class="form-group">
+					<label for="scriptSelectBox">Betik Adı</label> <select
+						class="form-control" id="scriptSelectBox">
+						<option value="0" selected>Betik seçiniz...</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="scriptParameters">Betik Parametreleri</label> <input
+						type="text" class="form-control" id="scriptParameters"
+						aria-describedby="scriptParametersHelp">
+						<small id="scriptParametersHelp" class="form-text text-muted">Varsa, betik parametreleri(parametreler arası boşluk bırakılır) girilir.</small>
+				</div>
+				<div class="form-group">
+    				<label for="scriptContent">Betik İçeriği</label>
+    				<textarea class="form-control" id="scriptContent" rows="16"></textarea>
+  				</div>
+				<div id="executeScript-info"></div>
+				<br>
+				<div id="plugin-result"></div>
+				<br> <br>
+				<div class="row">
+					<div class="col-lg-7">
+						<!-- ids of the following buettons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+						<button id=sendTask-execute-script type="button"
+							class="btn-shadow btn btn-info" title="Çalıştır">
+							<i class="fa fa-play"></i> Çalıştır
+						</button>
+						<button id=sendTaskCron-execute-script type="button"
+							class="btn-shadow btn btn-info" title="Zamanlı Çalıştır">
+							<i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır
+						</button>
+					</div>
+					<div class="col-lg-5 text-right">
+						<!-- ids of the following buttons must be closePage-{plugin-page} -->
+						<button id=closePage-execute-script type="button"
+							class="btn-shadow btn btn-info" data-dismiss="modal"
+							title="Kapat">
+							<i class="fa fa-window-close"></i> Kapat
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

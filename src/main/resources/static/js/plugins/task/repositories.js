@@ -1,5 +1,5 @@
 /**
- * Task is packages-sources and repositeries
+ * Task is packages-sources and repositories
  * This task get REPOSITORIES from agents. This task is used add and delete repository 
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
@@ -53,8 +53,6 @@ function sendRepositoryTask(params){
 		}, 
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			console.log("rest response")
-			console.log(res)
 			if(res.status=="OK"){		    		
 				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 			}   	

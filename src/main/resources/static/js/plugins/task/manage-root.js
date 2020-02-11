@@ -23,7 +23,6 @@ selectedPluginTask.dnList=dnlist;
 selectedPluginTask.parameterMap={};
 selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
-console.log(selectedPluginTask);
 var params = JSON.stringify(selectedPluginTask);
 
 var lockRootUser = "";
@@ -59,8 +58,6 @@ function setRootPassword(params){
 		}, 
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			console.log("rest response")
-			console.log(res)
 			if(res.status=="OK"){
 				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 			}   	

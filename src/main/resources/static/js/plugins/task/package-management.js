@@ -48,8 +48,6 @@ function sendPackageManagementTask(params){
 		}, 
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			console.log("rest response")
-			console.log(res)
 			if(res.status=="OK"){
 				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 			}   	

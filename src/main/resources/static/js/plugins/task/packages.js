@@ -1,6 +1,6 @@
 /**
- * Task is manage-root task
- * This task changes the client's root password.
+ * Task is packages task
+ * This task used to install applications from the other package repository
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
  * 
@@ -23,7 +23,6 @@ selectedPluginTask.dnList=dnlist;
 selectedPluginTask.parameterMap={};
 selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
-console.log(selectedPluginTask);
 
 var packages_data = [];
 var packageInfoList = [];
@@ -270,7 +269,6 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 			},
 			success: function(result) {
 				var res = jQuery.parseJSON(result);
-				console.log("rest response")
 				if(res.status=="OK"){		    		
 					$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 				}   	

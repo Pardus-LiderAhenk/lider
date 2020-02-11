@@ -40,8 +40,6 @@ function getResourceUsage(){
 		}, 
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			console.log("rest response")
-			console.log(res)
 			if(res.status=="OK"){
 				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
 			}   	
@@ -100,9 +98,7 @@ function resourceUsageListener(msg) {
 					$("#plugin-result").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
 					$.notify(xmppResponse.result.responseMessage, "error");
 				}
-
 			}
-
 		}						 
 	}
 	// we must return true to keep the handler alive. returning false would remove it after it finishes.

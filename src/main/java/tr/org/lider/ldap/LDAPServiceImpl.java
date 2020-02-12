@@ -1366,4 +1366,22 @@ public class LDAPServiceImpl implements ILDAPService {
 			}
 		}
 	}
+	
+	@Override
+	public void renameEntry(String oldName, String newName) throws LdapException {
+		logger.info("Rename DN  Old Name :" + oldName + " New Name " + newName);
+		LdapConnection connection = null;
+		connection = getConnection();
+		Entry entry = null;
+		try {
+			entry = connection.lookup(oldName);
+			org.apache.directory.api.ldap.model.name.Rdn rdn= new org.apache.directory.api.ldap.model.name.Rdn(newName);
+			connection.rename(entry.getDn(), rdn, true);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+	}
 }

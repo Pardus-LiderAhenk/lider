@@ -57,5 +57,5 @@ public interface ILDAPService {
 	
 	LdapEntry getDomainEntry() throws LdapException;
 	
-
+	void renameEntry(String oldName, String newName) throws LdapException;
 }

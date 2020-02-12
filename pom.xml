@@ -48,7 +48,7 @@
 		<jersey.client.version>1.19</jersey.client.version>
 		<file.upload.version>1.2.2</file.upload.version>
 		<jersey.client.version>1.17.1</jersey.client.version>
-		<commons.compress.version>1.7</commons.compress.version>
+		<commons.compress.version>1.19</commons.compress.version>
 		<springsource.jstl>1.2.0.v20110728</springsource.jstl>
 		<spring.framework.version>3.1.1.RELEASE</spring.framework.version>
 		<commons.fileupload>1.2.2</commons.fileupload>

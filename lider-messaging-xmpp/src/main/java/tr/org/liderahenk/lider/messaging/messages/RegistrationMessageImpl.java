@@ -53,6 +53,8 @@ public class RegistrationMessageImpl implements IRegistrationMessage {
 	private String userName;
 	
 	private String userPassword;
+	
+	private String directoryServer;
 
 	private Map<String, Object> data;
 
@@ -144,6 +146,15 @@ public class RegistrationMessageImpl implements IRegistrationMessage {
 
 	public void setUserPassword(String userPassword) {
 		this.userPassword = userPassword;
+	}
+
+	@Override
+	public String getDirectoryServer() {
+		return directoryServer;
+	}
+
+	public void setDirectoryServer(String directoryServer) {
+		this.directoryServer = directoryServer;
 	}
 
 }

@@ -82,6 +82,9 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 	private IAgentDao agentDao;
 	private IEntityFactory entityFactory;
 	private String LDAP_VERSION = "3";
+	
+	private static String DIRECTORY_SERVER_LDAP="LDAP";
+	private static String DIRECTORY_SERVER_AD="AD";
 
 
 	/**
@@ -102,18 +105,15 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			
 			String userName = message.getUserName();
 			String userPassword = message.getUserPassword();
+			String directoryServer = message.getDirectoryServer();
 			
 			LdapEntry ldapUserEntry= getUserFromLdap(userName, userPassword);
 			
 			if(ldapUserEntry==null) {
-				
 				RegistrationResponseMessageImpl	respMessage = new RegistrationResponseMessageImpl(StatusCode.NOT_AUTHORIZED,
 						"User Not Found", dn, null, new Date());
 				return respMessage;
 			}
-			
-			
-
 			// Try to find agent LDAP entry
 			final List<LdapEntry> entries = ldapService.search(configurationService.getAgentLdapJidAttribute(), jid,
 					new String[] { configurationService.getAgentLdapJidAttribute() });
@@ -161,8 +161,6 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 				logger.warn(
 						"Agent {} already exists! Updated its password and database properties with the values submitted.",
 						dn);
-				
-				
 				respMessage =new RegistrationResponseMessageImpl(StatusCode.ALREADY_EXISTS,
 						dn + " already exists! Updated its password and database properties with the values submitted.",
 						dn, null, new Date());
@@ -170,16 +168,26 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 				
 			} else {
 				logger.info("Agent {} and its related database record created successfully!", dn);
-				
 				respMessage = new RegistrationResponseMessageImpl(StatusCode.REGISTERED,
 						dn + " and its related database record created successfully!", dn, null, new Date());
-				
+			}
+			if(directoryServer.equals(DIRECTORY_SERVER_LDAP)) {
+				respMessage.setLdapServer(configurationService.getLdapServer());
+				respMessage.setLdapBaseDn(configurationService.getUserLdapBaseDn());
+				respMessage.setLdapVersion(LDAP_VERSION);
+				respMessage.setLdapUserDn(dn);
+			}
+//			 # self.domain_name = "engerek.local"
+//			 # self.host_name = "liderahenk.engerek.local"
+//			 # self.ip_address = "172.16.103.28"
+//			 # self.password = "Pp123456"
+			else if(directoryServer.equals(DIRECTORY_SERVER_AD)) {
+				respMessage.setAdDomainName(configurationService.getAdDomainName());
+				respMessage.setAdHostName(configurationService.getAdHostName());
+				respMessage.setAdIpAddress(configurationService.getAdIpAddress());
+				respMessage.setAdAdminPassword(configurationService.getAdAdminPassword());
 			}
 			
-			respMessage.setLdapServer(configurationService.getLdapServer());
-			respMessage.setLdapBaseDn(configurationService.getUserLdapBaseDn());
-			respMessage.setLdapVersion(LDAP_VERSION);
-			respMessage.setLdapUserDn(dn);
 			
 			logger.info("Registration message created..  "
 					+ "Message details ldap base dn : " +respMessage.getLdapBaseDn() 

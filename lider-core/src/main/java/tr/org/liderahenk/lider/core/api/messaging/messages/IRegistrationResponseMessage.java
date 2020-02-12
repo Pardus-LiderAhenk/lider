@@ -63,5 +63,21 @@ public interface IRegistrationResponseMessage extends ILiderMessage {
 	String getLdapUserDn();
 
 	void setLdapUserDn(String ldapUserDn);
+	
+	public String getAdDomainName();
+
+	public void setAdDomainName(String adDomainName);
+
+	public String getAdHostName();
+
+	public void setAdHostName(String adHostName);
+
+	public String getAdIpAddress();
+
+	public void setAdIpAddress(String adIpAddress);
+
+	public String getAdAdminPassword();
+
+	public void setAdAdminPassword(String adAdminPassword);
 
 }

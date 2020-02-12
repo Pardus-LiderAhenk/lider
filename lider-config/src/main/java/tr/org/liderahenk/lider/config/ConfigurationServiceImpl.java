@@ -139,8 +139,10 @@ public class ConfigurationServiceImpl implements IConfigurationService {
 	private Integer entrySizeLimit;
 	private Integer cronIntervalEntrySize;
 	
-	
-	
+	private String adDomainName;
+	private String adHostName;
+	private String adIpAddress;
+	private String adAdminPassword;
 	
 
 	public void refresh() {
@@ -875,6 +877,47 @@ public class ConfigurationServiceImpl implements IConfigurationService {
 
 	public void setUserLdapRolesDn(String userLdapRolesDn) {
 		this.userLdapRolesDn = userLdapRolesDn;
+	}
+
+
+	public String getAdDomainName() {
+		return adDomainName;
+	}
+
+
+	public void setAdDomainName(String adDomainName) {
+		this.adDomainName = adDomainName;
+	}
+
+
+	public String getAdHostName() {
+		return adHostName;
+	}
+
+
+	public void setAdHostName(String adHostName) {
+		this.adHostName = adHostName;
+	}
+
+
+	public String getAdIpAddress() {
+		return adIpAddress;
+	}
+
+
+	public void setAdIpAddress(String adIpAddress) {
+		this.adIpAddress = adIpAddress;
+	}
+
+
+	public String getAdAdminPassword() {
+		return adAdminPassword;
+	}
+
+
+
+	public void setAdAdminPassword(String adAdminPassword) {
+		this.adAdminPassword = adAdminPassword;
 	}
 
 }

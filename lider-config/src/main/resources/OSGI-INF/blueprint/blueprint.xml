@@ -95,6 +95,11 @@
 		<property name="cronTaskList" value="${cron.task.list}" />
 		<property name="entrySizeLimit" value="${entry.size.limit}" />
 		<property name="cronIntervalEntrySize" value="${cron.interval.entry.size}" />
+
+		<property name="adDomainName" value="${ad.domainname}" />
+		<property name="adHostName" value="${ad.hostname}" />
+		<property name="adIpAddress" value="${ad.ipaddress}" />
+		<property name="adAdminPassword" value="${ad.adminpassword}" />
 		
 		
 	</bean>

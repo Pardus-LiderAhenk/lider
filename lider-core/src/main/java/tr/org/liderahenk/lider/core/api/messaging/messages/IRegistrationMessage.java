@@ -53,6 +53,8 @@ public interface IRegistrationMessage extends IAgentMessage {
 	
 	String getUserPassword();
 
+	String getDirectoryServer();
+
 	/**
 	 * 
 	 * @return Additional data used to set agent properties.

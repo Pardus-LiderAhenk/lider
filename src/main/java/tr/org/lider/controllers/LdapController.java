@@ -363,34 +363,6 @@ public class LdapController {
 		}
 	}
 	
-	
-	@RequestMapping(method=RequestMethod.POST, value = "/editUser",produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public LdapEntry editUser(LdapEntry selectedEntry) {
-		try {
-//			if(!"".equals(selectedEntry.getUid())){
-//				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "uid", selectedEntry.getUid());
-//			}
-			if(!"".equals(selectedEntry.getCn())){
-				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "cn", selectedEntry.getCn());
-			}
-			if(!"".equals(selectedEntry.getSn())){
-				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "sn", selectedEntry.getSn());
-			}
-			if(!"".equals(selectedEntry.getTelephoneNumber())){
-				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "telephoneNumber", selectedEntry.getTelephoneNumber());
-			}
-			if(!"".equals(selectedEntry.getHomePostalAddress())){
-				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "homePostalAddress", selectedEntry.getHomePostalAddress());
-			}
-			
-			return selectedEntry;
-		} catch (LdapException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
 	//get members of group
 	@RequestMapping(method=RequestMethod.POST ,value = "/move/entry", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Boolean moveEntry(@RequestParam(value="sourceDN", required=true) String sourceDN,

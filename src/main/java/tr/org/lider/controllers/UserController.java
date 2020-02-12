@@ -75,15 +75,18 @@ public class UserController {
 			String rdn="uid="+selectedEntry.getUid()+","+selectedEntry.getParentName();
 
 			ldapService.addEntry(rdn, attributes);
+			
+			selectedEntry.setAttributesMultiValues(attributes);
+			selectedEntry.setDistinguishedName(selectedEntry.getUid());
 
 			logger.info("User created successfully RDN ="+rdn);
+			
 			return selectedEntry;
 		} catch (LdapException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
 	
 	@RequestMapping(method=RequestMethod.POST, value = "/deleteUser")
 	@ResponseBody
@@ -111,7 +114,8 @@ public class UserController {
 	}
 	
 	/**
-	 * edit only requeired user attributes
+	 * edit only required user attributes
+	 * return edited entry for update
 	 * @param selectedEntry
 	 * @return
 	 */
@@ -132,6 +136,9 @@ public class UserController {
 				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "homePostalAddress", selectedEntry.getHomePostalAddress());
 			}
 			
+			
+			selectedEntry = ldapService.findSubEntries(selectedEntry.getDistinguishedName(), "(objectclass=*)", new String[] {"*"}, SearchScope.OBJECT).get(0);
+
 			return selectedEntry;
 		} catch (LdapException e) {
 			e.printStackTrace();

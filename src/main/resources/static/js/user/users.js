@@ -2,61 +2,77 @@
  * When page loading getting users from LDAP and ldap users tree fill out on the treegrid that used jqxTreeGrid api..
  * M. Edip YILDIZ
  */
-
 $(document).ready(function(){
-	//create user tree check and uncheck action function
-	createUserTree("treeGridUserHolderDiv", false, true,
-			//check action
-			function(checkedRows, row){ 
-				if(checkedRows.length==0){
-					hideButtons()
-				  }
-			      if(checkedRows.length>0  ){
-			    	  var userList=[]
-			    	  for (var m = 0; m < checkedRows.length; m++) {
-				    	  var row = checkedRows[m];
-				    	  if(row.type == "USER"){
-				    		  userList.push(row)
-				    	  }
-					  }
-			    	  if(userList.length ==1){
-			    		  showButtons()
-			    	  }
-			    	  else{
-			    		  hideButtons()
-			    	  }
-			      }
-			      else{
-			    	  hideButtons()
-			      }
-							
-			},
-			//uncheck action
-			function(checkedRows, row){ 
-				  if(checkedRows.length>0  ){
-			    	  var userList=[]
-			    	  for (var m = 0; m < checkedRows.length; m++) {
-				    	  var row = checkedRows[m];
-				    	  if(row.type == "USER"){
-				    		  userList.push(row)
-				    	  }
-					  }
-			    	  if(userList.length ==1){
-			    		  showButtons()
-			    	  }
-			    	  else{
-			    		  hideButtons()
-			    	  }
-			      }
-				  else{
-					  hideButtons()
-				  }
-			}
-	);
 	/**
 	 * when user selected show  only related actions
 	 */
-	hideButtons()
+	hideUserButtons()
+	hideOuButtons()
+	
+	var selectedRowGen = null
+	var treeGridHolderDiv="treeGridUserHolderDiv"
+	
+	//create user tree check and uncheck action function
+	createUserTree(treeGridHolderDiv, false, false,
+			// row select
+			function(row){
+				selectedRowGen=row;
+		        fillEntryDetail2Table(row);
+		        setUserActionButtons(row)
+			},
+			//check action
+			function(checkedRows, row){
+				
+				
+			},
+			//uncheck action
+			function(checkedRows, row){
+				
+			}
+	);
+	
+	$('#btnAddOuModal').on('click',function(event) {
+		getModalContent("modals/user/addOuModal", function content(data){
+				$('#genericModalHeader').html("Klasör Yönetimi")
+				$('#genericModalBodyRender').html(data);
+				$('#ouInfo').html(selectedRowGen.name +"/");
+				$('#addOu').on('click', function (event) {
+						console.log(selectedRowGen)
+						
+						var parentDn=selectedRowGen.distinguishedName; 
+						var parentName= selectedRowGen.name;
+						var parentEntryUUID= selectedRowGen.entryUUID;
+						var ouName= $('#ouName').val();
+						$.ajax({
+							type : 'POST',
+							url : 'lider/ldap/addOu',
+							data: 'parentName='+parentDn +'&ou='+ouName,
+							dataType : 'json',
+							success : function(data) {
+								
+								$.notify("Klasör Başarı İle Eklendi.", "success");
+							     
+								$('#genericModal').trigger('click');
+								$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
+								$("#treeGridUserHolderDivGrid").jqxTreeGrid('expandRow' , parentEntryUUID);
+							}
+						});
+				});
+			} 
+		);
+	});
+	// Create ou for selected parent node. Ou modal will be open for all releated pages..
+	$('#btnDeleteOuModal').on('click',function(event) {
+		getModalContent("modals/user/deleteOuModal", function content(data){
+			$('#genericModalHeader').html("Klasör Sil")
+			$('#genericModalBodyRender').html(data);
+			
+			$('#deleteOuBtn').on('click', function (event) {
+				deleteUserOu(selectedRowGen)
+			});
+		} 
+		);
+	});
 	
 	$('#btnOpenAddUserModal').on('click',function(event) {
 		getModalContent("modals/user/addUserModal", function content(data){
@@ -71,10 +87,9 @@ $(document).ready(function(){
 				$('#confirm_password').val("")
 				$('#addUserBtn').removeClass('disabled');
 				
-				createUserTree("treeGridAddUserHolderDiv", true, false);
-				
+				userFolderInfo.append("Seçili Klasör : "+selectedRowGen.name)
 				$('#addUserBtn').on('click',function(event) {
-					addUser()
+					addUser(selectedRowGen)
 				});
 			} 
 		);
@@ -84,24 +99,16 @@ $(document).ready(function(){
 		getModalContent("modals//user/editUserModal", function content(data){
 				$('#genericModalHeader').html("Kullanıcı Düzenle")
 				$('#genericModalBodyRender').html(data);
-				var entry;
-				var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
-				for (var k = 0; k < checkedRows.length; k++) { 
-					var row= checkedRows[k];
-					if(row.type=="USER"){
-						entry=row;
-					}
-				}
-				console.log(entry)
-				$('#uidEdit').val(entry.attributes.uid)
-				$('#cnEdit').val(entry.name)
-				$('#snEdit').val(entry.sn)
-				$('#telephoneNumberEdit').val(entry.attributes.telephoneNumber)
-				$('#homePostalAddressEdit').val(entry.attributes.homePostalAddress)
-				$('#userPasswordEdit').val(entry.userPassword)
+				
+				$('#uidEdit').val(selectedRowGen.attributes.uid)
+				$('#cnEdit').val(selectedRowGen.name)
+				$('#snEdit').val(selectedRowGen.sn)
+				$('#telephoneNumberEdit').val(selectedRowGen.attributes.telephoneNumber)
+				$('#homePostalAddressEdit').val(selectedRowGen.attributes.homePostalAddress)
+				$('#userPasswordEdit').val(selectedRowGen.userPassword)
 				
 				$('#editUserBtn').on('click',function(event) {
-					editUser(entry.distinguishedName)
+					editUser(selectedRowGen.distinguishedName)
 				});
 				
 			} 
@@ -109,24 +116,16 @@ $(document).ready(function(){
 	});
 	
 	$('#btnOpenDeleteUserModal').on('click',function(event) {
-		var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
-		if(checkedRows.length==0){
-			$.notify("Lütfen Kullanıcı Ağacından Kayıt Seçiniz.", "warn");
-			return
-		}
+		
 		getModalContent("modals/user/deleteUserModal", function content(data){
 				$('#genericModalHeader').html("Kullanıcı Sil")
 				$('#genericModalBodyRender').html(data);
 				
-				var entryNames="<ul>";
-				for (var k = 0; k < checkedRows.length; k++) { 
-					var row= checkedRows[k];
-					if(row.type){
-						entryNames+="<li> "+row.name +"</li>"
-					}
-				}
-				entryNames+="</ul>"
-				$('#userInfoDelete').html(entryNames);
+				$('#userInfoDelete').html(selectedRowGen.name);
+				
+				$('#deleteUserBtn').on('click',function(event) {
+					deleteUsers(selectedRowGen)
+				});
 		});
 	});
 	
@@ -134,16 +133,7 @@ $(document).ready(function(){
 		getModalContent("modals/user/changePasswordUserModal", function content(data){
 			$('#genericModalHeader').html("Parola Güncelle")
 			$('#genericModalBodyRender').html(data);
-			var entry;
-			var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
 			
-			for (var k = 0; k < checkedRows.length; k++) { 
-				var row= checkedRows[k];
-				if(row.type=="USER"){
-					entry=row;
-				}
-			}
-			console.log(entry)
 			$('#updateUserPasswordBtn').on('click',function(event) {
 				var userPassword  =$('#newUserPassword').val()
 				var confirmPassword  =$('#newConfirmPassword').val()
@@ -165,7 +155,7 @@ $(document).ready(function(){
 			    	$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
 			    	return
 			    }
-			    updateUserPassword(entry.distinguishedName)
+			    updateUserPassword(selectedRowGen.distinguishedName)
 			});
 		});
 		
@@ -183,14 +173,6 @@ $(document).ready(function(){
 				$('#genericModalHeader').html("Parola Politikası Ata")
 				$('#genericModalBodyRender').html(data);
 				
-				var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
-				var entry;
-				for (var k = 0; k < checkedRows.length; k++) { 
-					var row= checkedRows[k];
-					if(row.type=="USER"){
-						entry=row;
-					}
-				}
 				$.ajax({
 					type : 'POST',
 					url : 'lider/user/getPasswordPolices',
@@ -260,7 +242,7 @@ $(document).ready(function(){
 								
 								var params = {
 										"passwordPolicy" :	selectedPasswordPolicy,
-										"dn" : entry.distinguishedName
+										"dn" : selectedRowGen.distinguishedName
 								};
 								
 								$.ajax({
@@ -270,6 +252,12 @@ $(document).ready(function(){
 									dataType : 'json',
 									success : function(data) {
 										$.notify("Kullanıcıya Parola Politikası Atanmıştır", "success");
+										var selectedData = $("#treeGridUserHolderDivGrid").jqxTreeGrid('getRow', data.entryUUID);
+										selectedData.attributes = data.attributes
+										$("#treeGridUserHolderDivGrid").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
+										$("#treeGridUserHolderDivGrid").jqxTreeGrid('selectRow', data.entryUUID);
+										$('#genericModal').trigger('click');
+										
 									},
 									error: function (data, errorThrown) {
 										$.notify("Kullanıcı Parolası Güncellenirken Hata Oluştu.", "error");
@@ -289,15 +277,8 @@ $(document).ready(function(){
 });
 
 
-function addUser() {
-	var checkedRows = $("#treeGridUserHolderDiv").jqxTreeGrid('getCheckedRows');
-	if(checkedRows.length==0){
-		$.notify("Lütfen Klasör Seçiniz",{className: 'warn',position:"right top"}  );
-		return
-	}
-	
-	var parentDn=checkedRows[0].distinguishedName; 
-	
+function addUser(row) {
+	var parentDn=row.distinguishedName; 
 	var uid=$('#uid').val();
 	var cn=$('#cn').val();
 	var sn=$('#sn').val();
@@ -342,7 +323,7 @@ function addUser() {
 		success : function(ldapResult) {
 			$.notify("Kullanıcı Başarı ile eklendi.",{className: 'success',position:"right top"}  );
 			$('#addUserBtn').addClass('disabled');
-			getUsers();
+			console.log(ldapResult)
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Kullanıcı Eklenirken Hata Oluştu.", "error");
@@ -359,22 +340,17 @@ function contains(rootPassword, allowedChars) {
      return false;
 }
 
-function deleteUsers() {
-	var checkedRows = $("#treeGridUser").jqxTreeGrid('getCheckedRows');
+function deleteUsers(row) {
 	var dnList = [];
-	for(var i = 0; i < checkedRows.length; i++) {
-		var rowData = checkedRows[i];
-		if(rowData.type){
-			dnList.push(
-					{
-						distinguishedName :rowData.distinguishedName, 
-						entryUUID: rowData.entryUUID, 
-						name: rowData.name,
-						type: rowData.type,
-						uid: rowData.uid
-					});
-		}
-	}
+	
+	dnList.push({
+			distinguishedName :row.distinguishedName, 
+			entryUUID: row.entryUUID, 
+			name: row.name,
+			type: row.type,
+			uid: row.uid
+		});
+		
     $.ajax({
 		type : 'POST',
 		url : 'lider/user/deleteUser',
@@ -383,9 +359,39 @@ function deleteUsers() {
 		contentType: "application/json",
 		success : function(ldapResult) {
 			$.notify("Kullanıcı Başarı ile Silindi.",{className: 'success',position:"right top"}  );
-			$("#deleteUserBtn").attr("disabled", true);
-			$('#deleteUserModal').modal('hide');
-			getUsers();
+			$('#genericModal').trigger('click');
+			if(ldapResult){
+				$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', row.entryUUID); 
+			}
+		},
+	    error: function (data, errorThrown) {
+			$.notify("Kullanıcı Silinirken Hata Oluştu.", "error");
+		}
+	});  
+}
+
+function deleteUserOu(row) {
+	var dnList = [];
+	dnList.push({
+			distinguishedName :row.distinguishedName, 
+			entryUUID: row.entryUUID, 
+			name: row.name,
+			type: row.type,
+			uid: row.uid
+		});
+		
+    $.ajax({
+		type : 'POST',
+		url : 'lider/user/deleteUserOu',
+		data : JSON.stringify(dnList),
+		dataType: "json",
+		contentType: "application/json",
+		success : function(ldapResult) {
+			$.notify("Klasör ve bulunan kullanıcılar başarı ile silindi.",{className: 'success',position:"right top"}  );
+			$('#genericModal').trigger('click');
+			if(ldapResult){
+				$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', row.entryUUID); 
+			}
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Kullanıcı Silinirken Hata Oluştu.", "error");
@@ -402,16 +408,22 @@ function editUser(userId) {
 		"telephoneNumber": $('#telephoneNumberEdit').val(),
 		"homePostalAddress": $('#homePostalAddressEdit').val()
 	};
-    console.log(params)
+    
 	$.ajax({
 		type : 'POST',
 		url : 'lider/user/editUser',
 		data : params,
 		dataType : 'json',
-		success : function(ldapResult) {
+		success : function(data) {
 			$.notify("Kullanıcı Başarı ile güncellendi.",{className: 'success',position:"right top"}  );
-			$('#editUserBtn').addClass('disabled');
-			getUsers();
+//			$('#editUserBtn').addClass('disabled');
+			console.log(data)
+			$('#genericModal').trigger('click');
+			var selectedData = $("#treeGridUserHolderDivGrid").jqxTreeGrid('getRow', data.entryUUID);
+			selectedData.attributes = data.attributes
+			$("#treeGridUserHolderDivGrid").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
+			$("#treeGridUserHolderDivGrid").jqxTreeGrid('selectRow', data.entryUUID);
+			
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Kullanıcı Güncellenirken Hata Oluştu.", "error");
@@ -430,8 +442,7 @@ function updateUserPassword(userId) {
 		dataType : 'json',
 		success : function(ldapResult) {
 			$.notify("Kullanıcı Parolası Başarı ile güncellendi.",{className: 'success',position:"right top"}  );
-			$('#updateUserPasswordBtn').addClass('disabled');
-			getUsers();
+			$('#genericModal').trigger('click');
 		},
 		error: function (data, errorThrown) {
 			$.notify("Kullanıcı Parolası Güncellenirken Hata Oluştu.", "error");
@@ -439,18 +450,104 @@ function updateUserPassword(userId) {
 	});  
 }
 
-function hideButtons(){
+function hideUserButtons(){
 	$("#btnEditUserModal").hide();
 	$("#btnOpenDeleteUserModal").hide();
 	$("#btnOpenEditUserModal").hide();
 	$("#btnOpenChangePasswordUserModal").hide();
 	$("#btnSetPasswordPolicyModal").hide();
+	$("#btnAddOuModal").hide();
+	$("#btnAddOuModal").hide();
+	$("#btnOpenAddUserModal").hide();
+	  
+}
+function hideOuButtons(){
+	$("#btnDeleteOuModal").hide();
 }
 
-function showButtons(){
+function showOuButtons(){
+	$("#btnDeleteOuModal").show();
+}
+function showUserButtons(){
 	$("#btnEditUserModal").show();
 	$("#btnOpenDeleteUserModal").show();
 	$("#btnOpenEditUserModal").show();
 	$("#btnOpenChangePasswordUserModal").show();
 	$("#btnSetPasswordPolicyModal").show();
+	
+}
+function setUserActionButtons(row){
+	
+	if(row.type =="USER"){
+		$("#btnOpenEditUserModal").show();
+		$("#btnOpenChangePasswordUserModal").show();
+		$("#btnSetPasswordPolicyModal").show();
+		$("#btnOpenDeleteUserModal").show();
+		
+		$("#btnDeleteOuModal").hide();
+		$("#btnAddOuModal").hide();
+		$("#btnOpenAddUserModal").hide();
+	  }
+	  else if(row.type =="ORGANIZATIONAL_UNIT"){
+		  $("#btnOpenEditUserModal").hide();
+		  $("#btnOpenChangePasswordUserModal").hide();
+		  $("#btnSetPasswordPolicyModal").hide();
+		  $("#btnOpenDeleteUserModal").hide();
+		  
+		  $("#btnAddOuModal").show();
+		  
+		  $("#btnDeleteOuModal").show();
+		  $("#btnOpenAddUserModal").show();
+	  }
+	
+}
+
+function fillEntryDetail2Table(row){
+	var html = '<table class="table table-striped table-bordered " id="attrTable">';
+	html += '<thead>';
+	html += '<tr>';
+	html += '<th style="width: 40%"></th>';
+	html += '<th style="width: 60%"></th>';
+	html += '</tr>';
+	html += '</thead>';
+    
+    for (key in row.attributes) {
+        if (row.attributes.hasOwnProperty(key)) {
+            if( (   key =="homeDirectory") 
+            		|| (key =="cn") 
+            		|| (key =="uid") 
+            		|| (key =="sn") 
+            		|| (key =="homePostalAddress") 
+            		|| (key =="telephoneNumber") 
+            		|| (key =="entryDN") 
+            		|| (key =="pwdPolicySubentry") 
+            		){
+	                	html += '<tr>';
+	                	var keyStr="";
+	                	if(key =="pwdPolicySubentry"){keyStr="Parola Politikası"}
+	                	if(key =="homeDirectory"){keyStr="Ev Dizini"}
+	                	if(key =="cn"){keyStr="Kullanıcı Adı"}
+	                	if(key =="uid"){keyStr="Kimlik"}
+	                	if(key =="sn"){keyStr="Kullanıcı Soyadı"}
+	                	if(key =="telephoneNumber"){keyStr="Telefon"}
+	                	if(key =="entryDN"){keyStr="Kayıt DN"}
+	                	if(key =="homePostalAddress"){keyStr="Adres"}
+			            html += '<td>' + keyStr + '</td>';
+			            html += '<td>' + row.attributes[key] + '</td>';
+			            html += '</tr>';
+	                }
+        }
+    } 
+    html += '</table>';
+    
+    $('#selectedDnInfo').html("Seçili Kayıt: "+row.name);
+    $('#ldapAttrInfoHolder').html(html);
+    
+    $('.nav-link').each(function(){               
+    	  var $tweet = $(this);                    
+    	  $tweet.removeClass('active');
+    	});
+ 
+    $('#tab-c-0').tab('show');
+	
 }

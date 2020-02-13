@@ -6,12 +6,15 @@
  * @param callback
  * @returns
  */
-function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowCheckAction, rowUncheckAction) {
+function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
 	
-	$('#'+treeHolderDiv).append('<div id="search" class="pull-right"> <input type="text" id="searchInput" /> <button id="btnSearchTree" > Ara </button> </div>')
+	var srcInputId= treeHolderDiv+"srcInput";
+	var srcBtnId= treeHolderDiv+"srcBtn";
+		
+	$('#'+treeHolderDiv).append('<div id="searchDiv" class="pull-right"> <input type="text" id='+srcInputId+' /> <button id='+srcBtnId+' > Ara </button> </div>')
 	
-	$('#btnSerachTree').on('click', function (event) {
-		alert("dsf")
+	$('#'+srcBtnId).on('click', function (event) {
+		alert($('#'+srcInputId).val())
 	});
 	
 	$.ajax({
@@ -35,6 +38,7 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowCheckAction, 
 			           { name: "expandedUser", type: "string" },
 			           { name: "entryUUID", type: "string" },
 			           { name: "attributes", type: "array" },
+			           { name: "attributesMultiValues", type: "array" },
 			           { name: "childEntries", type: "array" }
 			      ],
 			      hierarchy:
@@ -45,7 +49,7 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowCheckAction, 
 			      id: "entryUUID"
 			  };
 //			 	$("#treeGridUser").jqxTreeGrid('destroy');
-			 	var treeGridId=treeHolderDiv+"treeGridUser"
+			 	var treeGridId=treeHolderDiv+"Grid"
 			 	$('#'+treeHolderDiv).append('<div id="'+treeGridId+'"></div> ')
 				
 				var dataAdapter = new $.jqx.dataAdapter(source, {
@@ -72,8 +76,9 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowCheckAction, 
 			         pagerMode: 'default',
 				     checkboxes: useCheckBox,
 				     filterMode: "simple",
+				     selectionMode: "singleRow",
 				     localization: getLocalization(),
-				     pageSize: 50,
+				     pageSize: 15,
 				     pageSizeOptions: ['15', '25', '50'],
 				     icons: function (rowKey, dataRow) {
 				    	    var level = dataRow.level;
@@ -103,53 +108,7 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowCheckAction, 
 				        var args = event.args;
 					    var row = args.row;
 					    var name= row.name;
-				        	       
-				        var html = '<table class="table table-striped table-bordered " id="attrTable">';
-						html += '<thead>';
-						html += '<tr>';
-						html += '<th style="width: 40%"></th>';
-						html += '<th style="width: 60%"></th>';
-						html += '</tr>';
-						html += '</thead>';
-				        
-				        for (key in row.attributes) {
-				            if (row.attributes.hasOwnProperty(key)) {
-				                if( (   key =="homeDirectory") 
-				                		|| (key =="cn") 
-				                		|| (key =="uid") 
-				                		|| (key =="sn") 
-				                		|| (key =="homePostalAddress") 
-				                		|| (key =="telephoneNumber") 
-				                		|| (key =="entryDN") 
-				                		|| (key =="pwdPolicySubentry") 
-				                		){
-				                	html += '<tr>';
-				                	var keyStr="";
-				                	if(key =="pwdPolicySubentry"){keyStr="Parola Politikası"}
-				                	if(key =="homeDirectory"){keyStr="Ev Dizini"}
-				                	if(key =="cn"){keyStr="Kullanıcı Adı"}
-				                	if(key =="uid"){keyStr="Kimlik"}
-				                	if(key =="sn"){keyStr="Kullanıcı Soyadı"}
-				                	if(key =="telephoneNumber"){keyStr="Telefon"}
-				                	if(key =="entryDN"){keyStr="Kayıt DN"}
-				                	if(key =="homePostalAddress"){keyStr="Adres"}
-						            html += '<td>' + keyStr + '</td>';
-						            html += '<td>' + row.attributes[key] + '</td>';
-						            html += '</tr>';
-				                }
-				            }
-				        } 
-				        html += '</table>';
-				        
-					    $('#selectedDnInfo').html("Seçili Kayıt: "+name);
-					    $('#ldapAttrInfoHolder').html(html);
-					    
-					    $('.nav-link').each(function(){               
-					    	  var $tweet = $(this);                    
-					    	  $tweet.removeClass('active');
-					    	});
-					 
-					    $('#tab-c-0').tab('show');
+					    rowSelectAction(row)
 
 				    });
 				 
@@ -165,7 +124,6 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowCheckAction, 
 						  var args = event.args;
 						  var row = args.row;
 						  var checkedRows = $('#'+treeGridId).jqxTreeGrid('getCheckedRows');
-						  
 						  rowUncheckAction(checkedRows, row)
 					});
 					  

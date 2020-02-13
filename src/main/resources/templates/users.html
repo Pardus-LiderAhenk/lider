@@ -14,25 +14,7 @@
 					kullanıcıları listeleyebilir, kullanıcılarınızı yönetebilirsiniz.</div>
 			</div>
 		</div>
-		<div class="page-title-actions">
-
-			<div class="d-inline-block dropdown">
-				<button type="button" data-toggle="dropdown" aria-haspopup="true"
-					aria-expanded="false"
-					class="btn-shadow dropdown-toggle btn btn-info">
-					<span class="btn-icon-wrapper pr-2 opacity-7"> <i
-						class="fa fa-business-time fa-w-20"> </i>
-					</span> <span class="btn-icon-wrapper pr-2 "> </span> Politika Grupları
-				</button>
-
-			</div>
-
-			<button type="button" id="selectedEntrySize"
-				data-target="#selectedEntryListModal" data-toggle="modal"
-				data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
-				<i class="fa fa-star"></i>
-			</button>
-		</div>
+		
 	</div>
 </div>
 
@@ -42,7 +24,7 @@
 		<div class="main-card mb-3 card">
 			<div class="card-body">
 			
-						<div>
+				<div>
 					<div class="d-inline-block dropdown">
 							<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
                                             <span class="btn-icon-wrapper pr-2 opacity-7">
@@ -53,10 +35,18 @@
                         	<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
                                             <ul class="nav flex-column">
                                                 <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnOpenOuManagerModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+                                                    <a href="#" class="nav-link" id="btnAddOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
                                                         <i class="fa fa-folder-open"> &nbsp;</i>
                                                         <span>
                                                             Klasör Ekle
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnDeleteOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+                                                        <i class="fa fa-folder-open"> &nbsp;</i>
+                                                        <span>
+                                                            Klasör Sil
                                                         </span>
                                                     </a>
                                                 </li>

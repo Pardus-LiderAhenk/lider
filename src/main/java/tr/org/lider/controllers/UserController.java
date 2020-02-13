@@ -87,24 +87,20 @@ public class UserController {
 			return null;
 		}
 	}
-	
+	/**
+	 * delete selected user
+	 * @param selectedEntryArr
+	 * @return
+	 */
 	@RequestMapping(method=RequestMethod.POST, value = "/deleteUser")
 	@ResponseBody
 	public Boolean deleteUser(@RequestBody LdapEntry[] selectedEntryArr) {
 		try {
-			List<LdapEntry> ouList=new ArrayList<>();
-
 			for (LdapEntry ldapEntry : selectedEntryArr) {
 				if(ldapEntry.getType().equals(DNType.USER)) {
 					ldapService.deleteEntry(ldapEntry.getDistinguishedName());
 					logger.info("User deleted successfully RDN ="+ldapEntry.getDistinguishedName());
 				}
-				else if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
-					ouList.add(ldapEntry);
-				}
-			}
-			for (LdapEntry ldapEntry : ouList) {
-				ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(ldapEntry.getDistinguishedName()));
 			}
 			return true;
 		} catch (LdapException e) {
@@ -159,6 +155,7 @@ public class UserController {
 			if(!"".equals(selectedEntry.getUserPassword())){
 				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "userPassword", selectedEntry.getUserPassword());
 			}
+			selectedEntry = ldapService.findSubEntries(selectedEntry.getDistinguishedName(), "(objectclass=*)", new String[] {"*"}, SearchScope.OBJECT).get(0);
 			
 			return selectedEntry;
 		} catch (LdapException e) {
@@ -191,15 +188,19 @@ public class UserController {
 	 */
 	@RequestMapping(method=RequestMethod.POST, value = "/setPasswordPolicy",produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Boolean setPasswordPolicy(@RequestParam(value = "dn", required=true) String dn,@RequestParam(value = "passwordPolicy", required=true) String passwordPolicy) {
+	public LdapEntry setPasswordPolicy(@RequestParam(value = "dn", required=true) String dn,@RequestParam(value = "passwordPolicy", required=true) String passwordPolicy) {
+		LdapEntry selectedEntry=null;
 		try {
 			ldapService.updateEntry(dn, "pwdPolicySubentry", passwordPolicy);
+			
+		selectedEntry = ldapService.findSubEntries(dn, "(objectclass=*)", new String[] {"*"}, SearchScope.OBJECT).get(0);
+
 			
 		} catch (LdapException e) {
 			e.printStackTrace();
 			return null;
 		}
-		return true;
+		return selectedEntry;
 	}
 	
 	/**
@@ -276,5 +277,26 @@ public class UserController {
 			return null;
 		}
 		return entry;
+	}
+	
+	/**
+	 * delete user ous
+	 * @param selectedEntryArr
+	 * @return
+	 */
+	
+	@RequestMapping(method=RequestMethod.POST, value = "/deleteUserOu")
+	@ResponseBody
+	public Boolean deleteUserOu(@RequestBody LdapEntry[] selectedEntryArr) {
+		try {
+			for (LdapEntry ldapEntry : selectedEntryArr) {
+				if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT))
+				ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(ldapEntry.getDistinguishedName()));
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

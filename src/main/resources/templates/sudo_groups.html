@@ -35,54 +35,54 @@
 </div>
 
 <div class="row">
-
 	<div class="col-lg-4">
 		<div class="main-card mb-3 card">
-			<div class="card-header">
-				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-
-				<div>
-					<button id="userInfo" type="button"
-						class="btn-shadow btn btn-info" title="Kullanıcı Detay" ><i class="fa fa-info"></i></button>
-						
-					<button id="addUser" type="button"
-						class="btn-shadow btn btn-info" title="Kullanıcı Ekle" ><i class="fa fa-plus"></i></button>
-						
-					<button id="editUser" type="button"
-						class="btn-shadow btn btn-info"   title="Kullanıcı Düzenle"><i class="fa fa-edit"></i></button>
-						
-					<button id="deleteUser" type="button"
-						class="btn-shadow btn btn-info"   title="Kullanıcı Sil"><i class="fa fa-times"></i></button>
-						
-				</div>
-
-			</div>
 			<div class="card-body">
-				<div id="treeGridUser"></div>
+				<div class="d-block dropdown">
+                    <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+                        <span class="btn-icon-wrapper pr-2">
+                            <i class="fa fa-bars fa-w-20"></i>
+                        </span>
+                        İşlem Seç
+                    </button>
+                    <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+					    <a class="dropdown-item" href="#addNewAgentGroupModal"  
+					    	onclick="dropdownButtonClicked('addNewAgentGroup')">Yeni İstemci Grubu Oluştur</a>
+					    <a class="dropdown-item" href="#editSelectedAgentGroupModal"  
+					    	onclick="dropdownButtonClicked('editSelectedAgentGroup')">Seçili İstemci Grubunu Düzenle</a>
+					    <a class="dropdown-item" href="#addAgentsToAgentGroupModal"  
+					    	onclick="dropdownButtonClicked('addAgentsToAgentGroup')">Seçili İstemci Grubuna İstemci Ekle</a>
+					    <div class="dropdown-divider"></div>
+					    <a class="dropdown-item" href="#deleteAgentGroupAndMembersModal"  
+					    	onclick="dropdownButtonClicked('deleteAgentGroupAndMembers')">Seçili İstemci Grubunu ve Üyelerini Sil</a>
+                    </div>
+                </div>
+                <hr>
+			    <div id="treeGridSudoGroupsDiv">
+				    <div id="treeGridSudoGroups"></div>
+			    </div>
 			</div>
 
 		</div>
 	</div>
-
 	<div class="col-lg-8">
 		<div class="main-card mb-3 card">
 			<div class="card-header card-header-tab-animation">
 				<ul class="nav nav-justified">
 					<li class="nav-item">
 						<a role="tab" class="nav-link active"
-							id="tab-c-0" data-toggle="tab" href="#tab-animated-0"> 
-							<span>Detay</span>
+							id="entry-info" data-toggle="tab" href="#tab-entry-info"> 
+							<span>Kayıt Bilgisi</span>
 						</a>
 					</li>
-					
 				</ul>
 
 			</div>
 			<div class="card-body">
 				<div class="tab-content">
-					<div class="tab-pane active" id="tab-animated-0" role="tabpanel">
-						<p class="mb-0"></p>
-
+					<div class="tab-pane active" id="tab-entry-info" role="tabpanel">
+						<p id="selectedDnInfo"class="mb-0"></p>
+						<div id="ldapAttrInfoHolder"></div>
 					</div>
 					
 				</div>

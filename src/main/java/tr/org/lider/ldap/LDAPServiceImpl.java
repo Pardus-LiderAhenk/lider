@@ -1375,7 +1375,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		Entry entry = null;
 		try {
 			entry = connection.lookup(oldDN);
-			org.apache.directory.api.ldap.model.name.Rdn rdn= new org.apache.directory.api.ldap.model.name.Rdn("ou=" + newName);
+			org.apache.directory.api.ldap.model.name.Rdn rdn= new org.apache.directory.api.ldap.model.name.Rdn(newName);
 			connection.rename(entry.getDn(), rdn, true);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

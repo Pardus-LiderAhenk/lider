@@ -73,11 +73,17 @@ function dropdownButtonClicked(operation) {
 			$('#genericModalBodyRender').html(data);
 			generateTreeToMoveEntry();
 		});
-	} else if(operation == "editOrganizationalUnit") {
-		getModalContent("modals/groups/agent/editou", function content(data){
-			$('#genericModalHeader').html("Klasörü Düzenle");
+	} else if(operation == "editOrganizationalUnitName") {
+		getModalContent("modals/groups/agent/editouname", function content(data){
+			$('#genericModalHeader').html("Klasör Adı Düzenle");
 			$('#genericModalBodyRender').html(data);
 			$('#ouName').val(selectedName);
+		});
+	} else if(operation == "editGroupName") {
+		getModalContent("modals/groups/agent/editgroupname", function content(data){
+			$('#genericModalHeader').html("Grup Adı Düzenle");
+			$('#genericModalBodyRender').html(data);
+			$('#groupName').val(selectedName);
 		});
 	}
 }
@@ -287,7 +293,7 @@ function createMainTree() {
 			//if root dn is selected dont allow user to delete it
 			if(rootDNForAgentGroups != row.distinguishedName){
 				html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
-					+ 'onclick="dropdownButtonClicked(\'editOrganizationalUnit\')">Klasörü Düzenle</a>';
+					+ 'onclick="dropdownButtonClicked(\'editOrganizationalUnitName\')">Klasör Adı Düzenle</a>';
 				html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 					+ 'onclick="dropdownButtonClicked(\'moveEntry\')">Kaydı Taşı</a>';
 				html += '<div class="dropdown-divider"></div>';
@@ -298,6 +304,8 @@ function createMainTree() {
 		} else if(selectedRowData.type == "GROUP"){
 			html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 				+ 'onclick="dropdownButtonClicked(\'addMembersToAgentGroupModal\')">İstemci Ekle</a>';
+			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
+				+ 'onclick="dropdownButtonClicked(\'editGroupName\')">Grup Adını Düzenle</a>';
 			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 				+ 'onclick="dropdownButtonClicked(\'moveEntry\')">Kaydı Taşı</a>';
 			html += '<div class="dropdown-divider"></div>';
@@ -1181,7 +1189,7 @@ function btnMoveEntryClicked() {
 /*
  * edit organizational unit name
  */
-function btnEditOUClicked() {
+function btnEditOUNameClicked() {
 	var newOuName = $("#ouName").val();
 	if(newOuName == "") {
 		$.notify("Klasör adı giriniz.", "error");
@@ -1192,7 +1200,7 @@ function btnEditOUClicked() {
 		} 
 		var params = {
 				"oldDN" : selectedDN,
-				"newName": newOuName
+				"newName": "ou=" + newOuName
 		};
 		$.ajax({
 		    type: 'POST', 
@@ -1200,13 +1208,47 @@ function btnEditOUClicked() {
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
-		    	$.notify("Klasör düzenlendi.", "success");
+		    	$.notify("Grup adı düzenlendi.", "success");
 	            $('#genericModal').trigger('click');
 	            createMainTree();
 		    },
 		    error: function (data, errorThrown) {
-		    	$.notify("Klasör düzenlenirken hata oluştu.", "error");
+		    	$.notify("Grup adı düzenlenirken hata oluştu.", "error");
 		    }
 		});
 	}
 }
+
+/*
+ * edit group name
+ */
+function btnEditGroupNameClicked() {
+	var newOuName = $("#groupName").val();
+	if(newOuName == "") {
+		$.notify("Grup adı giriniz.", "error");
+	} else {
+		if(newOuName == selectedName) {
+			$('#genericModal').trigger('click');
+			return;
+		} 
+		var params = {
+				"oldDN" : selectedDN,
+				"newName": "cn=" + newOuName
+		};
+		$.ajax({
+		    type: 'POST', 
+		    url: '/lider/ldap/rename/entry',
+		    dataType: 'json',
+		    data: params,
+		    success: function (data) {
+		    	$.notify("Grup adı düzenlendi.", "success");
+	            $('#genericModal').trigger('click');
+	            createMainTree();
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Grup adı düzenlenirken hata oluştu.", "error");
+		    }
+		});
+	}
+}
+

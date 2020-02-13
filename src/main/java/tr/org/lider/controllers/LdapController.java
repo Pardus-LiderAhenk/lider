@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import tr.org.lider.ldap.DNType;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
@@ -363,7 +362,6 @@ public class LdapController {
 		}
 	}
 	
-	//get members of group
 	@RequestMapping(method=RequestMethod.POST ,value = "/move/entry", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Boolean moveEntry(@RequestParam(value="sourceDN", required=true) String sourceDN,
 			@RequestParam(value="destinationDN", required=true) String destinationDN) {
@@ -374,5 +372,17 @@ public class LdapController {
 			return false;
 		}
 		return true;
+	}
+	
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/rename/entry", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Boolean renameEntry(@RequestParam(value="oldDN", required=true) String oldDN,
+			@RequestParam(value="newName", required=true) String newName) {
+		try {
+			return ldapService.renameEntry(oldDN, newName);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

@@ -39,6 +39,7 @@ import org.apache.directory.api.ldap.model.message.AddRequest;
 import org.apache.directory.api.ldap.model.message.AddRequestImpl;
 import org.apache.directory.api.ldap.model.message.AddResponse;
 import org.apache.directory.api.ldap.model.message.LdapResult;
+import org.apache.directory.api.ldap.model.message.ModifyDnRequest;
 import org.apache.directory.api.ldap.model.message.ModifyRequest;
 import org.apache.directory.api.ldap.model.message.ModifyRequestImpl;
 import org.apache.directory.api.ldap.model.message.Response;
@@ -58,7 +59,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tr.org.lider.messaging.messages.XMPPClientImpl;
-import tr.org.lider.models.LiderUser;
 import tr.org.lider.services.ConfigurationService;
 
 
@@ -1368,14 +1368,14 @@ public class LDAPServiceImpl implements ILDAPService {
 	}
 	
 	@Override
-	public void renameEntry(String oldName, String newName) throws LdapException {
-		logger.info("Rename DN  Old Name :" + oldName + " New Name " + newName);
+	public Boolean renameEntry(String oldDN, String newName) throws LdapException {
+		logger.info("Rename DN  Old Name :" + oldDN + " New Name " + newName);
 		LdapConnection connection = null;
 		connection = getConnection();
 		Entry entry = null;
 		try {
-			entry = connection.lookup(oldName);
-			org.apache.directory.api.ldap.model.name.Rdn rdn= new org.apache.directory.api.ldap.model.name.Rdn(newName);
+			entry = connection.lookup(oldDN);
+			org.apache.directory.api.ldap.model.name.Rdn rdn= new org.apache.directory.api.ldap.model.name.Rdn("ou=" + newName);
 			connection.rename(entry.getDn(), rdn, true);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -1383,5 +1383,6 @@ public class LDAPServiceImpl implements ILDAPService {
 		} finally {
 			releaseConnection(connection);
 		}
+		return true;
 	}
 }

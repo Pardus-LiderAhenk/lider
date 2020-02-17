@@ -142,6 +142,7 @@ public class ConfigurationServiceImpl implements IConfigurationService {
 	private String adDomainName;
 	private String adHostName;
 	private String adIpAddress;
+	private String adAdminUserName;
 	private String adAdminPassword;
 	
 
@@ -918,6 +919,18 @@ public class ConfigurationServiceImpl implements IConfigurationService {
 
 	public void setAdAdminPassword(String adAdminPassword) {
 		this.adAdminPassword = adAdminPassword;
+	}
+
+
+
+	public String getAdAdminUserName() {
+		return adAdminUserName;
+	}
+
+
+
+	public void setAdAdminUserName(String adAdminUserName) {
+		this.adAdminUserName = adAdminUserName;
 	}
 
 }

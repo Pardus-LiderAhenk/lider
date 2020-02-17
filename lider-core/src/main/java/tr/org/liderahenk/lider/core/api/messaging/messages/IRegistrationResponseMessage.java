@@ -79,5 +79,9 @@ public interface IRegistrationResponseMessage extends ILiderMessage {
 	public String getAdAdminPassword();
 
 	public void setAdAdminPassword(String adAdminPassword);
+	
+	public String getAdAdminUserName();
+
+	public void setAdAdminUserName(String adAdminUserName);
 
 }

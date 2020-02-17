@@ -186,6 +186,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 				respMessage.setAdHostName(configurationService.getAdHostName());
 				respMessage.setAdIpAddress(configurationService.getAdIpAddress());
 				respMessage.setAdAdminPassword(configurationService.getAdAdminPassword());
+				respMessage.setAdAdminUserName(configurationService.getAdAdminUserName());
 			}
 			
 			

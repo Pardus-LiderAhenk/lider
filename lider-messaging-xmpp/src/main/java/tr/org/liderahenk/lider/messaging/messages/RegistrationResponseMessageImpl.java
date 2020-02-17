@@ -64,6 +64,8 @@ public class RegistrationResponseMessageImpl implements IRegistrationResponseMes
 	private String adIpAddress;
 	
 	private String adAdminPassword;
+
+	private String adAdminUserName;
 	
 	private Date timestamp;
 
@@ -195,6 +197,14 @@ public class RegistrationResponseMessageImpl implements IRegistrationResponseMes
 
 	public void setAdAdminPassword(String adAdminPassword) {
 		this.adAdminPassword = adAdminPassword;
+	}
+
+	public String getAdAdminUserName() {
+		return adAdminUserName;
+	}
+
+	public void setAdAdminUserName(String adAdminUserName) {
+		this.adAdminUserName = adAdminUserName;
 	}
 
 }

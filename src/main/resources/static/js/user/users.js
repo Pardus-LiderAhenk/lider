@@ -12,7 +12,9 @@ $(document).ready(function(){
 	var selectedRowGen = null
 	var treeGridHolderDiv="treeGridUserHolderDiv"
 	
-	//create user tree check and uncheck action function
+	/*
+	 * create user tree select, check and uncheck action functions can be implemented if required
+	 */
 	createUserTree(treeGridHolderDiv, false, false,
 			// row select
 			function(row){
@@ -26,7 +28,7 @@ $(document).ready(function(){
 				
 			},
 			//uncheck action
-			function(checkedRows, row){
+			function(unCheckedRows, row){
 				
 			}
 	);
@@ -74,7 +76,7 @@ $(document).ready(function(){
 		);
 	});
 	
-	$('#btnOpenAddUserModal').on('click',function(event) {
+	$('#btnAddUserModal').on('click',function(event) {
 		getModalContent("modals/user/addUserModal", function content(data){
 				$('#genericModalLargeHeader').html("Kullanıcı Ekle")
 				$('#genericModalLargeBodyRender').html(data);
@@ -95,7 +97,7 @@ $(document).ready(function(){
 		);
 	});
 	
-	$('#btnOpenEditUserModal').on('click',function(event) {
+	$('#btnEditUserModal').on('click',function(event) {
 		getModalContent("modals//user/editUserModal", function content(data){
 				$('#genericModalHeader').html("Kullanıcı Düzenle")
 				$('#genericModalBodyRender').html(data);
@@ -115,7 +117,7 @@ $(document).ready(function(){
 		);
 	});
 	
-	$('#btnOpenDeleteUserModal').on('click',function(event) {
+	$('#btnDeleteUserModal').on('click',function(event) {
 		
 		getModalContent("modals/user/deleteUserModal", function content(data){
 				$('#genericModalHeader').html("Kullanıcı Sil")
@@ -129,7 +131,7 @@ $(document).ready(function(){
 		});
 	});
 	
-	$('#btnOpenChangePasswordUserModal').on('click',function(event) {
+	$('#btnChangePasswordUserModal').on('click',function(event) {
 		getModalContent("modals/user/changePasswordUserModal", function content(data){
 			$('#genericModalHeader').html("Parola Güncelle")
 			$('#genericModalBodyRender').html(data);
@@ -196,7 +198,7 @@ $(document).ready(function(){
 								    		  selectedPolicy=row
 								    	  }
 									}
-									var html = '<table class="table table-striped table-bordered " id="attrTable">';
+								var html='<table class="table">';
 									html += '<thead>';
 									html += '<tr>';
 									html += '<th style="width: 40%"></th>';
@@ -234,40 +236,43 @@ $(document).ready(function(){
 							        $("#policyDetail").html(html)
 								
 							});
-							
-							
-							$('#setPasswordPolicydBtn').on('click', function(event) {
-								
-								var selectedPasswordPolicy=$('#passwordPolicyList').val();
-								
-								var params = {
-										"passwordPolicy" :	selectedPasswordPolicy,
-										"dn" : selectedRowGen.distinguishedName
-								};
-								
-								$.ajax({
-									type : 'POST',
-									url : 'lider/user/setPasswordPolicy',
-									data : params,
-									dataType : 'json',
-									success : function(data) {
-										$.notify("Kullanıcıya Parola Politikası Atanmıştır", "success");
-										var selectedData = $("#treeGridUserHolderDivGrid").jqxTreeGrid('getRow', data.entryUUID);
-										selectedData.attributes = data.attributes
-										$("#treeGridUserHolderDivGrid").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
-										$("#treeGridUserHolderDivGrid").jqxTreeGrid('selectRow', data.entryUUID);
-										$('#genericModal').trigger('click');
-										
-									},
-									error: function (data, errorThrown) {
-										$.notify("Kullanıcı Parolası Güncellenirken Hata Oluştu.", "error");
-									}
-								});
-							});
-							
 						}
 						 
 					}
+				});
+				
+				$('#setPasswordPolicydBtn').on('click', function(event) {
+					
+					var selectedPasswordPolicy=$('#passwordPolicyList').val();
+					
+					var params = {
+							"passwordPolicy" :	selectedPasswordPolicy,
+							"dn" : selectedRowGen.distinguishedName
+					};
+					
+					$.ajax({
+						type : 'POST',
+						url : 'lider/user/setPasswordPolicy',
+						data : params,
+						dataType : 'json',
+						success : function(data) {
+							$.notify("Kullanıcıya Parola Politikası Atanmıştır", "success");
+							$('#genericModal').trigger('click');
+							var selectedData = $("#treeGridUserHolderDivGrid").jqxTreeGrid('getRow', selectedRowGen.entryUUID);
+							console.log(selectedData)
+							if(selectedData){
+								selectedData.attributes = data.attributes
+								$("#treeGridUserHolderDivGrid").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
+								$("#treeGridUserHolderDivGrid").jqxTreeGrid('selectRow', data.entryUUID);
+							}
+							
+							
+							
+						},
+						error: function (data, errorThrown) {
+							$.notify("Kullanıcı Parolası Güncellenirken Hata Oluştu.", "error");
+						}
+					});
 				});
 		});
 	});
@@ -452,13 +457,13 @@ function updateUserPassword(userId) {
 
 function hideUserButtons(){
 	$("#btnEditUserModal").hide();
-	$("#btnOpenDeleteUserModal").hide();
-	$("#btnOpenEditUserModal").hide();
-	$("#btnOpenChangePasswordUserModal").hide();
+	$("#btnDeleteUserModal").hide();
+	$("#btnEditUserModal").hide();
+	$("#btnChangePasswordUserModal").hide();
 	$("#btnSetPasswordPolicyModal").hide();
 	$("#btnAddOuModal").hide();
 	$("#btnAddOuModal").hide();
-	$("#btnOpenAddUserModal").hide();
+	$("#btnAddUserModal").hide();
 	  
 }
 function hideOuButtons(){
@@ -470,34 +475,39 @@ function showOuButtons(){
 }
 function showUserButtons(){
 	$("#btnEditUserModal").show();
-	$("#btnOpenDeleteUserModal").show();
-	$("#btnOpenEditUserModal").show();
-	$("#btnOpenChangePasswordUserModal").show();
+	$("#btnDeleteUserModal").show();
+	$("#btnEditUserModal").show();
+	$("#btnChangePasswordUserModal").show();
 	$("#btnSetPasswordPolicyModal").show();
 	
 }
 function setUserActionButtons(row){
 	
 	if(row.type =="USER"){
-		$("#btnOpenEditUserModal").show();
-		$("#btnOpenChangePasswordUserModal").show();
+		$("#btnEditUserModal").show();
+		$("#btnChangePasswordUserModal").show();
 		$("#btnSetPasswordPolicyModal").show();
-		$("#btnOpenDeleteUserModal").show();
+		$("#btnDeleteUserModal").show();
+		$("#btnMoveUserModal").show();
 		
 		$("#btnDeleteOuModal").hide();
 		$("#btnAddOuModal").hide();
-		$("#btnOpenAddUserModal").hide();
+		$("#btnAddUserModal").hide();
+		$("#btnMoveOuModal").hide();
 	  }
 	  else if(row.type =="ORGANIZATIONAL_UNIT"){
-		  $("#btnOpenEditUserModal").hide();
-		  $("#btnOpenChangePasswordUserModal").hide();
+		  
+		  $("#btnEditUserModal").hide();
+		  $("#btnChangePasswordUserModal").hide();
 		  $("#btnSetPasswordPolicyModal").hide();
-		  $("#btnOpenDeleteUserModal").hide();
+		  $("#btnDeleteUserModal").hide();
+		  $("#btnMoveUserModal").hide();
 		  
 		  $("#btnAddOuModal").show();
 		  
 		  $("#btnDeleteOuModal").show();
-		  $("#btnOpenAddUserModal").show();
+		  $("#btnAddUserModal").show();
+		  $("#btnMoveOuModal").show();
 	  }
 	
 }
@@ -521,6 +531,7 @@ function fillEntryDetail2Table(row){
             		|| (key =="telephoneNumber") 
             		|| (key =="entryDN") 
             		|| (key =="pwdPolicySubentry") 
+            		|| (key =="entryUUID") 
             		){
 	                	html += '<tr>';
 	                	var keyStr="";

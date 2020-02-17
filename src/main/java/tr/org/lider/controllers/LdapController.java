@@ -131,8 +131,6 @@ public class LdapController {
 		return retList;
 	}
 
-	
-
 	@RequestMapping(value = "/getComputers")
 	public List<LdapEntry> getComputers() {
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
@@ -384,5 +382,24 @@ public class LdapController {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	/**
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST ,value = "/searchEntry", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<LdapEntry> searchEntry(@RequestParam(value="key", required=true) String key, 
+			@RequestParam(value="value", required=true) String value) {
+		
+		List<LdapEntry> results=null;
+		try {
+			results = ldapService.search(key, value, new String[] {"*"});
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return results ;
 	}
 }

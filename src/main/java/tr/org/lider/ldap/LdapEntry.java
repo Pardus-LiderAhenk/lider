@@ -69,13 +69,35 @@ public class LdapEntry implements Serializable{
 	 * @param attributes
 	 * @param type
 	 */
-	public LdapEntry(String dn, Map<String, String> attributes, DNType type) {
+	public LdapEntry(String dn, Map<String, String> attributes,  Map<String, String[]> attributesMultiValues,List<String> priviliges,  DNType type) {
 		this.distinguishedName = dn;
 		this.name = dn;
 		this.attributes = attributes;
+		this.attributesMultiValues = attributesMultiValues;
 		this.type = type;
+		this.priviliges=priviliges;
+		setAttributesToFields(attributes);
 	}
-
+	
+	/**
+	 * set 
+	 * @param attributes
+	 */
+	private void setAttributesToFields(Map<String, String> attributes) {
+		setEntryUUID(getAttributes().get("entryUUID"));
+		setHasSubordinates(getAttributes().get("hasSubordinates"));
+		setOu(getAttributes().get("ou"));
+		setCn(getAttributes().get("cn"));
+		setSn(getAttributes().get("sn"));
+		setUid(getAttributes().get("uid"));
+		setO(getAttributes().get("o"));
+		setUserPassword(getAttributes().get("userPassword"));
+		setExpandedUser("FALSE");
+		
+		setName( (getAttributes().get("ou")!=null &&  !getAttributes().get("ou").equals("")) 
+				? getAttributes().get("ou") : getAttributes().get("cn")!=null &&  !getAttributes().get("cn").equals("") 
+				? getAttributes().get("cn") : getAttributes().get("o") );
+	}
 	/**
 	 * 
 	 * @return

@@ -581,7 +581,7 @@ public class LDAPServiceImpl implements ILDAPService {
 						logger.error("Cannot find attribute: {} in entry: {}", new Object[] { attr, entry.getDn() });
 					}
 				}
-				return new LdapEntry(entryDn, attributes, convertObjectClass2DNType(entry.get("objectClass")));
+				return new LdapEntry(entryDn, attributes,null,null, convertObjectClass2DNType(entry.get("objectClass")));
 			} else {
 				return null;
 			}
@@ -658,7 +658,7 @@ public class LDAPServiceImpl implements ILDAPService {
 				requestAttributeSet.addAll(Arrays.asList(returningAttributes));
 			}
 			req.addAttributes(requestAttributeSet.toArray(new String[requestAttributeSet.size()]));
-
+			req.addAttributes("+");
 			// Construct filter expression
 			String searchFilterStr = "(&";
 			for (LdapSearchFilterAttribute filterAttr : filterAttributes) {
@@ -684,8 +684,39 @@ public class LDAPServiceImpl implements ILDAPService {
 							attrs.put(attr, entry.get(attr) != null ? entry.get(attr).getString() : "");
 						}
 					}
-					result.add(new LdapEntry(entry.getDn().toString(), attrs,
-							convertObjectClass2DNType(entry.get("objectClass"))));
+					List<String> priviliges=null;
+					if (null != entry.get("liderPrivilege")) {
+						
+						priviliges=new ArrayList<>();
+						Iterator<Value<?>> iter2 = entry.get("liderPrivilege").iterator();
+						while (iter2.hasNext()) {
+							String privilege = iter2.next().getValue().toString();
+							priviliges.add(privilege);
+						}
+					} else {
+						logger.debug("No privilege found in group => {}", entry.getDn());
+					}
+					
+					for (Iterator iterator = entry.getAttributes().iterator(); iterator.hasNext();) {
+						Attribute attr = (Attribute) iterator.next();
+						String attrName= attr.getUpId();
+						String value=attr.get().getString();
+
+						if(attr.size() > 1) {
+							Iterator<Value<?>> iter2 = entry.get(attrName).iterator();
+							String [] values = new String[attr.size()];
+							int counter = 0;
+							while (iter2.hasNext()) {
+								value = iter2.next().getValue().toString();
+								values[counter++] = value;
+							}
+							attributesMultiValues.put(attrName, values);
+						} else {
+							attrs.put(attrName, value);
+							attributesMultiValues.put(attrName, new String[] {value});
+						}
+					}
+					result.add(new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, priviliges,	convertObjectClass2DNType(entry.get("objectClass"))));
 				}
 			}
 		} catch (Exception e) {
@@ -694,7 +725,6 @@ public class LDAPServiceImpl implements ILDAPService {
 		} finally {
 			releaseConnection(connection);
 		}
-
 		return result;
 	}
 
@@ -718,14 +748,18 @@ public class LDAPServiceImpl implements ILDAPService {
 		return search(configurationService.getLdapRootDn(), filterAttributes, returningAttributes);
 	}
 	
+	/**
+	 * 
+	 */
 	@Override
 	public List<LdapEntry> findSubEntries(String filter, String[] returningAttributes,SearchScope scope) throws LdapException {
 		
 		return	findSubEntries(configurationService.getLdapRootDn(), filter, returningAttributes, scope);
 	}
 	
-	
-	
+	/**
+	 * 
+	 */
 	@Override
 	public List<LdapEntry> findSubEntries(String dn, String filter, String[] returningAttributes,SearchScope scope) throws LdapException {
 		List<LdapEntry> result = new ArrayList<LdapEntry>();
@@ -799,32 +833,8 @@ public class LDAPServiceImpl implements ILDAPService {
 						}
 					}
 					
-					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs, convertObjectClass2DNType(entry.get("objectClass")));
+					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, priviliges,convertObjectClass2DNType(entry.get("objectClass")));
 					
-					//ldapEntry.setParent(dn);
-					
-					ldapEntry.setEntryUUID(ldapEntry.getAttributes().get("entryUUID"));
-					ldapEntry.setHasSubordinates(ldapEntry.getAttributes().get("hasSubordinates"));
-					
-					ldapEntry.setOu(ldapEntry.getAttributes().get("ou"));
-					ldapEntry.setCn(ldapEntry.getAttributes().get("cn"));
-					ldapEntry.setSn(ldapEntry.getAttributes().get("sn"));
-					ldapEntry.setUid(ldapEntry.getAttributes().get("uid"));
-					ldapEntry.setO(ldapEntry.getAttributes().get("o"));
-					ldapEntry.setUserPassword(ldapEntry.getAttributes().get("userPassword"));
-					ldapEntry.setExpandedUser("FALSE");
-					
-					ldapEntry.setName( (ldapEntry.getAttributes().get("ou")!=null &&  !ldapEntry.getAttributes().get("ou").equals("")) 
-							? ldapEntry.getAttributes().get("ou") : ldapEntry.getAttributes().get("cn")!=null &&  !ldapEntry.getAttributes().get("cn").equals("") 
-							? ldapEntry.getAttributes().get("cn") : ldapEntry.getAttributes().get("o") );
-					if(ldapEntry.getType()==DNType.AHENK) {
-						ldapEntry.setOnline(xmppClientImpl.isRecipientOnline(ldapEntry.getUid()));
-					}
-					
-					if(priviliges!=null) {
-						ldapEntry.setPriviliges(priviliges);
-					}
-					ldapEntry.setAttributesMultiValues(attributesMultiValues);
 					result.add(ldapEntry);
 				}
 			}
@@ -1231,7 +1241,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		
 		List<LdapEntry> allGorups = null;
 		
-		LdapEntry groupDn= new LdapEntry("Gruplar",null,DNType.ORGANIZATIONAL_UNIT);
+		LdapEntry groupDn= new LdapEntry("Gruplar",null,null,null,DNType.ORGANIZATIONAL_UNIT);
 	
 		try {
 			String globalUserOu =  configurationService.getLdapRootDn(); 

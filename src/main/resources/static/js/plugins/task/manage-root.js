@@ -1,17 +1,16 @@
 /**
- * Task is manage-root task
- * This task changes the client's root password.
- * Tuncay ÇOLAK
- * tuncay.colak@tubitak.gov.tr
- * 
- * http://www.liderahenk.org/
- * 
+ *  manage-root
+ *  This task changes the client's root password.
+ *  Tuncay ÇOLAK
+ *  tuncay.colak@tubitak.gov.tr
+
+ *  http://www.liderahenk.org/ 
  */
 
 if (ref) {
 	connection.deleteHandler(ref);
 }
-
+scheduledParam = null;
 var ref=connection.addHandler(manageRootListener, null, 'message', null, null,  null);
 
 $("#entrySize").html(selectedEntries.length);		
@@ -43,28 +42,49 @@ function contains(rootPassword, allowedChars) {
 	return false;
 }
 
-function setRootPassword(params){
-	$.ajax({
-		type: "POST",
-		url: "/lider/task/execute",
-		headers: {
-			'Content-Type':'application/json',
-		}, 
-		data: params,
-		contentType: "application/json",
-		dataType: "json",
-		converters: {
-			'text json': true
-		}, 
-		success: function(result) {
-			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){
-				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
-			}   	
-			/* $('#closePage').click(); */
-		},
-		error: function(result) {
-			$.notify(result, "error");
+function sendRootTask(params) {
+	var content = "Görev Gönderilecek, emin misiniz?";
+	if (scheduledParam != null) {
+		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+	}
+	$.confirm({
+		title: 'Uyarı!',
+		content: content,
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+				var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
+				if (scheduledParam != null) {
+					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+				}
+
+				$.ajax({
+					type: "POST",
+					url: "/lider/task/execute",
+					headers: {
+						'Content-Type':'application/json',
+					}, 
+					data: params,
+					contentType: "application/json",
+					dataType: "json",
+					converters: {
+						'text json': true
+					}, 
+					success: function(result) {
+						var res = jQuery.parseJSON(result);
+						if(res.status=="OK"){
+							$("#plugin-result").html(message.bold());
+						}   	
+						/* $('#closePage').click(); */
+					},
+					error: function(result) {
+						$.notify(result, "error");
+					}
+				});
+				scheduledParam = null;
+			},
+			Hayır: function () {
+			}
 		}
 	});
 }
@@ -112,10 +132,11 @@ $('#generateRootPassword').click(function(e){
 		var splCharsFlag2 = contains(pwd, splChars);
 	}
 	$("#inputRootPassword").val(pwd);
+	$("#inputRootPasswordConfirm").val(pwd);
 });
 
 function generatePassword(){
-	var length = 12; //root password min length
+	var length = 8; //root password min length
 	var chars = "abcdefghijklmnopqrstuvwxyz+=.@*!ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	var password = "";
 	for (var x = 0; x < length; x++) {
@@ -127,13 +148,16 @@ function generatePassword(){
 
 $('#lockRootUserButton').click(function(e){
 	if($(this).is(':checked')){
-		$("#inputRootPassword").prop("readonly", true);
+		$("#inputRootPassword").prop("disabled", true);
+		$("#inputRootPasswordConfirm").prop("disabled", true);
 		$("#generateRootPassword").prop('disabled', true);
 		$("#inputRootPassword").val("");
+		$("#inputRootPasswordConfirm").val("");
 		lockRootUser = true;
 	}
 	else{
-		$("#inputRootPassword").prop("readonly", false);
+		$("#inputRootPassword").prop("disabled", false);
+		$("#inputRootPasswordConfirm").prop("disabled", false);
 		$("#generateRootPassword").prop('disabled', false);
 		lockRootUser = "";
 	}
@@ -143,32 +167,34 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	var entry=onlineEntryList[0];
 	var rootEntity = entry.jid;
 	rootPassword = $("#inputRootPassword").val();
+	rootPasswordConfirm = $("#inputRootPasswordConfirm").val();
 	selectedPluginTask.commandId = "SET_ROOT_PASSWORD";
 	selectedPluginTask.parameterMap={"RootPassword":rootPassword, "lockRootUser":lockRootUser, "rootEntity":rootEntity};
+	selectedPluginTask.cronExpression = scheduledParam;
 	var params = JSON.stringify(selectedPluginTask);
 	if(lockRootUser != true){
 		var ucaseFlag = contains(rootPassword, upperCase);
 		var lcaseFlag = contains(rootPassword, lowerCase);
 		var digitsFlag = contains(rootPassword, digits);
 		var splCharsFlag = contains(rootPassword, splChars);
-		if(rootPassword.length>=12 && ucaseFlag && lcaseFlag && digitsFlag && splCharsFlag){
-			setRootPassword(params);
+		if(rootPassword.length>=8 && ucaseFlag && lcaseFlag && digitsFlag && splCharsFlag){
+			if (rootPassword == rootPasswordConfirm) {
+				sendRootTask(params);
+			}else {
+				$.notify("Parola uyuşmamaktadır.","warn");
+			}
 		}
 		else{
-			$.notify("Parola en az 12 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
+			$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
 		}
 	}
 	else{
-		setRootPassword(params);
+		sendRootTask(params);
 	}
 });
 
-//scheduled task to be added 
-$('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
-	alert("Zamanlı Çalıştır")
-});
-
 $('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);	
+	connection.deleteHandler(ref);
+	scheduledParam = null;
 });
 

@@ -6,43 +6,50 @@
 <script type="text/javascript" src="js/plugins/task/manage-root.js"></script>
 </head>
 <body>
-	<div class="form-group form-check">
-	<div>
-	    <input type="checkbox" class="form-check-input" id="lockRootUserButton">
-	    <label class="form-check-label" for="lockRootUserButton">Root Kullanıcısını Kilitle</label>
-	 </div>
-	 <small id="passwordHelpInline" class="text-muted">
-      		Root Kullanıcısı, Root Parola Yönetimi eklentisinden tekrar parola verilene kadar istemcide kullanılamaz.
-    </small>
-    </div>
-   	<div class="login-form-1">
-		<div class="input-group">
-		  <div class="input-group-prepend">
-		    <span class="input-group-text">Root Parolası Tanımla</span>
-		  </div>
-		  <input type="text" id="inputRootPassword" class="form-control" placeholder="Parola...">
-		  <div class="input-group-append">
-   			 <button id=generateRootPassword type="button" class="btn-shadow btn btn-info" title="Parola Oluştur"><i class="fa fa-undo"></i> Parola Oluştur</button>
-  		  </div>
-		</div>
-	    <small id="passwordHelpInline" class="text-muted">
-      		Parolanız en az 12 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir. İzin verilen özel karakterler: +=.@*!
-    	</small>
-		<br><br>
-		<div id="plugin-result"></div>
-		<br><br>
-    	<div class="row">
-			<div class="col-lg-7">
-			<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-				<button id=sendTask-manage-root type="button" class="btn-shadow btn btn-info" title="Çalıştır"><i class="fa fa-play"></i> Çalıştır</button>
-				<button id=sendTaskCron-manage-root type="button" class="btn-shadow btn btn-info" title="Zamanlı Çalıştır"><i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır</button>
+	<div class="login-form-1">
+		<div class="login-group">
+			<div class="form-group form-check">
+				<div>
+					<input type="checkbox" class="form-check-input"
+						id="lockRootUserButton"> <label class="form-check-label"
+						for="lockRootUserButton">Root Kullanıcısını Kilitle</label>
+				</div>
+				<small id="passwordHelpInline" class="text-muted"> Root	Kullanıcısı, Root Parola Yönetimi eklentisinden tekrar parola verilene kadar istemcide kullanılamaz. </small>
 			</div>
-			<div class="col-lg-5 text-right">
-<!-- 			ids of the following buttons must be closePage-{plugin-page} -->
-				<button id=closePage-manage-root type="button" class="btn-shadow btn btn-info" data-dismiss="modal" title="Kapat"><i class="fa fa-window-close"></i> Kapat</button>
+			<div class="form-group row">
+				<label for="inputSchedule" class="col-sm-3 col-form-label">Yeni	Root Parolası</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" id="inputRootPassword" placeholder="Parola...">
+				</div>
+			</div>
+			<div class="form-group row">
+				<label for="inputSchedule" class="col-sm-3 col-form-label">Root Parolasını Onayla</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control"	id="inputRootPasswordConfirm" placeholder="Parola..."> 
+					<small id="passwordHelpInline" class="text-muted"> Parolanız en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve	karakter içermelidir. İzin verilen özel karakterler: +=.@*! </small>
+				</div>
+			</div>
+			<div class="text-right">
+				<button id=generateRootPassword type="button"
+					class="btn-shadow btn btn-info">
+					<i class="fa fa-undo"></i> Parola Oluştur
+				</button>
+			</div>
+			<br>
+			<div id="plugin-result"></div>
+			<br><br>
+			<div class="row">
+				<div class="col-lg-7">
+					<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+					<button id=sendTask-manage-root type="button" class="btn-shadow btn btn-info" title="Çalıştır"><i class="fa fa-play"></i> Çalıştır</button>
+					<button id=sendTaskCron-manage-root type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri" data-toggle="modal" data-target="#scheduledTasksModal"><i class="fa fa-hourglass-start"></i> Görev Parametreleri</button>
+				</div>
+				<div class="col-lg-5 text-right">
+					<!-- ids of the following buttons must be closePage-{plugin-page} -->
+					<button id=closePage-manage-root type="button" class="btn-shadow btn btn-info" data-dismiss="modal" title="Kapat"><i class="fa fa-window-close"></i> Kapat</button>
+				</div>
 			</div>
 		</div>
-    	
 	</div>
 </body>
 </html>

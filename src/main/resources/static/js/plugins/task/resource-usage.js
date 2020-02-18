@@ -10,22 +10,28 @@
 if (ref) {
 	connection.deleteHandler(ref);
 }
-
+scheduledParam=null;
 var ref=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
 $("#entrySize").html(selectedEntries.length);
 var dnlist=[]
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
 }
-selectedPluginTask.dnList=dnlist;
-selectedPluginTask.parameterMap={};
-selectedPluginTask.entryList=selectedEntries;
-selectedPluginTask.dnType="AHENK";
 
-var params = JSON.stringify(selectedPluginTask);
 getResourceUsage();
 
 function getResourceUsage(){
+	selectedPluginTask.dnList=dnlist;
+	selectedPluginTask.parameterMap={};
+	selectedPluginTask.entryList=selectedEntries;
+	selectedPluginTask.dnType="AHENK";
+	selectedPluginTask.cronExpression = scheduledParam;
+	var params = JSON.stringify(selectedPluginTask);
+	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
+	if (scheduledParam != null) {
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri: "+ scheduledParam;
+	}
+
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -41,7 +47,7 @@ function getResourceUsage(){
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
 			if(res.status=="OK"){
-				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
+				$("#plugin-result").html(message.bold());
 			}   	
 			/* $('#closePage').click(); */
 		},
@@ -52,7 +58,23 @@ function getResourceUsage(){
 }
 
 $('#sendTask-'+ selectedPluginTask.page).click(function(e){
-	getResourceUsage();
+	var content = "Görev Gönderilecek, emin misiniz?";
+	if (scheduledParam != null) {
+		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+	}
+	$.confirm({
+		title: 'Uyarı!',
+		content: content,
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+				getResourceUsage();
+				scheduledParam=null;
+			},
+			Hayır: function () {
+			}
+		}
+	});
 });
 
 function resourceUsageListener(msg) {
@@ -105,10 +127,7 @@ function resourceUsageListener(msg) {
 	return true;
 }
 
-$('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
-	alert("Zamanlı Çalıştır")
-});
-
 $('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);	
+	connection.deleteHandler(ref);
+	scheduledParam=null;
 });

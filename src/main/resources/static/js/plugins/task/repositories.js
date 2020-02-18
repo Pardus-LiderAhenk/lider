@@ -1,5 +1,5 @@
 /**
- * Task is packages-sources and repositories
+ * packages-sources and repositories
  * This task get REPOSITORIES from agents. This task is used add and delete repository 
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
@@ -11,13 +11,14 @@
 if (ref) {
 	connection.deleteHandler(ref);
 }
-
-var ref=connection.addHandler(repositoryListener, null, 'message', null, null,  null);
-$("#entrySize").html(selectedEntries.length);
+scheduledParam = null;
 var deletedItems = [];
 var addedItems = [];
 var dnlist = []
 var table;
+
+var ref=connection.addHandler(repositoryListener, null, 'message', null, null,  null);
+$("#entrySize").html(selectedEntries.length);
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -33,12 +34,17 @@ getRepositories()
 function getRepositories() {
 	selectedPluginTask.commandId = "REPOSITORIES";
 	selectedPluginTask.parameterMap={};
+	selectedPluginTask.cronExpression = scheduledParam;
 	var params = JSON.stringify(selectedPluginTask);
 	sendRepositoryTask(params);
 }
 
 function sendRepositoryTask(params){
-
+	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
+	if (scheduledParam != null) {
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+	}
+	
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -54,7 +60,7 @@ function sendRepositoryTask(params){
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
 			if(res.status=="OK"){		    		
-				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
+				$("#plugin-result").html(message.bold());
 			}   	
 		},
 		error: function(result) {
@@ -99,7 +105,7 @@ function repositoryListener(msg) {
 				createTable();
 				$("#plugin-result").html("");
 				$.notify(responseMessage, "success");
-				$('#repository-info').html('<small style="color:red;">Silmek istediğiniz repo/ları seçerek Sil butonunda tıklayınız. Depo eklemek için Depo Adresi tanımlayarak Ekle butonuna tıklayınız. Çalıştır ya da Zamanlı Çalıştır butonuna tıklayarak Sil ve/veya Ekle görevini gönderiniz.</small>');
+				$('#repository-info').html('<small style="color:red;">Silmek istediğiniz repo/ları seçerek Sil butonunda tıklayınız. Depo eklemek için Depo Adresi tanımlayarak Ekle butonuna tıklayınız. Çalıştır butonuna tıklayarak Sil ve/veya Ekle görevini gönderiniz.</small>');
 
 			}else {
 				createTable();
@@ -135,7 +141,6 @@ function createTable() {
 			"sInfoFiltered": " - _MAX_ depo arasından",
 		},
 	} );
-
 }
 
 $('#deleteRepo').click(function(e){
@@ -194,25 +199,35 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 		// commandId is PACKAGE_SOURCES. This command id is used to add and delete repositories
 		selectedPluginTask.commandId = "PACKAGE_SOURCES";  		
 		selectedPluginTask.parameterMap={"deletedItems":deletedItems, "addedItems":addedItems};
+		selectedPluginTask.cronExpression = scheduledParam;
 		var params = JSON.stringify(selectedPluginTask);
-		sendRepositoryTask(params);
-		deletedItems = [];
-		addedItems = [];
+
+		var content = "Görev Gönderilecek, emin misiniz?";
+		if (scheduledParam != null) {
+			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+		}
+		$.confirm({
+			title: 'Uyarı!',
+			content: content,
+			theme: 'light',
+			buttons: {
+				Evet: function () {
+					sendRepositoryTask(params);
+					deletedItems = [];
+					addedItems = [];
+					scheduledParam = null;
+				},
+				Hayır: function () {
+				}
+			}
+		});
 	}
 	else{
-		$.notify("Lütfen Ekle veya Sil işleminden sonra Çalıştır butonuna tıklayınız.","warn");
-	}
-});
-
-$('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
-	if (addedItems.length != 0 || deletedItems.length != 0) {
-		alert("Zamanlı Çalıştır");
-	} 
-	else {
-		$.notify("Lütfen Ekle veya Sil işleminden sonra Zamanlı Çalıştır butonuna tıklayınız.","warn");
+		$.notify("Lütfen Ekle ve/veya Sil işleminden sonra Çalıştır butonuna tıklayınız.","warn");
 	}
 });
 
 $('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);	
+	connection.deleteHandler(ref);
+	scheduledParam = null;
 });

@@ -1,5 +1,5 @@
 /**
- * Task is packages task
+ * Packages
  * This task used to install applications from the other package repository
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
@@ -11,7 +11,7 @@
 if (ref) {
 	connection.deleteHandler(ref);
 }
-
+scheduledParam = null;
 var ref=connection.addHandler(packagesListener, null, 'message', null, null,  null);
 
 $("#entrySize").html(selectedEntries.length);		
@@ -34,7 +34,7 @@ $('#getPackagesListBtn').click(function(e){
 			"url": $('#repoUrl').val(),
 			"component": $('#repoComponent').val(),
 	};
-	$("#plugin-result").html("Görev gönderildi.. Lütfen bekleyiniz...");
+	$("#plugin-result").html("Görev gönderildi.. Lütfen bekleyiniz...".bold());
 	getPackagesList(params);
 });
 
@@ -60,7 +60,7 @@ function getPackagesList(params){
 						+ '</span>'
 						+ '</td>';
 					var toogle_btn_tag = '<select onchange="selectTagPackage(this)" disabled class="custom-select selectTag" id="' + name +'" name="'+ version +'">'
-					+ '<option selected>İşlem Seç</option>'
+					+ '<option value="NA" selected>İşlem Seç</option>'
 					+ '<option value="Install">Yükle</option>'
 					+ '<option value="Uninstall">Kaldır</option>'
 					+ '</select>';
@@ -214,6 +214,7 @@ function packageChecked() {
 		}else if(!$(this).is(':checked')){
 			pName = $(this).val();
 			pVersion = $(this).attr('id');
+			$("#"+pName).val("NA").change();
 			$("#"+pName).prop('disabled', true);
 			var status = checkPackageListInfo(pName, pVersion, null);
 			if (status == true) {
@@ -249,32 +250,61 @@ function removePackageList(pName, pVersion) {
 	}
 }
 
+
+function sendPackagesTask(params) {
+	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
+	if (scheduledParam != null) {
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+	}
+
+	$.ajax({
+		type: "POST",
+		url: "/lider/task/execute",
+		headers: {
+			'Content-Type':'application/json',
+		},
+		data: params,
+		contentType: "application/json",
+		dataType: "json",
+		converters: {
+			'text json': true
+		},
+		success: function(result) {
+			var res = jQuery.parseJSON(result);
+			if(res.status=="OK"){		    		
+				$("#plugin-result").html(message.bold());
+			}   	
+		},
+		error: function(result) {
+			$.notify(result, "error");
+		}
+	});
+}
+
 $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	if (packageInfoList.length > 0) {
 		selectedPluginTask.commandId = "PACKAGES";
 		selectedPluginTask.parameterMap={"packageInfoList":packageInfoList};
+		selectedPluginTask.entryList=selectedEntries;
+		selectedPluginTask.dnType="AHENK";
+		selectedPluginTask.cronExpression = scheduledParam;
 		var params = JSON.stringify(selectedPluginTask);
 
-		$.ajax({
-			type: "POST",
-			url: "/lider/task/execute",
-			headers: {
-				'Content-Type':'application/json',
-			},
-			data: params,
-			contentType: "application/json",
-			dataType: "json",
-			converters: {
-				'text json': true
-			},
-			success: function(result) {
-				var res = jQuery.parseJSON(result);
-				if(res.status=="OK"){		    		
-					$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
-				}   	
-			},
-			error: function(result) {
-				$.notify(result, "error");
+		var content = "Görev Gönderilecek, emin misiniz?";
+		if (scheduledParam != null) {
+			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+		}
+		$.confirm({
+			title: 'Uyarı!',
+			content: content,
+			theme: 'light',
+			buttons: {
+				Evet: function () {
+					sendPackagesTask(params);
+					scheduledParam = null;
+				},
+				Hayır: function () {
+				}
 			}
 		});
 	}
@@ -283,12 +313,7 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	}
 });
 
-//scheduled task to be added 
-$('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
-	alert("Zamanlı Çalıştır")
-});
-
 $('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);	
+	connection.deleteHandler(ref);
+	scheduledParam = null;
 });
-

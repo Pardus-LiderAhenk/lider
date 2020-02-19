@@ -365,6 +365,7 @@ public class LdapController {
 			@RequestParam(value="destinationDN", required=true) String destinationDN) {
 		try {
 			ldapService.moveEntry(sourceDN, destinationDN);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -391,12 +392,16 @@ public class LdapController {
 	 * @return
 	 */
 	@RequestMapping(method=RequestMethod.POST ,value = "/searchEntry", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<LdapEntry> searchEntry(@RequestParam(value="key", required=true) String key, 
+	public List<LdapEntry> searchEntry(
+			@RequestParam(value="searchDn", required=true) String searchDn,
+			@RequestParam(value="key", required=true) String key, 
 			@RequestParam(value="value", required=true) String value) {
 		
 		List<LdapEntry> results=null;
 		try {
-			results = ldapService.search(key, value, new String[] {"*"});
+			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+			filterAttributes.add(new LdapSearchFilterAttribute(key, value, SearchFilterEnum.EQ));
+			results = ldapService.search(searchDn,filterAttributes, new String[] {"*"});
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}

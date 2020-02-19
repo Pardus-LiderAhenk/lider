@@ -277,9 +277,7 @@ function loadComputersTree(data){
 		if(rowData.online){
 			return 'green';
 		}
-		else{
-			return 'white';
-		}
+		
 //		if (rowData.online) {
 //		return 'green';
 //		}
@@ -306,7 +304,6 @@ function loadComputersTree(data){
 				source: dataAdapter,
 				altRows: true,
 				sortable: true,
-				theme :"Orange",
 				columnsResize: true,
 				filterable: true,
 				hierarchicalCheckboxes: true,
@@ -322,7 +319,7 @@ function loadComputersTree(data){
 					if(dataRow.type == "AHENK"){
 						return "img/linux.png";
 					}
-					else return "img/entry_org.gif";
+					else return "img/folder.png";
 				},
 				ready: function () {
 
@@ -355,6 +352,15 @@ function loadComputersTree(data){
 					]
 			});
 
+	$('#treegrid').on('rowSelect', function (event) {
+	        var args = event.args;
+		    var row = args.row;
+		    var name= row.name;
+		    
+		    addSelectedEntryToTable(row);
+
+	});
+	
 	$('#treegrid').on('rowExpand', function (event) {
 		var args = event.args;
 		var row = args.row;
@@ -1150,4 +1156,16 @@ function addNewGroup() {
 			$.notify("Error occured while adding new group. Group Name " + $('input[name=groupName]').val() + " could not be added.", "error");
 		}
 	});
+}
+
+function addSelectedEntryToTable(row){
+	
+	if(row.type=="AHENK"){
+		var tableRow="<tr> <td> </td> <td> "+row.name+ "</td> <td> "+row.distinguishedName+ "</td> </tr>";
+		
+		$("#selectedAgentTable tbody").append(tableRow);
+	}
+	
+	
+	
 }

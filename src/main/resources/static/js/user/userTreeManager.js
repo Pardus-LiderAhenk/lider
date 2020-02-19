@@ -6,22 +6,23 @@
  * @param callback
  * @returns
  */
-function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
-	
-	var srcInputId= treeHolderDiv+"srcInput";
-	var srcBtnId= treeHolderDiv+"srcBtn";
-		
-	$('#'+treeHolderDiv).append('<div id="searchDiv" class="pull-right"> <input type="text" id='+srcInputId+' /> <button id='+srcBtnId+' > Ara </button> </div>')
-	
-	$('#'+srcBtnId).on('click', function (event) {
-		alert($('#'+srcInputId).val())
-	});
-	
+
+function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
+	var rootDNUser = null;
+	var treeGridId=treeHolderDiv+"Grid";
+	/**
+	 * create search area
+	 */
+	createUserSearch(treeHolderDiv,treeGridId,showOnlyFolder);
+	/**
+	 * get root dn for user and set treegrid tree
+	 */
 	$.ajax({
 		type : 'POST',
 		url : 'lider/user/getUsers',
 		dataType : 'json',
 		success : function(data) {
+			rootDNUser = null;
 			 var source =
 			  {
 			      dataType: "json",
@@ -48,8 +49,10 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowSelectAction,
 			      localData: data,
 			      id: "entryUUID"
 			  };
+			 
+			 rootDNUser = source.localData[0].entryUUID;
 //			 	$("#treeGridUser").jqxTreeGrid('destroy');
-			 	var treeGridId=treeHolderDiv+"Grid"
+			 	
 			 	$('#'+treeHolderDiv).append('<div id="'+treeGridId+'"></div> ')
 				
 				var dataAdapter = new $.jqx.dataAdapter(source, {
@@ -64,7 +67,6 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowSelectAction,
 				}
 				 // create jqxTreeGrid.
 				 $('#'+treeGridId).jqxTreeGrid({
-					 theme :"Orange",
 					 width: '100%',
 					 source: dataAdapter,
 				     altRows: true,
@@ -89,16 +91,18 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowSelectAction,
 				    	},
 				     ready: function () {
 				    	 var allrows =$('#'+treeGridId).jqxTreeGrid('getRows');
+				    	 var main=null
 				    	 if(allrows.length==1){
 				    		 var row=allrows[0];
 				    		 if(row.childEntries==null ){
 				    			 $('#'+treeGridId).jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
+				    			 main=row.entryUUID
 				    		 }
 				    	 }
 				    	 $('#'+treeGridId).jqxTreeGrid('collapseAll');
 				     },
 				     rendered: function () {
-				   	},
+				   	 },
 				     columns: [
 				       { text: "Kullanıcılar", align: "center", dataField: "name", width: '100%' }
 				     ]
@@ -108,7 +112,7 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowSelectAction,
 				        var args = event.args;
 					    var row = args.row;
 					    var name= row.name;
-					    rowSelectAction(row)
+					    rowSelectAction(row,rootDNUser);
 
 				    });
 				 
@@ -146,7 +150,7 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowSelectAction,
 							  } 
 						      
 						      var urlPath=""
-						      if(disableUsers){
+						      if(showOnlyFolder){
 						    	  urlPath= 'lider/ldap/getOu'; 
 						      }
 						      else{
@@ -176,4 +180,87 @@ function createUserTree(treeHolderDiv,disableUsers,useCheckBox, rowSelectAction,
 					 }); 
 		}
 	});
+}
+
+function createUserSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
+	
+	var srcInputId= treeHolderDiv+"srcInput";
+	var srcBtnId= treeHolderDiv+"srcBtn";
+	var srcSelectId= treeHolderDiv+"srcSelect";
+	var searchHtml=	
+			' <div class="input-group"> '+
+			'    <div class="input-group-prepend">  '+
+			'       <select class="form-control " style="font-family: cursive; font-size: 12px;" id="'+srcSelectId+'" > ';
+	       
+		   if(showOnlyFolder==false){
+				searchHtml +='<option selected value="uid"> ID </option> '+
+						'<option value="cn"> Ad </option> '+ 
+						'<option value="sn"> Soyad </option>'+
+						'<option value="ou"> Klasör </option>';
+			}
+			else if(showOnlyFolder==true){
+				searchHtml +='<option selected value="ou"> Klasör </option> ';
+						}
+			searchHtml +='</select> '+
+			'    </div> '+ 
+			'    <input placeholder="" id='+srcInputId+' type="text" class="form-control"> '+ 
+			'    <div class="input-group-append"> '+ 
+			'        <button class="btn btn-info" id="'+srcBtnId+'" > Ara </button> '+ 
+			'    </div> '+ 
+			' </div>  ';
+		
+	$('#'+treeHolderDiv).append(searchHtml)
+	
+	$('#'+srcBtnId).on('click', function (event) {
+		var selection =$('#'+treeGridId).jqxTreeGrid('getSelection');
+		
+		if(selection && selection.length>0){
+			var key=$('#'+srcSelectId).val()
+			var value=$('#'+srcInputId).val()
+			if(key == -1)
+				{return}
+			if(value==""){
+				$.notify("Lütfen aranacak değer giriniz", "warn");
+				return
+			}
+			var params = {
+					"searchDn" : selection[0].distinguishedName,
+					"key" : key,
+					"value": value
+			};
+			
+			$.ajax({
+				type : 'POST',
+				url : 'lider/ldap/searchEntry',
+				data : params,
+				dataType: "json",
+				success : function(ldapResult) {
+					
+					if(ldapResult.length==0){
+						$.notify("Sonuç Bulunamadı", "warn");
+						return;
+					}
+					$('#'+treeGridId).jqxTreeGrid('deleteRow', "userSearch")
+					$('#'+treeGridId).jqxTreeGrid('addRow', "userSearch", { name: "Arama Sonuçları" }, 'last')
+					
+					for (var i = 0; i < ldapResult.length; i++) {
+				    	 var entry = ldapResult[i];
+				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.entryUUID , entry , 'last' ,'userSearch');
+					}
+					$('#'+treeGridId).jqxTreeGrid('expandRow', "userSearch")
+					
+				},
+			    error: function (data, errorThrown) {
+					$.notify("Hata Oluştu.", "error");
+				}
+			 }); 
+		}
+		else{
+			$.notify("Lütfen Arama Dizini Seçiniz", "warn");
+		}
+		
+		
+		
+	});
+	
 }

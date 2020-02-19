@@ -8,16 +8,16 @@
  * 
  */
 
-
 if (ref) {
 	connection.deleteHandler(ref);
 }
-var ref=connection.addHandler(getServiceListener, null, 'message', null, null,  null);
-$("#entrySize").html(selectedEntries.length);
-
+scheduledParam = null;
 var serviceRequestParameters = [];
 var dnlist = []
 var table;
+
+var ref=connection.addHandler(getServiceListener, null, 'message', null, null,  null);
+$("#entrySize").html(selectedEntries.length);
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -31,11 +31,16 @@ getServices();
 function getServices() {
 	selectedPluginTask.commandId = "GET_SERVICES";
 	selectedPluginTask.parameterMap={};
+	selectedPluginTask.cronExpression = null;
 	var params = JSON.stringify(selectedPluginTask);
 	serviceManagementTask(params);
 }
 
 function serviceManagementTask(params){
+	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
+	if (scheduledParam != null) {
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+	}
 
 	$.ajax({
 		type: "POST",
@@ -52,7 +57,7 @@ function serviceManagementTask(params){
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
 			if(res.status=="OK"){		    		
-				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
+				$("#plugin-result").html(message.bold());
 			}   	
 		},
 		error: function(result) {
@@ -145,7 +150,7 @@ function getServiceListener(msg) {
 										createTable();
 										$("#plugin-result").html("");
 										$.notify(responseMessage, "success");
-										$("#serviceList-info").html("<small style='color:red;'>İşlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır ya da Zamanlı Çalıştır butonuna tıklayınız.</small>");
+										$("#serviceList-info").html("<small style='color:red;'>İşlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır butonuna tıklayınız.</small>");
 									}
 								}else {
 									createTable();
@@ -180,7 +185,6 @@ function getServiceListener(msg) {
 	// we must return true to keep the handler alive. returning false would remove it after it finishes.
 	return true;
 }
-
 
 function createTable() {
 	table = $('#servicesListTableId').DataTable( {
@@ -241,7 +245,6 @@ $('#serviceExportPdf').click(function(e){
 	alert("export pdf");
 });
 
-
 $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	if($('input:checkbox[name=service_name]').is(':checked')) {
 		var ServiceListItem = [];
@@ -278,23 +281,34 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 		});
 		selectedPluginTask.commandId = "SERVICE_LIST";
 		selectedPluginTask.parameterMap={"serviceRequestParameters":serviceRequestParameters};
+		selectedPluginTask.dnType="AHENK";
+		selectedPluginTask.cronExpression = scheduledParam;
 		var params = JSON.stringify(selectedPluginTask);
-		serviceManagementTask(params);
-	}
-	else {
-		$.notify("Lütfen işlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır ya da Zamanlı Çalıştır butonuna tıklayınız.", "warn");
-	}
-});
 
-$('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
-	if ($('input:checkbox[name=service_name]').is(':checked')) {
-		alert("Zamanlı Çalıştır");
+		var content = "Görev Gönderilecek, emin misiniz?";
+		if (scheduledParam != null) {
+			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+		}
+		$.confirm({
+			title: 'Uyarı!',
+			content: content,
+			theme: 'light',
+			buttons: {
+				Evet: function () {
+					serviceManagementTask(params);
+					scheduledParam = null;
+				},
+				Hayır: function () {
+				}
+			}
+		});
 	}
 	else {
-		$.notify("Lütfen işlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır ya da Zamanlı Çalıştır butonuna tıklayınız.", "warn");
+		$.notify("Lütfen işlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır butonuna tıklayınız.", "warn");
 	}
 });
 
 $('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);	
+	connection.deleteHandler(ref);
+	scheduledParam = null;
 });

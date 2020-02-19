@@ -23,32 +23,49 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 		dataType : 'json',
 		success : function(data) {
 			rootDNUser = null;
+			
+			console.log(data)
+			
 			 var source =
 			  {
-			      dataType: "json",
-			      dataFields: [
-			           { name: "name", type: "string" },
-			           { name: "online", type: "string" },
-			           { name: "uid", type: "string" },
-			           { name: "type", type: "string" },
-			           { name: "cn", type: "string" },
-			           { name: "ou", type: "string" },
-			           { name: "parent", type: "string" },
-			           { name: "distinguishedName", type: "string" },
-			           { name: "hasSubordinates", type: "string" },
-			           { name: "expandedUser", type: "string" },
-			           { name: "entryUUID", type: "string" },
-			           { name: "attributes", type: "array" },
-			           { name: "attributesMultiValues", type: "array" },
-			           { name: "childEntries", type: "array" }
-			      ],
-			      hierarchy:
-			          {
-			              root: "childEntries"
-			          },
-			      localData: data,
-			      id: "entryUUID"
+					 dataType: "json",
+						dataFields: [
+							{ name: "name", type: "string" },
+							{ name: "online", type: "string" },
+							{ name: "uid", type: "string" },
+							{ name: "type", type: "string" },
+							{ name: "cn", type: "string" },
+							{ name: "ou", type: "string" },
+							{ name: "parent", type: "string" },
+							{ name: "distinguishedName", type: "string" },
+							{ name: "hasSubordinates", type: "string" },
+							{ name: "expandedUser", type: "string" },
+							{ name: "attributes", type: "array" },
+							{ name: "entryUUID", type: "string" },
+							{ name: "childEntries", type: "array" }
+							],
+							hierarchy:
+							{
+								root: "childEntries"
+							},
+							localData: data,
+							id: "name"
 			  };
+			 
+			 var cellclass = function (row, columnfield, value,rowData) {
+
+					//if((value.indexOf("online") != -1) || (rowData.online) ){
+					if(rowData.online){
+						return 'green';
+					}
+					
+//					if (rowData.online) {
+//					return 'green';
+//					}
+//					else if (!rowData.online) {
+//					return 'white';
+//					}
+				};
 			 
 			 rootDNUser = source.localData[0].entryUUID;
 //			 	$("#treeGridUser").jqxTreeGrid('destroy');
@@ -91,12 +108,10 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 				    	},
 				     ready: function () {
 				    	 var allrows =$('#'+treeGridId).jqxTreeGrid('getRows');
-				    	 var main=null
 				    	 if(allrows.length==1){
 				    		 var row=allrows[0];
 				    		 if(row.childEntries==null ){
-				    			 $('#'+treeGridId).jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
-				    			 main=row.entryUUID
+				    			 $('#'+treeGridId).jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.name);
 				    		 }
 				    	 }
 				    	 $('#'+treeGridId).jqxTreeGrid('collapseAll');
@@ -104,8 +119,8 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 				     rendered: function () {
 				   	 },
 				     columns: [
-				       { text: "Kullanıcılar", align: "center", dataField: "name", width: '100%' }
-				     ]
+				    	 { text: "Bilgisayarlar", align: "center", dataField: "name", cellclassname: cellclass ,width: '100%'}
+				    ]
 				 });
 				 
 				 $('#'+treeGridId).on('rowSelect', function (event) {
@@ -139,15 +154,14 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 						      var nameList=[];
 						      
 						      for (var m = 0; m < row.records.length; m++) {
-						    	  var childRow = row.records[m];
-									nameList.push(childRow.uid);      
-							  }
-						      
-						      for (var k = 0; k < nameList.length; k++) {
-									          // get a row.
-								  var childRowname = nameList[k];
-								  $('#'+treeGridId).jqxTreeGrid('deleteRow', childRowname); 
-							  } 
+									var childRow = row.records[m];
+									nameList.push(childRow.name);      
+								}
+								for (var k = 0; k < nameList.length; k++) {
+									// get a row.
+									var childRowname = nameList[k];
+									$('#'+treeGridId).jqxTreeGrid('deleteRow', childRowname); 
+								}  
 						      
 						      var urlPath=""
 						      if(showOnlyFolder){
@@ -164,17 +178,30 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 									dataType : 'text',
 									success : function(ldapResult) {
 										var childs = jQuery.parseJSON(ldapResult);
+										var onlineCount=0;
 										 for (var m = 0; m < childs.length; m++) {
 											 	// get a row.
 									          	var childRow = childs[m];
-										          $('#'+treeGridId).jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
-										          if(childRow.hasSubordinates=="TRUE"){
-										           $('#'+treeGridId).jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
-										          }
-										           $('#'+treeGridId).jqxTreeGrid('collapseRow', childRow.name);
+									          	if(childRow.online){
+													onlineCount++;
+												}
+									          	$('#'+treeGridId).jqxTreeGrid('addRow', childRow.name, childRow, 'last', row.name);
+												if(childRow.hasSubordinates=="TRUE"){
+													$('#'+treeGridId).jqxTreeGrid('addRow', childRow.name+"1" , {}, 'last', childRow.name); 
+												}
+												$('#'+treeGridId).jqxTreeGrid('collapseRow', childRow.name);
+
 									      } 
 										 row.expandedUser="TRUE"
-									}
+										if(onlineCount == 0){
+														newName=row.ou+" ("+childs.length+")";
+													}
+													else{
+														newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
+													}
+												$('#'+treeGridId).jqxTreeGrid('updateRow',row.name, {name:newName });
+												
+										}
 								});  
 					      }
 					 }); 
@@ -246,7 +273,7 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 					
 					for (var i = 0; i < ldapResult.length; i++) {
 				    	 var entry = ldapResult[i];
-				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.entryUUID , entry , 'last' ,'userSearch');
+				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.name , entry , 'last' ,'userSearch');
 					}
 					$('#'+treeGridId).jqxTreeGrid('expandRow', "userSearch")
 					

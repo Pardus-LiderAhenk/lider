@@ -8,15 +8,17 @@
 
 connection.addHandler(onPresence2, null, "presence");
 
+var selectedRow= null;
 var selectedEntries = []; 
 var selectedPluginTask;
 var selectedAgentGroupDN = "";
 var selectedOUDN = "";
 var treeGridHolderDiv= "computerTreeDiv"
 //creating pluginTask Table on the page
-loadPluginTaskTable(false);
+//loadPluginTaskTable(false);
 
 setOnlineEntryList();
+taskHistory();
 /*
  * create user tree select, check and uncheck action functions can be implemented if required
  * params div, onlyFolder, use Checkbox, select action , check action, uncheck action
@@ -24,6 +26,7 @@ setOnlineEntryList();
 createComputerTree(treeGridHolderDiv, false, false,
 		// row select
 		function(row, rootDnUser){
+			selectedRow=row;
 			addSelectedEntryToTable(row);
 		},
 		//check action
@@ -35,7 +38,6 @@ createComputerTree(treeGridHolderDiv, false, false,
 			
 		}
 );
-
 
 function loadPluginTaskTable(isMulti) {
 	$.ajax({
@@ -77,7 +79,8 @@ function loadPluginTaskTable(isMulti) {
 		    }
 		    html += '</table>';
 		    
-		    $('#pluginListTableDiv').html(html);		    
+		    $('#pluginListTableDiv').html(html);	
+		    
 		    $('.sendTaskButton').click(function() {
 		    	
 				if(selectedEntries.length ==0){
@@ -142,18 +145,19 @@ function onPresence2(presence)
 	if (ptype === 'subscribe') {
 		$.notify("subscribe","warn");
 	} 
-
 	else if (ptype !== 'error') {
 		//OFFLine state
 		if (ptype === 'unavailable') {
-			var row = $("#treegrid").jqxTreeGrid('getRow', name);
+			var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
+			console.log(row)
 			row.online=false;
-			$("#treegrid").jqxTreeGrid('updateRow', name , {name:name}); 
+			$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name}); 
 
 		} else {
-			var row = $("#treegrid").jqxTreeGrid('getRow', name);
+			var row = $('#computerTreeDivGridGrid').jqxTreeGrid('getRow', name);
+			console.log(row)
 			row.online=true;
-			$("#treegrid").jqxTreeGrid('updateRow', name , {name:name}); 
+			$('#computerTreeDivGridGrid').jqxTreeGrid('updateRow', name , {name:name}); 
 		}
 	}
 	return true;
@@ -212,146 +216,6 @@ function loadComputersTree(data){
 		return localizationobj;
 	}
 
-	// create jqxTreeGrid.
-	$("#treegrid").jqxTreeGrid(
-			{
-				width: '100%',
-				source: dataAdapter,
-				altRows: true,
-				sortable: true,
-				columnsResize: true,
-				filterable: true,
-				hierarchicalCheckboxes: true,
-				pageable: true,
-				pagerMode: 'default',
-				checkboxes: true,
-				filterMode: "simple",
-				localization: getLocalization(),
-				pageSize: 30,
-				pageSizeOptions: ['15', '25', '50'],
-				icons: function (rowKey, dataRow) {
-					var level = dataRow.level;
-					if(dataRow.type == "AHENK"){
-						return "img/linux.png";
-					}
-					else return "img/folder.png";
-				},
-				ready: function () {
-
-					var allrows =$("#treegrid").jqxTreeGrid('getRows');
-					if(allrows.length==1){
-						var row=allrows[0];
-						if(row.childEntries==null && row.name=="Ahenkler"){
-
-							$("#treegrid").jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.name);
-						}
-					}
-					$("#treegrid").jqxTreeGrid('collapseAll');
-				},
-				rendering: function()
-				{
-					/* // destroys all buttons.
-               if ($(".editButtons").length > 0) {
-                   $(".editButtons").jqxButton('destroy');
-               } */
-
-				},
-
-				rendered: function () {
-
-				},
-
-				columns: [
-					{ text: "Bilgisayarlar", align: "center", dataField: "name", cellclassname: cellclass ,width: '100%'}
-
-					]
-			});
-
-
-	$('#tab-task-history').on('click',function() {
-		var checkedRows = $("#treegrid").jqxTreeGrid('getCheckedRows');
-		if(checkedRows.length==0){
-	    	var trElement = '<tr><td colspan="100%" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td></tr>';
-	    	$("#taskHistoryTable").empty();
-	    	$('#taskHistoryTable').append(trElement);
-	    	$('#selectedAgentInfoSection').hide();
-		}
-		else {
-			var selectedRowData=checkedRows[checkedRows.length-1];
-			$('#selectedAgentInfoSection').show();
-			$("#selectedAgentDN").text(selectedRowData.distinguishedName);
-			var params = {
-			    "dn" : selectedRowData.distinguishedName
-			};
-			$.ajax({ 
-			    type: 'POST', 
-			    url: "/command",
-			    dataType: 'json',
-			    data: params,
-			    success: function (data) { 
-			    	if(data.length > 0) {
-			    		var trElement = "";
-			    		$.each(data, function(index, command) {
-			    			var executionResult = "";
-			    			var executionTime = "-";
-				        	trElement += '<tr>';
-				        	trElement += '<td>' + command.task.plugin.name + '</td>';
-			    			if(command.commandExecutions[0].commandExecutionResults.length > 0) {
-			    				executionResult = command.commandExecutions[0].commandExecutionResults[0].responseCode;
-			    				var rawEndDate = command.commandExecutions[0].commandExecutionResults[0].createDate;
-					        	var year = rawEndDate.substring(0,4);
-					        	var month = rawEndDate.substring(5,7);
-					        	var day = rawEndDate.substring(8,10);
-					        	var time = rawEndDate.substring(11,19);
-								executionTime = day + '.' + month + '.' + year + ' ' + time;
-
-				    			if(executionResult == "TASK_PROCESSED") {
-				    				trElement += '<td>' + '<div class="badge badge-success">Başarılı</div>' + '</td>';
-				    			} else {
-				    				trElement += '<td>' + '<div class="badge badge-danger">Hata oluştu</div>' + '</td>';
-				    			}
-			    			} else {
-			    				trElement += '<td>' + '<div class="badge badge-info">Gönderildi</div>' + '</td>';
-			    			}
-			    			
-			    			trElement += '<td>' + command.commandOwnerUid  + '</td>';
-			    			
-				        	var year = command.commandExecutions[0].createDate.substring(0,4);
-				        	var month = command.commandExecutions[0].createDate.substring(5,7);
-				        	var day = command.commandExecutions[0].createDate.substring(8,10);
-				        	var time = command.commandExecutions[0].createDate.substring(11,19);
-							var createDate = day + '.' + month + '.' + year + ' ' + time;
-							
-			    			trElement += '<td>' + createDate + '</td>';
-			    			trElement += '<td>' + executionTime + '</td>';
-			    			if(executionResult == "TASK_PROCESSED" || executionResult == "TASK_ERROR") {
-				    			trElement += '<td><a href="#executedTaskDetail" class="view text-center" '
-			    					  + 'onclick="executedTaskDetailClicked('
-			    					  + '\'' + createDate + '\', '
-			    					  + '\'' + command.task.plugin.name + '\', '
-			    					  + '\'' + command.commandExecutions[0].commandExecutionResults[0].id + '\')" data-id="' 
-			    					  + command.commandExecutions[0].commandExecutionResults[0].id
-			    					  + '" data-toggle="modal" data-target="#executedTaskDetail">'
-			    					  + '<i class="pe-7s-info"></i>'
-			    					  + '</a></td></tr>';
-			    			} else {
-				    			trElement += '<td></td></tr>';
-			    			}
-			    		});
-			    		$("#taskHistoryTable").empty();
-			    		$('#taskHistoryTable').append(trElement);
-			    	} else {
-						$("#taskHistoryTable").empty();
-				    	var trElement = '<tr><td colspan="100%" class="text-center">Bu ahenk üzerinde henüz bir görev çalıştırılmamıştır.</td></tr>';
-				    	$('#taskHistoryTable').append(trElement);
-			    	}
-			    },
-			    error: function (data, errorThrown) {
-			    	$.notify("Something went wrong.", "error");
-			    }
-			});
-		}
-	});
 	
 	$('#treegrid').on('rowDoubleClick', function (event) {
 		var args = event.args;
@@ -910,9 +774,27 @@ function addNewGroup() {
 
 function addSelectedEntryToTable(row){
 	if(row.type=="AHENK"){
-		var tableRow="<tr> <td> </td> <td> "+row.name+ "</td> <td> "+row.distinguishedName+ "</td> </tr>";
+		
+		var indexx=$.grep(selectedEntries, function(item){
+			return item.entryUUID == row.entryUUID;
+		}).length
+
+		if(indexx ==0 ){
+			selectedEntries.push(row);
+		}
+		
+		if(indexx ==0){
+			var tableRow="<tr> <td> </td> <td> "+row.name+ "</td> <td> "+row.distinguishedName+ "</td> </tr>";
+		}
 		
 		$("#selectedAgentTable tbody").append(tableRow);
+		
+		if(selectedEntries.length>1){
+			loadPluginTaskTable(true);
+		}
+		else{
+			loadPluginTaskTable(false);
+		}
 	}
 }
 
@@ -937,5 +819,93 @@ function setOnlineEntryList() {
 	$('#onlineEntryListHolder').html(html);
 }
 
+function taskHistory() {
+	$('#tab-task-history').on('click',function() {
+		
+//		var checkedRows = $("#treegrid").jqxTreeGrid('getCheckedRows');
+		
+		if(selectedRow==null){
+	    	var trElement = '<tr><td colspan="100%" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td></tr>';
+	    	$("#taskHistoryTable").empty();
+	    	$('#taskHistoryTable').append(trElement);
+	    	$('#selectedAgentInfoSection').hide();
+		}
+		else {
+//			var selectedRowData=checkedRows[checkedRows.length-1];
+			$('#selectedAgentInfoSection').show();
+			$("#selectedAgentDN").text(selectedRow.distinguishedName);
+			var params = {
+			    "dn" : selectedRow.distinguishedName
+			};
+			$.ajax({ 
+			    type: 'POST', 
+			    url: "/command",
+			    dataType: 'json',
+			    data: params,
+			    success: function (data) { 
+			    	if(data.length > 0) {
+			    		var trElement = "";
+			    		$.each(data, function(index, command) {
+			    			var executionResult = "";
+			    			var executionTime = "-";
+				        	trElement += '<tr>';
+				        	trElement += '<td>' + command.task.plugin.name + '</td>';
+			    			if(command.commandExecutions[0].commandExecutionResults.length > 0) {
+			    				executionResult = command.commandExecutions[0].commandExecutionResults[0].responseCode;
+			    				var rawEndDate = command.commandExecutions[0].commandExecutionResults[0].createDate;
+					        	var year = rawEndDate.substring(0,4);
+					        	var month = rawEndDate.substring(5,7);
+					        	var day = rawEndDate.substring(8,10);
+					        	var time = rawEndDate.substring(11,19);
+								executionTime = day + '.' + month + '.' + year + ' ' + time;
+
+				    			if(executionResult == "TASK_PROCESSED") {
+				    				trElement += '<td>' + '<div class="badge badge-success">Başarılı</div>' + '</td>';
+				    			} else {
+				    				trElement += '<td>' + '<div class="badge badge-danger">Hata oluştu</div>' + '</td>';
+				    			}
+			    			} else {
+			    				trElement += '<td>' + '<div class="badge badge-info">Gönderildi</div>' + '</td>';
+			    			}
+			    			
+			    			trElement += '<td>' + command.commandOwnerUid  + '</td>';
+			    			
+				        	var year = command.commandExecutions[0].createDate.substring(0,4);
+				        	var month = command.commandExecutions[0].createDate.substring(5,7);
+				        	var day = command.commandExecutions[0].createDate.substring(8,10);
+				        	var time = command.commandExecutions[0].createDate.substring(11,19);
+							var createDate = day + '.' + month + '.' + year + ' ' + time;
+							
+			    			trElement += '<td>' + createDate + '</td>';
+			    			trElement += '<td>' + executionTime + '</td>';
+			    			if(executionResult == "TASK_PROCESSED" || executionResult == "TASK_ERROR") {
+				    			trElement += '<td><a href="#executedTaskDetail" class="view text-center" '
+			    					  + 'onclick="executedTaskDetailClicked('
+			    					  + '\'' + createDate + '\', '
+			    					  + '\'' + command.task.plugin.name + '\', '
+			    					  + '\'' + command.commandExecutions[0].commandExecutionResults[0].id + '\')" data-id="' 
+			    					  + command.commandExecutions[0].commandExecutionResults[0].id
+			    					  + '" data-toggle="modal" data-target="#executedTaskDetail">'
+			    					  + '<i class="pe-7s-info"></i>'
+			    					  + '</a></td></tr>';
+			    			} else {
+				    			trElement += '<td></td></tr>';
+			    			}
+			    		});
+			    		$("#taskHistoryTable").empty();
+			    		$('#taskHistoryTable').append(trElement);
+			    	} else {
+						$("#taskHistoryTable").empty();
+				    	var trElement = '<tr><td colspan="100%" class="text-center">Bu ahenk üzerinde henüz bir görev çalıştırılmamıştır.</td></tr>';
+				    	$('#taskHistoryTable').append(trElement);
+			    	}
+			    },
+			    error: function (data, errorThrown) {
+			    	$.notify("Something went wrong.", "error");
+			    }
+			});
+		}
+	});
+}
 
 

@@ -26,6 +26,7 @@ function getResourceUsage(){
 	selectedPluginTask.entryList=selectedEntries;
 	selectedPluginTask.dnType="AHENK";
 	selectedPluginTask.cronExpression = scheduledParam;
+	console.log(selectedPluginTask)
 	var params = JSON.stringify(selectedPluginTask);
 	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 	if (scheduledParam != null) {

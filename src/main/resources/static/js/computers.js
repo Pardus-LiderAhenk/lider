@@ -301,6 +301,7 @@ function loadComputersTree(data){
 	$("#treegrid").jqxTreeGrid(
 			{
 				width: '100%',
+				theme: 'orange',
 				source: dataAdapter,
 				altRows: true,
 				sortable: true,

@@ -1,25 +1,25 @@
 /**
- * userTree component 
- * this component can be use for user tree
+ * tree component 
+ * this component can be use for tree
  * edip.yildiz
  * @param page
  * @param callback
  * @returns
  */
-
-function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
+function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
+	
 	var rootDNUser = null;
 	var treeGridId=treeHolderDiv+"Grid";
 	/**
 	 * create search area
 	 */
-	createUserSearch(treeHolderDiv,treeGridId,showOnlyFolder);
+	createSearch(treeHolderDiv,treeGridId,showOnlyFolder);
 	/**
 	 * get root dn for user and set treegrid tree
 	 */
 	$.ajax({
 		type : 'POST',
-		url : 'lider/user/getUsers',
+		url : 'lider/ldap/getComputers',
 		dataType : 'json',
 		success : function(data) {
 			rootDNUser = null;
@@ -84,8 +84,8 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 				     pageSizeOptions: ['15', '25', '50'],
 				     icons: function (rowKey, dataRow) {
 				    	    var level = dataRow.level;
-				    	    if(dataRow.type == "USER"){
-				    	        return "img/checked-user-32.png";
+				    	    if(dataRow.type == "AHENK"){
+				    	    	return "img/linux.png";
 				    	    }
 				    	    else return "img/folder.png";
 				    	},
@@ -182,20 +182,20 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 	});
 }
 
-function createUserSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
+
+
+function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 	
 	var srcInputId= treeHolderDiv+"srcInput";
 	var srcBtnId= treeHolderDiv+"srcBtn";
 	var srcSelectId= treeHolderDiv+"srcSelect";
-	var searchHtml=	
-			' <div class="input-group"> '+
+	var searchHtml=	 '<div class="input-group"> '+
 			'    <div class="input-group-prepend">  '+
 			'       <select class="form-control " style="font-family: cursive; font-size: 12px;" id="'+srcSelectId+'" > ';
 	       
 		   if(showOnlyFolder==false){
 				searchHtml +='<option selected value="uid"> ID </option> '+
 						'<option value="cn"> Ad </option> '+ 
-						'<option value="sn"> Soyad </option>'+
 						'<option value="ou"> Klasör </option>';
 			}
 			else if(showOnlyFolder==true){
@@ -240,6 +240,7 @@ function createUserSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 						$.notify("Sonuç Bulunamadı", "warn");
 						return;
 					}
+					
 					$('#'+treeGridId).jqxTreeGrid('deleteRow', "userSearch")
 					$('#'+treeGridId).jqxTreeGrid('addRow', "userSearch", { name: "Arama Sonuçları" }, 'last')
 					

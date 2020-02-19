@@ -1,4 +1,4 @@
-<script type="text/javascript" src="js/computers.js"></script>
+<script type="text/javascript" src="js/computers/computers.js"></script>
 
 <style>
 	.green {
@@ -23,7 +23,6 @@
 	}
 </style>
 
-
 <div class="app-page-title">
 	<div class="page-title-wrapper">
 		<div class="page-title-heading">
@@ -36,26 +35,6 @@
 					istemcileri listeleyebilir, istemcilere görev gönderebilirsiniz.</div>
 			</div>
 		</div>
-		<div class="page-title-actions">
-
-			<div class="d-inline-block dropdown">
-				<button type="button" data-toggle="dropdown" aria-haspopup="true"
-					aria-expanded="false"
-					class="btn-shadow btn btn-info">
-					<span class="btn-icon-wrapper pr-2 opacity-7"> <i
-						class="fa fa-business-time fa-w-20"> </i>
-					</span> <span class="btn-icon-wrapper pr-2 "> </span> Görev Gönderilecek
-					İstemciler
-				</button>
-
-			</div>
-
-			<button type="button" id="selectedEntrySize"
-				data-target="#selectedEntryListModal" data-toggle="modal"
-				data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
-				<i class="fa fa-star"></i>
-			</button>
-		</div>
 	</div>
 </div>
 
@@ -63,20 +42,54 @@
 
 	<div class="col-lg-4 col-md-6 col-sm-6">
 		<div class="main-card mb-3 card">
-			<div class="card-header">
-				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-
-				<div>
-					<button id="addSelectedEntry2Box" type="button"
-						class="btn-shadow btn btn-info" title="İstemcileri Ekle" ><i class="fa fa-plus"></i></button>
-					
-					<button id="addOnlyOnlineAhenk" type="button"
-						class="btn-shadow btn btn-info"   title="Online İstemcileri Ekle"><i class="fa fa-plus-circle"></i></button>
-				</div>
-
-			</div>
 			<div class="card-body">
-				<div id="treegrid"></div>
+				<div>
+					<div class="d-inline-block dropdown">
+								<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+	                                            <span class="btn-icon-wrapper pr-2 opacity-7">
+	                                                <i class="fa fa-braille fa-w-20"></i>
+	                                            </span>
+	                                            İstemci İşlemleri
+	                        	</button>
+                        		<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+                                            <ul class="nav flex-column">
+                                                <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnAddAgentOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="agents" >
+                                                        <i class="fa fa-folder-open"> &nbsp;</i>
+                                                        <span>
+                                                            Klasör Ekle
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnDeleteAgentOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="agents" >
+                                                        <i class="fa fa-folder-open"> &nbsp;</i>
+                                                        <span>
+                                                            Klasör Sil
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnMoveAgentOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="agents" >
+                                                        <i class="fa fa-random"> &nbsp;</i>
+                                                        <span>
+                                                            Klasör Taşı
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                                                                             
+                                                <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnMoveAgentModal" title="Kullanıcı Sil" data-target="#genericModal" data-toggle="modal">
+                                                        <i class="fa fa-random"> &nbsp;</i>
+                                                        <span> İstemci Taşı </span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                              </div>
+                    </div>
+				</div>
+				<hr>
+				<div id="computerTreeDiv"></div>
 			</div>
 
 		</div>
@@ -87,25 +100,28 @@
 		<div class="main-card mb-3 card">
 			<div class="card-header card-header-tab-animation">
 				<ul class="nav nav-justified">
-					<li class="nav-item"><a role="tab" class="nav-link active"
-						id="tab-c-0" data-toggle="tab" href="#tab-new-task"> <span>Görev
-								Gönder</span>
-					</a></li>
-					<li class="nav-item"><a role="tab" class="nav-link"
-						id="tab-task-history" data-toggle="tab" href="#tab-task-history-tab"> <span>Görev
-								Geçmişi</span>
-					</a></li>
-					<li class="nav-item"><a role="tab" class="nav-link"
-						id="tab-c-2" data-toggle="tab" href="#tab-online-clients"> <span>Açık
-								İstemciler</span>
-					</a></li>
-					<li class="nav-item"><a role="tab" class="nav-link"
-						id="tab-c-3" data-toggle="tab" href="#tab-roster"> <span>Roster</span>
-					</a></li>
-					
-					<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab"
+					<li class="nav-item">
+						<a role="tab" class="nav-link active"
+							id="tab-c-0" data-toggle="tab" href="#tab-new-task"> <span>Görev
+									Gönder</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a role="tab" class="nav-link"
+							id="tab-task-history" data-toggle="tab" href="#tab-task-history-tab"> <span>Görev
+									Geçmişi</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a role="tab" class="nav-link"
+							id="tab-c-2" data-toggle="tab" href="#tab-online-clients"> <span>Açık
+									İstemciler</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a role="tab" class="nav-link" data-toggle="tab"
 											id="tab-c-4-info" href="#tab-entry-info"> <span>Kayıt Bilgisi</span>
-										</a>
+						</a>
 					</li>
 				</ul>
 
@@ -133,7 +149,7 @@
 							</div>
 						</div>
 						<div class="col-lg-6">
-							<p class="mb-0">dsds</p>
+							<p class="mb-0"></p>
 							<input type="text" class="form-control" id="textTaskSearch">
 							<div id="pluginListTableDiv"></div>
 						</div>

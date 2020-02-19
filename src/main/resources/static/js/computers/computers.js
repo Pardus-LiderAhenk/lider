@@ -12,117 +12,32 @@ var selectedEntries = [];
 var selectedPluginTask;
 var selectedAgentGroupDN = "";
 var selectedOUDN = "";
+var treeGridHolderDiv= "computerTreeDiv"
 //creating pluginTask Table on the page
-
 loadPluginTaskTable(false);
 
-var html = '<table class="table table-striped table-bordered " id="rosterListTable">';
-for (var i = 0; i < rosterList.length ; i++) {
-	var roster=rosterList[i];
-	html += '<tr>';
-	html += '<td>' + roster.item_name + '</td>';
-	html += '</tr>';
-}
-html += '</table>';
-$('#rosterListHolder').html(html);
-
-
-var html = '<table class="table table-striped table-bordered " id="onlineEntryListTable">';
-html += '<thead>';
-html += '<tr>';
-html += '<th>JID</th>';
-html += '<th>Kaynak</th>';
-html += '</tr>';
-html += '</thead>';
-
-for (var i = 0; i < onlineEntryList.length ; i++) {
-	var entry=onlineEntryList[i];
-	html += '<tr>';
-	html += '<td>' + entry.jid + '</td>';
-	html += '<td>' + entry.source + '</td>';
-	html += '</tr>';
-}
-html += '</table>';
-
-$('#onlineEntryListHolder').html(html);
-
-$(document).ready(function(){
-	$.ajax({
-		type : 'POST',
-		url : 'lider/ldap/getComputers',
-		dataType : 'json',
-		success : function(data) {
-			loadComputersTree(data)
+setOnlineEntryList();
+/*
+ * create user tree select, check and uncheck action functions can be implemented if required
+ * params div, onlyFolder, use Checkbox, select action , check action, uncheck action
+ */
+createComputerTree(treeGridHolderDiv, false, false,
+		// row select
+		function(row, rootDnUser){
+			addSelectedEntryToTable(row);
 		},
-		error: function (data, errorThrown) {
-			console.log(data);
+		//check action
+		function(checkedRows, row){
+			
+		},
+		//uncheck action
+		function(unCheckedRows, row){
+			
 		}
-	});
+);
 
-	$('#selectedEntryListModal').on('show.bs.modal', function(event) {
-		showSelectedEntries();
-	});
-	$('#textTaskSearch').keyup(function() {
-		var txt=$('#textTaskSearch').val();
-		$("#pluginListTable > tbody > tr").filter(function() {
-			$(this).toggle($(this).text().indexOf(txt) > -1)
-		});
-	});
-});
-
-function showSelectedEntries() {
-	//var html = '<div><button id="createAgentGroup" data-toggle="modal" onclick="createAgentGroupClicked()" data-target="#createAgentGroupModal" type="button" class="btn btn-info pull-right btn-group" title="İstemcileri Ekle" ><i class="material-icons">add</i> <span>Seçili İstemcilerden Grup Oluştur</span> </button><br></div>';
-	var html = '<table class="table table-striped table-bordered " id="selectedEntry4TaskTables">';
-	html += '<tr>';
-	html += '<th style="width: 5%"></th>';
-	html += '<th style="width: 30%">Bilgisayar Adı</th>';
-	html += '<th style="width: 50%">DN</th>';
-	html += '<th style="width: 15%"></th>';
-	html += '</tr>';
-	
-	if(selectedEntries.length == 0) {
-		html += '<tr><td colspan="100%" class="text-center">İşlem yapabilmek için en az bir istemci bulunmalıdır.</td></tr>';
-		$("#dropdownButton").hide();
-	} else {
-		$("#dropdownButton").show();
-	}
-	for (var i = 0; i < selectedEntries.length; i++) {
-		html += '<tr>';
-		html += '<td>' + (i+1) + '</td>';
-		html += '<td>' + selectedEntries[i].name + '</td>';
-		html += '<td>' + selectedEntries[i].distinguishedName + '</td>';
-		html += '<td class="text-center">';
-		html += '<button class="btn btn-danger removeEntry" type="button" id="' +selectedEntries[i]+ '" data-id="'+ selectedEntries[i]+'" title="Kaldir">Kaldır</button>';
-		html += '</td>';
-		html += '</tr>';
-	}
-	html += '</table>';
-
-	$('#selectedEntriesHolder').html(html);
-
-	if(selectedEntries.length>1){
-		loadPluginTaskTable(true);
-	}
-	else{
-		loadPluginTaskTable(false);
-	}
-
-	$('.removeEntry').on('click', function(e) {
-		var uid = $(this).data("id");
-		selectedEntries.splice($.inArray(uid, selectedEntries), 1);
-		showSelectedEntries();
-		$('#selectedEntrySize').html(selectedEntries.length);
-		if(selectedEntries.length > 1){
-			loadPluginTaskTable(true);
-		}
-		else{
-			loadPluginTaskTable(false);
-		}
-	});
-}
 
 function loadPluginTaskTable(isMulti) {
-	
 	$.ajax({
 		type : 'POST',
 		url : 'getPluginTaskList',
@@ -352,171 +267,6 @@ function loadComputersTree(data){
 					]
 			});
 
-	$('#treegrid').on('rowSelect', function (event) {
-	        var args = event.args;
-		    var row = args.row;
-		    var name= row.name;
-		    
-		    addSelectedEntryToTable(row);
-
-	});
-	
-	$('#treegrid').on('rowExpand', function (event) {
-		var args = event.args;
-		var row = args.row;
-
-		if(row.expandedUser=="FALSE") {
-			var nameList=[];
-			for (var m = 0; m < row.records.length; m++) {
-				var childRow = row.records[m];
-				nameList.push(childRow.name);      
-			}
-			for (var k = 0; k < nameList.length; k++) {
-				// get a row.
-				var childRowname = nameList[k];
-				$("#treegrid").jqxTreeGrid('deleteRow', childRowname); 
-			}  
-			$.ajax({
-				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
-				data : 'uid=' + row.distinguishedName + '&type=' + row.type
-				+ '&name=' + row.name + '&parent=' + row.parent,
-				dataType : 'text',
-				success : function(ldapResult) {
-					var childs = jQuery.parseJSON(ldapResult);
-					var onlineCount=0;
-					for (var m = 0; m < childs.length; m++) {
-						// get a row.
-						var childRow = childs[m];
-						if(childRow.online){
-							onlineCount++;
-						}
-						$("#treegrid").jqxTreeGrid('addRow', childRow.name, childRow, 'last', row.name);
-						if(childRow.hasSubordinates=="TRUE"){
-							$("#treegrid").jqxTreeGrid('addRow', childRow.name+"1" , {}, 'last', childRow.name); 
-						}
-						$("#treegrid").jqxTreeGrid('collapseRow', childRow.name);
-					} 
-					row.expandedUser="TRUE"
-						if(onlineCount == 0){
-							newName=row.ou+" ("+childs.length+")";
-						}
-						else{
-							newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
-						}
-					$("#treegrid").jqxTreeGrid('updateRow',row.name, {name:newName });
-					
-					console.log(row)
-				}
-			});  
-		}
-	}); 
-
-	// adding tree selected computers to box
-	$('#addSelectedEntry2Box').on('click',function() {
-		var checkedRows = $("#treegrid").jqxTreeGrid('getCheckedRows');
-		var checkedEntryArray=[]
-		for (var i = 0; i < checkedRows.length; i++) {
-			// get a row.
-			var rowData = checkedRows[i];
-			if(rowData.type=="ORGANIZATIONAL_UNIT"){
-				checkedEntryArray.push({
-					distinguishedName :rowData.distinguishedName, 
-					entryUUID: rowData.entryUUID, 
-					name: rowData.name,
-					type: rowData.type,
-					uid: rowData.uid
-				});
-			}
-			else if(rowData.type=="AHENK"){
-				selectedEntries.push(rowData)
-			}
-		}
-
-		$.ajax({
-			url : 'lider/ldap/getAhenks',
-			type : 'POST',
-			data: JSON.stringify(checkedEntryArray),
-			dataType: "json",
-			contentType: "application/json",
-			success : function(data) {
-				var ahenks = data;
-				console.log("gelen ahenkler")
-				console.log(ahenks)
-				for (var i = 0; i < ahenks.length; i++) {
-					// get a row.
-					var rowData = ahenks[i];
-					if(rowData.type=="AHENK"){
-						var indexx=$.grep(selectedEntries, function(item){
-							return item.entryUUID == rowData.entryUUID;
-						}).length
-
-						if(indexx ==0 ){
-							selectedEntries.push(rowData);
-						}
-					}
-				}
-				$('#selectedEntrySize').html(selectedEntries.length);
-				if(selectedEntries.length>1){
-					loadPluginTaskTable(true);
-				}
-				else{
-					loadPluginTaskTable(false);
-				}
-			}
-		});
-	});
-	$('#addOnlyOnlineAhenk').on('click',function() {
-
-		var checkedRows = $("#treegrid").jqxTreeGrid('getCheckedRows');
-		console.log(checkedRows)
-		var checkedEntryArray=[]
-
-		for (var i = 0; i < checkedRows.length; i++) {
-			// get a row.
-			var rowData = checkedRows[i];
-			checkedEntryArray.push(
-			{
-				distinguishedName :rowData.distinguishedName, 
-				entryUUID: rowData.entryUUID, 
-				name: rowData.name,
-				type: rowData.type,
-				uid: rowData.uid
-			});
-		}
-
-		$.ajax({
-			url : 'lider/ldap/getOnlineAhenks',
-			type : 'POST',
-			data: JSON.stringify(checkedEntryArray),
-			dataType: "json",
-			contentType: "application/json",
-			success : function(data) {
-				var ahenks = data;
-				selectedEntries=[]
-				for (var i = 0; i < ahenks.length; i++) {
-					// get a row.
-					var rowData = ahenks[i];
-					if(rowData.type=="AHENK"){
-						var indexx=$.grep(selectedEntries, function(item){
-							return item.entryUUID == rowData.entryUUID;
-						}).length
-
-						if(indexx ==0 ){
-							selectedEntries.push(rowData);
-						}
-					}
-				}
-				$('#selectedEntrySize').html(selectedEntries.length);
-				if(selectedEntries.length>1){
-					loadPluginTaskTable(true);
-				}
-				else{
-					loadPluginTaskTable(false);
-				}
-			}
-		});
-	});
 
 	$('#tab-task-history').on('click',function() {
 		var checkedRows = $("#treegrid").jqxTreeGrid('getCheckedRows');
@@ -1159,13 +909,33 @@ function addNewGroup() {
 }
 
 function addSelectedEntryToTable(row){
-	
 	if(row.type=="AHENK"){
 		var tableRow="<tr> <td> </td> <td> "+row.name+ "</td> <td> "+row.distinguishedName+ "</td> </tr>";
 		
 		$("#selectedAgentTable tbody").append(tableRow);
 	}
-	
-	
-	
 }
+
+function setOnlineEntryList() {
+	var html = '<table class="table table-striped table-bordered " id="onlineEntryListTable">';
+	html += '<thead>';
+	html += '<tr>';
+	html += '<th>JID</th>';
+	html += '<th>Kaynak</th>';
+	html += '</tr>';
+	html += '</thead>';
+
+	for (var i = 0; i < onlineEntryList.length ; i++) {
+		var entry=onlineEntryList[i];
+		html += '<tr>';
+		html += '<td>' + entry.jid + '</td>';
+		html += '<td>' + entry.source + '</td>';
+		html += '</tr>';
+	}
+	html += '</table>';
+
+	$('#onlineEntryListHolder').html(html);
+}
+
+
+

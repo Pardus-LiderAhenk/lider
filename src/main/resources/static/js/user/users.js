@@ -2,29 +2,25 @@
  * When page loading getting users from LDAP and ldap users tree fill out on the treegrid that used jqxTreeGrid api..
  * M. Edip YILDIZ
  */
+
+var selectedRowGen = null
+var treeGridHolderDiv="treeGridUserHolderDiv"
 $(document).ready(function(){
-	/**
-	 * when user selected show  only related actions
-	 */
+	
 	hideUserButtons()
-	hideOuButtons()
-	
-	var selectedRowGen = null
-	var treeGridHolderDiv="treeGridUserHolderDiv"
-	
 	/*
 	 * create user tree select, check and uncheck action functions can be implemented if required
+	 * params div, onlyFolder, use Checkbox, select action , check action, uncheck action
 	 */
 	createUserTree(treeGridHolderDiv, false, false,
 			// row select
-			function(row){
+			function(row, rootDnUser){
 				selectedRowGen=row;
+				setUserActionButtons(row,rootDnUser);
 		        fillEntryDetail2Table(row);
-		        setUserActionButtons(row)
 			},
 			//check action
 			function(checkedRows, row){
-				
 				
 			},
 			//uncheck action
@@ -65,6 +61,7 @@ $(document).ready(function(){
 	});
 	// Create ou for selected parent node. Ou modal will be open for all releated pages..
 	$('#btnDeleteOuModal').on('click',function(event) {
+		
 		getModalContent("modals/user/deleteOuModal", function content(data){
 			$('#genericModalHeader').html("Klasör Sil")
 			$('#genericModalBodyRender').html(data);
@@ -128,6 +125,35 @@ $(document).ready(function(){
 				$('#deleteUserBtn').on('click',function(event) {
 					deleteUsers(selectedRowGen)
 				});
+		});
+	});
+	
+	$('#btnMoveUserModal').on('click',function(event) {
+		
+		getModalContent("modals/user/moveUserModal", function content(data){
+			$('#genericModalHeader').html("Kullanıcı Taşı")
+			$('#genericModalBodyRender').html(data);
+			
+			$('#infoUserMove').html(selectedRowGen.name);
+			// params div, disableuser, useCheckBox, select function
+			var selectedOu=null;
+			createUserTree("userTree4MoveDiv", true, false,
+					// row select
+					function(row, rootDnUser){
+						selectedOu=row;
+					},
+					//check action
+					function(checkedRows, row){
+						
+					},
+					//uncheck action
+					function(unCheckedRows, row){
+						
+					}
+			);
+			$('#moveUserBtn').on('click',function(event) {
+				moveUser(selectedRowGen,selectedOu)
+			});
 		});
 	});
 	
@@ -302,6 +328,8 @@ function addUser(row) {
     var digitsFlag = contains(userPassword, digits);
     var splCharsFlag = contains(userPassword, splChars);
     
+    var parentEntryUUID= row.entryUUID;
+    
     if(userPassword.length < 8 || !ucaseFlag || !lcaseFlag || !digitsFlag || !splCharsFlag){
     	$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
     	return
@@ -325,10 +353,12 @@ function addUser(row) {
 		url : 'lider/user/addUser',
 		data : params,
 		dataType : 'json',
-		success : function(ldapResult) {
+		success : function(data) {
+			console.log(data)
 			$.notify("Kullanıcı Başarı ile eklendi.",{className: 'success',position:"right top"}  );
-			$('#addUserBtn').addClass('disabled');
-			console.log(ldapResult)
+			$('#genericModalLarge').trigger('click');
+			$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
+			$("#treeGridUserHolderDivGrid").jqxTreeGrid('expandRow' , parentEntryUUID);
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Kullanıcı Eklenirken Hata Oluştu.", "error");
@@ -455,6 +485,28 @@ function updateUserPassword(userId) {
 	});  
 }
 
+function moveUser(selectedEntry, ou) {
+		var params = {
+			    "sourceDN" : selectedEntry.distinguishedName,
+			    "destinationDN": ou.distinguishedName
+		};
+		$.ajax({ 
+		    type: 'POST', 
+		    url: '/lider/ldap/move/entry',
+		    dataType: 'json',
+		    data: params,
+		    success: function (data) {
+	            $.notify("Kayıt taşındı.", "success");
+	            if(selectedEntry){
+					$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', selectedEntry.entryUUID); 
+				}
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Kayıt taşınırken hata oluştu.", "error");
+		    }
+		});
+}
+
 function hideUserButtons(){
 	$("#btnEditUserModal").hide();
 	$("#btnDeleteUserModal").hide();
@@ -462,27 +514,15 @@ function hideUserButtons(){
 	$("#btnChangePasswordUserModal").hide();
 	$("#btnSetPasswordPolicyModal").hide();
 	$("#btnAddOuModal").hide();
-	$("#btnAddOuModal").hide();
+	$("#btnDeleteUserModal").hide();
 	$("#btnAddUserModal").hide();
+	$("#btnDeleteOuModal").hide();
+	$("#btnMoveUserModal").hide();
+	$("#btnMoveOuModal").hide();
 	  
 }
-function hideOuButtons(){
-	$("#btnDeleteOuModal").hide();
-}
 
-function showOuButtons(){
-	$("#btnDeleteOuModal").show();
-}
-function showUserButtons(){
-	$("#btnEditUserModal").show();
-	$("#btnDeleteUserModal").show();
-	$("#btnEditUserModal").show();
-	$("#btnChangePasswordUserModal").show();
-	$("#btnSetPasswordPolicyModal").show();
-	
-}
-function setUserActionButtons(row){
-	
+function setUserActionButtons(row,rootDNUser){
 	if(row.type =="USER"){
 		$("#btnEditUserModal").show();
 		$("#btnChangePasswordUserModal").show();
@@ -495,7 +535,7 @@ function setUserActionButtons(row){
 		$("#btnAddUserModal").hide();
 		$("#btnMoveOuModal").hide();
 	  }
-	  else if(row.type =="ORGANIZATIONAL_UNIT"){
+	  else if(row.type == "ORGANIZATIONAL_UNIT"){
 		  
 		  $("#btnEditUserModal").hide();
 		  $("#btnChangePasswordUserModal").hide();
@@ -503,13 +543,28 @@ function setUserActionButtons(row){
 		  $("#btnDeleteUserModal").hide();
 		  $("#btnMoveUserModal").hide();
 		  
+		  if(row.entryUUID == rootDNUser){
+			  $("#btnDeleteOuModal").hide();
+			  $("#btnMoveOuModal").hide();
+		  }else{
+			  $("#btnDeleteOuModal").show();
+			  $("#btnMoveOuModal").show();
+		  }
+		  $("#btnAddUserModal").show();
 		  $("#btnAddOuModal").show();
 		  
-		  $("#btnDeleteOuModal").show();
-		  $("#btnAddUserModal").show();
-		  $("#btnMoveOuModal").show();
 	  }
-	
+	  else{
+		$("#btnDeleteOuModal").hide();
+		$("#btnAddOuModal").hide();
+		$("#btnAddUserModal").hide();
+		$("#btnMoveOuModal").hide();
+		$("#btnEditUserModal").hide();
+		$("#btnChangePasswordUserModal").hide();
+		$("#btnSetPasswordPolicyModal").hide();
+		$("#btnDeleteUserModal").hide();
+		$("#btnMoveUserModal").hide();
+	  }
 }
 
 function fillEntryDetail2Table(row){
@@ -531,7 +586,6 @@ function fillEntryDetail2Table(row){
             		|| (key =="telephoneNumber") 
             		|| (key =="entryDN") 
             		|| (key =="pwdPolicySubentry") 
-            		|| (key =="entryUUID") 
             		){
 	                	html += '<tr>';
 	                	var keyStr="";

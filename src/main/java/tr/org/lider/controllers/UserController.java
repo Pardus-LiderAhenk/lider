@@ -70,7 +70,8 @@ public class UserController {
 			attributes.put("loginShell", new String[] { "/bin/bash" });
 			attributes.put("userPassword", new String[] { selectedEntry.getUserPassword() });
 			attributes.put("homePostalAddress", new String[] { selectedEntry.getHomePostalAddress() });
-			attributes.put("telephoneNumber", new String[] { selectedEntry.getTelephoneNumber() });
+			if(selectedEntry.getTelephoneNumber()!=null && selectedEntry.getTelephoneNumber()!="")
+				attributes.put("telephoneNumber", new String[] { selectedEntry.getTelephoneNumber() });
 
 			String rdn="uid="+selectedEntry.getUid()+","+selectedEntry.getParentName();
 
@@ -80,6 +81,8 @@ public class UserController {
 			selectedEntry.setDistinguishedName(selectedEntry.getUid());
 
 			logger.info("User created successfully RDN ="+rdn);
+			selectedEntry = ldapService.findSubEntries(rdn, "(objectclass=*)", new String[] {"*"}, SearchScope.OBJECT).get(0);
+
 			
 			return selectedEntry;
 		} catch (LdapException e) {

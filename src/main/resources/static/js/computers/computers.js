@@ -779,12 +779,23 @@ function addSelectedEntryToTable(row){
 			return item.entryUUID == row.entryUUID;
 		}).length
 
-		if(indexx ==0 ){
-			selectedEntries.push(row);
+		data={}
+		data.type=row.type;
+		data.entryUUID=row.entryUUID;
+		data.name=row.name;
+		data.online=row.online;
+		data.uid=row.uid;
+		data.distinguishedName=row.distinguishedName;
+		data.cn=row.cn;
+		data.attributes=row.attributes;
+		
+		console.log(row)
+		if(indexx == 0 ){
+			selectedEntries.push(data);
 		}
 		
 		if(indexx ==0){
-			var tableRow="<tr> <td> </td> <td> "+row.name+ "</td> <td> "+row.distinguishedName+ "</td> </tr>";
+			var tableRow="<tr> <td> </td> <td> "+data.name+ "</td> <td> "+row.distinguishedName+ "</td> </tr>";
 		}
 		
 		$("#selectedAgentTable tbody").append(tableRow);

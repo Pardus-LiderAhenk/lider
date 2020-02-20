@@ -12,12 +12,13 @@
 if (ref) {
 	connection.deleteHandler(ref);
 }
-var ref=connection.addHandler(getPackagesListener, null, 'message', null, null,  null);
-$("#entrySize").html(selectedEntries.length);
-
+scheduledParam = null;
 var packageInfoList = [];
 var dnlist = []
 var table;
+
+var ref=connection.addHandler(getPackagesListener, null, 'message', null, null,  null);
+$("#entrySize").html(selectedEntries.length);
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -27,12 +28,19 @@ selectedPluginTask.parameterMap={};
 selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
 selectedPluginTask.commandId = "INSTALLED_PACKAGES";
+selectedPluginTask.cronExpression = scheduledParam;
 var params = JSON.stringify(selectedPluginTask);
-//get installed packages from agent when page opened. This action default parameterMap is null. CommandID is INSTALLED_PACKAGES
 
+//get installed packages from agent when page opened. This action default parameterMap is null. CommandID is INSTALLED_PACKAGES
 sendPackageManagementTask(params);
 
 function sendPackageManagementTask(params){
+	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
+	if (scheduledParam != null) {
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+	}
+
+	console.log(message);
 
 	$.ajax({
 		type: "POST",
@@ -48,8 +56,9 @@ function sendPackageManagementTask(params){
 		}, 
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
+			console.log(res);
 			if(res.status=="OK"){
-				$("#plugin-result").html("Görev başarı ile gönderildi.. Lütfen bekleyiniz...");
+				$("#plugin-result").html(message.bold());
 			}   	
 		},
 		error: function(result) {
@@ -110,7 +119,7 @@ function getPackagesListener(msg) {
 									createTable();
 									$("#plugin-result").html("");
 									$.notify(responseMessage, "success");
-									$('#package-management-info').html('<small style="color:red;">Silmek istediğiniz paket/leri seçerek Çalıştır ya da Zamanlı Çalıştır butonuna tıklayınız.</small>');
+									$('#package-management-info').html('<small style="color:red;">Silmek istediğiniz paket/leri seçerek Çalıştır butonuna tıklayınız.</small>');
 								}
 							}else {
 								createTable();
@@ -137,6 +146,7 @@ function getPackagesListener(msg) {
 					selectedPluginTask.entryList=selectedEntries;
 					selectedPluginTask.dnType="AHENK";
 					selectedPluginTask.commandId = "INSTALLED_PACKAGES";
+					selectedPluginTask.cronExpression = null;
 					var params = JSON.stringify(selectedPluginTask);
 					table.clear().draw();
 					table.destroy();
@@ -173,7 +183,6 @@ function createTable() {
 			"sInfoFiltered": " - _MAX_ paket arasından",
 		},
 	} );
-	
 }
 
 $('#sendTask-'+ selectedPluginTask.page).click(function(e){
@@ -219,24 +228,34 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 		});
 		selectedPluginTask.commandId = "PACKAGE_MANAGEMENT";
 		selectedPluginTask.parameterMap={"packageInfoList":packageInfoList};
+		selectedPluginTask.cronExpression = scheduledParam;
 		var params = JSON.stringify(selectedPluginTask);
-		sendPackageManagementTask(params);
-		packageInfoList = [];
+
+		var content = "Görev Gönderilecek, emin misiniz?";
+		if (scheduledParam != null) {
+			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+		}
+		$.confirm({
+			title: 'Uyarı!',
+			content: content,
+			theme: 'light',
+			buttons: {
+				Evet: function () {
+					sendPackageManagementTask(params);
+					packageInfoList = [];
+					scheduledParam = null;
+				},
+				Hayır: function () {
+				}
+			}
+		});
 	}
 	else {
 		$.notify("Lütfen silmek istediğiniz paketi/leri seçerek Çalıştır butonuna tıklayınız.", "warn");
 	}
 });
 
-$('#sendTaskCron-'+ selectedPluginTask.page).click(function(e){
-	if ($('input:checkbox[name=package_name]').is(':checked')) {
-		alert("Zamanlı Çalıştır");
-	}
-	else {
-		$.notify("Lütfen silmek istediğiniz paketi/leri seçerek Zamanlı Çalıştır butonuna tıklayınız.", "warn");
-	}
-});
-
 $('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);	
+	connection.deleteHandler(ref);
+	scheduledParam = null;
 });

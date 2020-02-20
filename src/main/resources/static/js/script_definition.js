@@ -9,7 +9,7 @@
 
 var table;
 var scriptFileList = [];
-var sId = null;
+var sId = null; // selected script id
 
 $(document).ready(function(){
 	$("#scriptDelBtn").hide();
@@ -18,7 +18,7 @@ $(document).ready(function(){
 });
 
 function getScriptFile() {
-	
+
 	$.ajax({
 		type: 'POST', 
 		url: "/script/list",
@@ -26,7 +26,7 @@ function getScriptFile() {
 		success: function(data) {
 			if(data != null && data.length > 0) {
 				scriptFileList = data;
-				createScriptTable()
+				createScriptTable();
 				$.notify("Betikler başarıyla listelendi.", "success");
 			}else {
 				createScriptTable();
@@ -39,19 +39,21 @@ function getScriptFile() {
 }
 
 function createScriptTable() {
-
 	for (var i = 0; i < scriptFileList.length; i++) {
 		var scriptName = scriptFileList[i]['label'];
 		var scriptType = scriptFileList[i]['scriptType'];
 		var createDate = scriptFileList[i]['createDate'];
 		var modifyDate = scriptFileList[i]['modifyDate'];
+		var scriptId = scriptFileList[i]["id"];
+		var scriptContents = scriptFileList[i]['contents'];
+
 		if (modifyDate == null) {
 			modifyDate = "";
 		}
 		if (createDate == null) {
 			createDate = "";
 		}
-		var newRow = $("<tr>");
+		var newRow = $("<tr id="+ scriptId +">");
 		var html = '<td>'+ scriptName +'</td>';
 		html += '<td>'+ scriptType +'</td>';
 		html += '<td>'+ createDate +'</td>';
@@ -81,12 +83,14 @@ $('#scriptTableTemp tbody').on( 'click', 'tr', function () {
 		$('#scriptType').val("bash").change();
 		$("#scriptSaveBtn").html("Kaydet");
 		$("#scriptDelBtn").hide();
+		sId = null;
 	}
 	else {
 		table.$('tr.selected').removeClass('selected');
 		$(this).addClass('selected');
 		$("#scriptSaveBtn").html("Güncelle");
 		var rowData = table.rows('.selected').data()[0];
+		sId = $(this).attr('id');
 		$("#scriptNameTemp").val(rowData[0]);
 		$("#scriptDelBtn").show();
 		var sType = null;
@@ -105,9 +109,8 @@ $('#scriptTableTemp tbody').on( 'click', 'tr', function () {
 		}
 		$('#scriptType').val(sType).change();
 		for (var i = 0; i < scriptFileList.length; i++) {
-			if (scriptFileList[i]['label'] == rowData[0]) {
+			if (scriptFileList[i]['id'] == sId) {
 				$("#scriptContentTemp").val(scriptFileList[i]['contents']);
-				sId = scriptFileList[i]['id'];
 			}
 		}
 	}
@@ -160,30 +163,34 @@ $('#scriptSaveBtn').click(function(e){
 				scriptType: sType,
 				id: sId
 		};
-		$.ajax({
-			type: 'POST', 
-			url: "/script/update",
-			data: JSON.stringify(file),
-			dataType: "json",
-			contentType: "application/json",
-			success: function(data) {
-				if (data != null) {
-					$.notify("Betik başarıyla güncellendi.", "success");
-					updateScriptList(data.id, data.label, data.contents, data.scriptType, data.modifyDate);
-					// the table is refreshed after the script is updated
-					table.clear().draw();
-					table.destroy();
-					createScriptTable();
+		if (sContent != "" && sName != "" && sType != null) {
+			$.ajax({
+				type: 'POST', 
+				url: "/script/update",
+				data: JSON.stringify(file),
+				dataType: "json",
+				contentType: "application/json",
+				success: function(data) {
+					if (data != null) {
+						$.notify("Betik başarıyla güncellendi.", "success");
+						updateScriptList(data.id, data.label, data.contents, data.scriptType, data.modifyDate);
+						// the table is refreshed after the script is updated
+						table.clear().draw();
+						table.destroy();
+						createScriptTable();
 
-					$("#scriptNameTemp").val("");
-					$('#scriptType').val("bash").change();
-					$("#scriptSaveBtn").html("Kaydet");
-					$("#scriptDelBtn").hide();
-				}else {
-					$.notify("Betik güncellenirken hata oluştu.", "error");
+						$("#scriptNameTemp").val("");
+						$('#scriptType').val("bash").change();
+						$("#scriptSaveBtn").html("Kaydet");
+						$("#scriptDelBtn").hide();
+					}else {
+						$.notify("Betik güncellenirken hata oluştu.", "error");
+					}
 				}
-			}
-		});
+			});
+		}else {
+			$.notify("Betik adı ve içeriği boş bırakılamaz.", "warn");
+		}
 		// Otherwise, if no rows are selected. Save script file
 	} else {
 		file = {
@@ -243,13 +250,9 @@ $('#scriptDelBtn').click(function(e){
 	var rows = table.$('tr.selected');
 	if(rows.length){
 		var rowData = table.rows('.selected').data()[0];
-		for (var i = 0; i < scriptFileList.length; i++) {
-			if (scriptFileList[i]['label'] == rowData[0]) {
-				var id = scriptFileList[i]['id'];
-			}
-		}
+
 		file = {
-				id: id
+				id: sId
 		};
 
 		$.ajax({
@@ -261,7 +264,7 @@ $('#scriptDelBtn').click(function(e){
 			success: function(data) {
 				if (data != null) {
 					$.notify("Betik başarıyla silindi.", "success");
-					removeScriptList(id);
+					removeScriptList(data.id);
 					// the table is refreshed after the script is deleted
 					table.clear().draw();
 					table.destroy();
@@ -271,6 +274,7 @@ $('#scriptDelBtn').click(function(e){
 					$("#scriptNameTemp").val("");
 					$('#scriptType').val("bash").change();
 					$("#scriptSaveBtn").html("Kaydet");
+					$("#scriptDelBtn").hide();
 				}else {
 					$.notify("Betik silinirken hata oluştu.", "error");
 				}

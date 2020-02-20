@@ -61,7 +61,6 @@ function getScriptFile() {
 $('#scriptSelectBox').change(function(){ 
 	var scriptType = $(this).val();
 	var scriptFileId = $(this).find('option:selected').attr('id')
-	console.log(scriptType);
 	for (var i = 0; i < scriptFileList.length; i++) {
 		if (scriptFileId == scriptFileList[i]["id"]) {
 			$("#scriptContent").val(scriptFileList[i]["contents"]);

@@ -13,7 +13,7 @@
 				<div class="form-group">
 					<label for="scriptSelectBox">Betik Adı</label> <select
 						class="form-control" id="scriptSelectBox">
-						<option value="0" selected>Betik seçiniz...</option>
+						<option value="NA" selected>Betik seçiniz...</option>
 					</select>
 				</div>
 				<div class="form-group">
@@ -33,22 +33,13 @@
 				<div class="row">
 					<div class="col-lg-7">
 						<!-- ids of the following buettons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-						<button id=sendTask-execute-script type="button"
-							class="btn-shadow btn btn-info" title="Çalıştır">
-							<i class="fa fa-play"></i> Çalıştır
-						</button>
+						<button id=sendTask-execute-script type="button" class="btn-shadow btn btn-info"><i class="fa fa-play"></i> Çalıştır</button>
 						<button id=sendTaskCron-execute-script type="button"
-							class="btn-shadow btn btn-info" title="Zamanlı Çalıştır">
-							<i class="fa fa-hourglass-start"></i> Zamanlı Çalıştır
-						</button>
+							class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri" data-toggle="modal" data-target="#scheduledTasksModal"><i class="fa fa-hourglass-start"></i> Görev Parametreleri</button>
 					</div>
 					<div class="col-lg-5 text-right">
 						<!-- ids of the following buttons must be closePage-{plugin-page} -->
-						<button id=closePage-execute-script type="button"
-							class="btn-shadow btn btn-info" data-dismiss="modal"
-							title="Kapat">
-							<i class="fa fa-window-close"></i> Kapat
-						</button>
+						<button id=closePage-execute-script type="button" class="btn-shadow btn btn-info" data-dismiss="modal"><i class="fa fa-window-close"></i> Kapat</button>
 					</div>
 				</div>
 			</div>

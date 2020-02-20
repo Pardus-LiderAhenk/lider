@@ -1,6 +1,7 @@
 /**
  * Generic scheduler (crontab expression) page for scheduled tasks.
- * Tuncay ÇOLAK tuncay.colak@tubitak.gov.tr
+ * Tuncay ÇOLAK 
+ * tuncay.colak@tubitak.gov.tr
  * 
  * http://www.liderahenk.org/
  */
@@ -16,12 +17,14 @@ function getNewDate() {
 	var day = date.getDate();
 	var month = date.getMonth() + 1;
 	var year = date.getFullYear();
+
 	if (day < 10) {
 		day = "0" + day;
 	}
 	if (month < 10) {
 		month = "0" + month;
 	}
+
 	var strDate = year + "-" + month + "-" + day;
 	return strDate;
 }
@@ -53,13 +56,7 @@ $("#scheduledSelection").on("change", function() {
 		var strDate = getNewDate();
 		var resDate = strDate.split("-");
 		var resDay = resDate[2];
-		if (resDay.includes("0")) {
-			resDay = resDay.replace("0", "");
-		}
 		var resMonth = resDate[1];
-		if (resMonth.includes("0")) {
-			resMonth = resMonth.replace("0", "");
-		}
 		setScheduleParameters(time.getMinutes(), time.getHours(),
 				resDay, resMonth, "*", false);
 	} else if (scheduleType == "custom") {
@@ -80,16 +77,8 @@ function setScheduleParameters(min, hour, dOfMonth, month, dOfWeek, dateStatus) 
 $("#scheduledDate").on("change", function() {
 	var date = $(this).val();
 	var resDate = date.split("-");
-	var resDay = resDate[2];
-	if (resDay.includes("0")) {
-		resDay = resDay.replace("0", "");
-	}
-	$("#scheduledDayOfMonth").val(resDay);
-	var resMonth = resDate[1];
-	if (resMonth.includes("0")) {
-		resMonth = resMonth.replace("0", "");
-	}
-	$("#scheduledMonth").val(resMonth);
+	$("#scheduledDayOfMonth").val(resDate[2]);
+	$("#scheduledMonth").val(resDate[1]);
 });
 
 $("#scheduledSendTask").on("click", function() {
@@ -108,6 +97,12 @@ $("#scheduledSendTask").on("click", function() {
 		if (type == "once" || type == "custom") {
 			var year = $("#scheduledDate").val();
 			year = year.split("-");
+			if (dayOfMonth < 10 && dayOfMonth.includes("0")) {
+				dayOfMonth = dayOfMonth.replace("0", "");
+			}
+			if (month < 10 && month.includes("0")) {
+				month = month.replace("0", "");
+			}
 			scheduledParam = minute +" "+ hour + " " + dayOfMonth + " " + month + " " + dayOfWeek + " " + year[0];
 		}else {
 			scheduledParam = minute +" "+ hour + " " + dayOfMonth + " " + month + " " + dayOfWeek;

@@ -6,16 +6,51 @@
  * 
  */
 
-connection.addHandler(onPresence2, null, "presence");
-
 var selectedRow= null;
 var selectedEntries = []; 
 var selectedPluginTask;
 var selectedAgentGroupDN = "";
 var selectedOUDN = "";
-var treeGridHolderDiv= "computerTreeDiv"
+var treeGridHolderDiv= "computerTreeDiv";
+var computerTreeCreated=false;
 //creating pluginTask Table on the page
 //loadPluginTaskTable(false);
+
+	connection.addHandler(onPresence2, null, "presence");
+function onPresence2(presence)
+{
+	var ptype = $(presence).attr('type');
+	var from = $(presence).attr('from');
+	var jid_id = jid_to_id(from);
+	var name = jid_to_name(from);
+	var source = jid_to_source(from);
+	
+	
+	if (ptype === 'subscribe') {
+		$.notify("subscribe","warn");
+	} 
+	else if (ptype !== 'error') {
+		//OFFLine state
+		if (ptype === 'unavailable') {
+			
+			if(computerTreeCreated){
+				var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
+				console.log(row)
+				row.online=false;
+				$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name});
+			}
+		} else {
+			
+			if(computerTreeCreated){
+				var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
+				console.log(row)
+				row.online=true;
+				$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name}); 
+			}
+		}
+	}
+	return true;
+}
 
 setOnlineEntryList();
 taskHistory();
@@ -25,9 +60,9 @@ taskHistory();
  */
 createComputerTree(treeGridHolderDiv, false, false,
 		// row select
-		function(row, rootDnUser){
+		function(row, rootDnComputer){
 			selectedRow=row;
-			addSelectedEntryToTable(row);
+			addSelectedEntryToTable(row,rootDnComputer);
 		},
 		//check action
 		function(checkedRows, row){
@@ -38,6 +73,8 @@ createComputerTree(treeGridHolderDiv, false, false,
 			
 		}
 );
+
+computerTreeCreated=true;
 
 function loadPluginTaskTable(isMulti) {
 	$.ajax({
@@ -51,7 +88,7 @@ function loadPluginTaskTable(isMulti) {
 			html += '<thead>';
 			html += '<tr>';
 			html += '<th style="width: 40%">Görev Adı</th>';
-			html += '<th style="width: 25%" >Açıklama</th>';
+//			html += '<th style="width: 25%" >Açıklama</th>';
 			html += '<th style="width: 10%"></th>';
 			html += '</tr>';
 			html += '</thead>';
@@ -62,16 +99,16 @@ function loadPluginTaskTable(isMulti) {
 		    	if(isMulti==entry.isMulti){
 
 		        	html += '<tr>';
-		            html += '<td>' + entry.name + '</td>';
-		            html += '<td>' + entry.description + '</td>';
+		            html += '<td title="'+entry.description +'">' + entry.name + '</td>';
+//		            html += '<td>' + entry.description + '</td>';
 		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" title="Görev Gönder" data-toggle="modal" data-target="#pluginHtmlPageLargeModal" data-id="' + entry.id + '" data-page="'
 		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <i class="fa fa-tasks fa-w-20"> </i> </button>  </td>';
 		            html += '</tr>';
 		    	}
 		    	else if(isMulti== false){
 		    		html += '<tr>';
-		            html += '<td>' + entry.name + '</td>';
-		            html += '<td>' + entry.description + '</td>';
+		    		html += '<td title="'+entry.description +'">' + entry.name + '</td>';
+//		            html += '<td>' + entry.description + '</td>';
 		            html += '<td>  <button class="btn btn-xs btn-default sendTaskButton" type="button" id="sendTaskButtonId" title="Görev Gönder" data-toggle="modal" data-target="#pluginHtmlPageLargeModal" data-id="' + entry.id + '" data-page="'
 		            + entry.page +'" data-name="'+ entry.name +'" data-description="'+ entry.description+'" > <i class="fa fa-tasks fa-w-20"> </i> </button>  </td>';		 
 		            html += '</tr>';
@@ -134,34 +171,6 @@ function loadPluginTaskTable(isMulti) {
 }
 
 
-function onPresence2(presence)
-{
-	var ptype = $(presence).attr('type');
-	var from = $(presence).attr('from');
-	var jid_id = jid_to_id(from);
-	var name = jid_to_name(from);
-	var source = jid_to_source(from);
-
-	if (ptype === 'subscribe') {
-		$.notify("subscribe","warn");
-	} 
-	else if (ptype !== 'error') {
-		//OFFLine state
-		if (ptype === 'unavailable') {
-			var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
-			console.log(row)
-			row.online=false;
-			$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name}); 
-
-		} else {
-			var row = $('#computerTreeDivGridGrid').jqxTreeGrid('getRow', name);
-			console.log(row)
-			row.online=true;
-			$('#computerTreeDivGridGrid').jqxTreeGrid('updateRow', name , {name:name}); 
-		}
-	}
-	return true;
-}
 
 function loadComputersTree(data){
 	var source =
@@ -772,7 +781,7 @@ function addNewGroup() {
 	});
 }
 
-function addSelectedEntryToTable(row){
+function addSelectedEntryToTable(row,rootDnComputer){
 	if(row.type=="AHENK"){
 		
 		var indexx=$.grep(selectedEntries, function(item){
@@ -789,24 +798,119 @@ function addSelectedEntryToTable(row){
 		data.cn=row.cn;
 		data.attributes=row.attributes;
 		
-		console.log(row)
 		if(indexx == 0 ){
 			selectedEntries.push(data);
 		}
+		showSelectedEntries();
 		
-		if(indexx ==0){
-			var tableRow="<tr> <td> </td> <td> "+data.name+ "</td> <td> "+row.distinguishedName+ "</td> </tr>";
-		}
+	}
+	
+	else if(row.type == "ORGANIZATIONAL_UNIT" && row.entryUUID != rootDnComputer){
+		var selectedEntryArray=[]
+		selectedEntryArray.push({
+				distinguishedName :row.distinguishedName, 
+				entryUUID: row.entryUUID, 
+				name: row.name,
+				type: row.type,
+				uid: row.uid
+		});
 		
-		$("#selectedAgentTable tbody").append(tableRow);
+		$.ajax({
+			url : 'lider/ldap/getAhenks',
+			type : 'POST',
+			data: JSON.stringify(selectedEntryArray),
+			dataType: "json",
+			contentType: "application/json",
+			success : function(data) {
+				var ahenks = data;
+				
+				for (var i = 0; i < ahenks.length; i++) {
+					// get a row.
+					var rowData = ahenks[i];
+					if(rowData.type=="AHENK"){
+						var indexx=$.grep(selectedEntries, function(item){
+							return item.entryUUID == rowData.entryUUID;
+						}).length
+
+						if(indexx ==0 ){
+							selectedEntries.push(rowData);
+						}
+					}
+				}
+				showSelectedEntries();
+			}
+		});
+	}
+}
+
+function showSelectedEntries() {
+	//var html = '<div><button id="createAgentGroup" data-toggle="modal" onclick="createAgentGroupClicked()" data-target="#createAgentGroupModal" type="button" class="btn btn-info pull-right btn-group" title="İstemcileri Ekle" ><i class="material-icons">add</i> <span>Seçili İstemcilerden Grup Oluştur</span> </button><br></div>';
+	var html = '<table class="table table-striped table-bordered " id="selectedEntry4TaskTables">';
+	html += '<tr>';
+	html += '<th style="width: 5%"></th>';
+	html += '<th style="width: 30%">Bilgisayar Adı</th>';
+	html += '<th style="width: 15%"></th>';
+	html += '</tr>';
+	
+	if(selectedEntries.length == 0) {
+		html += '<tr><td colspan="100%" class="text-center">İşlem yapabilmek için en az bir istemci bulunmalıdır.</td></tr>';
+		$("#dropdownButton").hide();
+	} else {
+		$("#dropdownButton").show();
+	}
+	
+	for (var i = 0; i < selectedEntries.length; i++) {
 		
-		if(selectedEntries.length>1){
+		var onlyParentName="";
+		var dn=selectedEntries[i].distinguishedName;
+		var dnArr= dn.split(",");
+		
+		dnArr.forEach(function(entry) {
+		    if(entry.startsWith("ou")){
+		    	var onName=entry.split("=");
+		    	onlyParentName +=onName[1]
+		    	onlyParentName +=","
+		    }
+		});
+		html += '<tr>';
+		html += '<td>' + (i+1) + '</td>';
+		html += '<td class="entryDetail" title="'+selectedEntries[i].distinguishedName +'" > ' + selectedEntries[i].name   ;
+//		html += '<div style = "display:none; background-color: black; color: yellow; " class=" card popup" style=" height: 100px;">   '+ selectedEntries[i].distinguishedName  + '</div> </td>';
+		html += '<td class="text-center">';
+		html += '<button class="btn btn-danger btn-sm removeEntry" type="button" id="' +selectedEntries[i]+ '" data-id="'+ selectedEntries[i]+'" title="Kaldir"> - </button>';
+		html += '</td>';
+		html += '</tr>';
+	}
+	html += '</table>';
+
+	$('.pizzaname').hide();
+	$('#selectedAgentTable').html(html);
+
+	if(selectedEntries.length>1){
+		loadPluginTaskTable(true);
+	}
+	else{
+		loadPluginTaskTable(false);
+	}
+
+	$('.removeEntry').on('click', function(e) {
+		var uid = $(this).data("id");
+		selectedEntries.splice($.inArray(uid, selectedEntries), 1);
+		showSelectedEntries();
+		$('#selectedEntrySize').html(selectedEntries.length);
+		if(selectedEntries.length > 1){
 			loadPluginTaskTable(true);
 		}
 		else{
 			loadPluginTaskTable(false);
 		}
-	}
+	});
+	
+	$('.entryDetail').hover(function() {
+	    $(this).find('.popup').show();
+	  }, function() {
+	    $(this).find('.popup').hide();
+	  });
 }
 
 function setOnlineEntryList() {

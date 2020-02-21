@@ -166,6 +166,7 @@ function onRosterChanged(iq) {
 	return true;
 }
 
+
 function onPresence(presence)
 {
 	var ptype = $(presence).attr('type');
@@ -191,7 +192,6 @@ function onPresence(presence)
 					break;
 				}
 			}
-
 		} else {
 			$.notify(name+" online..", {className: 'success',position:"left bottom"}  );
 			log(name+" çevrimiçi oldu.","INFO");

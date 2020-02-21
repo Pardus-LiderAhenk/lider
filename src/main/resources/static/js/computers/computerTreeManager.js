@@ -8,7 +8,7 @@
  */
 function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
 	
-	var rootDNUser = null;
+	var rootComputer = null;
 	var treeGridId=treeHolderDiv+"Grid";
 	/**
 	 * create search area
@@ -22,10 +22,7 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 		url : 'lider/ldap/getComputers',
 		dataType : 'json',
 		success : function(data) {
-			rootDNUser = null;
-			
-			console.log(data)
-			
+			rootComputer = null;
 			 var source =
 			  {
 					 dataType: "json",
@@ -67,7 +64,7 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 //					}
 				};
 			 
-			 rootDNUser = source.localData[0].entryUUID;
+			 rootComputer = source.localData[0].entryUUID;
 //			 	$("#treeGridUser").jqxTreeGrid('destroy');
 			 	
 			 	$('#'+treeHolderDiv).append('<div id="'+treeGridId+'"></div> ')
@@ -127,7 +124,7 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 				        var args = event.args;
 					    var row = args.row;
 					    var name= row.name;
-					    rowSelectAction(row,rootDNUser);
+					    rowSelectAction(row,rootComputer);
 
 				    });
 				 
@@ -275,7 +272,8 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 				    	 var entry = ldapResult[i];
 				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.name , entry , 'last' ,'userSearch');
 					}
-					$('#'+treeGridId).jqxTreeGrid('expandRow', "userSearch")
+					$('#'+treeGridId).jqxTreeGrid('collapseAll');
+					$('#'+treeGridId).jqxTreeGrid('expandRow', "userSearch");
 					
 				},
 			    error: function (data, errorThrown) {

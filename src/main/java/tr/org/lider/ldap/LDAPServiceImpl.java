@@ -716,8 +716,14 @@ public class LDAPServiceImpl implements ILDAPService {
 							attributesMultiValues.put(attrName, new String[] {value});
 						}
 					}
-					result.add(new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, priviliges,	convertObjectClass2DNType(entry.get("objectClass"))));
-				}
+
+					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, priviliges,convertObjectClass2DNType(entry.get("objectClass")));
+					
+					if(ldapEntry.getType()==DNType.AHENK) {
+						ldapEntry.setOnline(xmppClientImpl.isRecipientOnline(ldapEntry.getUid()));
+					}
+					result.add(ldapEntry);
+									}
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -835,6 +841,10 @@ public class LDAPServiceImpl implements ILDAPService {
 					
 					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, priviliges,convertObjectClass2DNType(entry.get("objectClass")));
 					
+					
+					if(ldapEntry.getType()==DNType.AHENK) {
+						ldapEntry.setOnline(xmppClientImpl.isRecipientOnline(ldapEntry.getUid()));
+					}
 					result.add(ldapEntry);
 				}
 			}

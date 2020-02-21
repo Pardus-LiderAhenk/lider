@@ -163,31 +163,37 @@ $('#scriptSaveBtn').click(function(e){
 				scriptType: sType,
 				id: sId
 		};
-		if (sContent != "" && sName != "" && sType != null) {
-			$.ajax({
-				type: 'POST', 
-				url: "/script/update",
-				data: JSON.stringify(file),
-				dataType: "json",
-				contentType: "application/json",
-				success: function(data) {
-					if (data != null) {
-						$.notify("Betik başarıyla güncellendi.", "success");
-						updateScriptList(data.id, data.label, data.contents, data.scriptType, data.modifyDate);
-						// the table is refreshed after the script is updated
-						table.clear().draw();
-						table.destroy();
-						createScriptTable();
 
-						$("#scriptNameTemp").val("");
-						$('#scriptType').val("bash").change();
-						$("#scriptSaveBtn").html("Kaydet");
-						$("#scriptDelBtn").hide();
-					}else {
-						$.notify("Betik güncellenirken hata oluştu.", "error");
+		if (sContent != "" && sName != "" && sType != null) {
+			if (checkedUpdatedScriptName(sName, sId) == false) {
+				$.ajax({
+					type: 'POST', 
+					url: "/script/update",
+					data: JSON.stringify(file),
+					dataType: "json",
+					contentType: "application/json",
+					success: function(data) {
+						if (data != null) {
+							$.notify("Betik başarıyla güncellendi.", "success");
+							updateScriptList(data.id, data.label, data.contents, data.scriptType, data.modifyDate);
+							// the table is refreshed after the script is updated
+							table.clear().draw();
+							table.destroy();
+							createScriptTable();
+
+							$("#scriptNameTemp").val("");
+							$('#scriptType').val("bash").change();
+							$("#scriptSaveBtn").html("Kaydet");
+							$("#scriptDelBtn").hide();
+						}else {
+							$.notify("Betik güncellenirken hata oluştu.", "error");
+						}
 					}
-				}
-			});
+				});
+			}else {
+				$.notify("Betik adı zaten var. Farklı bir betik adı giriniz.", "warn");
+				$("#scriptNameTemp").focus();
+			}
 		}else {
 			$.notify("Betik adı ve içeriği boş bırakılamaz.", "warn");
 		}
@@ -236,11 +242,25 @@ $('#scriptSaveBtn').click(function(e){
 	}
 });
 
+//checked script name for added selected script
 function checkedScriptName(sName) {
 	var isExist = false;
 	for (var i = 0; i < scriptFileList.length; i++) {
 		if (sName == scriptFileList[i]["label"]) {
-			isExist = true
+			isExist = true;
+		}
+	}
+	return isExist;
+}
+
+//checked script name for updated selected script
+function checkedUpdatedScriptName(sName, sId) {
+	var isExist = false;
+	for (var i = 0; i < scriptFileList.length; i++) {
+		if (sName == scriptFileList[i]["label"] && sId == scriptFileList[i]["id"]) {
+			isExist = false;
+		}else if (sName == scriptFileList[i]["label"] && sId != scriptFileList[i]["id"]) {
+			isExist = true;
 		}
 	}
 	return isExist;

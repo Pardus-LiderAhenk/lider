@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -414,14 +412,73 @@ public class LdapController {
 	@RequestMapping(method=RequestMethod.POST ,value = "/createSudoGroup", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public LdapEntry createSudoGroup(@RequestParam(value = "groupName", required=true) String groupName,
+			@RequestParam(value = "selectedOUDN", required=true) String selectedOUDN,
 			@RequestParam(value = "sudoHostList[]", required=false)  String[] sudoHostList,
 			@RequestParam(value = "sudoCommandList[]", required=false)  String[] sudoCommandList,
 			@RequestParam(value = "sudoUserList[]", required=false)  String[] sudoUserList) {
 		
-		 MultiValueMap<String, String> bodyMap = new LinkedMultiValueMap<>();
-		    bodyMap.add("key", "e2e33efb4efb4e5794b48a18578384ee");
-		    bodyMap.add("key", "123");
-		    bodyMap.add("info", "aa");
-		return null;
+		String newGroupDN = "";
+		//to return newly added entry with its details
+		LdapEntry entry;
+		Map<String, String[]> attributes = new HashMap<String,String[]>();
+		attributes.put("objectClass", new String[] {"top", "sudoRole"} );
+		//attributes.put("liderGroupType", new String[] {"ROLE"} );
+		try {
+			if(sudoUserList != null) {
+				//when single dn comes spring boot takes it as multiple arrays
+				//so dn must be joined with comma
+				//if member dn that will be added to group is cn=user1,ou=Groups,dn=liderahenk,dc=org
+				//spring boot gets this param as array which has size 4
+				Boolean checkedArraySizeIsOne = true;
+				for (int i = 0; i < sudoUserList.length; i++) {
+					if(sudoUserList[i].contains(",")) {
+						checkedArraySizeIsOne = false;
+						break;
+					}
+				}
+				if(checkedArraySizeIsOne ) {
+					attributes.put("sudoUser", new String[] {String.join(",", sudoUserList)} );
+				} else {
+					attributes.put("sudoUser", sudoUserList );
+				}
+			}
+
+			//add sudoHost attributes 
+			if(sudoHostList != null) {
+				attributes.put("sudoHost", sudoHostList );
+			}
+			//add sudoCommand attributes 
+			if(sudoCommandList != null) {
+				attributes.put("sudoCommand", sudoCommandList );
+			}
+			newGroupDN = "cn=" +  groupName +","+ selectedOUDN;
+			ldapService.addEntry(newGroupDN , attributes);
+			entry = ldapService.getEntryDetail(newGroupDN);
+		} catch (LdapException e) {
+			logger.error("Error occured while adding new group.");
+			return null;
+		}
+		return entry;
+	}
+	
+	//edit sudo group
+	@RequestMapping(method=RequestMethod.POST ,value = "/editSudoGroup", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry editSudoGroup(@RequestParam(value = "selectedDN", required=true) String selectedDN,
+			@RequestParam(value = "sudoHostList[]", required=false)  String[] sudoHostList,
+			@RequestParam(value = "sudoCommandList[]", required=false)  String[] sudoCommandList,
+			@RequestParam(value = "sudoUserList[]", required=false)  String[] sudoUserList) {
+		LdapEntry entry;
+		try {
+			ldapService.updateEntryRemoveAttribute(selectedDN, "sudoCommand");
+			ldapService.updateEntryRemoveAttribute(selectedDN, "sudoHost");
+			ldapService.updateEntryRemoveAttribute(selectedDN, "sudoUser");
+			entry = ldapService.getEntryDetail(selectedDN);
+		} catch (LdapException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return entry;
 	}
 }

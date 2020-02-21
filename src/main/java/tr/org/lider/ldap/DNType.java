@@ -4,7 +4,7 @@ package tr.org.lider.ldap;
 
 public enum DNType {
 
-	AHENK(1), USER(2), GROUP(3), ALL(4), ORGANIZATIONAL_UNIT(5), ROLE_GROUP(6);
+	AHENK(1), USER(2), GROUP(3), ALL(4), ORGANIZATIONAL_UNIT(5), ROLE(6);
 
 	private int id;
 

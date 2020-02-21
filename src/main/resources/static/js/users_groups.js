@@ -632,7 +632,6 @@ function btnCreateUserGroupClicked() {
 	    	//add this group to main tree
             $("#treeGridUserGroups").jqxTreeGrid('addRow', data.entryUUID, data, 'last', selectedEntryUUID);
             $("#treeGridUserGroups").jqxTreeGrid('expandRow', selectedEntryUUID);
-            $("#treeGridUserGroups").jqxTreeGrid('selectRow', data.entryUUID);
             $('#genericModal').trigger('click');
 	    },
 	    error: function (data, errorThrown) {
@@ -642,7 +641,7 @@ function btnCreateUserGroupClicked() {
 }
 
 /*
- * delete user group members
+ * delete user group
  */
 function btnDeleteGroupClicked() {
 	var params = {
@@ -912,7 +911,6 @@ function btnAddMemberClicked() {
 				selectedData.attributesMultiValues = data.attributesMultiValues;
 				$("#treeGridUserGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 				$("#treeGridUserGroups").jqxTreeGrid('getRow', data.entryUUID);
-				$("#treeGridUserGroups").jqxTreeGrid('selectRow', data.entryUUID);
 				$('#genericModal').trigger('click');
 		    },
 		    error: function (data, errorThrown) {
@@ -1001,7 +999,6 @@ function btnDeleteMembersClicked() {
 					selectedData.attributesMultiValues = data.attributesMultiValues;
 					$("#treeGridUserGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 					$("#treeGridUserGroups").jqxTreeGrid('getRow', data.entryUUID);
-					$("#treeGridUserGroups").jqxTreeGrid('selectRow', data.entryUUID);
 					$('#genericModalLarge').trigger('click');
 				}
 			},

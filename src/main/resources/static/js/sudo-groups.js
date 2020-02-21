@@ -42,20 +42,17 @@ function dropdownButtonClicked(operation) {
 			//createModalForCreatingGroup();
 
 		});
-	} else if(operation == "deleteAgentGroup") {
-		checkedAgents = [];
-		checkedOUList = [];
+	} else if(operation == "deleteSudoGroup") {
 		getModalContent("modals/groups/sudo/deletegroup", function content(data){
-			$('#genericModalHeader').html("İstemci Grubunu Sil");
+			$('#genericModalHeader').html("Yetki Grubunu Sil");
 			$('#genericModalBodyRender').html(data);
 		});
-	} else if(operation == "deleteMembersFromGroup") {
-		groupMemberDNListForDelete = [];
-		groupMemberDNList = [];
-		getModalContent("modals/groups/agent/deletemember", function content(data){
-			$('#genericModalLargeHeader').html("Üye Sil");
+	} else if(operation == "editSudoGroup") {
+		getModalContent("modals/groups/sudo/editgroup", function content(data){
+			$('#genericModalLargeHeader').html("Grubu Düzenle");
 			$('#genericModalLargeBodyRender').html(data);
-			deleteMembersOfGroup();
+			fillAttributeTableForEditingGroup();
+
 		});
 	} else if(operation == "createNewOrganizationalUnit") {
 		getModalContent("modals/groups/agent/createou", function content(data){
@@ -294,7 +291,7 @@ function createMainTree() {
 
 		var selectedRows = $("#treeGridSudoGroups").jqxTreeGrid('getSelection');
 		var selectedRowData=selectedRows[0];
-
+		console.log(selectedRowData);
 		if(selectedRowData.type == "ORGANIZATIONAL_UNIT"){
 			html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModalLarge"' 
 				+ 'onclick="dropdownButtonClicked(\'createNewSudoGroup\')">Yeni Yetki Grubu Oluştur</a>';
@@ -311,18 +308,14 @@ function createMainTree() {
 					+ 'onclick="dropdownButtonClicked(\'deleteOrganizationalUnit\')">Klasörü Sil</a>';
 			}
 			$('#operationDropDown').html(html);
-		} else if(selectedRowData.type == "ROLE_GROUP"){
-			html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
-				+ 'onclick="dropdownButtonClicked(\'addMembersToSudoGroupModal\')">Üye Ekle</a>';
-			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
-				+ 'onclick="dropdownButtonClicked(\'editGroupName\')">Grup Adını Düzenle</a>';
+		} else if(selectedRowData.type == "ROLE"){
+			html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModalLarge"' 
+				+ 'onclick="dropdownButtonClicked(\'editSudoGroup\')">Grubu Düzenle</a>';
 			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 				+ 'onclick="dropdownButtonClicked(\'moveEntry\')">Kaydı Taşı</a>';
 			html += '<div class="dropdown-divider"></div>';
-			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModalLarge"'
-				+ 'onclick="dropdownButtonClicked(\'deleteMembersFromGroup\')">İstemci Sil</a>';
 			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
-				+ 'onclick="dropdownButtonClicked(\'deleteSudoGroup\')">İstemci Grubunu Sil</a>';
+				+ 'onclick="dropdownButtonClicked(\'deleteSudoGroup\')">Yetki Grubunu Sil</a>';
 			$('#operationDropDown').html(html);
 		}
 	});
@@ -786,7 +779,6 @@ function rowCheckAndUncheckOperationForCreatingGroup(event) {
     	if(checkedRows.length > 0){
     		for(var row in checkedRows) {
     			if(checkedRows[row].type == "USER") {
-    				//selectedAttribute.push(["sudoUser", checkedRows[row].distinguishedName]);
     				checkedUsers.push({
     					distinguishedName: checkedRows[row].distinguishedName, 
     					entryUUID: checkedRows[row].entryUUID, 
@@ -823,7 +815,6 @@ function rowCheckAndUncheckOperationForCreatingGroup(event) {
     							}
     						}
     						if(isExists == false) {
-    							//selectedAttribute.push(["sudoUser", element.distinguishedName]);
     							checkedUsers.push({
     								distinguishedName: element.distinguishedName, 
     								entryUUID: element.entryUUID, 
@@ -856,21 +847,14 @@ function btnCreateSudoGroupClicked() {
 	if($('#groupName').val() == "") {
 		$.notify("Lütfen grup adı giriniz.", "error");
 		return;
-	} else if(selectedAttribute.length == 0) {
-		$.notify("Grup oluşturabilmek için en az bir özellik eklemelisiniz.", "error");
-		return;
 	}
-	
-	var data = {sudoHost:["adsadas","dsdasas"]};
 	var params = {
-			"groupName" : "dsadasd",
+			"groupName" : $('#groupName').val(),
+			"selectedOUDN" : selectedDN,
 		    "sudoUserList" : sudoUserList,
 		    "sudoCommandList" : sudoCommandList,
 		    "sudoHostList" : sudoHostList
 	};
-
-	console.log(params);
-	//JSON.stringify(params)
 	$.ajax({ 
 	    type: 'POST', 
 	    url: "/lider/ldap/createSudoGroup",
@@ -878,6 +862,8 @@ function btnCreateSudoGroupClicked() {
 	    data: params,
 	    success: function (data) { 
 	    	$.notify("Grup oluşturuldu ve özellikler bu gruba dahil eklendi.", "success");
+            $("#treeGridSudoGroups").jqxTreeGrid('addRow', data.entryUUID, data, 'last', selectedEntryUUID);
+            $("#treeGridSudoGroups").jqxTreeGrid('expandRow', selectedEntryUUID);
             $('#genericModalLarge').trigger('click');
 	    },
 	    error: function (data, errorThrown) {
@@ -891,55 +877,98 @@ function btnMembersSelectedFromUserTree() {
 	for(var i = 0; i < checkedUsers.length; i++) {
 		var isExists = false;
 		for(var j = 0; j < selectedAttribute.length; j++) {
-			console.log(checkedUsers[i].distinguishedName +'=='+ selectedAttribute[j][1]);
 			if(checkedUsers[i].distinguishedName == selectedAttribute[j][1]) {
-				console.log("exists");
 				isExists = true;
 			}
 		}
 		if(isExists == false) {
-			console.log("add: " + checkedUsers[i]);
 			selectedAttribute.push(["sudoUser", checkedUsers[i].distinguishedName]);
 		}
 	}
 	createAttributeTable();
 }
 
-function btnCreateUserGroupClicked() {
-	if($('#userGroupsNewUserGroupName').val() == "") {
-		$.notify("Lütfen grup adı giriniz.", "error");
-		return;
-	} else if(checkedUsers.length == 0) {
-		$.notify("Grup oluşturabilmek için en az bir kullanıcı seçmelisiniz.", "error");
-		return;
-	}
-	var selectedRows = $("#selectMemberTreeGrid").jqxTreeGrid('getSelection');
-	var selectedDNList = [];
-	for (var i = 0; i < checkedUsers.length; i++) {
-		selectedDNList.push(checkedUsers[i].distinguishedName);
-	}
+/*
+ * delete sudo group
+ */
+function btnDeleteGroupClicked() {
 	var params = {
-		    "groupName" : $('#userGroupsNewUserGroupName').val(),
-		    "checkedList": selectedDNList,
-		    "selectedOUDN" : selectedDN
-		};
-	
+		    "dn": selectedDN,
+	};
 	$.ajax({ 
 	    type: 'POST', 
-	    url: "/lider/user/createNewGroup",
+	    url: '/lider/ldap/deleteEntry',
+	    dataType: 'json',
+	    data: params,
+	    success: function (data) {
+	    	$("#treeGridSudoGroups").jqxTreeGrid('deleteRow', selectedEntryUUID);
+	    	$("#genericModal").trigger('click');
+            $.notify("Yetki grubu başarıyla silindi.", "success");
+	    },
+	    error: function (data, errorThrown) {
+	    	$.notify("Yetki grubu silinirken hata oluştu.", "error");
+	    }
+	});
+}
+
+/*
+ * edit group name and attributes
+ */
+function fillAttributeTableForEditingGroup() {
+	selectedAttribute = [];
+	var selectedRows = $("#treeGridSudoGroups").jqxTreeGrid('getSelection');
+	var row=selectedRows[0];
+	$('#groupName').val(row.name);
+	
+	for (var key in row.attributesMultiValues) {
+		if (row.attributesMultiValues.hasOwnProperty(key)  && key != "member") {
+			if(key == "sudoUser") {
+				for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
+					selectedAttribute.push(["sudoUser", row.attributesMultiValues[key][i] ]);
+				}
+			} else if(key == "sudoCommand") {
+				for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
+					selectedAttribute.push(["sudoCommand", row.attributesMultiValues[key][i] ]);
+				}
+			} else if(key == "sudoHost") {
+				for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
+					selectedAttribute.push(["sudoHost", row.attributesMultiValues[key][i] ]);
+				}
+			}
+		}
+	}
+	createAttributeTable();
+}
+
+function btnEditSudoGroupClicked() {
+	if($('#groupName').val() == "") {
+		$.notify("Lütfen grup adı giriniz.", "error");
+		return;
+	}
+	var params = {
+			"selectedDN" : selectedDN,
+		    "sudoUserList" : sudoUserList,
+		    "sudoCommandList" : sudoCommandList,
+		    "sudoHostList" : sudoHostList
+	};
+
+	$.ajax({ 
+	    type: 'POST', 
+	    url: "/lider/ldap/editSudoGroup",
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) { 
-	    	$.notify("Grup oluşturuldu ve kullanıcılar bu gruba dahil edildi.", "success");
-	    	//after user group is added get newly added group detail from service
-	    	//add this group to main tree
-            $("#treeGridUserGroups").jqxTreeGrid('addRow', data.entryUUID, data, 'last', selectedEntryUUID);
-            $("#treeGridUserGroups").jqxTreeGrid('expandRow', selectedEntryUUID);
-            $("#treeGridUserGroups").jqxTreeGrid('selectRow', data.entryUUID);
-            $('#genericModal').trigger('click');
+	    	$.notify("Grup düzenlendi.", "success");
+	    	
+			var selectedData= $("#treeGridSudoGroups").jqxTreeGrid('getRow', data.entryUUID);
+			selectedData.attributesMultiValues = data.attributesMultiValues;
+			$("#treeGridSudoGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
+			$("#treeGridSudoGroups").jqxTreeGrid('getRow', data.entryUUID);
+			$('#genericModalLarge').trigger('click');
+	    	
 	    },
 	    error: function (data, errorThrown) {
-	    	$.notify("Yeni kullanıcı grubu oluştururken hata oluştu.", "error");
+	    	$.notify("Yeni sudo grubu oluştururken hata oluştu.", "error");
 	    }
 	});
 }

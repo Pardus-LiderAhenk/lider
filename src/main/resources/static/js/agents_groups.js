@@ -653,7 +653,6 @@ function btnCreateAgentGroupClicked() {
 	    	//add this group to main tree
             $("#treeGridAgentGroups").jqxTreeGrid('addRow', data.entryUUID, data, 'last', selectedEntryUUID);
             $("#treeGridAgentGroups").jqxTreeGrid('expandRow', selectedEntryUUID);
-            $("#treeGridAgentGroups").jqxTreeGrid('selectRow', data.entryUUID);
             $('#genericModal').trigger('click');
 	    },
 	    error: function (data, errorThrown) {
@@ -910,7 +909,6 @@ function btnAddMemberClicked() {
 				selectedData.attributesMultiValues = data.attributesMultiValues;
 				$("#treeGridAgentGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 				$("#treeGridAgentGroups").jqxTreeGrid('getRow', data.entryUUID);
-				$("#treeGridAgentGroups").jqxTreeGrid('selectRow', data.entryUUID);
 				$('#genericModal').trigger('click');
 		    },
 		    error: function (data, errorThrown) {
@@ -1001,7 +999,6 @@ function btnDeleteMembersClicked() {
 					selectedData.attributesMultiValues = data.attributesMultiValues;
 					$("#treeGridAgentGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 					$("#treeGridAgentGroups").jqxTreeGrid('getRow', data.entryUUID);
-					$("#treeGridAgentGroups").jqxTreeGrid('selectRow', data.entryUUID);
 					$('#genericModalLarge').trigger('click');
 				}
 			},

@@ -536,7 +536,36 @@
 			</div>
 		</div>
 	</div>
-
+	
+	<!-- User tree modal -->
+	<div class="modal fade" id="userTreeModal" tabindex="0" role="dialog" aria-labelledby="userTreeModal" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" id="userTreeModalHeader">Kullanıcı Ekle</h5>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+					    <div class="col-12" id="selectMemberTreeDiv">
+						    <div id="selectMemberTreeGrid"></div>
+					    </div>
+					    <div class="col-12">
+							<div>Seçilen kullanıcı sayısı: <b id="selectedUserCount">0</b></div>
+					    </div>
+					    <div class="col-12">
+							<div class="form-group float-right  mt-3 mr-2" id="newGroupInput">
+								<button type="button" class="btn btn-primary p-2" id="btnAddMember" 
+									onclick="btnMembersSelectedFromUserTree()">Kullanıcıları Seç</button>
+							</div>
+					    </div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCloseGenericModal">Kapat</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<script type="text/javascript" src="js/notify.min.js"></script>
 	<script type="text/javascript" src="js/messaging.js"></script> <!-- for xmmp connection send message -->
 	<script type="text/javascript" src="js/main.js"></script>

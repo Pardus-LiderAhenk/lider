@@ -70,6 +70,7 @@ public class ConfigurationService{
 	private String userLdapObjectClasses;
 	private Boolean userAuthorizationEnabled;
 	private String groupLdapObjectClasses;
+	private String roleLdapObjectClasses;
 	private String userLdapRolesDn;
 	private String groupLdapBaseDn;
 
@@ -170,6 +171,8 @@ public class ConfigurationService{
 		userLdapObjectClasses = env.getProperty("user.ldap.object.classes");
 		userAuthorizationEnabled = Boolean.getBoolean(env.getProperty("user.authorization.enabled"));
 		groupLdapObjectClasses = env.getProperty("group.ldap.object.classes");
+		roleLdapObjectClasses = env.getProperty("role.ldap.object.classes");
+		
 		setGroupLdapBaseDn(env.getProperty("group.ldap.base.dn"));
 		setUserLdapRolesDn(env.getProperty("user.ldap.roles.dn"));
 		
@@ -476,7 +479,14 @@ public class ConfigurationService{
 		this.groupLdapObjectClasses = groupLdapObjectClasses;
 	}
 
-	
+	public String getRoleLdapObjectClasses() {
+		return roleLdapObjectClasses;
+	}
+
+	public void setRoleLdapObjectClasses(String roleLdapObjectClasses) {
+		this.roleLdapObjectClasses = roleLdapObjectClasses;
+	}
+
 	public Boolean getTaskManagerCheckFutureTask() {
 		return taskManagerCheckFutureTask;
 	}
@@ -843,9 +853,9 @@ public class ConfigurationService{
 		return cronIntervalEntrySize;
 	}
 
-	
+	@Override
 	public String toString() {
-		return "ConfigurationServiceImpl [liderLocale=" + liderLocale + ", ldapServer=" + ldapServer + ", ldapPort="
+		return "ConfigurationService [liderLocale=" + liderLocale + ", ldapServer=" + ldapServer + ", ldapPort="
 				+ ldapPort + ", ldapUsername=" + ldapUsername + ", ldapPassword=" + ldapPassword + ", ldapRootDn="
 				+ ldapRootDn + ", ldapUseSsl=" + ldapUseSsl + ", ldapSearchAttributes=" + ldapSearchAttributes
 				+ ", ldapAllowSelfSignedCert=" + ldapAllowSelfSignedCert + ", ldapMailNotifierAttributes="
@@ -861,13 +871,14 @@ public class ConfigurationService{
 				+ ", userLdapUidAttribute=" + userLdapUidAttribute + ", userLdapPrivilegeAttribute="
 				+ userLdapPrivilegeAttribute + ", userLdapObjectClasses=" + userLdapObjectClasses
 				+ ", userAuthorizationEnabled=" + userAuthorizationEnabled + ", groupLdapObjectClasses="
-				+ groupLdapObjectClasses + ", taskManagerCheckFutureTask=" + taskManagerCheckFutureTask
-				+ ", taskManagerFutureTaskCheckPeriod=" + taskManagerFutureTaskCheckPeriod + ", alarmCheckReport="
-				+ alarmCheckReport + ", mailAddress=" + mailAddress + ", mailPassword=" + mailPassword + ", mailHost="
-				+ mailHost + ", mailSmtpPort=" + mailSmtpPort + ", mailSmtpAuth=" + mailSmtpAuth
-				+ ", mailSmtpStartTlsEnable=" + mailSmtpStartTlsEnable + ", mailSmtpSslEnable=" + mailSmtpSslEnable
-				+ ", mailSmtpConnTimeout=" + mailSmtpConnTimeout + ", mailSmtpTimeout=" + mailSmtpTimeout
-				+ ", mailSmtpWriteTimeout=" + mailSmtpWriteTimeout + ", mailSendOnTaskCompletion="
+				+ groupLdapObjectClasses + ", roleLdapObjectClasses=" + roleLdapObjectClasses + ", userLdapRolesDn="
+				+ userLdapRolesDn + ", groupLdapBaseDn=" + groupLdapBaseDn + ", taskManagerCheckFutureTask="
+				+ taskManagerCheckFutureTask + ", taskManagerFutureTaskCheckPeriod=" + taskManagerFutureTaskCheckPeriod
+				+ ", alarmCheckReport=" + alarmCheckReport + ", mailAddress=" + mailAddress + ", mailPassword="
+				+ mailPassword + ", mailHost=" + mailHost + ", mailSmtpPort=" + mailSmtpPort + ", mailSmtpAuth="
+				+ mailSmtpAuth + ", mailSmtpStartTlsEnable=" + mailSmtpStartTlsEnable + ", mailSmtpSslEnable="
+				+ mailSmtpSslEnable + ", mailSmtpConnTimeout=" + mailSmtpConnTimeout + ", mailSmtpTimeout="
+				+ mailSmtpTimeout + ", mailSmtpWriteTimeout=" + mailSmtpWriteTimeout + ", mailSendOnTaskCompletion="
 				+ mailSendOnTaskCompletion + ", mailCheckTaskCompletionPeriod=" + mailCheckTaskCompletionPeriod
 				+ ", mailSendOnPolicyCompletion=" + mailSendOnPolicyCompletion + ", mailCheckPolicyCompletionPeriod="
 				+ mailCheckPolicyCompletionPeriod + ", hotDeploymentPath=" + hotDeploymentPath + ", fileServerProtocol="
@@ -876,7 +887,9 @@ public class ConfigurationService{
 				+ fileServerPluginPath + ", fileServerAgreementPath=" + fileServerAgreementPath
 				+ ", fileServerAgentFilePath=" + fileServerAgentFilePath + ", fileServerUrl=" + fileServerUrl
 				+ ", fileServerPort=" + fileServerPort + ", cronTaskList=" + cronTaskList + ", entrySizeLimit="
-				+ entrySizeLimit + ", cronIntervalEntrySize=" + cronIntervalEntrySize + "]";
+				+ entrySizeLimit + ", cronIntervalEntrySize=" + cronIntervalEntrySize + ", env=" + env
+				+ ", userGroupLdapBaseDn=" + userGroupLdapBaseDn + ", ahenkGroupLdapBaseDn=" + ahenkGroupLdapBaseDn
+				+ "]";
 	}
 
 	public void setFileServerProtocol(Protocol fileServerProtocol) {

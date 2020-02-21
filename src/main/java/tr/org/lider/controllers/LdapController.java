@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -406,5 +408,20 @@ public class LdapController {
 			e.printStackTrace();
 		}
 		return results ;
+	}
+	
+	//add new group and add selected attributes
+	@RequestMapping(method=RequestMethod.POST ,value = "/createSudoGroup", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry createSudoGroup(@RequestParam(value = "groupName", required=true) String groupName,
+			@RequestParam(value = "sudoHostList[]", required=false)  String[] sudoHostList,
+			@RequestParam(value = "sudoCommandList[]", required=false)  String[] sudoCommandList,
+			@RequestParam(value = "sudoUserList[]", required=false)  String[] sudoUserList) {
+		
+		 MultiValueMap<String, String> bodyMap = new LinkedMultiValueMap<>();
+		    bodyMap.add("key", "e2e33efb4efb4e5794b48a18578384ee");
+		    bodyMap.add("key", "123");
+		    bodyMap.add("info", "aa");
+		return null;
 	}
 }

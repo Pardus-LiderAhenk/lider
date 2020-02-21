@@ -16,6 +16,7 @@ var groupMemberDNList = [];
 var groupMemberDNListForDelete = [];
 
 var destinationDNToMoveRecord = "";
+var selectedEntryUUIDForTreeMove = "";
 $(document).ready(function(){
 	createMainTree();
 });
@@ -1048,6 +1049,8 @@ function generateTreeToMoveEntry(){
 			      localData: data,
 			      id: "entryUUID"
 			  };
+			 selectedEntryUUIDForTreeMove = source.localData[0].entryUUID;
+			 destinationDNToMoveRecord = source.localData[0].distinguishedName;
 			 //create computer tree grid
 			 createTreeToMoveEntry(source);
 		},
@@ -1102,7 +1105,8 @@ function createTreeToMoveEntry(source) {
 					$("#moveEntryTreeGrid").jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
 				}
 			}
-	    	$("#moveEntryTreeGrid").jqxTreeGrid('collapseAll'); 
+	    	$("#moveEntryTreeGrid").jqxTreeGrid('collapseAll');
+	    	$("#moveEntryTreeGrid").jqxTreeGrid('selectRow', selectedEntryUUIDForTreeMove);
 	    }, 
 	    rendered: function () {
 	   	},
@@ -1161,7 +1165,7 @@ function createTreeToMoveEntry(source) {
 }
 
 function btnMoveEntryClicked() {
-	if(selectedDN != destinationDNToMoveRecord) {
+	if(selectedEntryParentDN != destinationDNToMoveRecord) {
 		var params = {
 			    "sourceDN" : selectedDN,
 			    "destinationDN": destinationDNToMoveRecord
@@ -1182,7 +1186,7 @@ function btnMoveEntryClicked() {
 		    }
 		});
 	} else {
-		$.notify("Bir kayıt kendi altına taşınamaz.", "error");
+		$.notify("Kayıt aynı yere taşınamaz.", "error");
 	}
 }
 

@@ -1033,8 +1033,12 @@ public class LDAPServiceImpl implements ILDAPService {
 		if (isOrganizationalGroup) {
 			return DNType.ORGANIZATIONAL_UNIT;
 		}
+		
+		boolean isRoleGroup = objectClass.contains("sudoRole");
+		if (isRoleGroup) {
+			return DNType.ROLE_GROUP;
+		}
 		return null;
-	
 	}
 
 	

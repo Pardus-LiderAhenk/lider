@@ -14,7 +14,7 @@ if (ref) {
 
 scheduledParam = null;
 var table;
-var scriptFileList = [];
+var scriptTempList = [];
 
 var ref=connection.addHandler(executeScriptListener, null, 'message', null, null,  null);
 $("#entrySize").html(selectedEntries.length);
@@ -26,17 +26,17 @@ selectedPluginTask.dnList=dnlist;
 selectedPluginTask.entryList=selectedEntries;
 selectedPluginTask.dnType="AHENK";
 
-//get script file from liderdb
-getScriptFile();
+//get script templates from liderdb
+getScriptTemp();
 
-function getScriptFile() {
+function getScriptTemp() {
 	$.ajax({
 		type: 'POST', 
 		url: "/script/list",
 		dataType: 'json',
 		success: function(data) {
 			if(data != null && data.length > 0) {
-				scriptFileList = data;
+				scriptTempList = data;
 				$.notify("Betikler başarıyla listelendi.", "success");
 				for (var i = 0; i < data.length; i++) {
 					$('#scriptSelectBox').append($('<option>', {
@@ -60,10 +60,10 @@ function getScriptFile() {
 
 $('#scriptSelectBox').change(function(){ 
 	var scriptType = $(this).val();
-	var scriptFileId = $(this).find('option:selected').attr('id')
-	for (var i = 0; i < scriptFileList.length; i++) {
-		if (scriptFileId == scriptFileList[i]["id"]) {
-			$("#scriptContent").val(scriptFileList[i]["contents"]);
+	var scriptTempId = $(this).find('option:selected').attr('id')
+	for (var i = 0; i < scriptTempList.length; i++) {
+		if (scriptTempId == scriptTempList[i]["id"]) {
+			$("#scriptContent").val(scriptTempList[i]["contents"]);
 			$("#scriptParameters").val("");
 		}else if (scriptType == "NA") {
 			$("#scriptContent").val("");

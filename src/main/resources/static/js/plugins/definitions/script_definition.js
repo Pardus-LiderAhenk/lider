@@ -1,5 +1,5 @@
 /**
- * This page Script definition. Get script files from database. Save script and edit, delete registered scripts
+ * This page Script definition. Get script templates from database. Save script and edit, delete registered scripts
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
  * 
@@ -8,16 +8,16 @@
  */
 
 var table;
-var scriptFileList = [];
+var scriptTempList = [];
 var sId = null; // selected script id
 
 $(document).ready(function(){
 	$("#scriptDelBtn").hide();
 	$("#scriptContentTemp").val("#!/bin/bash\nset -e");
-	getScriptFile()
+	getScriptTemp()
 });
 
-function getScriptFile() {
+function getScriptTemp() {
 
 	$.ajax({
 		type: 'POST', 
@@ -25,7 +25,7 @@ function getScriptFile() {
 		dataType: 'json',
 		success: function(data) {
 			if(data != null && data.length > 0) {
-				scriptFileList = data;
+				scriptTempList = data;
 				createScriptTable();
 				$.notify("Betikler başarıyla listelendi.", "success");
 			}else {
@@ -39,13 +39,13 @@ function getScriptFile() {
 }
 
 function createScriptTable() {
-	for (var i = 0; i < scriptFileList.length; i++) {
-		var scriptName = scriptFileList[i]['label'];
-		var scriptType = scriptFileList[i]['scriptType'];
-		var createDate = scriptFileList[i]['createDate'];
-		var modifyDate = scriptFileList[i]['modifyDate'];
-		var scriptId = scriptFileList[i]["id"];
-		var scriptContents = scriptFileList[i]['contents'];
+	for (var i = 0; i < scriptTempList.length; i++) {
+		var scriptName = scriptTempList[i]['label'];
+		var scriptType = scriptTempList[i]['scriptType'];
+		var createDate = scriptTempList[i]['createDate'];
+		var modifyDate = scriptTempList[i]['modifyDate'];
+		var scriptId = scriptTempList[i]["id"];
+		var scriptContents = scriptTempList[i]['contents'];
 
 		if (modifyDate == null) {
 			modifyDate = "";
@@ -108,9 +108,9 @@ $('#scriptTableTemp tbody').on( 'click', 'tr', function () {
 			sType = "ruby";
 		}
 		$('#scriptType').val(sType).change();
-		for (var i = 0; i < scriptFileList.length; i++) {
-			if (scriptFileList[i]['id'] == sId) {
-				$("#scriptContentTemp").val(scriptFileList[i]['contents']);
+		for (var i = 0; i < scriptTempList.length; i++) {
+			if (scriptTempList[i]['id'] == sId) {
+				$("#scriptContentTemp").val(scriptTempList[i]['contents']);
 			}
 		}
 	}
@@ -156,7 +156,7 @@ $('#scriptSaveBtn').click(function(e){
 	var rows = table.$('tr.selected');
 
 	if(rows.length){
-//		updated script file
+//		updated script template
 		file = {
 				label: sName,
 				contents: sContent,
@@ -197,7 +197,7 @@ $('#scriptSaveBtn').click(function(e){
 		}else {
 			$.notify("Betik adı ve içeriği boş bırakılamaz.", "warn");
 		}
-		// Otherwise, if no rows are selected. Save script file
+		// Otherwise, if no rows are selected. Save script template
 	} else {
 		file = {
 				label: sName,
@@ -215,7 +215,7 @@ $('#scriptSaveBtn').click(function(e){
 					success: function(data) {
 						if (data != null) {
 							$.notify("Betik başarıyla kaydedildi.", "success");
-							scriptFileList.push(data);
+							scriptTempList.push(data);
 
 							// the table is refreshed after the script is saved
 							table.clear().draw();
@@ -245,8 +245,8 @@ $('#scriptSaveBtn').click(function(e){
 //checked script name for added selected script
 function checkedScriptName(sName) {
 	var isExist = false;
-	for (var i = 0; i < scriptFileList.length; i++) {
-		if (sName == scriptFileList[i]["label"]) {
+	for (var i = 0; i < scriptTempList.length; i++) {
+		if (sName == scriptTempList[i]["label"]) {
 			isExist = true;
 		}
 	}
@@ -256,10 +256,10 @@ function checkedScriptName(sName) {
 //checked script name for updated selected script
 function checkedUpdatedScriptName(sName, sId) {
 	var isExist = false;
-	for (var i = 0; i < scriptFileList.length; i++) {
-		if (sName == scriptFileList[i]["label"] && sId == scriptFileList[i]["id"]) {
+	for (var i = 0; i < scriptTempList.length; i++) {
+		if (sName == scriptTempList[i]["label"] && sId == scriptTempList[i]["id"]) {
 			isExist = false;
-		}else if (sName == scriptFileList[i]["label"] && sId != scriptFileList[i]["id"]) {
+		}else if (sName == scriptTempList[i]["label"] && sId != scriptTempList[i]["id"]) {
 			isExist = true;
 		}
 	}
@@ -306,22 +306,22 @@ $('#scriptDelBtn').click(function(e){
 });
 
 function removeScriptList(id) {
-	var index = scriptFileList.findIndex(function(item, i){
+	var index = scriptTempList.findIndex(function(item, i){
 		return item.id === id;
 	});
 	if (index > -1) {
-		scriptFileList.splice(index, 1);
+		scriptTempList.splice(index, 1);
 	}
 }
 
-//updated script file list selected script file
+//updated script template list selected script template
 function updateScriptList(id, scriptName, contents, scriptType, modifyDate) {
-	for (var i = 0; i < scriptFileList.length; i++) {
-		if (scriptFileList[i].id === id) {
-			scriptFileList[i].label = scriptName;
-			scriptFileList[i].scriptType = scriptType;
-			scriptFileList[i].modifyDate = modifyDate;
-			scriptFileList[i].contents = contents;
+	for (var i = 0; i < scriptTempList.length; i++) {
+		if (scriptTempList[i].id === id) {
+			scriptTempList[i].label = scriptName;
+			scriptTempList[i].scriptType = scriptType;
+			scriptTempList[i].modifyDate = modifyDate;
+			scriptTempList[i].contents = contents;
 		}
 	}
 }

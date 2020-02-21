@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import tr.org.lider.entities.ScriptFile;
+import tr.org.lider.entities.ScriptTemp;
 import tr.org.lider.repositories.ScriptRepository;
 
 @Service
@@ -15,20 +15,20 @@ public class ScriptService {
 	@Autowired
 	private ScriptRepository scriptRepository;
 
-	public List<ScriptFile> list(){
+	public List<ScriptTemp> list(){
 		return scriptRepository.findAll();
 	}
 
-	public ScriptFile add(ScriptFile file) {
+	public ScriptTemp add(ScriptTemp file) {
 		return scriptRepository.save(file);
 	}
 
-	public ScriptFile del(ScriptFile file) {
+	public ScriptTemp del(ScriptTemp file) {
 		scriptRepository.deleteById(file.getId());
 		return file;
 	}
 	
-	public ScriptFile update(ScriptFile file) {
+	public ScriptTemp update(ScriptTemp file) {
 		file.setModifyDate(new Date());
 		return scriptRepository.save(file);
 	}

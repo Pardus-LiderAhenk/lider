@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tr.org.lider.entities.ScriptFile;
+import tr.org.lider.entities.ScriptTemp;
 import tr.org.lider.services.ScriptService;
 
 /**
  * 
- * Return the script list, saved, edited and deleted script
+ * Return the script templates, saved, edited and deleted script
  * @author <a href="mailto:tuncay.colak@tubitak.gov.tr">Tuncay ÇOLAK</a>
  *
  */
@@ -25,24 +25,24 @@ public class ScriptController {
 	@Autowired
 	private ScriptService scriptService;
 	
-//	get script list
+//	get script templates
 	@RequestMapping(method=RequestMethod.POST ,value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<ScriptFile> scriptList() {
+	public List<ScriptTemp> scriptList() {
 		return scriptService.list();
 	}
 
 	@RequestMapping(method=RequestMethod.POST ,value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ScriptFile scriptAdd(@RequestBody ScriptFile file){
+	public ScriptTemp scriptAdd(@RequestBody ScriptTemp file){
 		return scriptService.add(file);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST ,value = "/del", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ScriptFile scriptDel(@RequestBody ScriptFile file){
+	public ScriptTemp scriptDel(@RequestBody ScriptTemp file){
 		return scriptService.del(file);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST ,value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ScriptFile scriptUpdate(@RequestBody ScriptFile file){
+	public ScriptTemp scriptUpdate(@RequestBody ScriptTemp file){
 		return scriptService.update(file);
 	}
 }

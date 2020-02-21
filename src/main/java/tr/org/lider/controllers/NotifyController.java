@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tr.org.lider.entities.NotifyFile;
+import tr.org.lider.entities.NotifyTemp;
 import tr.org.lider.services.NotifyService;
 
 /**
  * 
- * Return the ETA-Notify list, saved, edited and deleted notify
+ * Return the Notify Template list, saved, edited and deleted notify for ETA
  * @author <a href="mailto:tuncay.colak@tubitak.gov.tr">Tuncay ÇOLAK</a>
  *
  */
@@ -27,22 +27,22 @@ public class NotifyController {
 	
 //	get notify list
 	@RequestMapping(method=RequestMethod.POST ,value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<NotifyFile> notifyList() {
+	public List<NotifyTemp> notifyList() {
 		return notifyService.list();
 	}
 
 	@RequestMapping(method=RequestMethod.POST ,value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-	public NotifyFile notifyAdd(@RequestBody NotifyFile file){
+	public NotifyTemp notifyAdd(@RequestBody NotifyTemp file){
 		return notifyService.add(file);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST ,value = "/del", produces = MediaType.APPLICATION_JSON_VALUE)
-	public NotifyFile notifyDel(@RequestBody NotifyFile file){
+	public NotifyTemp notifyDel(@RequestBody NotifyTemp file){
 		return notifyService.del(file);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST ,value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-	public NotifyFile notifyUpdate(@RequestBody NotifyFile file){
+	public NotifyTemp notifyUpdate(@RequestBody NotifyTemp file){
 		return notifyService.update(file);
 	}
 }

@@ -1,7 +1,7 @@
 package tr.org.lider.repositories;
 
-import tr.org.lider.entities.NotifyFile;
+import tr.org.lider.entities.NotifyTemp;
 
-public interface NotifyRepository extends BaseJpaRepository<NotifyFile, Long>{
+public interface NotifyRepository extends BaseJpaRepository<NotifyTemp, Long>{
 
 }

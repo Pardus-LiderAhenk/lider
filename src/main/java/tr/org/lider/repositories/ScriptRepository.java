@@ -1,8 +1,8 @@
 package tr.org.lider.repositories;
 
-import tr.org.lider.entities.ScriptFile;
+import tr.org.lider.entities.ScriptTemp;
 
 
-public interface ScriptRepository extends BaseJpaRepository<ScriptFile, Long>{
+public interface ScriptRepository extends BaseJpaRepository<ScriptTemp, Long>{
 
 }

@@ -19,26 +19,26 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 /**
- * Entity class for script files.
+ * Entity class for ETA-Notify files.
  * 
  */
 @Entity
-@Table(name = "P_SCRIPT_FILE")
+@Table(name = "P_NOTIFY_TEMPLATE")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ScriptFile implements Serializable {
+public class NotifyTemp implements Serializable {
 
 	private static final long serialVersionUID = 5867302652909954893L;
 
 	@Id
 	@GeneratedValue
-	@Column(name = "SCRIPT_FILE_ID", unique = true, nullable = false)
+	@Column(name = "ID", unique = true, nullable = false)
 	private Long id;
-
-	@Column(name = "SCRIPT_TYPE", length = 1, nullable = false)
-	private Integer scriptType;
 
 	@Column(name = "LABEL", nullable = false, unique = true, length = 255)
 	private String label;
+	
+	@Column(name = "TIME", nullable = false, unique = false, length = 255)
+	private Integer time;
 
 	@Lob
 	@Column(name = "CONTENTS", nullable = false)
@@ -55,13 +55,13 @@ public class ScriptFile implements Serializable {
 	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private Date modifyDate;
 
-	public ScriptFile() {
+	public NotifyTemp() {
 	}
 
-	public ScriptFile(Long id, ScriptType scriptType, String label, String contents, Date createDate, Date modifyDate) {
+	public NotifyTemp(Long id, ScriptType scriptType, String label, Integer time, String contents, Date createDate, Date modifyDate) {
 		this.id = id;
-		setScriptType(scriptType);
 		this.label = label;
+		this.time = time;
 		this.contents = contents;
 		this.createDate = createDate;
 		this.modifyDate = modifyDate;
@@ -75,18 +75,6 @@ public class ScriptFile implements Serializable {
 		this.id = id;
 	}
 
-	public ScriptType getScriptType() {
-		return ScriptType.getType(scriptType);
-	}
-
-	public void setScriptType(ScriptType scriptType) {
-		if (scriptType == null) {
-			this.scriptType = null;
-		} else {
-			this.scriptType = scriptType.getId();
-		}
-	}
-
 	public String getLabel() {
 		return label;
 	}
@@ -95,6 +83,14 @@ public class ScriptFile implements Serializable {
 		this.label = label;
 	}
 
+	public Integer getTime() {
+		return time;
+	}
+
+	public void setTime(Integer time) {
+		this.time = time;
+	}
+	
 	public String getContents() {
 		return contents;
 	}

@@ -1,5 +1,5 @@
 /**
- * This page notify definition. Get notify files from database. Save notify and edit, delete registered notifys
+ * This page notify definition. Get notify templates from database. Save notify and edit, delete registered notifies
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
  * 
@@ -8,16 +8,16 @@
  */
 
 var table;
-var notifyFileList = [];
+var notifyTempList = [];
 var nId = null; // selected notify id
 
 $(document).ready(function(){
 	$("#notifyDelBtn").hide();
 	$("#notifyContentTemp").val("");
-	getNotifyFile();
+	getNotifyTemp();
 });
 
-function getNotifyFile() {
+function getNotifyTemp() {
 
 	$.ajax({
 		type: 'POST', 
@@ -25,7 +25,7 @@ function getNotifyFile() {
 		dataType: 'json',
 		success: function(data) {
 			if(data != null && data.length > 0) {
-				notifyFileList = data;
+				notifyTempList = data;
 				createNotifyTable();
 				$.notify("Mesajlar başarıyla listelendi.", "success");
 			}else {
@@ -40,12 +40,12 @@ function getNotifyFile() {
 
 function createNotifyTable() {
 
-	for (var i = 0; i < notifyFileList.length; i++) {
-		var notifyName = notifyFileList[i]['label'];
-		var notifyTime = notifyFileList[i]['time'];
-		var createDate = notifyFileList[i]['createDate'];
-		var modifyDate = notifyFileList[i]['modifyDate'];
-		var notifyId = notifyFileList[i]["id"];
+	for (var i = 0; i < notifyTempList.length; i++) {
+		var notifyName = notifyTempList[i]['label'];
+		var notifyTime = notifyTempList[i]['time'];
+		var createDate = notifyTempList[i]['createDate'];
+		var modifyDate = notifyTempList[i]['modifyDate'];
+		var notifyId = notifyTempList[i]["id"];
 		if (modifyDate == null) {
 			modifyDate = "";
 		}
@@ -95,14 +95,13 @@ $('#notifyTableTemp tbody').on( 'click', 'tr', function () {
 		$("#notifyNameTemp").val(rowData[0]);
 		$("#notifyDelBtn").show();
 		$('#notifyTime').val(rowData[1]);
-		for (var i = 0; i < notifyFileList.length; i++) {
-			if (notifyFileList[i]['id'] == nId) {
-				$("#notifyContentTemp").val(notifyFileList[i]['contents']);
+		for (var i = 0; i < notifyTempList.length; i++) {
+			if (notifyTempList[i]['id'] == nId) {
+				$("#notifyContentTemp").val(notifyTempList[i]['contents']);
 			}
 		}
 	}
 } );
-
 
 //if clicked save and update button 
 $('#notifySaveBtn').click(function(e){
@@ -113,7 +112,7 @@ $('#notifySaveBtn').click(function(e){
 
 	if($.isNumeric(nTime)){
 		if(rows.length){
-//			updated notify file
+//			updated notify template
 			file = {
 					label: nName,
 					contents: nContent,
@@ -153,7 +152,7 @@ $('#notifySaveBtn').click(function(e){
 					$("#notifyNameTemp").focus();
 				}
 			}
-			// Otherwise, if no rows are selected. Save notify file
+			// Otherwise, if no rows are selected. Save notify template
 		} else {
 			file = {
 					label: nName,
@@ -172,7 +171,7 @@ $('#notifySaveBtn').click(function(e){
 						success: function(data) {
 							if (data != null) {
 								$.notify("Mesaj başarıyla kaydedildi.", "success");
-								notifyFileList.push(data);
+								notifyTempList.push(data);
 
 								// the table is refreshed after the notify is saved
 								table.clear().draw();
@@ -206,8 +205,8 @@ $('#notifySaveBtn').click(function(e){
 //checked notify name for added selected notify
 function checkedNotifyName(nName) {
 	var isExist = false;
-	for (var i = 0; i < notifyFileList.length; i++) {
-		if (nName == notifyFileList[i]["label"]) {
+	for (var i = 0; i < notifyTempList.length; i++) {
+		if (nName == notifyTempList[i]["label"]) {
 			isExist = true;
 		}
 	}
@@ -217,10 +216,10 @@ function checkedNotifyName(nName) {
 //checked notify name for updated selected notify
 function checkedUpdatedNotifyName(nName, nId) {
 	var isExist = false;
-	for (var i = 0; i < notifyFileList.length; i++) {
-		if (nName == notifyFileList[i]["label"] && nId == notifyFileList[i]["id"]) {
+	for (var i = 0; i < notifyTempList.length; i++) {
+		if (nName == notifyTempList[i]["label"] && nId == notifyTempList[i]["id"]) {
 			isExist = false;
-		}else if (nName == notifyFileList[i]["label"] && nId != notifyFileList[i]["id"]) {
+		}else if (nName == notifyTempList[i]["label"] && nId != notifyTempList[i]["id"]) {
 			isExist = true;
 		}
 	}
@@ -267,22 +266,22 @@ $('#notifyDelBtn').click(function(e){
 });
 
 function removeNotifyList(id) {
-	var index = notifyFileList.findIndex(function(item, i){
+	var index = notifyTempList.findIndex(function(item, i){
 		return item.id === id;
 	});
 	if (index > -1) {
-		notifyFileList.splice(index, 1);
+		notifyTempList.splice(index, 1);
 	}
 }
 
-//updated notify file list selected notify file
+//updated notify template list selected notify template
 function updateNotifyList(id, notifyName, contents, notifyTime, modifyDate) {
-	for (var i = 0; i < notifyFileList.length; i++) {
-		if (notifyFileList[i].id === id) {
-			notifyFileList[i].label = notifyName;
-			notifyFileList[i].time = notifyTime;
-			notifyFileList[i].modifyDate = modifyDate;
-			notifyFileList[i].contents = contents;
+	for (var i = 0; i < notifyTempList.length; i++) {
+		if (notifyTempList[i].id === id) {
+			notifyTempList[i].label = notifyName;
+			notifyTempList[i].time = notifyTime;
+			notifyTempList[i].modifyDate = modifyDate;
+			notifyTempList[i].contents = contents;
 		}
 	}
 }

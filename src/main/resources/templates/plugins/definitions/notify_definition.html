@@ -1,4 +1,4 @@
-<script type="text/javascript" src="js/plugins/definitions/script_definition.js"></script>
+<script type="text/javascript" src="js/plugins/definitions/notify_definition.js"></script>
 
 <div class="app-page-title">
 	<div class="page-title-wrapper">
@@ -7,11 +7,10 @@
 				<i class="pe-7s-drawer icon-gradient bg-happy-itmeo"> </i>
 			</div>
 			<div>
-				Betik Tanımlama
-				<div class="page-title-subheading">Tanımlamak istenilen
-					betikler Betik Adı, Betik Türü ve Betik İçeriği girilerek
-					kaydedilir. Betik türü olarak bash, python, perl ve ruby
-					seçenekleri mevcuttur. Kayıtlı betikler listelenir ve Ekle, Sil,
+				Etkileşimli Tahta Mesajı Tanımlama
+				<div class="page-title-subheading">Etkileşimli Tahtalar için tanımlamak istenilen
+					mesajlar Mesaj Adı, Mesaj Süresi ve Mesaj İçeriği girilerek
+					kaydedilir. Kayıtlı mesajlar listelenir ve Ekle, Sil,
 					Düzenle işlemleri yapılır.</div>
 			</div>
 		</div>
@@ -25,20 +24,20 @@
 				<div class="card-header text-left">
 					<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
 					<div>
-						<button id=scriptAddBtn type="button"
+						<button id=notifyAddBtn type="button"
 							class="btn-shadow btn btn-info">Ekle</button>
-						<button id=scriptDelBtn type="button"
+						<button id=notifyDelBtn type="button"
 							class="btn-shadow btn btn-info">Sil</button>
 					</div>
 				</div>
 				<div class="card-body">
 					<table class="table table-striped table-bordered display table-hover"
-						id="scriptTableTemp" border="1">
+						id="notifyTableTemp" border="1">
 						<tbody>
 						<thead>
 							<tr>
 								<th style="width: 35%">Adı</th>
-								<th style="width: 15%">Türü</th>
+								<th style="width: 15%">Süre(sn)</th>
 								<th style="width: 25%">Oluşturma Tarihi</th>
 								<th style="width: 25%">Düzenleme Tarihi</th>
 							</tr>
@@ -54,29 +53,24 @@
 					<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
 					<div class="col-md-10"></div>
 					<div class="col-md-2">
-						<button id=scriptSaveBtn type="button"
+						<button id=notifySaveBtn type="button"
 							class="btn-shadow btn btn-info">Kaydet</button>
 					</div>
 				</div>
 				<div class="card-body">
 					<div class="row">
 						<div class="form-group col-lg-9">
-							<label for="scriptNameTemp">Betik Adı</label> <input type="text"
-								class="form-control" id="scriptNameTemp">
+							<label for="notifyNameTemp">Mesaj Adı</label> <input type="text"
+								class="form-control" id="notifyNameTemp">
 						</div>
 						<div class="form-group col-lg-3">
-							<label for="scriptType" onclick="scriptTypeChange()">Betik
-								Türü</label> <select class="form-control" id="scriptType">
-								<option value="bash">Bash</option>
-								<option value="python">Python</option>
-								<option value="perl">Perl</option>
-								<option value="ruby">Ruby</option>
-							</select>
+							<label for="notifyTime" onclick="scriptTypeChange()">Mesaj Süresi(sn)</label><input type="text"
+								class="form-control" id="notifyTime">
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="scriptContentTemp">Betik İçeriği</label>
-						<textarea class="form-control" id="scriptContentTemp" rows="18"></textarea>
+						<label for="notifyContentTemp">Mesaj İçeriği</label>
+						<textarea class="form-control" id="notifyContentTemp" rows="18"></textarea>
 					</div>
 				</div>
 			</div>

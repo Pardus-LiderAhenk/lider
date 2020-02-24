@@ -11,6 +11,7 @@ var selectedEntryParentDN = "";
 var checkedAgents = [];
 var checkedOUList = [];
 var rootDNForAgentGroups = "";
+var rootEntryUUID = "";
 var selectedUUID = "";
 var groupMemberDNList = [];
 var groupMemberDNListForDelete = [];
@@ -134,6 +135,7 @@ function createMainTree() {
 			};
 			rootDNForAgentGroups = source.localData[0].distinguishedName;
 			selectedEntryUUID = source.localData[0].entryUUID;
+			rootEntryUUID = source.localData[0].entryUUID;
 			var dataAdapter = new $.jqx.dataAdapter(source, {
 			});
 
@@ -364,6 +366,7 @@ function btnDeleteOUClicked() {
 	    data: params,
 	    success: function (data) {
 	    	$("#treeGridAgentGroups").jqxTreeGrid('deleteRow', selectedEntryUUID);
+	    	$("#treeGridAgentGroups").jqxTreeGrid('selectRow', rootEntryUUID);
 	    	$('#genericModal').trigger('click');
             $.notify("Klasör silindi.", "success");
 	    },
@@ -387,6 +390,7 @@ function btnDeleteGroupClicked() {
 	    data: params,
 	    success: function (data) {
 	    	$("#treeGridAgentGroups").jqxTreeGrid('deleteRow', selectedEntryUUID);
+	    	$("#treeGridAgentGroups").jqxTreeGrid('selectRow', rootEntryUUID);
 	    	$('#genericModal').trigger('click');
             $.notify("İstemci Grubu Silindi.", "success");
 	    },
@@ -909,6 +913,7 @@ function btnAddMemberClicked() {
 				selectedData.attributesMultiValues = data.attributesMultiValues;
 				$("#treeGridAgentGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 				$("#treeGridAgentGroups").jqxTreeGrid('getRow', data.entryUUID);
+				$("#treeGridAgentGroups").jqxTreeGrid('selectRow', data.entryUUID);
 				$('#genericModal').trigger('click');
 		    },
 		    error: function (data, errorThrown) {
@@ -999,6 +1004,7 @@ function btnDeleteMembersClicked() {
 					selectedData.attributesMultiValues = data.attributesMultiValues;
 					$("#treeGridAgentGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 					$("#treeGridAgentGroups").jqxTreeGrid('getRow', data.entryUUID);
+					$("#treeGridAgentGroups").jqxTreeGrid('selectRow', data.entryUUID);
 					$('#genericModalLarge').trigger('click');
 				}
 			},
@@ -1162,7 +1168,10 @@ function createTreeToMoveEntry(source) {
 }
 
 function btnMoveEntryClicked() {
-	if(selectedEntryParentDN != destinationDNToMoveRecord) {
+	if(selectedDN == destinationDNToMoveRecord) {
+		$.notify("Kayıt kendi altına taşınamaz.", "error");
+	}
+	else if(selectedEntryParentDN != destinationDNToMoveRecord) {
 		var params = {
 			    "sourceDN" : selectedDN,
 			    "destinationDN": destinationDNToMoveRecord

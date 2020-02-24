@@ -12,6 +12,7 @@ var selectedEntryParentDN = "";
 var checkedUsers = [];
 var checkedOUList = [];
 var rootDNForSudoGroups = "";
+var rootEntryUUID = "";
 var selectedUUID = "";
 var groupMemberDNList = [];
 var groupMemberDNListForDelete = [];
@@ -37,10 +38,8 @@ function dropdownButtonClicked(operation) {
 		selectedAttribute = [];
 		$('#attributeValue').val("");
 		getModalContent("modals/groups/sudo/creategroup", function content(data){
-			$('#genericModalLargeHeader').html("Yeni Grup Oluştur");
+			$('#genericModalLargeHeader').html("Yeni Yetki Grubu Oluştur");
 			$('#genericModalLargeBodyRender').html(data);
-			//createModalForCreatingGroup();
-
 		});
 	} else if(operation == "deleteSudoGroup") {
 		getModalContent("modals/groups/sudo/deletegroup", function content(data){
@@ -49,10 +48,9 @@ function dropdownButtonClicked(operation) {
 		});
 	} else if(operation == "editSudoGroup") {
 		getModalContent("modals/groups/sudo/editgroup", function content(data){
-			$('#genericModalLargeHeader').html("Grubu Düzenle");
+			$('#genericModalLargeHeader').html("Yetki Grubunu Düzenle");
 			$('#genericModalLargeBodyRender').html(data);
 			fillAttributeTableForEditingGroup();
-
 		});
 	} else if(operation == "createNewOrganizationalUnit") {
 		getModalContent("modals/groups/agent/createou", function content(data){
@@ -80,8 +78,8 @@ function dropdownButtonClicked(operation) {
 			generateTreeToMoveEntry();
 		});
 	} else if(operation == "editOrganizationalUnit") {
-		getModalContent("modals/groups/agent/editouname", function content(data){
-			$('#genericModalHeader').html("Klasörü Düzenle");
+		getModalContent("modals/groups/sudo/editouname", function content(data){
+			$('#genericModalHeader').html("Klasör Adı Düzenle");
 			$('#genericModalBodyRender').html(data);
 			$('#ouName').val(selectedName);
 		});
@@ -139,6 +137,7 @@ function createMainTree() {
 			};
 			rootDNForSudoGroups = source.localData[0].distinguishedName;
 			selectedEntryUUID = source.localData[0].entryUUID;
+			rootEntryUUID = source.localData[0].entryUUID;
 			var dataAdapter = new $.jqx.dataAdapter(source, {
 			});
 
@@ -291,7 +290,6 @@ function createMainTree() {
 
 		var selectedRows = $("#treeGridSudoGroups").jqxTreeGrid('getSelection');
 		var selectedRowData=selectedRows[0];
-		console.log(selectedRowData);
 		if(selectedRowData.type == "ORGANIZATIONAL_UNIT"){
 			html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModalLarge"' 
 				+ 'onclick="dropdownButtonClicked(\'createNewSudoGroup\')">Yeni Yetki Grubu Oluştur</a>';
@@ -300,7 +298,7 @@ function createMainTree() {
 			//if root dn is selected dont allow user to delete it
 			if(rootDNForSudoGroups != row.distinguishedName){
 				html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
-					+ 'onclick="dropdownButtonClicked(\'editOrganizationalUnit\')">Klasörü Düzenle</a>';
+					+ 'onclick="dropdownButtonClicked(\'editOrganizationalUnit\')">Klasör Adı Düzenle</a>';
 				html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 					+ 'onclick="dropdownButtonClicked(\'moveEntry\')">Kaydı Taşı</a>';
 				html += '<div class="dropdown-divider"></div>';
@@ -366,6 +364,7 @@ function btnDeleteOUClicked() {
 		data: params,
 		success: function (data) {
 			$("#treeGridSudoGroups").jqxTreeGrid('deleteRow', selectedEntryUUID);
+			$("#treeGridSudoGroups").jqxTreeGrid('selectRow', rootEntryUUID);
 			$('#genericModal').trigger('click');
 			$.notify("Klasör silindi.", "success");
 		},
@@ -526,7 +525,10 @@ function createTreeToMoveEntry(source) {
 }
 
 function btnMoveEntryClicked() {
-	if(selectedEntryParentDN != destinationDNToMoveRecord) {
+	if(selectedDN == destinationDNToMoveRecord) {
+		$.notify("Kayıt kendi altına taşınamaz.", "error");
+	}
+	else if(selectedEntryParentDN != destinationDNToMoveRecord) {
 		var params = {
 			    "sourceDN" : selectedDN,
 			    "destinationDN": destinationDNToMoveRecord
@@ -902,6 +904,7 @@ function btnDeleteGroupClicked() {
 	    data: params,
 	    success: function (data) {
 	    	$("#treeGridSudoGroups").jqxTreeGrid('deleteRow', selectedEntryUUID);
+	    	$("#treeGridSudoGroups").jqxTreeGrid('selectRow', rootEntryUUID);
 	    	$("#genericModal").trigger('click');
             $.notify("Yetki grubu başarıyla silindi.", "success");
 	    },
@@ -959,16 +962,61 @@ function btnEditSudoGroupClicked() {
 	    data: params,
 	    success: function (data) { 
 	    	$.notify("Grup düzenlendi.", "success");
-	    	
+	    	console.log(data);
 			var selectedData= $("#treeGridSudoGroups").jqxTreeGrid('getRow', data.entryUUID);
 			selectedData.attributesMultiValues = data.attributesMultiValues;
 			$("#treeGridSudoGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 			$("#treeGridSudoGroups").jqxTreeGrid('getRow', data.entryUUID);
+			$("#treeGridSudoGroups").jqxTreeGrid('selectRow', data.entryUUID);
 			$('#genericModalLarge').trigger('click');
-	    	
 	    },
 	    error: function (data, errorThrown) {
 	    	$.notify("Yeni sudo grubu oluştururken hata oluştu.", "error");
 	    }
 	});
+}
+
+/*
+ * edit organizational unit name
+ */
+function btnEditOUNameClicked() {
+	var newOuName = $("#ouName").val();
+	if(newOuName == "") {
+		$.notify("Klasör adı giriniz.", "error");
+	} else {
+		if(newOuName == selectedName) {
+			$('#genericModal').trigger('click');
+			return;
+		} 
+		var params = {
+				"oldDN" : selectedDN,
+				"newName": "ou=" + newOuName
+		};
+		$.ajax({
+		    type: 'POST', 
+		    url: '/lider/ldap/rename/entry',
+		    dataType: 'json',
+		    data: params,
+		    success: function (data) {
+		    	$.notify("Klasör adı düzenlendi.", "success");
+	            $('#genericModal').trigger('click');
+	            createMainTree();
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Klasör adı düzenlenirken hata oluştu.", "error");
+		    }
+		});
+	}
+}
+
+/*
+ * get readable strings for ldap attribute key values
+ */
+function getReadableValueForLDAPAttributeName(key) {
+	if(key == "")
+		return "";
+	else if(key == "")
+		return "";
+	else 
+		return key;
 }

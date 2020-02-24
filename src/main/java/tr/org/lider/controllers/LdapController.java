@@ -2,6 +2,7 @@ package tr.org.lider.controllers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -473,9 +474,23 @@ public class LdapController {
 			ldapService.updateEntryRemoveAttribute(selectedDN, "sudoCommand");
 			ldapService.updateEntryRemoveAttribute(selectedDN, "sudoHost");
 			ldapService.updateEntryRemoveAttribute(selectedDN, "sudoUser");
+			if(sudoHostList != null) {
+				for (String value : sudoHostList) {
+					ldapService.updateEntryAddAtribute(selectedDN, "sudoHost", value);
+				}
+			}
+			if(sudoCommandList != null) {
+				for (String value : sudoCommandList) {
+					ldapService.updateEntryAddAtribute(selectedDN, "sudoCommand", value);
+				}
+			}
+			if(sudoUserList != null) {
+				for (String value : sudoUserList) {
+					ldapService.updateEntryAddAtribute(selectedDN, "sudoUser", value);
+				}
+			}
 			entry = ldapService.getEntryDetail(selectedDN);
 		} catch (LdapException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}

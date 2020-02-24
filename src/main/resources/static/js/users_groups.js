@@ -7,6 +7,7 @@
  */
 
 var rootDNForUsersGroup = "";
+var rootEntryUUID = "";
 var selectedEntryUUID = "";
 var selectedDN = "";
 var selectedName = "";
@@ -136,6 +137,7 @@ function createMainTree() {
 			};
 			rootDNForUsersGroup = source.localData[0].distinguishedName;
 			selectedEntryUUID = source.localData[0].entryUUID;
+			rootEntryUUID = source.localData[0].entryUUID;
 			var dataAdapter = new $.jqx.dataAdapter(source, {
 			});
 
@@ -368,6 +370,7 @@ function btnDeleteOUClicked() {
 	    data: params,
 	    success: function (data) {
 	    	$("#treeGridUserGroups").jqxTreeGrid('deleteRow', selectedEntryUUID);
+	    	$("#treeGridUserGroups").jqxTreeGrid('selectRow', rootEntryUUID);
 	    	$('#genericModal').trigger('click');
             $.notify("Klasör başarıyla silindi.", "success");
 	    },
@@ -654,6 +657,7 @@ function btnDeleteGroupClicked() {
 	    data: params,
 	    success: function (data) {
 	    	$("#treeGridUserGroups").jqxTreeGrid('deleteRow', selectedEntryUUID);
+	    	$("#treeGridUserGroups").jqxTreeGrid('selectRow', rootEntryUUID);
 	    	$("#genericModal").trigger('click');
             $.notify("Kullanıcı grubu başarıyla silindi.", "success");
 	    },
@@ -911,6 +915,7 @@ function btnAddMemberClicked() {
 				selectedData.attributesMultiValues = data.attributesMultiValues;
 				$("#treeGridUserGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 				$("#treeGridUserGroups").jqxTreeGrid('getRow', data.entryUUID);
+				$("#treeGridUserGroups").jqxTreeGrid('selectRow', data.entryUUID);
 				$('#genericModal').trigger('click');
 		    },
 		    error: function (data, errorThrown) {
@@ -999,6 +1004,7 @@ function btnDeleteMembersClicked() {
 					selectedData.attributesMultiValues = data.attributesMultiValues;
 					$("#treeGridUserGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 					$("#treeGridUserGroups").jqxTreeGrid('getRow', data.entryUUID);
+					$("#treeGridUserGroups").jqxTreeGrid('selectRow', data.entryUUID);
 					$('#genericModalLarge').trigger('click');
 				}
 			},
@@ -1162,7 +1168,10 @@ function createTreeToMoveEntry(source) {
 }
 
 function btnMoveEntryClicked() {
-	if(selectedEntryParentDN != destinationDNToMoveRecord) {
+	if(selectedDN == destinationDNToMoveRecord) {
+		$.notify("Kayıt kendi altına taşınamaz.", "error");
+	}
+	else if(selectedEntryParentDN != destinationDNToMoveRecord) {
 		var params = {
 			    "sourceDN" : selectedDN,
 			    "destinationDN": destinationDNToMoveRecord

@@ -44,7 +44,7 @@
                                                 </li>
                                                 <li class="nav-item">
                                                     <a href="#" class="nav-link" id="btnDeleteOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
-                                                        <i class="fa fa-folder-open"> &nbsp;</i>
+                                                        <i class="fa fa-minus"> &nbsp;</i>
                                                         <span>
                                                             Klasör Sil
                                                         </span>
@@ -72,6 +72,13 @@
                                                     </a>
                                                 </li>
                                                 
+                                                <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnDisableUserModal" title="Kullanıcıyı Pasif Hale Getir" data-target="#genericModal" data-toggle="modal">
+                                                        <i class="fa fa-blind"> &nbsp;</i>
+                                                        <span> Kullanıcıyı Pasif Hale Getir </span>
+                                                    </a>
+                                                </li>
+
                                                 <li class="nav-item">
                                                     <a href="#" class="nav-link" id="btnDeleteUserModal" title="Kullanıcı Sil" data-target="#genericModal" data-toggle="modal">
                                                         <i class="fa fa-minus-circle"> &nbsp;</i>
@@ -115,8 +122,20 @@
 				<ul class="nav nav-justified" >
 					<li class="nav-item">
 						<a role="tab" class="nav-link "
-							id="tab-c-0" data-toggle="tab" href="#tab-entry-info"> 
+							id="tab-btn-userInfo" data-toggle="tab" href="#tab-entry-info"> 
 							<span>Kullanıcı Detay</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a role="tab" class="nav-link "
+							id="tab-btn-userGroups" data-toggle="tab" href="#tab-user-groups"> 
+							<span>Kullanıcı Grupları</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a role="tab" class="nav-link "
+							id="tab-btn-userRoles" data-toggle="tab" href="#tab-user-roles"> 
+							<span>Kullanıcı Rolleri</span>
 						</a>
 					</li>
 					
@@ -124,16 +143,17 @@
 			</div>
 			<div class="card-body">
 				<div class="tab-content">
-					<div class="tab-pane active" id="tab-new-policy" role="tabpanel">
-						<p class="mb-0"></p>
-						
-				
-					</div>
 					<div class="tab-pane" id="tab-entry-info" role="tabpanel">
-					
-							<h6 id="selectedDnInfo"></h6>
+							<p id="selectedDnInfo"></p>
 							<div id="ldapAttrInfoHolder"></div>
 					</div>
+					<div class="tab-pane" id="tab-user-groups" role="tabpanel">
+							<div id="ldapAttrMemberHolder">Kullanıcı herhangi bir gruba üye değildir.</div>
+					</div>
+					<div class="tab-pane" id="tab-user-roles" role="tabpanel">
+							
+					</div>
+					
 				</div>
 			</div>
 		</div>

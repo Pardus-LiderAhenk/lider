@@ -7,16 +7,23 @@
  */
 
 var selectedRow= null;
+var baseRootDnComputer=null;
 var selectedEntries = []; 
 var selectedPluginTask;
 var selectedAgentGroupDN = "";
 var selectedOUDN = "";
 var treeGridHolderDiv= "computerTreeDiv";
 var computerTreeCreated=false;
+
 //creating pluginTask Table on the page
 //loadPluginTaskTable(false);
+connection.addHandler(onPresence2, null, "presence");
 
-	connection.addHandler(onPresence2, null, "presence");
+//selected row function action behave different when selected tab change.. for this use selectedTab name
+var selectedTab="sendTask";
+
+$("#dropdownButton").hide();
+
 function onPresence2(presence)
 {
 	var ptype = $(presence).attr('type');
@@ -35,7 +42,6 @@ function onPresence2(presence)
 			
 			if(computerTreeCreated){
 				var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
-				console.log(row)
 				row.online=false;
 				$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name});
 			}
@@ -43,7 +49,6 @@ function onPresence2(presence)
 			
 			if(computerTreeCreated){
 				var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
-				console.log(row)
 				row.online=true;
 				$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name}); 
 			}
@@ -54,6 +59,7 @@ function onPresence2(presence)
 
 setOnlineEntryList();
 taskHistory();
+selectedEntryDetail();
 /*
  * create user tree select, check and uncheck action functions can be implemented if required
  * params div, onlyFolder, use Checkbox, select action , check action, uncheck action
@@ -62,7 +68,37 @@ createComputerTree(treeGridHolderDiv, false, false,
 		// row select
 		function(row, rootDnComputer){
 			selectedRow=row;
-			addSelectedEntryToTable(row,rootDnComputer);
+			baseRootDnComputer=rootDnComputer;
+			if(selectedTab=="sendTask"){
+				$('.nav-link').each(function(){               
+					var $tweet = $(this);                    
+					$tweet.removeClass('active');
+				});
+				$('#tab-new-task').tab('show');
+			}
+			else if(selectedTab=="showEntryDetail"){
+				selectedEntryDetail();
+				$('.nav-link').each(function(){               
+					var $tweet = $(this);                    
+					$tweet.removeClass('active');
+				});
+				$('#tab-entryinfo').tab('show');
+			}
+			else if(selectedTab=="taskHistory"){
+				
+				taskHistory()
+				$('.nav-link').each(function(){               
+					var $tweet = $(this);                    
+					$tweet.removeClass('active');
+				});
+				$('#tab-task-history-tab').tab('show');
+			}
+			else if(selectedTab=="onlineAgents"){
+				
+				
+			}
+			
+			
 		},
 		//check action
 		function(checkedRows, row){
@@ -75,6 +111,82 @@ createComputerTree(treeGridHolderDiv, false, false,
 );
 
 computerTreeCreated=true;
+
+$('#tab-entry-info').on('click',function() {
+	selectedTab="showEntryDetail";
+	selectedEntryDetail()
+	
+});
+$('#tab-send-task').on('click',function() {
+	selectedTab="sendTask";
+});
+
+$('#tab-task-history').on('click',function() {
+	selectedTab="taskHistory";
+	taskHistory()
+});
+$('#tab-onlineAgents').on('click',function() {
+	selectedTab="onlineAgents";
+});
+
+$('#btnAddAgents').click(function() {
+	addSelectedEntryToTable(selectedRow,baseRootDnComputer);
+	
+});
+
+$('#addOnlyOnlineAgents').click(function() {
+	var selection =$('#computerTreeDivGrid').jqxTreeGrid('getSelection');
+	
+	if(selection && selection.length>0){
+		var checkedEntryArray=[]
+
+		for (var i = 0; i < selection.length; i++) {
+			// get a row.
+			var rowData = selection[i];
+			
+			checkedEntryArray.push(
+			{
+				distinguishedName :rowData.distinguishedName, 
+				entryUUID: rowData.entryUUID, 
+				name: rowData.name,
+				type: rowData.type,
+				uid: rowData.uid
+			});
+		}
+		$.ajax({
+			url : 'lider/ldap/getOnlineAhenks',
+			type : 'POST',
+			data: JSON.stringify(checkedEntryArray),
+			dataType: "json",
+			contentType: "application/json",
+			success : function(data) {
+				var ahenks = data;
+				selectedEntries=[]
+				if(ahenks.length==0)
+					$.notify("Online istemci bulunmamaktadır.", "warn");
+				else
+					$.notify(ahenks.length+ " adet online istemci eklendi.", "success");
+				for (var i = 0; i < ahenks.length; i++) {
+					// get a row.
+					var rowData = ahenks[i];
+					if(rowData.type=="AHENK"){
+						var indexx=$.grep(selectedEntries, function(item){
+							return item.entryUUID == rowData.entryUUID;
+						}).length
+
+						if(indexx ==0 ){
+							selectedEntries.push(rowData);
+						}
+					}
+				}
+				showSelectedEntries();
+			}
+		});
+	}
+	else{
+		$.notify("Lütfen Arama Dizini Seçiniz", "warn");
+	}
+});
 
 function loadPluginTaskTable(isMulti) {
 	$.ajax({
@@ -170,106 +282,6 @@ function loadPluginTaskTable(isMulti) {
 	});
 }
 
-
-
-function loadComputersTree(data){
-	var source =
-	{
-			dataType: "json",
-			dataFields: [
-				{ name: "name", type: "string" },
-				{ name: "online", type: "string" },
-				{ name: "uid", type: "string" },
-				{ name: "type", type: "string" },
-				{ name: "cn", type: "string" },
-				{ name: "ou", type: "string" },
-				{ name: "parent", type: "string" },
-				{ name: "distinguishedName", type: "string" },
-				{ name: "hasSubordinates", type: "string" },
-				{ name: "expandedUser", type: "string" },
-				{ name: "attributes", type: "array" },
-				{ name: "entryUUID", type: "string" },
-				{ name: "childEntries", type: "array" }
-				],
-				hierarchy:
-				{
-					root: "childEntries"
-				},
-				localData: data,
-				id: "name"
-	};
-
-	var cellclass = function (row, columnfield, value,rowData) {
-
-		//if((value.indexOf("online") != -1) || (rowData.online) ){
-		if(rowData.online){
-			return 'green';
-		}
-		
-//		if (rowData.online) {
-//		return 'green';
-//		}
-//		else if (!rowData.online) {
-//		return 'white';
-//		}
-	};
-
-	var dataAdapter = new $.jqx.dataAdapter(source, {
-		loadComplete: function () {
-		}
-	});
-
-	var getLocalization = function () {
-		var localizationobj = {};
-		localizationobj.filterSearchString = "Ara :";
-		return localizationobj;
-	}
-
-	
-	$('#treegrid').on('rowDoubleClick', function (event) {
-		var args = event.args;
-		var row = args.row;
-		var name= row.name;
-		var html = '<table class="table table-striped table-bordered " id="attrTable">';
-		html += '<thead>';
-		html += '<tr>';
-		html += '<th style="width: 40%"></th>';
-		html += '<th style="width: 60%"></th>';
-		html += '</tr>';
-		html += '</thead>';
-
-		for (key in row.attributes) {
-			if (row.attributes.hasOwnProperty(key)) {
-				console.log(key + " = " + row.attributes[key]);
-
-				html += '<tr>';
-				html += '<td>' + key + '</td>';
-				html += '<td>' + row.attributes[key] + '</td>';
-				html += '</tr>';
-			}
-		}
-
-		html += '</table>';
-
-		$('#selectedDnInfo').html("Seçili Kayıt: "+name);
-		$('#ldapAttrInfoHolder').html(html);
-
-		$('.nav-link').each(function(){               
-			var $tweet = $(this);                    
-			$tweet.removeClass('active');
-		});
-		
-		$('#tab-c-4-info').tab('show');
-
-	});
-	$('#treegrid').on('rowClick', function (event) {
-		//alert("dsad");
-	});
-	$("#treegrid").on('change', function (event) {
-		alert("aaaabbb");
-	});
-}
-
 function executedTaskDetailClicked(executionDate, pluginName, commandExecutionResultID) {
 
 	var params = {
@@ -326,22 +338,22 @@ function executedTaskDetailClicked(executionDate, pluginName, commandExecutionRe
 }
 
 function dropdownButtonClicked(operation) {
-	if(operation == "addToExistingGroup") {
-		getModalContent("modals/computer/addtoexistinggroup", function content(data){
-			$('#genericModalHeader').html("Seçili İstemcileri Gruba Ekle");
-			$('#genericModalBodyRender').html(data);
-			generateAddToExistingGroupTreeGrid();
-			$("#addToExistingGroupButtonDiv").hide();
-			
-		});
-	} else if(operation == "addToNewGroup") {
-		getModalContent("modals/computer/addtonewgroup", function content(data){
-			$('#genericModalHeader').html("Seçili İstemcileri Gruba Ekle");
-			$('#genericModalBodyRender').html(data);
-			generateAddToNewGroupTreeGrid();
-			
-		});
-	}
+		if(operation == "addToExistingGroup") {
+			getModalContent("modals/computer/addtoexistinggroup", function content(data){
+				$('#genericModalHeader').html("Seçili İstemcileri Gruba Ekle");
+				$('#genericModalBodyRender').html(data);
+				generateAddToExistingGroupTreeGrid();
+				$("#addToExistingGroupButtonDiv").hide();
+					
+				});
+		} else if(operation == "addToNewGroup") {
+			getModalContent("modals/computer/addtonewgroup", function content(data){
+				$('#genericModalHeader').html("Seçili İstemcileri Gruba Ekle");
+				$('#genericModalBodyRender').html(data);
+				generateAddToNewGroupTreeGrid();
+				
+			});
+		}
 }
 
 function generateAddToExistingGroupTreeGrid() {
@@ -849,11 +861,11 @@ function showSelectedEntries() {
 	html += '<tr>';
 	html += '<th style="width: 5%"></th>';
 	html += '<th style="width: 30%">Bilgisayar Adı</th>';
-	html += '<th style="width: 15%"></th>';
+	html += '<th style="width: 15%"> <button id="btnRemoveAllAgents" class="btn btn-link btn-sm"> Tümünü Kaldır </button> </th>';
 	html += '</tr>';
 	
 	if(selectedEntries.length == 0) {
-		html += '<tr><td colspan="100%" class="text-center">İşlem yapabilmek için en az bir istemci bulunmalıdır.</td></tr>';
+		html += '<tr><td colspan="3" class="text-center">İşlem yapabilmek için en az bir istemci bulunmalıdır.</td></tr>';
 		$("#dropdownButton").hide();
 	} else {
 		$("#dropdownButton").show();
@@ -864,7 +876,6 @@ function showSelectedEntries() {
 		var onlyParentName="";
 		var dn=selectedEntries[i].distinguishedName;
 		var dnArr= dn.split(",");
-		
 		dnArr.forEach(function(entry) {
 		    if(entry.startsWith("ou")){
 		    	var onName=entry.split("=");
@@ -874,10 +885,17 @@ function showSelectedEntries() {
 		});
 		html += '<tr>';
 		html += '<td>' + (i+1) + '</td>';
-		html += '<td class="entryDetail" title="'+selectedEntries[i].distinguishedName +'" > ' + selectedEntries[i].name   ;
+		if(selectedEntries[i].online)
+		{
+			html += '<td class="entryDetail " style="" title="'+selectedEntries[i].distinguishedName +'" > <font color="green"> * ' + selectedEntries[i].name +' </font>'  ;
+		}
+		else{
+			html += '<td class="entryDetail" title="'+selectedEntries[i].distinguishedName +'" > ' + selectedEntries[i].name   ;
+		}
+		
 //		html += '<div style = "display:none; background-color: black; color: yellow; " class=" card popup" style=" height: 100px;">   '+ selectedEntries[i].distinguishedName  + '</div> </td>';
 		html += '<td class="text-center">';
-		html += '<button class="btn btn-danger btn-sm removeEntry" type="button" id="' +selectedEntries[i]+ '" data-id="'+ selectedEntries[i]+'" title="Kaldir"> - </button>';
+		html += '<button class="btn btn-link btn-sm removeEntry" type="button" id="' +selectedEntries[i]+ '" data-id="'+ selectedEntries[i]+'" title="Kaldir"> Kaldır </button>';
 		html += '</td>';
 		html += '</tr>';
 	}
@@ -904,6 +922,10 @@ function showSelectedEntries() {
 		else{
 			loadPluginTaskTable(false);
 		}
+	});
+	$('#btnRemoveAllAgents').on('click', function(e) {
+		selectedEntries=[];
+		showSelectedEntries();
 	});
 	
 	$('.entryDetail').hover(function() {
@@ -935,10 +957,6 @@ function setOnlineEntryList() {
 }
 
 function taskHistory() {
-	$('#tab-task-history').on('click',function() {
-		
-//		var checkedRows = $("#treegrid").jqxTreeGrid('getCheckedRows');
-		
 		if(selectedRow==null){
 	    	var trElement = '<tr><td colspan="100%" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td></tr>';
 	    	$("#taskHistoryTable").empty();
@@ -1020,7 +1038,36 @@ function taskHistory() {
 			    }
 			});
 		}
-	});
 }
 
+function selectedEntryDetail() {
+	
+	if(selectedRow!=null){
+		$("#selectedDnInfo").html(selectedRow.distinguishedName)
+		
+		var html = '<table class="table table-striped table-bordered " id="attrTable">';
+		html += '<thead>';
+		html += '<tr>';
+		html += '<th style="width: 40%"></th>';
+		html += '<th style="width: 60%"></th>';
+		html += '</tr>';
+		html += '</thead>';
 
+		for (key in selectedRow.attributes) {
+			if (selectedRow.attributes.hasOwnProperty(key)) {
+				html += '<tr>';
+				html += '<td>' + key + '</td>';
+				html += '<td>' + selectedRow.attributes[key] + '</td>';
+				html += '</tr>';
+			}
+		}
+		html += '</table>';
+
+		$('#ldapAttrInfoHolder').html(html);
+		$('.nav-link').each(function(){               
+			var $tweet = $(this);                    
+			$tweet.removeClass('active');
+		});
+		$('#tab-entryinfo').tab('show');
+	}
+}

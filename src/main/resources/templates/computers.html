@@ -43,67 +43,78 @@
 
 	<div class="col-lg-4 col-md-6 col-sm-6">
 		<div class="main-card mb-3 card">
-			<div class="card-body">
+			<div class="card-header">
 				<div>
-					<div class="d-inline-block dropdown">
-								<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
-	                                            <span class="btn-icon-wrapper pr-2 opacity-7">
-	                                                <i class="fa fa-braille fa-w-20"></i>
-	                                            </span>
-	                                            İstemci İşlemleri
-	                        	</button>
-                        		<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
-                                            <ul class="nav flex-column">
-                                                <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnAddAgentOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="agents" >
-                                                        <i class="fa fa-folder-open"> &nbsp;</i>
-                                                        <span>
-                                                            Klasör Ekle
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnDeleteAgentOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="agents" >
-                                                        <i class="fa fa-folder-open"> &nbsp;</i>
-                                                        <span>
-                                                            Klasör Sil
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnMoveAgentOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="agents" >
-                                                        <i class="fa fa-random"> &nbsp;</i>
-                                                        <span>
-                                                            Klasör Taşı
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                                                                             
-                                                <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnMoveAgentModal" title="Kullanıcı Sil" data-target="#genericModal" data-toggle="modal">
-                                                        <i class="fa fa-random"> &nbsp;</i>
-                                                        <span> İstemci Taşı </span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                              </div>
-                    </div>
+					<button id="btnAddAgents" type="button"
+						class="btn-shadow btn btn-info" title="İstemcileri Ekle" > <i class="fa fa-plus"></i>  </button>
+					
+					<button id="addOnlyOnlineAgents" type="button"
+						class="btn-shadow btn btn-success"   title="Online İstemcileri Ekle"> <i class="fa fa-plus-circle"></i> </button>
 				</div>
-				<hr>
+				
+			</div>
+			<div class="card-body">
+<!-- 				<div> -->
+<!-- 					<div class="d-inline-block dropdown"> -->
+<!-- 							<div class="row"> -->
+<!-- 								<div class="col-lg-10">  -->
+<!-- 									<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info"> -->
+<!-- 	                                            <span class="btn-icon-wrapper pr-2 opacity-7"> -->
+<!-- 	                                                <i class="fa fa-server"></i> -->
+<!-- 	                                            </span> -->
+<!-- 	                                            İstemci İşlemleri -->
+<!-- 		                        	</button> -->
+<!-- 	                        		<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left"> -->
+<!-- 	                                            <ul class="nav flex-column"> -->
+	                                                
+<!-- 	                                                <li class="nav-item"> -->
+<!-- 	                                                    <a href="#" class="nav-link" id="btnAddOnlineAgents"> -->
+<!-- 	                                                        <i class="fa fa-folder-open"> &nbsp;</i> -->
+<!-- 	                                                        <span> -->
+<!-- 	                                                             Online İstemcileri Ekle -->
+<!-- 	                                                        </span> -->
+<!-- 	                                                    </a> -->
+<!-- 	                                                </li> -->
+<!-- 	                                                <li class="nav-item"> -->
+<!-- 	                                                    <a href="#" class="nav-link" id="btnMoveAgentModal" title="İstemci Taşı" data-target="#genericModal" data-toggle="modal"> -->
+<!-- 	                                                        <i class="fa fa-random"> &nbsp;</i> -->
+<!-- 	                                                        <span> İstemci Taşı </span> -->
+<!-- 	                                                    </a> -->
+<!-- 	                                                </li> -->
+<!-- 	                                            </ul> -->
+<!-- 	                              </div> -->
+									
+<!-- 								</div> -->
+<!-- 								<div class="col-lg-2">  -->
+<!-- 									 <a href="#" class="btn btn-info pull-right" id="btnAddAgents"> -->
+<!--                                                         <i class="fa fa-plus"> </i> -->
+                                                        
+<!--                                      </a> -->
+<!--                                      <a href="#" class="nav-link" id="btnAddOnlineAgents"> -->
+<!-- 	                                                        <i class="fa fa-folder-open"> &nbsp;</i> -->
+<!-- 	                                                        <span> -->
+<!-- 	                                                             Online İstemcileri Ekle -->
+<!-- 	                                                        </span> -->
+<!-- 	                                                    </a> -->
+<!-- 								</div> -->
+							
+<!-- 							</div> -->
+							
+<!--                     </div> -->
+<!-- 				</div> -->
+<!-- 				<hr> -->
 				<div id="computerTreeDiv"></div>
 			</div>
 
 		</div>
 	</div>
-
-
 	<div class="col-lg-8 col-md-6 col-sm-6">
 		<div class="main-card mb-3 card">
 			<div class="card-header card-header-tab-animation">
 				<ul class="nav nav-justified">
 					<li class="nav-item">
 						<a role="tab" class="nav-link active"
-							id="tab-c-0" data-toggle="tab" href="#tab-new-task"> <span>Görev
+							id="tab-send-task" data-toggle="tab" href="#tab-new-task"> <span>Görev
 									Gönder</span>
 						</a>
 					</li>
@@ -115,17 +126,16 @@
 					</li>
 					<li class="nav-item">
 						<a role="tab" class="nav-link"
-							id="tab-c-2" data-toggle="tab" href="#tab-online-clients"> <span>Açık
+							id="tab-onlineAgents" data-toggle="tab" href="#tab-online-clients"> <span>Açık
 									İstemciler</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a role="tab" class="nav-link" data-toggle="tab"
-											id="tab-c-4-info" href="#tab-entry-info"> <span>Kayıt Bilgisi</span>
+						<a role="tab" class="nav-link" data-toggle="tab" id="tab-entry-info"
+											 href="#tab-entryinfo"> <span>Kayıt Bilgisi</span>
 						</a>
 					</li>
 				</ul>
-
 			</div>
 			<div class="card-body">
 				<div class="tab-content">
@@ -133,6 +143,23 @@
 					
 					<div class="row"> 
 						<div class="col-lg-6">
+							<div class="pull-right" > 
+								
+								<div class="d-block dropdown pull-right mb-1">
+				                    <button type="button" id="dropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+				                        <span class="btn-icon-wrapper pr-1">
+				                            İstemci Grubu Oluştur
+				                        </span>
+				                    </button>
+				                    <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+									    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#genericModal" id="btnAddToExistingGroup"
+									    	onclick="dropdownButtonClicked('addToExistingGroup')">Mevcut Gruba Ekle</a>
+									    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#genericModal" id="btnAddToNewGroup"
+									    	onclick="dropdownButtonClicked('addToNewGroup')">Yeni İstemci Grubu Oluştur</a>
+				                    </div>
+				                </div>
+							
+							</div>
 							<div id="selectedAgentDiv">
 								<table id="selectedAgentTable" class="table table-striped table-bordered">
 									<thead>
@@ -144,7 +171,7 @@
 									</thead>
 									<tbody>
 									
-									<tr><td colspan="100%" class="text-center" style=" ">Lütfen istemci seçiniz.</td></tr>
+									<tr><td colspan="3" class="text-center" style=" ">Lütfen istemci seçiniz.</td></tr>
 									
 									</tbody>
 									
@@ -181,8 +208,6 @@
 					</div>
 					<div class="tab-pane" id="tab-online-clients" role="tabpanel">
 							<div id="onlineEntryListHolder"></div>
-						
-
 					</div>
 					<div class="tab-pane" id="tab-roster" role="tabpanel">
 							<div id="rosterListHolder">
@@ -190,9 +215,8 @@
 									class="btn-shadow btn btn-info" title="İstemcileri Ekle" ><i class="fa fa-plus"></i></button>
 							</div>
 					</div>
-					
-					<div class="tab-pane" id="tab-entry-info" role="tabpanel">
-							<h6 id="selectedDnInfo"></h6>
+					<div class="tab-pane" id="tab-entryinfo" role="tabpanel">
+							<div >Seçilen Ahenk: <b id="selectedDnInfo"></b></div><br>
 							<div id="ldapAttrInfoHolder"></div>
 					</div>
 				</div>

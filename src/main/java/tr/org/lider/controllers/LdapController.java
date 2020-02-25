@@ -1,10 +1,8 @@
 package tr.org.lider.controllers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -426,27 +424,11 @@ public class LdapController {
 		LdapEntry entry;
 		Map<String, String[]> attributes = new HashMap<String,String[]>();
 		attributes.put("objectClass", new String[] {"top", "sudoRole"} );
-		//attributes.put("liderGroupType", new String[] {"ROLE"} );
 		try {
+			//add sudoUser attributes 
 			if(sudoUserList != null) {
-				//when single dn comes spring boot takes it as multiple arrays
-				//so dn must be joined with comma
-				//if member dn that will be added to group is cn=user1,ou=Groups,dn=liderahenk,dc=org
-				//spring boot gets this param as array which has size 4
-				Boolean checkedArraySizeIsOne = true;
-				for (int i = 0; i < sudoUserList.length; i++) {
-					if(sudoUserList[i].contains(",")) {
-						checkedArraySizeIsOne = false;
-						break;
-					}
-				}
-				if(checkedArraySizeIsOne ) {
-					attributes.put("sudoUser", new String[] {String.join(",", sudoUserList)} );
-				} else {
-					attributes.put("sudoUser", sudoUserList );
-				}
+				attributes.put("sudoUser", sudoUserList );
 			}
-
 			//add sudoHost attributes 
 			if(sudoHostList != null) {
 				attributes.put("sudoHost", sudoHostList );

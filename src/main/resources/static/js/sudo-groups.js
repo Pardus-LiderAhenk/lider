@@ -560,7 +560,7 @@ function attributeOnChange(selectOption) {
 	selectedOptionValue = selectOption.value;
 	if(selectedOptionValue == "sudoUser") {
 		selectedOptionValue = "sudoUser";
-		$('#attributeValue').attr("placeholder", "Kullanıcı DN'inin giriniz...");
+		$('#attributeValue').attr("placeholder", "Kullanıcı uid'sini giriniz...");
 		var html = '<button onclick="createTreeModalForUserSelection()" href="#" data-toggle="modal" data-target="#userTreeModal"'
 		+ 'class="btn-icon btn-icon-only btn btn-info" title="Kullanıcı ağacından ekle">'
 		+ '<i class="pe-7s-network btn-icon-wrapper fa-lg"> </i></button>';
@@ -884,7 +884,7 @@ function btnMembersSelectedFromUserTree() {
 			}
 		}
 		if(isExists == false) {
-			selectedAttribute.push(["sudoUser", checkedUsers[i].distinguishedName]);
+			selectedAttribute.push(["sudoUser", checkedUsers[i].uid]);
 		}
 	}
 	createAttributeTable();

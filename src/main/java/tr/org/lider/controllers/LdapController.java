@@ -1,6 +1,8 @@
 package tr.org.lider.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -63,6 +65,7 @@ public class LdapController {
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
+		Collections.sort(subEntries);
 		selectedEntry.setChildEntries(subEntries);
 		return subEntries;
 	}

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class LdapEntry implements Serializable{
+public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 
 
 	/**
@@ -298,6 +298,11 @@ public class LdapEntry implements Serializable{
 	
 	public void setAttributesMultiValues(Map<String, String[]> attributesMultiValues) {
 		this.attributesMultiValues = attributesMultiValues;
+	}
+	@Override
+	public int compareTo(LdapEntry o) {
+		
+		return  o.getType().compareTo(getType());
 	}
 
 }

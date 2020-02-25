@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import tr.org.lider.entities.NotifyTemp;
+import tr.org.lider.entities.NotifyTemplate;
 import tr.org.lider.repositories.NotifyRepository;
 
 @Service
@@ -15,20 +15,20 @@ public class NotifyService {
 	@Autowired
 	private NotifyRepository notifyRepository;
 
-	public List<NotifyTemp> list(){
+	public List<NotifyTemplate> list(){
 		return notifyRepository.findAll();
 	}
 
-	public NotifyTemp add(NotifyTemp file) {
+	public NotifyTemplate add(NotifyTemplate file) {
 		return notifyRepository.save(file);
 	}
 
-	public NotifyTemp del(NotifyTemp file) {
+	public NotifyTemplate del(NotifyTemplate file) {
 		notifyRepository.deleteById(file.getId());
 		return file;
 	}
 	
-	public NotifyTemp update(NotifyTemp file) {
+	public NotifyTemplate update(NotifyTemplate file) {
 		file.setModifyDate(new Date());
 		return notifyRepository.save(file);
 	}

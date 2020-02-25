@@ -19,13 +19,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 /**
- * Entity class for ETA-Notify files.
+ * Entity class for script templates.
  * 
  */
 @Entity
-@Table(name = "P_NOTIFY_TEMPLATE")
+@Table(name = "P_SCRIPT_TEMPLATE")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class NotifyTemp implements Serializable {
+public class ScriptTemplate implements Serializable {
 
 	private static final long serialVersionUID = 5867302652909954893L;
 
@@ -34,11 +34,11 @@ public class NotifyTemp implements Serializable {
 	@Column(name = "ID", unique = true, nullable = false)
 	private Long id;
 
+	@Column(name = "SCRIPT_TYPE", length = 1, nullable = false)
+	private Integer scriptType;
+
 	@Column(name = "LABEL", nullable = false, unique = true, length = 255)
 	private String label;
-	
-	@Column(name = "TIME", nullable = false, unique = false, length = 255)
-	private Integer time;
 
 	@Lob
 	@Column(name = "CONTENTS", nullable = false)
@@ -55,13 +55,13 @@ public class NotifyTemp implements Serializable {
 	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private Date modifyDate;
 
-	public NotifyTemp() {
+	public ScriptTemplate() {
 	}
 
-	public NotifyTemp(Long id, ScriptType scriptType, String label, Integer time, String contents, Date createDate, Date modifyDate) {
+	public ScriptTemplate(Long id, ScriptType scriptType, String label, String contents, Date createDate, Date modifyDate) {
 		this.id = id;
+		setScriptType(scriptType);
 		this.label = label;
-		this.time = time;
 		this.contents = contents;
 		this.createDate = createDate;
 		this.modifyDate = modifyDate;
@@ -75,6 +75,18 @@ public class NotifyTemp implements Serializable {
 		this.id = id;
 	}
 
+	public ScriptType getScriptType() {
+		return ScriptType.getType(scriptType);
+	}
+
+	public void setScriptType(ScriptType scriptType) {
+		if (scriptType == null) {
+			this.scriptType = null;
+		} else {
+			this.scriptType = scriptType.getId();
+		}
+	}
+
 	public String getLabel() {
 		return label;
 	}
@@ -83,14 +95,6 @@ public class NotifyTemp implements Serializable {
 		this.label = label;
 	}
 
-	public Integer getTime() {
-		return time;
-	}
-
-	public void setTime(Integer time) {
-		this.time = time;
-	}
-	
 	public String getContents() {
 		return contents;
 	}

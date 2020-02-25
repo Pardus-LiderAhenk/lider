@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tr.org.lider.entities.ScriptTemp;
+import tr.org.lider.entities.ScriptTemplate;
 import tr.org.lider.services.ScriptService;
 
 /**
@@ -27,22 +27,22 @@ public class ScriptController {
 	
 //	get script templates
 	@RequestMapping(method=RequestMethod.POST ,value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<ScriptTemp> scriptList() {
+	public List<ScriptTemplate> scriptList() {
 		return scriptService.list();
 	}
 
 	@RequestMapping(method=RequestMethod.POST ,value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ScriptTemp scriptAdd(@RequestBody ScriptTemp file){
+	public ScriptTemplate scriptAdd(@RequestBody ScriptTemplate file){
 		return scriptService.add(file);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST ,value = "/del", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ScriptTemp scriptDel(@RequestBody ScriptTemp file){
+	public ScriptTemplate scriptDel(@RequestBody ScriptTemplate file){
 		return scriptService.del(file);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST ,value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ScriptTemp scriptUpdate(@RequestBody ScriptTemp file){
+	public ScriptTemplate scriptUpdate(@RequestBody ScriptTemplate file){
 		return scriptService.update(file);
 	}
 }

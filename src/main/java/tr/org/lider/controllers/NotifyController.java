@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tr.org.lider.entities.NotifyTemp;
+import tr.org.lider.entities.NotifyTemplate;
 import tr.org.lider.services.NotifyService;
 
 /**
@@ -27,22 +27,22 @@ public class NotifyController {
 	
 //	get notify list
 	@RequestMapping(method=RequestMethod.POST ,value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<NotifyTemp> notifyList() {
+	public List<NotifyTemplate> notifyList() {
 		return notifyService.list();
 	}
 
 	@RequestMapping(method=RequestMethod.POST ,value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-	public NotifyTemp notifyAdd(@RequestBody NotifyTemp file){
+	public NotifyTemplate notifyAdd(@RequestBody NotifyTemplate file){
 		return notifyService.add(file);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST ,value = "/del", produces = MediaType.APPLICATION_JSON_VALUE)
-	public NotifyTemp notifyDel(@RequestBody NotifyTemp file){
+	public NotifyTemplate notifyDel(@RequestBody NotifyTemplate file){
 		return notifyService.del(file);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST ,value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-	public NotifyTemp notifyUpdate(@RequestBody NotifyTemp file){
+	public NotifyTemplate notifyUpdate(@RequestBody NotifyTemplate file){
 		return notifyService.update(file);
 	}
 }

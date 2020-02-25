@@ -1,0 +1,68 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/eta-notify.js"></script>
+<link rel="stylesheet" href="css/plugin.task.css" />
+</head>
+<body>
+	<div class="login-form-1">
+		<div class="login-group">
+			<div class="form-group">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-lg-8">
+							<label for="notifySelectBox">Mesajı Adı</label> <select
+								class="form-control" id="notifySelectBox">
+								<option value="NA" selected>Mesaj seçiniz...</option>
+							</select>
+							<small class="form-text text-muted">Gönderilmek istenilen mesaj seçilerek Çalıştır butonuna tıklanır.</small>
+						</div>
+						<div class="col-lg-2">
+							<label for="notifyTime">Mesaj Süresi(sn)</label> <input
+								type="text" class="form-control" id="notifyTime">
+						</div>
+						<div class="col-lg-2">
+							<label for="notifySize">Mesaj Boyutu</label>
+							<select class="form-control" id="notifySize">
+								<option value="full" selected>Tam Ekran</option>
+								<option value="small">Küçük</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="notifyContent">Mesaj İçeriği</label>
+					<textarea class="form-control" id="notifyContent" rows="16"></textarea>
+				</div>
+				<br>
+				<div id="plugin-result"></div>
+				<br> <br>
+				<div class="row">
+					<div class="col-lg-7">
+						<!-- ids of the following buettons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+						<button id=sendTask-eta-notify type="button"
+							class="btn-shadow btn btn-info">
+							<i class="fa fa-play"></i> Çalıştır
+						</button>
+						<button id=sendTaskCron-eta-notify type="button"
+							class="btn-shadow btn btn-info"
+							title="Zamanlanmış Görev Parametreleri" data-toggle="modal"
+							data-target="#scheduledTasksModal">
+							<i class="fa fa-hourglass-start"></i> Görev Parametreleri
+						</button>
+					</div>
+					<div class="col-lg-5 text-right">
+						<!-- ids of the following buttons must be closePage-{plugin-page} -->
+						<button id=closePage-eta-notify type="button"
+							class="btn-shadow btn btn-info" data-dismiss="modal">
+							<i class="fa fa-window-close"></i> Kapat
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

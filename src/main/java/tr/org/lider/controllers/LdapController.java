@@ -401,6 +401,9 @@ public class LdapController {
 		
 		List<LdapEntry> results=null;
 		try {
+			if(searchDn.equals("")) {
+				searchDn=configurationService.getLdapRootDn();
+			}
 			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
 			filterAttributes.add(new LdapSearchFilterAttribute(key, value, SearchFilterEnum.EQ));
 			results = ldapService.search(searchDn,filterAttributes, new String[] {"*"});

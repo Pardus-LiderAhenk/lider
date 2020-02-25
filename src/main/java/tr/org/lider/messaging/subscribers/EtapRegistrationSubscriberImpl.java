@@ -100,9 +100,12 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 				String idAttribute=configurationService.getAgentLdapIdAttribute();
 
 				// Is Agent registered in ldap?
-				final List<LdapEntry> entries = ldapService.search(configurationService.getAgentLdapJidAttribute(),
-						message.getFrom().split("@")[0],
-						new String[] { configurationService.getAgentLdapJidAttribute() });
+//				final List<LdapEntry> entries = ldapService.search(configurationService.getAgentLdapJidAttribute(),
+//						message.getFrom().split("@")[0],
+//						new String[] { configurationService.getAgentLdapJidAttribute() });
+				final List<LdapEntry> entries = ldapService.search(configurationService.getAgentLdapIdAttribute(),
+						macAddress,
+						new String[] { configurationService.getAgentLdapJidAttribute(),configurationService.getAgentLdapIdAttribute() });
 				LdapEntry entry = entries != null && !entries.isEmpty() ? entries.get(0) : null;
 
 				// Agent already registered

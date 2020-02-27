@@ -13,7 +13,9 @@ var nId = null; // selected notify id
 
 $(document).ready(function(){
 	$("#notifyDelBtn").hide();
+	$("#notifyCleanBtn").hide();
 	$("#notifyContentTemp").val("");
+	$("#notifyNameTemp").focus();
 	getNotifyTemp();
 });
 
@@ -83,6 +85,7 @@ $('#notifyTableTemp tbody').on( 'click', 'tr', function () {
 		$('#notifyContentTemp').val("");
 		$("#notifySaveBtn").html("Kaydet");
 		$("#notifyDelBtn").hide();
+		$("#notifyCleanBtn").hide();
 		nId = null;
 
 	}
@@ -94,6 +97,7 @@ $('#notifyTableTemp tbody').on( 'click', 'tr', function () {
 		var rowData = table.rows('.selected').data()[0];
 		$("#notifyNameTemp").val(rowData[0]);
 		$("#notifyDelBtn").show();
+		$("#notifyCleanBtn").show();
 		$('#notifyTime').val(rowData[1]);
 		for (var i = 0; i < notifyTempList.length; i++) {
 			if (notifyTempList[i]['id'] == nId) {
@@ -254,6 +258,7 @@ $('#notifyDelBtn').click(function(e){
 					$('#notifyTime').val("");
 					$("#notifySaveBtn").html("Kaydet");
 					$("#notifyDelBtn").hide();
+					$("#notifyCleanBtn").hide();
 					$("#notifyContentTemp").val("");
 				}else {
 					$.notify("Mesaj silinirken hata oluştu.", "error");
@@ -286,7 +291,7 @@ function updateNotifyList(id, notifyName, contents, notifyTime, modifyDate) {
 	}
 }
 
-$('#notifyAddBtn').click(function(e){
+$('#notifyCleanBtn').click(function(e){
 	var rows = table.$('tr.selected');
 	if(rows.length){
 		table.$('tr.selected').removeClass('selected');

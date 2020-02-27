@@ -7,6 +7,7 @@
  * 
  */
 
+var table;
 var conkyTempList = [];
 var cId = null; // selected conky id
 

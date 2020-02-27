@@ -58,7 +58,7 @@ public class NotifyTemplate implements Serializable {
 	public NotifyTemplate() {
 	}
 
-	public NotifyTemplate(Long id, ScriptType scriptType, String label, Integer time, String contents, Date createDate, Date modifyDate) {
+	public NotifyTemplate(Long id, String label, Integer time, String contents, Date createDate, Date modifyDate) {
 		this.id = id;
 		this.label = label;
 		this.time = time;

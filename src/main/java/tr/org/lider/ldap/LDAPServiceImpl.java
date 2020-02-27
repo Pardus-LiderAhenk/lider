@@ -1189,6 +1189,29 @@ public class LDAPServiceImpl implements ILDAPService {
 		return computersDn;
 	}
 	
+	/*
+	 * returns just organizational units under given node
+	 */
+	public LdapEntry getOUTree(String dn) {
+		LdapEntry computersDn = null;
+		try {
+			String globalUserOu =  configurationService.getAgentLdapBaseDn(); 
+			logger.info("Getting computers");
+			List<LdapEntry> retList = findSubEntries(globalUserOu, "(objectClass=organizationalUnit)",
+					new String[] { "*" }, SearchScope.OBJECT);
+
+			logger.info("Ldap OUs under Computers Node listed.");
+			if (retList.size() > 0) {
+				computersDn = retList.get(0);
+				computersDn.setExpandedUser("FALSE");
+			}
+
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return computersDn;
+	}
+	
 	public LdapEntry getLdapAgentsGroupTree() {
 		LdapEntry computersGroupDn = null;
 		try {

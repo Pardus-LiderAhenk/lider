@@ -267,28 +267,75 @@ function createMainTree() {
 			}
 		}
 	     
-		//to print members at the end of table
-		for (var key in row.attributesMultiValues) {
-			if (row.attributesMultiValues.hasOwnProperty(key) && key == "member") {
-				if(row.attributesMultiValues[key].length > 1) {
-					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
-						html += '<tr>';
-						html += '<td>' + key + '</td>';
-						html += '<td>' + row.attributesMultiValues[key][i] + '</td>'; 
-						html += '</tr>';
-					}
-				} else {
-					html += '<tr>';
-					html += '<td>' + key + '</td>';
-					html += '<td>' + row.attributesMultiValues[key] + '</td>';
-					html += '</tr>';
-				}
-			}
-		}
+//		//to print members at the end of table
+//		for (var key in row.attributesMultiValues) {
+//			if (row.attributesMultiValues.hasOwnProperty(key) && key == "member") {
+//				if(row.attributesMultiValues[key].length > 1) {
+//					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
+//						html += '<tr>';
+//						html += '<td>' + key + '</td>';
+//						html += '<td>' + row.attributesMultiValues[key][i] + '</td>'; 
+//						html += '</tr>';
+//					}
+//				} else {
+//					html += '<tr>';
+//					html += '<td>' + key + '</td>';
+//					html += '<td>' + row.attributesMultiValues[key] + '</td>';
+//					html += '</tr>';
+//				}
+//			}
+//		}
 	        
 		html += '</table>';
 		$('#selectedDnInfo').html("Seçili Kayıt: "+name);
+		$('#memberTabSelectedDNInfo').html("Seçili Kayıt: "+name);
 		$('#ldapAttrInfoHolder').html(html);
+		
+		
+		
+		if(row.type != "ORGANIZATIONAL_UNIT") {
+			//enable members tab button
+			$('#member-info').removeClass('disabled');
+			var members = "";
+			//to print members at different tab
+			for (var key in row.attributesMultiValues) {
+				if (row.attributesMultiValues.hasOwnProperty(key) && key == "member") {
+					if(row.attributesMultiValues[key].length > 1) {
+						for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
+							members += '<tr>';
+							members += '<td class="text-center">' + (i + 1) + '</td>';
+							members += '<td>' + row.attributesMultiValues[key][i] + '</td>';
+							members += '<td class="text-center">' 
+								+ '<button onclick="deleteMemberFromTabList(\'' + row.attributesMultiValues[key][i] + '\')"' 
+								+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">' 
+								+ '<i class="pe-7s-trash btn-icon-wrapper"> </i></button>' 
+								+ '</td>';
+							members += '</tr>';
+						}
+					} else {
+						members += '<tr>';
+						members += '<td class="text-center">1</td>';
+						members += '<td>' + row.attributesMultiValues[key] + '</td>';
+						members += '<td class="text-center">' 
+							+ '<button onclick="deleteMemberFromTabList(\'' + row.attributesMultiValues[key] + '\')"' 
+							+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">' 
+							+ '<i class="pe-7s-trash btn-icon-wrapper"> </i></button>' 
+							+ '</td>';
+						members += '</tr>';
+					}
+				}
+			}
+			$('#bodyMembers').html(members);
+		} else {
+			//select entry info tab
+			$('#member-info').removeClass('active');
+			$('#tab-entry-info').tab('show');
+			$('#entry-info').addClass('active');
+			$('#member-info').addClass('disabled');
+		}
+		
+		
+		
 		
 		var selectedRows = $("#treeGridUserGroups").jqxTreeGrid('getSelection');
 		var selectedRowData=selectedRows[0];
@@ -1261,3 +1308,41 @@ function btnEditGroupNameClicked() {
 	}
 }
 
+/*
+ * delete group member from tab list
+ */
+function deleteMemberFromTabList(dn) {
+	var selectedRows = $("#treeGridUserGroups").jqxTreeGrid('getSelection');
+	var selectedRowData=selectedRows[0];
+	var dnListToDelete = [];
+	dnListToDelete.push(dn);
+	if(selectedRowData.attributesMultiValues['member'].length > 1) {
+		var params = {
+			    "dnList": dnListToDelete,
+			    "dn": selectedDN
+		};
+		$.ajax({
+			type : 'POST',
+			url  : 'lider/ldap/delete/group/members',
+			data : params,
+			dataType : 'json',
+			success : function(data) {
+				
+				if(data != null) {
+					$.notify("Grup üyeleri başarıyla düzenlendi", "success");
+					//get selected data and update it with new data result from service call
+					var selectedData= $("#treeGridUserGroups").jqxTreeGrid('getRow', data.entryUUID);
+					selectedData.attributesMultiValues = data.attributesMultiValues;
+					$("#treeGridUserGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
+					$("#treeGridUserGroups").jqxTreeGrid('getRow', data.entryUUID);
+					$("#treeGridUserGroups").jqxTreeGrid('selectRow', data.entryUUID);
+				}
+			},
+		    error: function (data, errorThrown) {
+		    	$.notify("Grup üyesi silinirken hata oluştu.", "error");
+		    }
+		}); 
+	} else {
+		$.notify("Grup en az bir üye bulundurmalıdır. Son üye silinemez", "error");
+	}
+}

@@ -70,11 +70,17 @@
 	<div class="col-lg-8">
 		<div class="main-card mb-3 card">
 			<div class="card-header card-header-tab-animation">
-				<ul class="nav nav-justified">
+				<ul class="nav nav-justified" id="tab-items">
 					<li class="nav-item">
 						<a role="tab" class="nav-link active"
 							id="entry-info" data-toggle="tab" href="#tab-entry-info"> 
 							<span>Kayıt Bilgisi</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a role="tab" class="nav-link"
+							id="member-info" data-toggle="tab" href="#tab-member-info"> 
+							<span>Grup Üyeleri</span>
 						</a>
 					</li>
 				</ul>
@@ -83,10 +89,26 @@
 			<div class="card-body">
 				<div class="tab-content">
 					<div class="tab-pane active" id="tab-entry-info" role="tabpanel">
-						<p id="selectedDnInfo"class="mb-0"></p>
+						<p id="entrInfoTabSelectedDnInfo"class="mb-0"></p>
 						<div id="ldapAttrInfoHolder"></div>
 					</div>
-					
+					<div class="tab-pane" id="tab-member-info" role="tabpanel">
+						<p id="memberTabSelectedDNInfo"class="mb-0"></p>
+						<div>
+							<table class="mb-0 table table-bordered">
+								<thead>
+									<tr>
+										<th style="width: 10%" class="text-center">#</th>
+										<th style="width: 80%">Üye DN</th>
+										<th style="width: 10%"></th>
+									</tr>
+								</thead>
+								<tbody id="bodyMembers">
+									<tr><td colspan="100%" class="text-center">Üye bulunamadı</td></tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -34,8 +34,8 @@ function fillRegistrationTemplateTable() {
 		    	$.each(data, function(index, element) {
 		    		html += '<tr><td>' + (index+1) + '</td>'
 		    			 + '<td>' + element.unitId + '</td>'
-		    			 + '<td>' + element.authGroup + '</td>'
 		    			 + '<td>' + element.parentDn + '</td>'
+		    			 + '<td>' + element.authGroup + '</td>'
 		    			 + '<td>' + element.createDate + '</td>';
 		    		html += '<td class="text-center">' 
 		    			+ '<button onclick="deleteTemplate(\'' + element.id + '\')"' 

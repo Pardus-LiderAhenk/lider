@@ -1,112 +1,72 @@
-<!DOCTYPE html>
-
 <html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/conky.js"></script>
 </head>
 <body>
-<h6 th:text="${pluginTask.description}"> </h6> 
-<h6>  deneme</h6> 
-<hr>
-
-
-<span th:text="${pluginTask.description}"> </span> 
-<span id="entrySize"> </span> 
-
-<hr>
-<div class="login-form-1">
-				<div class="login-group">
-					<div class="form-group">
-					Mesaj : 
-						<input type="text" class="form-control" id="username" name="param" >
-						
-						<div id="plugin-result">result</div>
+	<div class="login-form-1">
+		<div class="login-group">
+			<div class="form-group">
+				<div class="form-group">
+					<div class="form-check">
+						<input type="checkbox" class="form-check-input"
+							id="removeConkyMessageBtn"> <label class="form-check-label"
+							for="removeConkyMessageBtn">Conky Mesajını Kaldır</label>
+					</div>
+					<small class="text-muted"> İstemci/lerde var olan Conky mesajını kaldırır. </small>
+					<br><br>
+					<div>
+						<label for="conkySelectBox">Conky Adı</label> <select
+							class="form-control" id="conkySelectBox">
+							<option value="NA" selected>Conky seçiniz...</option>
+						</select>
+						<small class="form-text text-muted">Gönderilmek istenilen Conky seçilerek Çalıştır butonuna tıklanır.</small>
+					</div>
+					<br>
+					<ul id="conkyTabsTask" class="nav nav-tabs">
+						<li class="nav-item"><a role="tab" class="nav-link active" data-toggle="tab" href="#conkyContentTabTask"> <span style="color: black;">Conky İçeriği</span></a>
+						</li>
+						<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#conkySettingsTabTask"> <span style="color: black;">Conky Ayarları</span></a>
+						</li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane fade" id="conkyContentTabTask">
+							<textarea class="form-control" id="conkyContentTemp" rows="18"></textarea>
+						</div>
+						<div class="tab-pane fade" id="conkySettingsTabTask">
+							<textarea class="form-control" id="conkySettingTemp" rows="18"></textarea>
+						</div>
+               		</div>
+				</div>
+				<br>
+				<div id="plugin-result"></div>
+				<br> <br>
+				<div class="row">
+					<div class="col-lg-7">
+						<!-- ids of the following buettons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+						<button id=sendTask-conky type="button"
+							class="btn-shadow btn btn-info">
+							<i class="fa fa-play"></i> Çalıştır
+						</button>
+						<button id=sendTaskCron-conky type="button"
+							class="btn-shadow btn btn-info"
+							title="Zamanlanmış Görev Parametreleri" data-toggle="modal"
+							data-target="#scheduledTasksModal">
+							<i class="fa fa-hourglass-start"></i> Görev Parametreleri
+						</button>
+					</div>
+					<div class="col-lg-5 text-right">
+						<!-- ids of the following buttons must be closePage-{plugin-page} -->
+						<button id=closePage-conky type="button"
+							class="btn-shadow btn btn-info" data-dismiss="modal">
+							<i class="fa fa-window-close"></i> Kapat
+						</button>
 					</div>
 				</div>
-				
-</div>
-<script type="text/javascript">
-				
-				var ref=connection.addHandler(conkylistener, null, 'message', null, null,  null); 
-				
-				var dnlist=[]
-				
-				for (var i = 0; i < selectedEntries.length; i++) {
-					dnlist.push(selectedEntries[i].distinguishedName);
-				}
-				
-// 				var data = {
-// 						"pluginName":"conky",
-// 						"dnList":dnlist,
-// 						"pluginVersion":"1.0.0",
-// 						"timestamp":1523430976357,
-// 						"dnType":"AHENK",
-// 						"parameterMap":{"conkyMessage":"DENEEM","removeConkyMessage":false},
-// 						"commandId":"EXECUTE_CONKY"
-// 				}
-				
-				selectedPluginTask.dnList=dnlist;
-				selectedPluginTask.parameterMap={};
-				selectedPluginTask.entryList=selectedEntries;
-				selectedPluginTask.dnType="AHENK";
-				
-				var params = JSON.stringify(selectedPluginTask); 
-
-				$("#gonder").click(function(e) {
-				    e.preventDefault();
-				    
-				    $.ajax({
-				      type: "POST",
-				      url: "/lider/task/execute",
-				       headers: {
-				          'Content-Type':'application/json',
-				      }, 
-				      data: params,
-				      contentType: "application/json",
-				      dataType: "json",
-				      converters: {
-				        'text json': true
-				      }, 
-				      success: function(result) {
-				    	  
-				    	var res = jQuery.parseJSON(result);
-				    	console.log("rest response")
-				    	console.log(res)
-						if(res.status=="OK"){
-				    		$("#plugin-result").html("Görev başarı ile gönderildi.. Cevap Bekleniyor..");
-				    	}
-				      },
-				      error: function(result) {
-				        alert(result);
-				      }
-				    });
-				  }); 
-				
-				function conkylistener(msg) {
-				    var to = msg.getAttribute('to');
-				    var from = msg.getAttribute('from');
-				    var type = msg.getAttribute('type');
-				    var elems = msg.getElementsByTagName('body');
-				    
-				    if (type == "chat" && elems.length > 0) {
-					
-				    	var body = elems[0];
-				    	var data=Strophe.xmlunescape(Strophe.getText(body));
-				    	var xmppResponse=JSON.parse(data);
-						if(xmppResponse.commandClsId == "EXECUTE_CONKY"){
-							$("#plugin-result").html(xmppResponse.result.responseMessage);
-						}
-						/* connection.deleteHandler(ref); */
-				    }
-				    // we must return true to keep the handler alive. returning false would remove it after it finishes.
-				    return true;
-				}
-				$('#closePage').click(function(e){
-					connection.deleteHandler(ref);
-				});
-	</script>
-
+			</div>
+		</div>
+	</div>
 </body>
 </html>

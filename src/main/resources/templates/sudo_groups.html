@@ -46,15 +46,6 @@
                         İşlem Seç
                     </button>
                     <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
-					    <a class="dropdown-item" href="#addNewAgentGroupModal"  
-					    	onclick="dropdownButtonClicked('addNewAgentGroup')">Yeni İstemci Grubu Oluştur</a>
-					    <a class="dropdown-item" href="#editSelectedAgentGroupModal"  
-					    	onclick="dropdownButtonClicked('editSelectedAgentGroup')">Seçili İstemci Grubunu Düzenle</a>
-					    <a class="dropdown-item" href="#addAgentsToAgentGroupModal"  
-					    	onclick="dropdownButtonClicked('addAgentsToAgentGroup')">Seçili İstemci Grubuna İstemci Ekle</a>
-					    <div class="dropdown-divider"></div>
-					    <a class="dropdown-item" href="#deleteAgentGroupAndMembersModal"  
-					    	onclick="dropdownButtonClicked('deleteAgentGroupAndMembers')">Seçili İstemci Grubunu ve Üyelerini Sil</a>
                     </div>
                 </div>
                 <hr>
@@ -75,6 +66,12 @@
 							<span>Kayıt Bilgisi</span>
 						</a>
 					</li>
+					<li class="nav-item">
+						<a role="tab" class="nav-link"
+							id="member-info" data-toggle="tab" href="#tab-member-info"> 
+							<span>Grup Üyeleri</span>
+						</a>
+					</li>
 				</ul>
 
 			</div>
@@ -84,7 +81,23 @@
 						<p id="selectedDnInfo"class="mb-0"></p>
 						<div id="ldapAttrInfoHolder"></div>
 					</div>
-					
+					<div class="tab-pane" id="tab-member-info" role="tabpanel">
+						<p id="memberTabSelectedDNInfo"class="mb-0"></p>
+						<div>
+							<table class="mb-0 table table-bordered">
+								<thead>
+									<tr>
+										<th style="width: 10%" class="text-center">#</th>
+										<th style="width: 80%">Üye DN</th>
+										<th style="width: 10%"></th>
+									</tr>
+								</thead>
+								<tbody id="bodyMembers">
+									<tr><td colspan="100%" class="text-center">Üye bulunamadı</td></tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

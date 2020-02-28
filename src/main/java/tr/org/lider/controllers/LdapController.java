@@ -484,4 +484,18 @@ public class LdapController {
 		}
 		return entry;
 	}
+	
+	//delete sudoUser from sudo groups
+	@RequestMapping(method=RequestMethod.POST ,value = "/delete/sudo/user", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry deleteUserOfSudoGroup(@RequestParam(value="dn", required=true) String dn, 
+			@RequestParam(value="uid", required=true) String uid) {
+		try {
+			ldapService.updateEntryRemoveAttributeWithValue(dn, "sudoUser", uid);
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return ldapService.getEntryDetail(dn);
+	}
 }

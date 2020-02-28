@@ -266,32 +266,11 @@ function createMainTree() {
 				}
 			}
 		}
-	     
-//		//to print members at the end of table
-//		for (var key in row.attributesMultiValues) {
-//			if (row.attributesMultiValues.hasOwnProperty(key) && key == "member") {
-//				if(row.attributesMultiValues[key].length > 1) {
-//					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
-//						html += '<tr>';
-//						html += '<td>' + key + '</td>';
-//						html += '<td>' + row.attributesMultiValues[key][i] + '</td>'; 
-//						html += '</tr>';
-//					}
-//				} else {
-//					html += '<tr>';
-//					html += '<td>' + key + '</td>';
-//					html += '<td>' + row.attributesMultiValues[key] + '</td>';
-//					html += '</tr>';
-//				}
-//			}
-//		}
 	        
 		html += '</table>';
 		$('#selectedDnInfo').html("Seçili Kayıt: "+name);
 		$('#memberTabSelectedDNInfo').html("Seçili Kayıt: "+name);
 		$('#ldapAttrInfoHolder').html(html);
-		
-		
 		
 		if(row.type != "ORGANIZATIONAL_UNIT") {
 			//enable members tab button
@@ -333,9 +312,6 @@ function createMainTree() {
 			$('#entry-info').addClass('active');
 			$('#member-info').addClass('disabled');
 		}
-		
-		
-		
 		
 		var selectedRows = $("#treeGridUserGroups").jqxTreeGrid('getSelection');
 		var selectedRowData=selectedRows[0];

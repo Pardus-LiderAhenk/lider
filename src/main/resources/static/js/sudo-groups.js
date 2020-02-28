@@ -62,15 +62,6 @@ function dropdownButtonClicked(operation) {
 			$('#genericModalHeader').html("Klasörü Sil");
 			$('#genericModalBodyRender').html(data);
 		});
-	} else if(operation == "addMembersToAgentGroupModal") {
-		checkedAgents = [];
-		checkedOUList = [];
-		getModalContent("modals/groups/agent/addmember", function content(data){
-			$('#genericModalHeader').html("İstemci Grubuna Üye Ekle");
-			$('#genericModalBodyRender').html(data);
-			$('#selectedAgentCount').html(checkedAgents.length);
-			generateTreeToAddMembersToExistingGroup();
-		});
 	} else if(operation == "moveEntry") {
 		getModalContent("modals/groups/sudo/moveentry", function content(data){
 			$('#genericModalHeader').html("Kayıt Taşı");
@@ -82,12 +73,6 @@ function dropdownButtonClicked(operation) {
 			$('#genericModalHeader').html("Klasör Adı Düzenle");
 			$('#genericModalBodyRender').html(data);
 			$('#ouName').val(selectedName);
-		});
-	} else if(operation == "editGroupName") {
-		getModalContent("modals/groups/agent/editgroupname", function content(data){
-			$('#genericModalHeader').html("Grup Adı Düzenle");
-			$('#genericModalBodyRender').html(data);
-			$('#groupName').val(selectedName);
 		});
 	}
 }
@@ -110,30 +95,30 @@ function createMainTree() {
 		success : function(data) {
 			var source =
 			{
-					dataType: "json",
-					dataFields: [
-						{ name: "name", type: "string" },
-						{ name: "online", type: "string" },
-						{ name: "uid", type: "string" },
-						{ name: "type", type: "string" },
-						{ name: "cn", type: "string" },
-						{ name: "ou", type: "string" },
-						{ name: "parent", type: "string" },
-						{ name: "distinguishedName", type: "string" },
-						{ name: "hasSubordinates", type: "string" },
-						{ name: "expanded", type: "string" },
-						{ name: "expandedUser", type: "string" },
-						{ name: "attributes", type: "array" },
-						{ name: "attributesMultiValues", type: "array" },
-						{ name: "entryUUID", type: "string" },
-						{ name: "childEntries", type: "array" }
-						],
-						hierarchy:
-						{
-							root: "childEntries",
-						},
-						localData: data,
-						id: "entryUUID"
+				dataType: "json",
+				dataFields: [
+					{ name: "name", type: "string" },
+					{ name: "online", type: "string" },
+					{ name: "uid", type: "string" },
+					{ name: "type", type: "string" },
+					{ name: "cn", type: "string" },
+					{ name: "ou", type: "string" },
+					{ name: "parent", type: "string" },
+					{ name: "distinguishedName", type: "string" },
+					{ name: "hasSubordinates", type: "string" },
+					{ name: "expanded", type: "string" },
+					{ name: "expandedUser", type: "string" },
+					{ name: "attributes", type: "array" },
+					{ name: "attributesMultiValues", type: "array" },
+					{ name: "entryUUID", type: "string" },
+					{ name: "childEntries", type: "array" }
+					],
+					hierarchy:
+					{
+						root: "childEntries",
+					},
+					localData: data,
+					id: "entryUUID"
 			};
 			rootDNForSudoGroups = source.localData[0].distinguishedName;
 			selectedEntryUUID = source.localData[0].entryUUID;
@@ -248,26 +233,7 @@ function createMainTree() {
 		html += '</tr>';
 		html += '</thead>';
 		for (var key in row.attributesMultiValues) {
-			if (row.attributesMultiValues.hasOwnProperty(key)  && key != "member") {
-				if(row.attributesMultiValues[key].length > 1) {
-					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
-						html += '<tr>';
-						html += '<td>' + key + '</td>';
-						html += '<td>' + row.attributesMultiValues[key][i] + '</td>'; 
-						html += '</tr>';
-					}
-				} else {
-					html += '<tr>';
-					html += '<td>' + key + '</td>';
-					html += '<td>' + row.attributesMultiValues[key] + '</td>';
-					html += '</tr>';
-				}
-			}
-		}
-
-		//to print members at the end of table
-		for (var key in row.attributesMultiValues) {
-			if (row.attributesMultiValues.hasOwnProperty(key) && key == "member") {
+			if (row.attributesMultiValues.hasOwnProperty(key)  && key != "sudoUser") {
 				if(row.attributesMultiValues[key].length > 1) {
 					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
 						html += '<tr>';
@@ -286,8 +252,41 @@ function createMainTree() {
 
 		html += '</table>';
 		$('#selectedDnInfo').html("Seçili Kayıt: "+name);
+		$('#memberTabSelectedDNInfo').html("Seçili Kayıt: "+name);
 		$('#ldapAttrInfoHolder').html(html);
-
+		
+		if(row.type != "ORGANIZATIONAL_UNIT") {
+			//enable members tab button
+			$('#member-info').removeClass('disabled');
+			var members = "";
+			//to print members at different tab
+			for (var key in row.attributesMultiValues) {
+				if (row.attributesMultiValues.hasOwnProperty(key) && key == "sudoUser") {
+					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
+						members += '<tr>';
+						members += '<td class="text-center">' + (i + 1) + '</td>';
+						members += '<td>' + row.attributesMultiValues[key][i] + '</td>';
+						members += '<td class="text-center">' 
+							+ '<button onclick="deleteMemberFromTabList(\'' + row.attributesMultiValues[key][i] + '\')"' 
+							+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">' 
+							+ '<i class="pe-7s-trash btn-icon-wrapper"> </i></button>' 
+							+ '</td>';
+						members += '</tr>';
+					}
+				}
+			}
+			if(members == "") {
+				members = '<tr><td colspan="100%" class="text-center">Üye bulunamadı</td></tr>';
+			}
+			$('#bodyMembers').html(members);
+		} else {
+			//select entry info tab
+			$('#member-info').removeClass('active');
+			$('#tab-entry-info').tab('show');
+			$('#entry-info').addClass('active');
+			$('#member-info').addClass('disabled');
+		}
+		
 		var selectedRows = $("#treeGridSudoGroups").jqxTreeGrid('getSelection');
 		var selectedRowData=selectedRows[0];
 		if(selectedRowData.type == "ORGANIZATIONAL_UNIT"){
@@ -1019,4 +1018,34 @@ function getReadableValueForLDAPAttributeName(key) {
 		return "";
 	else 
 		return key;
+}
+
+/*
+ * delete group member from tab list
+ */
+function deleteMemberFromTabList(uid) {
+	var params = {
+		    "uid": uid,
+		    "dn": selectedDN
+	};
+	$.ajax({
+		type : 'POST',
+		url  : 'lider/ldap/delete/sudo/user',
+		data : params,
+		dataType : 'json',
+		success : function(data) {
+			if(data != null) {
+				$.notify("Grup üyeleri başarıyla düzenlendi", "success");
+				//get selected data and update it with new data result from service call
+				var selectedData= $("#treeGridSudoGroups").jqxTreeGrid('getRow', data.entryUUID);
+				selectedData.attributesMultiValues = data.attributesMultiValues;
+				$("#treeGridSudoGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
+				$("#treeGridSudoGroups").jqxTreeGrid('getRow', data.entryUUID);
+				$("#treeGridSudoGroups").jqxTreeGrid('selectRow', data.entryUUID);
+			}
+		},
+	    error: function (data, errorThrown) {
+	    	$.notify("Grup üyesi silinirken hata oluştu.", "error");
+	    }
+	}); 
 }

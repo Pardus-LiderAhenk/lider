@@ -56,14 +56,26 @@
 					</div>
 				</div>
 				<div class="card-body">
-						<div class="form-group">
-							<label for="conkyNameTemp">Conky Adı</label> <input type="text"
-								class="form-control" id="conkyNameTemp">
-						</div>
 					<div class="form-group">
-						<label for="conkyContentTemp">Conky İçeriği</label>
-						<textarea class="form-control" id="conkyContentTemp" rows="18"></textarea>
-					</div>
+						<label for="conkyNameTemp">Conky Adı</label> <input type="text"
+							class="form-control" id="conkyNameTemp"><br>
+						<ul id="conkyTabs" class="nav nav-pills">
+							<li class="nav-item"><a role="tab" class="nav-link active" id="conkyContentTabId" data-toggle="tab" href="#conkyContentTab"> <span>Conky İçeriği</span></a>
+							</li>
+							<li class="nav-item"><a role="tab" class="nav-link" id="conkySettingTabId" data-toggle="tab" href="#conkySettingTab"> <span>Conky Ayarları</span></a>
+							</li>
+						</ul>
+						<div id="conkyTabsContents" class="tab-content">
+							<div class="tab-pane fade" id="conkyContentTab">
+	<!-- 							<label for="conkyContentTemp">Conky İçeriği</label> -->
+								<textarea class="form-control" id="conkyContentTemp" rows="18"></textarea>
+							</div>
+							<div class="tab-pane fade" id="conkySettingTab">
+	<!-- 							<label for="conkyContentTemp">Conky İçeriği</label> -->
+								<textarea class="form-control" id="conkySettingTemp" rows="18"></textarea>
+							</div>
+                		</div>
+                	</div>
 				</div>
 			</div>
 		</div>

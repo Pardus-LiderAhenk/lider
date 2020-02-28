@@ -155,6 +155,8 @@ $('#notifySaveBtn').click(function(e){
 					$.notify("Mesaj adı zaten var. Farklı bir mesaj adı giriniz.", "warn");
 					$("#notifyNameTemp").focus();
 				}
+			}else {
+				$.notify("Mesaj adı, süresi ve içeriği boş bırakılamaz.", "warn");
 			}
 			// Otherwise, if no rows are selected. Save notify template
 		} else {

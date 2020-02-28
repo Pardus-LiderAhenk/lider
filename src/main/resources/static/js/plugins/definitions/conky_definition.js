@@ -10,11 +10,33 @@
 var table;
 var conkyTempList = [];
 var cId = null; // selected conky id
+var defaultSettings = "# VARSAYILAN\n"+
+"background yes\n"+
+"own_window yes\n"+
+"own_window_type normal\n"+
+"own_window_class conky\n"+
+"own_window_hints undecorated,skip_taskbar,skip_pager,sticky,below\n"+
+"own_window_argb_visual yes\n"+
+"own_window_transparent yes\n"+
+"draw_shades no\n"+
+"use_xft yes\n"+
+"xftfont Monospace:size=10\n"+
+"xftalpha 0.1\n"+
+"alignment top_right\n"+
+
+"TEXT\n"+
+"${voffset 0}\n"+
+"${font Ubuntu:style=Medium:pixelsize=35}${time %H:%M}${font}\n"+
+"${voffset 0}\n"+
+"${font Ubuntu:style=Medium:pixelsize=13}${time %A %d %B %Y}${font}\n"+
+"${hr}${font Ubuntu:style=Medium:pixelsize=18}\n";
 
 $(document).ready(function(){
+	$('#conkyContentTab').tab('show');
 	$("#conkyDelBtn").hide();
 	$("#conkyCleanBtn").hide();
-	$("#conkyContentTemp").val("");
+	$("#conkyContentTemp").val("#Your text will come here");
+	$("#conkySettingTemp").val(defaultSettings);
 	$("#conkyNameTemp").focus();
 	getConkyTemp();
 });
@@ -80,7 +102,8 @@ $('#conkyTableTemp tbody').on( 'click', 'tr', function () {
 	if ( $(this).hasClass('selected') ) {
 		$(this).removeClass('selected');
 		$("#conkyNameTemp").val("");
-		$('#conkyContentTemp').val("");
+		$('#conkyContentTemp').val("#Your text will come here");
+		$("#conkySettingTemp").val(defaultSettings);
 		$("#conkySaveBtn").html("Kaydet");
 		$("#conkyDelBtn").hide();
 		$("#conkyCleanBtn").hide();
@@ -96,9 +119,11 @@ $('#conkyTableTemp tbody').on( 'click', 'tr', function () {
 		$("#conkyNameTemp").val(rowData[0]);
 		$("#conkyDelBtn").show();
 		$("#conkyCleanBtn").show();
+
 		for (var i = 0; i < conkyTempList.length; i++) {
 			if (conkyTempList[i]['id'] == cId) {
 				$("#conkyContentTemp").val(conkyTempList[i]['contents']);
+				$("#conkySettingTemp").val(conkyTempList[i]['settings']);
 			}
 		}
 	}
@@ -107,6 +132,7 @@ $('#conkyTableTemp tbody').on( 'click', 'tr', function () {
 //if clicked save and update button 
 $('#conkySaveBtn').click(function(e){
 	var content = $("#conkyContentTemp").val();
+	var setting = $("#conkySettingTemp").val();
 	var name = $("#conkyNameTemp").val();
 	var rows = table.$('tr.selected');
 
@@ -115,10 +141,11 @@ $('#conkySaveBtn').click(function(e){
 		file = {
 				label: name,
 				contents: content,
+				settings: setting,
 				id: cId
 		};
 
-		if (content != "" && name != "") {
+		if (content != "" && name != "" && setting != "") {
 			if (checkedUpdatedConkyName(name, cId) == false) {
 				$.ajax({
 					type: 'POST', 
@@ -137,7 +164,8 @@ $('#conkySaveBtn').click(function(e){
 
 							$("#conkyNameTemp").val("");
 							$("#conkySaveBtn").html("Kaydet");
-							$("#conkyContentTemp").val("");
+							$("#conkyContentTemp").val("#Your text will come here");
+							$("#conkySettingTemp").val(defaultSettings);
 							$("#conkyDelBtn").hide();
 							$("#conkyCleanBtn").hide();
 						}else {
@@ -149,15 +177,18 @@ $('#conkySaveBtn').click(function(e){
 				$.notify("Conky adı zaten var. Farklı bir Conky adı giriniz.", "warn");
 				$("#conkyNameTemp").focus();
 			}
+		}else {
+			$.notify("Conky adı, içeriği ve ayarları boş bırakılamaz.", "warn");
 		}
 		// Otherwise, if no rows are selected. Save conky template
 	} else {
 		file = {
 				label: name,
 				contents: content,
+				settings: setting
 		};
 
-		if (content != "" && name != "") {
+		if (content != "" && name != "" && setting != "") {
 			if (checkedConkyName(name) == false) {
 				$.ajax({
 					type: 'POST', 
@@ -175,7 +206,8 @@ $('#conkySaveBtn').click(function(e){
 							table.destroy();
 							createConkyTable();
 							$("#conkyNameTemp").val("");
-							$("#conkyContentTemp").val("");
+							$("#conkyContentTemp").val("#Your text will come here");
+							$("#conkySettingTemp").val(defaultSettings);
 							$("#conkySaveBtn").html("Kaydet");
 							$("#conkyCleanBtn").hide();
 						}else {
@@ -191,7 +223,7 @@ $('#conkySaveBtn').click(function(e){
 				$("#conkyNameTemp").focus();
 			}
 		}else {
-			$.notify("Conky adı ve içeriği boş bırakılamaz.", "warn");
+			$.notify("Conky adı, içeriği ve ayarları boş bırakılamaz.", "warn");
 		}
 	}
 });
@@ -247,7 +279,8 @@ $('#conkyDelBtn').click(function(e){
 					$("#conkySaveBtn").html("Kaydet");
 					$("#conkyDelBtn").hide();
 					$("#conkyCleanBtn").hide();
-					$("#conkyContentTemp").val("");
+					$("#conkyContentTemp").val("#Your text will come here");
+					$("#conkySettingTemp").val(defaultSettings);
 				}else {
 					$.notify("Conky silinirken hata oluştu.", "error");
 				}
@@ -283,7 +316,8 @@ $('#conkyCleanBtn').click(function(e){
 	if(rows.length){
 		table.$('tr.selected').removeClass('selected');
 		$("#conkyNameTemp").val("");
-		$("#conkyContentTemp").val("");
+		$("#conkyContentTemp").val("#Your text will come here");
+		$("#conkySettingTemp").val(defaultSettings);
 		$("#conkySaveBtn").html("Kaydet");
 	}
 	$("#conkyNameTemp").focus();

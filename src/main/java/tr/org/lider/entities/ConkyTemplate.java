@@ -40,6 +40,10 @@ public class ConkyTemplate implements Serializable {
 	@Lob
 	@Column(name = "CONTENTS", nullable = false)
 	private String contents;
+	
+	@Lob
+	@Column(name = "SETTINGS", nullable = false)
+	private String settings;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "CREATE_DATE", nullable = false, updatable = false)
@@ -55,12 +59,21 @@ public class ConkyTemplate implements Serializable {
 	public ConkyTemplate() {
 	}
 
-	public ConkyTemplate(Long id, String label, String contents, Date createDate, Date modifyDate) {
+	public ConkyTemplate(Long id, String label, String contents, String settings, Date createDate, Date modifyDate) {
 		this.id = id;
 		this.label = label;
 		this.contents = contents;
+		this.settings = settings;
 		this.createDate = createDate;
 		this.modifyDate = modifyDate;
+	}
+
+	public String getSettings() {
+		return settings;
+	}
+
+	public void setSettings(String settings) {
+		this.settings = settings;
 	}
 
 	public Long getId() {

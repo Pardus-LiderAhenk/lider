@@ -29,7 +29,6 @@ function getNotifyTemp() {
 			if(data != null && data.length > 0) {
 				notifyTempList = data;
 				createNotifyTable();
-				$.notify("Mesajlar başarıyla listelendi.", "success");
 			}else {
 				createNotifyTable();
 			}

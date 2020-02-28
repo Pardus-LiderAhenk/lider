@@ -51,7 +51,6 @@ function getConkyTemp() {
 			if(data != null && data.length > 0) {
 				conkyTempList = data;
 				createConkyTable();
-				$.notify("Conky başarıyla listelendi.", "success");
 			}else {
 				createConkyTable();
 			}

@@ -29,7 +29,6 @@ function getScriptTemp() {
 			if(data != null && data.length > 0) {
 				scriptTempList = data;
 				createScriptTable();
-				$.notify("Betikler başarıyla listelendi.", "success");
 			}else {
 				createScriptTable();
 			}

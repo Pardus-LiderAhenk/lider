@@ -131,7 +131,6 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 
 				// Try to find related agent database record
 				
-				logger.info("-------------------->>>>>>>>>>>>>>>>" +message.getFrom().split("@")[0]);
 //				List<? extends AgentImpl> agents = agentDao.findByJid(message.getFrom().split("@")[0]);
 				List<? extends AgentImpl> agents = agentDao.findByDn(dn);
 				
@@ -144,12 +143,12 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 				
 				if (agent != null) {
 					logger.debug(
-							"Agent already exists in database.If there is a changed property, it will be updated.");
+							"Agent already exists in database with dn name.If there is a changed property, it will be updated.");
 					alreadyExists = true;
 					// Update the record
 					agent = new AgentImpl(
 							agent.getId(), 
-							agent.getJid(), 
+							message.getFrom().split("@")[0], 
 							false, 
 							dn,
 							message.getPassword(), 
@@ -175,22 +174,47 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 					// Create new agent database record
 					logger.debug("Creating new agent record in database.");
 					
-					AgentImpl agentImpl = new AgentImpl(null, message.getFrom().split("@")[0], false, dn, message.getPassword(), 
-							message.getHostname(), 
-							message.getIpAddresses(),  
-							message.getMacAddresses(),
-							new Date(), null, false, null, null);
-					if (message.getData() != null) {
-						for (Entry<String, Object> entryy : message.getData().entrySet()) {
-							if (entryy.getKey() != null && entryy.getValue() != null) {
-								agentImpl.addProperty(new AgentPropertyImpl(null, agentImpl, entryy.getKey(),
-										entryy.getValue().toString(), new Date()));
+					List<? extends AgentImpl> agentsJidList = agentDao.findByJid(message.getFrom().split("@")[0]);
+					AgentImpl agentsJid = agentsJidList != null && !agentsJidList.isEmpty() ? agentsJidList.get(0) : null;
+					
+					if(agentsJid != null) {
+						logger.debug(
+								"Agent already exists in database with jid name.If there is a changed property, it will be updated.");
+						
+						AgentImpl agentImpl = new AgentImpl(agentsJid.getId(), null, false, dn ,
+								message.getPassword(), 
+								message.getHostname(), 
+								message.getIpAddresses(), 
+								message.getMacAddresses(), 
+								agent.getCreateDate(),  new Date(),false,
+								(Set<AgentPropertyImpl>) agentsJid.getProperties(),
+								(Set<UserSessionImpl>) agentsJid.getSessions());
+						
+						if (message.getData() != null) {
+							for (Entry<String, Object> entryy : message.getData().entrySet()) {
+								if (entryy.getKey() != null && entryy.getValue() != null) {
+									agentImpl.addProperty(new AgentPropertyImpl(null, agentImpl, entryy.getKey(),
+											entryy.getValue().toString(), new Date()));
+								}
 							}
 						}
-					}
-						
-					agentDao.save(agentImpl);
+					}else {
 					
+						AgentImpl agentImpl = new AgentImpl(null, message.getFrom().split("@")[0], false, dn, message.getPassword(), 
+								message.getHostname(), 
+								message.getIpAddresses(),  
+								message.getMacAddresses(),
+								new Date(), null, false, null, null);
+						if (message.getData() != null) {
+							for (Entry<String, Object> entryy : message.getData().entrySet()) {
+								if (entryy.getKey() != null && entryy.getValue() != null) {
+									agentImpl.addProperty(new AgentPropertyImpl(null, agentImpl, entryy.getKey(),
+											entryy.getValue().toString(), new Date()));
+								}
+							}
+						}
+						agentDao.save(agentImpl);
+					}
 //					agent = entityFactory.createAgent(null, message.getFrom().split("@")[0], dn, message.getPassword(),
 //							message.getHostname(), message.getIpAddresses(), macAddress,
 //							message.getData());

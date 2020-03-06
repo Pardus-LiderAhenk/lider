@@ -267,7 +267,7 @@ public interface IEntityFactory {
 	 * @param data
 	 * @return
 	 */
-	IAgent createAgent(Long id, String jid, String dn, String password, String hostname, String ipAddresses,
+	IAgent createAgent(String jid, String dn, String password, String hostname, String ipAddresses,
 			String macAddresses, Map<String, Object> data);
 
 	/**
@@ -282,6 +282,9 @@ public interface IEntityFactory {
 	 */
 	IAgent createAgent(IAgent existingAgent,String dn, String password, String hostname, String ipAddresses, String macAddresses,
 			Map<String, Object> data);
+	
+	IAgent createAgent(IAgent existingAgent, String dn, String jid, String password, String hostname, String ipAddresses,
+			String macAddresses, Map<String, Object> data);
 
 	IPluginPart createPluginPart(Long id, String fileName, String type, String fullPath);
 

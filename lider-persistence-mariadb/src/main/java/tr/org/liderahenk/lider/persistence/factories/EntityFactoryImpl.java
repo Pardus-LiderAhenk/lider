@@ -307,9 +307,9 @@ public class EntityFactoryImpl implements IEntityFactory {
 	}
 
 	@Override
-	public IAgent createAgent(Long id, String jid, String dn, String password, String hostname, String ipAddresses,
+	public IAgent createAgent(String jid, String dn, String password, String hostname, String ipAddresses,
 			String macAddresses, Map<String, Object> data) {
-		AgentImpl agentImpl = new AgentImpl(id, jid, false, dn, password, hostname, ipAddresses, macAddresses,
+		AgentImpl agentImpl = new AgentImpl(null, jid, false, dn, password, hostname, ipAddresses, macAddresses,
 				new Date(), null, null, null);
 		if (data != null) {
 			for (Entry<String, Object> entry : data.entrySet()) {
@@ -328,6 +328,25 @@ public class EntityFactoryImpl implements IEntityFactory {
 			String macAddresses, Map<String, Object> data) {
 		
 		AgentImpl agentImpl = new AgentImpl(existingAgent.getId(), existingAgent.getJid(), false, dn == null ? existingAgent.getDn() : dn,
+				password, hostname, ipAddresses, macAddresses, existingAgent.getCreateDate(), new Date(),
+				(Set<AgentPropertyImpl>) existingAgent.getProperties(),
+				(Set<UserSessionImpl>) existingAgent.getSessions());
+		if (data != null) {
+			for (Entry<String, Object> entry : data.entrySet()) {
+				if (entry.getKey() != null && entry.getValue() != null) {
+					agentImpl.addProperty(new AgentPropertyImpl(null, agentImpl, entry.getKey(),
+							entry.getValue().toString(), new Date()));
+				}
+			}
+		}
+		return agentImpl;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public IAgent createAgent(IAgent existingAgent, String dn, String jid, String password, String hostname, String ipAddresses,
+			String macAddresses, Map<String, Object> data) {
+		
+		AgentImpl agentImpl = new AgentImpl(existingAgent.getId(), jid ==null ? existingAgent.getJid() : jid, false, dn == null ? existingAgent.getDn() : dn,
 				password, hostname, ipAddresses, macAddresses, existingAgent.getCreateDate(), new Date(),
 				(Set<AgentPropertyImpl>) existingAgent.getProperties(),
 				(Set<UserSessionImpl>) existingAgent.getSessions());

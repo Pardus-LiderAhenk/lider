@@ -246,19 +246,20 @@ function createMainTree() {
 		html += '<th style="width: 60%">Değer</th>';
 		html += '</tr>';
 		html += '</thead>';
-		for (var key in row.attributesMultiValues) {
-			if (row.attributesMultiValues.hasOwnProperty(key)  && key != "member") {
-				if(row.attributesMultiValues[key].length > 1) {
-					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
+		renamedList = renameAndOrderAttributeList(row.attributesMultiValues);
+		for (var key in renamedList) {
+			if (renamedList.hasOwnProperty(key)  && key != "member") {
+				if(renamedList[key].length > 1) {
+					for(var i = 0; i< renamedList[key].length; i++) {
 						html += '<tr>';
 						html += '<td>' + key + '</td>';
-						html += '<td>' + row.attributesMultiValues[key][i] + '</td>'; 
+						html += '<td>' + renamedList[key][i] + '</td>'; 
 						html += '</tr>';
 					}
 				} else {
 					html += '<tr>';
 					html += '<td>' + key + '</td>';
-					html += '<td>' + row.attributesMultiValues[key] + '</td>';
+					html += '<td>' + renamedList[key] + '</td>';
 					html += '</tr>';
 				}
 			}

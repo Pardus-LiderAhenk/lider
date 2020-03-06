@@ -498,4 +498,29 @@ public class LdapController {
 		}
 		return ldapService.getEntryDetail(dn);
 	}
+	
+	
+	/**
+	 * 
+	 * @param searchDn
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST ,value = "/removeAttributeWithValue", produces = MediaType.APPLICATION_JSON_VALUE)
+	public LdapEntry removeAttributeWithValue(
+			@RequestParam(value="dn", required=true) String dn,
+			@RequestParam(value="attribute", required=true) String attribute, 
+			@RequestParam(value="value", required=true) String value) {
+		
+		LdapEntry entry=null;
+		try {
+			ldapService.updateEntryRemoveAttributeWithValue(dn, attribute, value);
+			entry = ldapService.findSubEntries(dn, "(objectclass=*)", new String[] {"*"}, SearchScope.OBJECT).get(0);
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return entry ;
+	}
 }

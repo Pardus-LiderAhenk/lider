@@ -14,6 +14,8 @@ public interface AgentRepository extends BaseJpaRepository<AgentImpl, Long>{
 
 	List<AgentImpl> findByJid(String jid);
 	
+	List<AgentImpl> findByDn(String dn);
+	
 	Page<AgentImpl> findAllByJidIn(List<String> jidList, Pageable pageable);
 	
 	Page<AgentImpl> findByJidContaining(String jid, Pageable pageable);

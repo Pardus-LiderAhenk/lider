@@ -131,7 +131,9 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 
 				// Try to find related agent database record
 				
-				List<? extends AgentImpl> agents = agentDao.findByJid(message.getFrom().split("@")[0]);
+				logger.info("-------------------->>>>>>>>>>>>>>>>" +message.getFrom().split("@")[0]);
+//				List<? extends AgentImpl> agents = agentDao.findByJid(message.getFrom().split("@")[0]);
+				List<? extends AgentImpl> agents = agentDao.findByDn(dn);
 				
 //				List<? extends IAgent> agents = agentDao.findByProperty(IAgent.class, "jid",
 //						message.getFrom().split("@")[0], 1);
@@ -145,7 +147,6 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 							"Agent already exists in database.If there is a changed property, it will be updated.");
 					alreadyExists = true;
 					// Update the record
-					
 					agent = new AgentImpl(
 							agent.getId(), 
 							agent.getJid(), 
@@ -169,8 +170,6 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 							}
 						}
 					}
-					
-					
 					agentDao.save(agent);
 				} else {
 					// Create new agent database record
@@ -189,7 +188,7 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 							}
 						}
 					}
-					
+						
 					agentDao.save(agentImpl);
 					
 //					agent = entityFactory.createAgent(null, message.getFrom().split("@")[0], dn, message.getPassword(),

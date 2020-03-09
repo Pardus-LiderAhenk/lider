@@ -42,6 +42,31 @@
     opacity: 0;
     transition: opacity 1.3s;
 }
+
+.green {
+		color: black;
+		background-color: #EAEDED;
+	}
+	
+.back{
+ 	background-color:#505165;  
+	}
+	
+.white {
+		color: black;
+		background-color: white;
+	}
+	
+.btn-group {
+	    margin-bottom: 10px;
+	    font-size: 13px;
+		border: none;
+	}
+	
+.btn span {
+		float: left;
+		margin-top: 3px;
+	}
 </style>
 
 <!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>  -->
@@ -50,7 +75,8 @@
 <!--     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script> -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script> 
-<script type="text/javascript" src="js/strophe.js"></script>
+	
+	<script type="text/javascript" src="js/strophe.js"></script>
 <script src="js/jquery.dataTables.min.js" type="text/javascript"></script>
 
 
@@ -68,28 +94,27 @@
 	var childEntryList = [];
 	var scheduledParam = null;
 </script>
- <script type="text/javascript" src="assets/scripts/main.js"></script> 
+<script type="text/javascript" src="assets/scripts/main.js"></script> 
 <script type="text/javascript" src="js/modal.js"></script>
-<script type="text/javascript" src="js/util.js"></script>
 <script type="text/javascript" src="js/user/userTreeManager.js"></script>
 <script type="text/javascript" src="js/computers/computerTreeManager.js"></script>
 </head>
 <body>
 	<div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
-		<div class="app-header header-shadow">
-			<div class="app-header__logo">
-				<div class="logo-src"></div>
-				<div class="header__pane ml-auto">
-					<div>
-						<button type="button"
-							class="hamburger close-sidebar-btn hamburger--elastic"
-							data-class="closed-sidebar">
-							<span class="hamburger-box"> <span class="hamburger-inner"></span>
-							</span>
-						</button>
-					</div>
-				</div>
-			</div>
+		<div class="app-header header-shadow" >
+<!-- 			<div class="app-header__logo"> -->
+<!-- 				<div class="logo-src"></div> -->
+<!-- 				<div class="header__pane ml-auto"> -->
+<!-- 					<div> -->
+<!-- 						<button type="button" -->
+<!-- 							class="hamburger close-sidebar-btn hamburger--elastic" -->
+<!-- 							data-class="closed-sidebar"> -->
+<!-- 							<span class="hamburger-box"> <span class="hamburger-inner"></span> -->
+<!-- 							</span> -->
+<!-- 						</button> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
 			<div class="app-header__mobile-menu">
 				<div>
 					<button type="button"
@@ -111,6 +136,60 @@
 			</div>
 
 			<div class="app-header__content">
+			
+				<div class="app-header-left">
+<!--                     <div class="search-wrapper"> -->
+<!--                         <div class="input-holder"> -->
+<!-- <!--                             <input type="text" class="search-input" placeholder="Type to search"> --> 
+<!-- <!--                             <button class="search-icon"><span></span></button> --> 
+								
+<!--                         </div> -->
+                        
+<!--                         <button class="close"></button> -->
+<!--                     </div> -->
+                    <ul class="header-menu nav">
+                        <li class="nav-item">
+                           <a class="nav-link dizin" href="#" data-page="dashboard"> <img width="26"
+									class="rounded-circle" src="img/LiderAhenk-Logo-02.png"
+									alt=""> <i class="fa ml-2 opacity-8"></i>
+						   </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link dizin" href="#" data-page="computers" >
+                                <i class="nav-link-icon fas fa-network-wired"> </i>
+                                İstemci Yönetimi
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link dizin" href="#" data-page="users" >
+                                <i class="nav-link-icon fa fa-users"></i>
+                                Kullanıcı Yönetimi
+                            </a>
+                        </li>
+                        <li class="dropdown nav-item">
+                            <a class="nav-link dropdown-toggle " href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
+                                <i class="nav-link-icon fa fa-cog"></i>
+                                Grup Yönetimi
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					          <a class="dropdown-item dizin" href="#" data-page="user_groups">Kullanıcı Grup Yönetimi</a>
+					          <a class="dropdown-item dizin " href="#" data-page="agent_groups">İstemci Grup Yönetimi</a>
+					          <a class="dropdown-item dizin " href="#" data-page="sudo_groups"> Kullanıcı Yetkilendirme (Sudo) </a>
+					        </div>
+                        </li>
+                        <li class="dropdown nav-item">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                                <i class="nav-link-icon fa fa-cog"></i>
+                                Tanımlar
+                            </a>
+                            
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					          <a class="dropdown-item dizin" href="#" data-page="/plugins/definitions/script_definition">Betik Tanımlary</a>
+					          <a class="dropdown-item dizin " href="#" data-page="/plugins/definitions/notify_definition">ETA Mesaj Tanımları</a>
+					        </div>
+                        </li>
+                    </ul>
+                 </div>
 				<div class="app-header-right">
 					<div class="header-btn-lg pr-0">
 						<div class="widget-content p-0">
@@ -163,103 +242,95 @@
 		
 
 		<div class="app-main">
-			<div class="app-sidebar sidebar-shadow">
-				<div class="app-header__logo">
-					<div class="logo-src"></div>
-					<div class="header__pane ml-auto">
-						<div>
-							<button type="button"
-								class="hamburger close-sidebar-btn hamburger--elastic"
-								data-class="closed-sidebar">
-								<span class="hamburger-box"><span
-									class="hamburger-inner"></span>
-								</span>
-							</button>
-						</div>
-					</div>
-				</div>
-				<div class="app-header__mobile-menu">
-					<div>
-						<button type="button"
-							class="hamburger hamburger--elastic mobile-toggle-nav">
-							<span class="hamburger-box"> <span class="hamburger-inner"></span>
-							</span>
-						</button>
-					</div>
-				</div>
-				<div class="app-header__menu">
-					<span>
-						<button type="button"
-							class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
-							<span class="btn-icon-wrapper"> <i
-								class="fa fa-ellipsis-v fa-w-6"></i>
-							</span>
-						</button>
-					</span>
-				</div>
-				<div class="scrollbar-sidebar">
-					<div class="app-sidebar__inner">
-						<ul class="vertical-nav-menu">
-							<li class="app-sidebar__heading">Panel</li>
-							<li><a href="#" class="mm-active dizin"
-								data-page="dashboard"> <i
-									class="metismenu-icon pe-7s-rocket"></i> Durum
-							</a></li>
-							<li class="app-sidebar__heading">Dizin Yönetimi</li>
+<!-- 			<div class="app-sidebar sidebar-shadow"> -->
+<!-- 				<div class="app-header__logo"> -->
+<!-- 					<div class="logo-src"></div> -->
+<!-- 					<div class="header__pane ml-auto"> -->
+<!-- 						<div> -->
+<!-- 							<button type="button" -->
+<!-- 								class="hamburger close-sidebar-btn hamburger--elastic" -->
+<!-- 								data-class="closed-sidebar"> -->
+<!-- 								<span class="hamburger-box"><span -->
+<!-- 									class="hamburger-inner"></span> -->
+<!-- 								</span> -->
+<!-- 							</button> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 				<div class="app-header__mobile-menu"> -->
+<!-- 					<div> -->
+<!-- 						<button type="button" -->
+<!-- 							class="hamburger hamburger--elastic mobile-toggle-nav"> -->
+<!-- 							<span class="hamburger-box"> <span class="hamburger-inner"></span> -->
+<!-- 							</span> -->
+<!-- 						</button> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 				<div class="app-header__menu"> -->
+<!-- 					<span> -->
+<!-- 						<button type="button" -->
+<!-- 							class="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav"> -->
+<!-- 							<span class="btn-icon-wrapper"> <i -->
+<!-- 								class="fa fa-ellipsis-v fa-w-6"></i> -->
+<!-- 							</span> -->
+<!-- 						</button> -->
+<!-- 					</span> -->
+<!-- 				</div> -->
+<!-- 				<div class="scrollbar-sidebar"> -->
+<!-- 					<div class="app-sidebar__inner"> -->
+<!-- 						<ul class="vertical-nav-menu"> -->
+<!-- 							<li class="app-sidebar__heading">Panel</li> -->
+<!-- 							<li><a href="#" class="mm-active dizin" -->
+<!-- 								data-page="dashboard"> <i -->
+<!-- 									class="metismenu-icon pe-7s-rocket"></i> Durum -->
+<!-- 							</a></li> -->
+<!-- 							<li class="app-sidebar__heading">Dizin Yönetimi</li> -->
 
-							<li><a class="dizin" href="#" data-page="users"> <i
-									class="metismenu-icon pe-7s-users"></i> Kullanıcı Yönetimi
-							</a></li>
-							<li><a class="dizin" href="#" data-page="computers"> <i
-									class="metismenu-icon pe-7s-display2"></i> İstemci Yönetimi
-							</a></li>
+<!-- 							<li><a class="dizin" href="#" data-page="users"> <i -->
+<!-- 									class="metismenu-icon pe-7s-users"></i> Kullanıcı Yönetimi -->
+<!-- 							</a></li> -->
+<!-- 							<li><a class="dizin" href="#" data-page="computers"> <i -->
+<!-- 									class="metismenu-icon pe-7s-display2"></i> İstemci Yönetimi -->
+<!-- 							</a></li> -->
 
-							<li><a> <i class="metismenu-icon pe-7s-diamond"></i>
-									Grup Yönetimi <i
-									class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
-							</a>
-								<ul>
-									<li><a class="dizin" href="#" data-page="user_groups"> <i
-											class="metismenu-icon"></i> Kullanıcı Grupları
-									</a></li>
-									<li><a class="dizin" href="#" data-page="agent_groups">
-											<i class="metismenu-icon"></i> İstemci Grupları
-									</a></li>
-									<li><a class="dizin" href="#" data-page="sudo_groups">
-											<i class="metismenu-icon"></i> İstemci Yetki Grupları(Sudo)
-									</a></li>
-								</ul></li>
-							<li class="app-sidebar__heading">Raporlar</li>
-							<li><a class="dizin" href="#" data-page="agent_info"> <i
-									class="metismenu-icon pe-7s-display2"></i> Detaylı İstemci
-									Raporu
-							</a></li>
+<!-- 							<li><a> <i class="metismenu-icon pe-7s-plugin"></i> -->
+<!-- 									Grup Yönetimi <i -->
+<!-- 									class="metismenu-state-icon pe-7s-angle-down caret-left"></i> -->
+<!-- 							</a> -->
+<!-- 								<ul> -->
+<!-- 									<li><a class="dizin" href="#" data-page="user_groups"> <i -->
+<!-- 											class="metismenu-icon"></i> Kullanıcı Grupları -->
+<!-- 									</a></li> -->
+<!-- 									<li><a class="dizin" href="#" data-page="agent_groups"> -->
+<!-- 											<i class="metismenu-icon"></i> İstemci Grupları -->
+<!-- 									</a></li> -->
+<!-- 									<li><a class="dizin" href="#" data-page="sudo_groups"> -->
+<!-- 											<i class="metismenu-icon"></i> İstemci Yetki Grupları(Sudo) -->
+<!-- 									</a></li> -->
+<!-- 								</ul></li> -->
+<!-- 							<li class="app-sidebar__heading">Raporlar</li> -->
+<!-- 							<li><a class="dizin" href="#" data-page="agent_info"> <i -->
+<!-- 									class="metismenu-icon pe-7s-news-paper"></i> Detaylı İstemci -->
+<!-- 									Raporu -->
+<!-- 							</a></li> -->
 
-							<li class="app-sidebar__heading">Ayarlar</li>
-							<li><a class="dizin" href="#" data-page="agent_info"> <i
-									class="metismenu-icon pe-7s-display2"></i> Sunucu Ayarları
-							</a></li>
-							<li class="app-sidebar__heading">Tanımlar</li>
-							<li><a class="dizin" href="#" data-page="/plugins/definitions/script_definition">
-								<i class="metismenu-icon pe-7s-display2"></i> Betik Tanımları
-							</a></li>
-							<li><a class="dizin" href="#" data-page="/plugins/definitions/notify_definition">
-								<i class="metismenu-icon pe-7s-display2"></i>  ETA Mesaj Tanımları
-							</a></li>
-							<li><a class="dizin" href="#" data-page="/plugins/definitions/conky_definition">
-								<i class="metismenu-icon pe-7s-display2"></i>  Conky Tanımları
-							</a></li>
-							<li><a class="dizin" href="#" data-page="registration_template">
-								<i class="metismenu-icon pe-7s-display2"></i>  Kayıt Şablonları
-							</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-
-			<div class="app-main__outer">
-				<div class="app-main__inner">
-					<div class="app-page-title">
+<!-- 							<li class="app-sidebar__heading">Ayarlar</li> -->
+<!-- 							<li><a class="dizin" href="#" data-page="agent_info"> <i -->
+<!-- 									class="metismenu-icon pe-7s-tools"></i> Sunucu Ayarları -->
+<!-- 							</a></li> -->
+<!-- 							<li class="app-sidebar__heading">Tanımlar</li> -->
+<!-- 							<li><a class="dizin" href="#" data-page="/plugins/definitions/script_definition"> -->
+<!-- 								<i class="metismenu-icon pe-7s-display2"></i> Betik Tanımları -->
+<!-- 							</a></li> -->
+<!-- 							<li><a class="dizin" href="#" data-page="/plugins/definitions/notify_definition"> -->
+<!-- 								<i class="metismenu-icon pe-7s-display2"></i>  ETA Mesaj Tanımları -->
+<!-- 							</a></li> -->
+<!-- 						</ul> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!--			</div>
+-->
+ 				<div class="app-main__inner back" > 
 					
 					<!--  Dynamic Content  -->
 						<div id="mainArea">
@@ -267,9 +338,9 @@
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-	</div>
+ 			</div> 
+
+	<!--All Modals should be add here.. -->
 
 	<!--All Modals should be add here.. -->
 	

@@ -2,29 +2,25 @@
 <script type="text/javascript" src="js/user/users.js"></script>
 <script type="text/javascript" src="js/user/ouManager.js"></script>
 
-<div class="app-page-title">
-	<div class="page-title-wrapper">
-		<div class="page-title-heading">
-			<div class="page-title-icon">
-				<i class="pe-7s-drawer icon-gradient bg-happy-itmeo"> </i>
-			</div>
-			<div>
-				Kullanıcı Yönetimi
-				<div class="page-title-subheading">Sistemde bulunan
-					kullanıcıları listeleyebilir, kullanıcılarınızı yönetebilirsiniz.</div>
-			</div>
-		</div>
+<!-- <div class="app-page-title"> -->
+<!-- 	<div class="page-title-wrapper"> -->
+<!-- 		<div class="page-title-heading"> -->
+<!-- 			<div class="page-title-icon"> -->
+<!-- 				<i class="pe-7s-drawer icon-gradient bg-happy-itmeo"> </i> -->
+<!-- 			</div> -->
+<!-- 			<div> -->
+<!-- 				Kullanıcı Yönetimi -->
+<!-- 				<div class="page-title-subheading">Sistemde bulunan -->
+<!-- 					kullanıcıları listeleyebilir, kullanıcılarınızı yönetebilirsiniz.</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
 		
-	</div>
-</div>
+<!-- 	</div> -->
+<!-- </div> -->
 
 <div class="row">
 
-	<div class="col-lg-4">
-		<div class="main-card mb-3 card">
-			<div class="card-body">
-			
-				<div>
+	<div class="col-lg-2">
 					<div class="d-inline-block dropdown">
 							<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
                                             <span class="btn-icon-wrapper pr-2 opacity-7">
@@ -106,17 +102,14 @@
                                                 </li>
                                             </ul>
                               </div>
-                    </div>
-				</div>
 				<hr>
 				<div id="treeGridUserHolderDiv">
 					
 				</div>
 			</div>
-		</div>
 	</div>
 
-	<div class="col-lg-8">
+	<div class="col-lg-10">
 		<div class="main-card mb-3 card">
 			<div class="card-header card-header-tab-animation">
 				<ul class="nav nav-justified" >
@@ -135,7 +128,7 @@
 					<li class="nav-item">
 						<a role="tab" class="nav-link "
 							id="tab-btn-userRoles" data-toggle="tab" href="#tab-user-roles"> 
-							<span>Kullanıcı Rolleri</span>
+							<span>İstemci Yetki Grupları (Sudo)</span>
 						</a>
 					</li>
 					
@@ -148,10 +141,10 @@
 							<div id="ldapAttrInfoHolder"></div>
 					</div>
 					<div class="tab-pane" id="tab-user-groups" role="tabpanel">
-							<div id="ldapAttrMemberHolder">Kullanıcı herhangi bir gruba üye değildir.</div>
+							<div id="groupsDiv">Kullanıcı herhangi bir gruba üye değildir.</div>
 					</div>
 					<div class="tab-pane" id="tab-user-roles" role="tabpanel">
-							
+							<div id="rolesDiv">Kullanıcının istemci yönetim yetki grubu bulunmamaktadir.</div>
 					</div>
 					
 				</div>

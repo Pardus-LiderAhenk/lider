@@ -85,7 +85,7 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 				     icons: function (rowKey, dataRow) {
 				    	    var level = dataRow.level;
 				    	    if(dataRow.type == "USER"){
-				    	        return "img/checked-user-32.png";
+				    	        return "img/person.png";
 				    	    }
 				    	    else return "img/folder.png";
 				    	},
@@ -247,7 +247,8 @@ function createUserSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 				    	 var entry = ldapResult[i];
 				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.entryUUID , entry , 'last' ,'userSearch');
 					}
-					$('#'+treeGridId).jqxTreeGrid('expandRow', "userSearch")
+					$('#'+treeGridId).jqxTreeGrid('collapseAll');
+					$('#'+treeGridId).jqxTreeGrid('expandRow', "userSearch");
 					
 				},
 			    error: function (data, errorThrown) {

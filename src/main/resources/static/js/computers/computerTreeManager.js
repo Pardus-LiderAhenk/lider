@@ -6,7 +6,7 @@
  * @param callback
  * @returns
  */
-function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
+function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
 	
 	var rootComputer = null;
 	var treeGridId=treeHolderDiv+"Grid";
@@ -19,9 +19,10 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 	 */
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/getComputers',
+		url : searchPath,
 		dataType : 'json',
 		success : function(data) {
+			console.log(data)
 			rootComputer = null;
 			 var source =
 			  {
@@ -77,13 +78,16 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 				 var getLocalization = function () {
 			           var localizationobj = {};
 			           localizationobj.filterSearchString = "Ara :";
+			           localizationobj.pagerShowRowsString= "Sayfa:";
+			           localizationobj.pagerGoToPageString = "";
 			           return localizationobj;
 				}
 				 // create jqxTreeGrid.
 				 $('#'+treeGridId).jqxTreeGrid({
 					 width: '100%',
 					 source: dataAdapter,
-				     altRows: true,
+//					 theme : 'fresh',
+//				     altRows: true,
 				     sortable: true,
 				     columnsResize: true,
 			         filterable: false,
@@ -94,14 +98,17 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 				     filterMode: "simple",
 				     selectionMode: "singleRow",
 				     localization: getLocalization(),
-				     pageSize: 15,
-				     pageSizeOptions: ['15', '25', '50'],
+				     pageSize: 500,
+				     pagerMode: "default",
+				     pageSizeOptions: ['15', '50', '500'],
 				     icons: function (rowKey, dataRow) {
 				    	    var level = dataRow.level;
 				    	    if(dataRow.type == "AHENK"){
 				    	    	return "img/linux.png";
 				    	    }
-				    	    else return "img/folder.png";
+				    	    else if(dataRow.type =="ORGANIZATIONAL_UNIT")
+				    	    	{return "img/folder.png";}
+				    	    else {return "img/entry_group.gif"; }
 				    	},
 				     ready: function () {
 				    	 var allrows =$('#'+treeGridId).jqxTreeGrid('getRows');
@@ -175,6 +182,7 @@ function createComputerTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectA
 									dataType : 'text',
 									success : function(ldapResult) {
 										var childs = jQuery.parseJSON(ldapResult);
+										console.log(childs)
 										var onlineCount=0;
 										 for (var m = 0; m < childs.length; m++) {
 											 	// get a row.
@@ -218,8 +226,8 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 			'       <select class="form-control " style="font-family: cursive; font-size: 12px;" id="'+srcSelectId+'" > ';
 	       
 		   if(showOnlyFolder==false){
-				searchHtml +='<option selected value="uid"> ID </option> '+
-						'<option value="cn"> Ad </option> '+ 
+				searchHtml +='<option  value="uid"> ID </option> '+
+						'<option selected value="cn"> Ad </option> '+ 
 						'<option value="ou"> Klasör </option>';
 			}
 			else if(showOnlyFolder==true){
@@ -265,15 +273,15 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 						return;
 					}
 					
-					$('#'+treeGridId).jqxTreeGrid('deleteRow', "userSearch")
-					$('#'+treeGridId).jqxTreeGrid('addRow', "userSearch", { name: "Arama Sonuçları" }, 'last')
+					$('#'+treeGridId).jqxTreeGrid('deleteRow', "Results")
+					$('#'+treeGridId).jqxTreeGrid('addRow', "Results", { name: "Arama Sonuçları" }, 'last')
 					
 					for (var i = 0; i < ldapResult.length; i++) {
 				    	 var entry = ldapResult[i];
-				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.name , entry , 'last' ,'userSearch');
+				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.name , entry , 'last' ,'Results');
 					}
 					$('#'+treeGridId).jqxTreeGrid('collapseAll');
-					$('#'+treeGridId).jqxTreeGrid('expandRow', "userSearch");
+					$('#'+treeGridId).jqxTreeGrid('expandRow', "Results");
 					
 				},
 			    error: function (data, errorThrown) {
@@ -284,9 +292,5 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 		else{
 			$.notify("Lütfen Arama Dizini Seçiniz", "warn");
 		}
-		
-		
-		
 	});
-	
 }

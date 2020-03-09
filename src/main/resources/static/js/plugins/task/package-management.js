@@ -18,23 +18,28 @@ var dnlist = []
 var table;
 
 var ref=connection.addHandler(getPackagesListener, null, 'message', null, null,  null);
-$("#entrySize").html(selectedEntries.length);
 
-for (var i = 0; i < selectedEntries.length; i++) {
-	dnlist.push(selectedEntries[i].distinguishedName);
+if(selectedEntries){
+	for (var i = 0; i < selectedEntries.length; i++) {
+		dnlist.push(selectedEntries[i].distinguishedName);
+	}
 }
-selectedPluginTask.dnList=dnlist;
-selectedPluginTask.parameterMap={};
-selectedPluginTask.entryList=selectedEntries;
-selectedPluginTask.dnType="AHENK";
-selectedPluginTask.commandId = "INSTALLED_PACKAGES";
-selectedPluginTask.cronExpression = scheduledParam;
-var params = JSON.stringify(selectedPluginTask);
+
 
 //get installed packages from agent when page opened. This action default parameterMap is null. CommandID is INSTALLED_PACKAGES
-sendPackageManagementTask(params);
+//sendPackageManagementTask(params);
 
 function sendPackageManagementTask(params){
+	
+	if(selectedPluginTask){
+		selectedPluginTask.dnList=dnlist;
+		selectedPluginTask.parameterMap={};
+		selectedPluginTask.entryList=selectedEntries;
+		selectedPluginTask.dnType="AHENK";
+		selectedPluginTask.commandId = "INSTALLED_PACKAGES";
+		selectedPluginTask.cronExpression = scheduledParam;
+		var params = JSON.stringify(selectedPluginTask);
+	}
 	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 	if (scheduledParam != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;

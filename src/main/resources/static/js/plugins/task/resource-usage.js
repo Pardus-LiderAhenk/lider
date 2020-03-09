@@ -7,57 +7,80 @@
  *  http://www.liderahenk.org/ 
  */
 
-if (ref) {
-	connection.deleteHandler(ref);
+if (refResUsage) {
+	connection.deleteHandler(refResUsage);
 }
 scheduledParam=null;
-var ref=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
-$("#entrySize").html(selectedEntries.length);
-var dnlist=[]
-for (var i = 0; i < selectedEntries.length; i++) {
-	dnlist.push(selectedEntries[i].distinguishedName);
+var refResUsage=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
+
+var pluginTask_ResourceUsage=null
+
+
+
+for (var n = 0; n < pluginTaskList.length; n++) {
+		var pluginTask=pluginTaskList[n];
+		if(pluginTask.page == 'resource-usage')
+		{
+			pluginTask_ResourceUsage=pluginTask;
+		}
 }
 
-getResourceUsage();
 
 function getResourceUsage(){
-	selectedPluginTask.dnList=dnlist;
-	selectedPluginTask.parameterMap={};
-	selectedPluginTask.entryList=selectedEntries;
-	selectedPluginTask.dnType="AHENK";
-	selectedPluginTask.cronExpression = scheduledParam;
-	var params = JSON.stringify(selectedPluginTask);
-	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
-	if (scheduledParam != null) {
-		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri: "+ scheduledParam;
+	var dnlist=[]
+	for (var i = 0; i < selectedEntries.length; i++) {
+		dnlist.push(selectedEntries[i].distinguishedName);
+		alert(selectedEntries[i].distinguishedName)
 	}
-
-	$.ajax({
-		type: "POST",
-		url: "/lider/task/execute",
-		headers: {
-			'Content-Type':'application/json',
-		}, 
-		data: params,
-		contentType: "application/json",
-		dataType: "json",
-		converters: {
-			'text json': true
-		}, 
-		success: function(result) {
-			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){
-				$("#plugin-result").html(message.bold());
-			}   	
-			/* $('#closePage').click(); */
-		},
-		error: function(result) {
-			$.notify(result, "error");
+	
+	if(pluginTask_ResourceUsage){
+		
+		pluginTask_ResourceUsage.commandId='RESOURCE_INFO_FETCHER'
+		pluginTask_ResourceUsage.dnList=dnlist;
+		pluginTask_ResourceUsage.parameterMap={};
+		pluginTask_ResourceUsage.entryList=selectedEntries;
+		pluginTask_ResourceUsage.dnType="AHENK";
+		pluginTask_ResourceUsage.cronExpression = scheduledParam;
+		
+		var params = JSON.stringify(pluginTask_ResourceUsage);
+		
+		var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
+		if (scheduledParam != null) {
+				message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri: "+ scheduledParam;
 		}
-	});
+		
+			$.ajax({
+				type: "POST",
+				url: "/lider/task/execute",
+				headers: {
+					'Content-Type':'application/json',
+				}, 
+				data: params,
+				contentType: "application/json",
+				dataType: "json",
+				converters: {
+					'text json': true
+				}, 
+				success: function(result) {
+					var res = jQuery.parseJSON(result);
+					if(res.status=="OK"){
+						$("#plugin-result-resource-usage").html(message.bold());
+					}   	
+					/* $('#closePage').click(); */
+				},
+				error: function(result) {
+					$.notify(result, "error");
+				}
+			});
+	}
 }
 
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
+$('#sendTask-resource-usage').click(function(e){
+	if(selectedEntries.length ==0 ){
+		$.notify("Lütfen İstemci Seçiniz", "error");
+		return;
+	}
+	
 	var content = "Görev Gönderilecek, emin misiniz?";
 	if (scheduledParam != null) {
 		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
@@ -82,7 +105,7 @@ function resourceUsageListener(msg) {
 	var from = msg.getAttribute('from');
 	var type = msg.getAttribute('type');
 	var elems = msg.getElementsByTagName('body');
-
+	
 	if (type == "chat" && elems.length > 0) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
@@ -113,7 +136,7 @@ function resourceUsageListener(msg) {
 					$("#device").html(arrg["Device"]);
 					$("#total_disk").html(arrg["Total Disc"]+" MB");
 					$("#usage_disk").html(arrg["Usage Disc"]+" MB");
-					$("#plugin-result").html("");
+					$("#plugin-result-resource-usage").html("");
 					$.notify(xmppResponse.result.responseMessage, "success");
 
 				} else {
@@ -127,7 +150,7 @@ function resourceUsageListener(msg) {
 	return true;
 }
 
-$('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);
-	scheduledParam=null;
-});
+//$('#closePage-'+ selectedPluginTask.page).click(function(e){
+//	connection.deleteHandler(ref);
+//	scheduledParam=null;
+//});

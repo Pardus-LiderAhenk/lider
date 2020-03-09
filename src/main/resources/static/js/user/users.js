@@ -26,9 +26,9 @@ $(document).ready(function(){
 				{
 					showAttributes(row);
 				}
-				else if(selectedUserTab=="showMembers")
+				else if(selectedUserTab=="showGroups")
 				{
-					showMembers(row);
+					showGroups(row);
 				}
 				else if(selectedUserTab=="showRoles")
 				{
@@ -45,7 +45,6 @@ $(document).ready(function(){
 				
 			}
 	);
-	
 	/**
 	 * tab click
 	 */
@@ -53,13 +52,23 @@ $(document).ready(function(){
 		selectedUserTab="showAttributes"
 	});
 	$('#tab-btn-userGroups').on('click',function() {
-		selectedUserTab="showMembers"
+		selectedUserTab="showGroups"
+			if(selectedRowGen==null){
+				$.notify("Lütfen Kullanıcı Seçiniz", "warn");
+			}
+			else{
+				showGroups(selectedRowGen);
+			}
 	});
 	$('#tab-btn-userRoles').on('click',function() {
 		selectedUserTab="showRoles"
+		if(selectedRowGen==null){
+			$.notify("Lütfen Kullanıcı Seçiniz", "warn");
+		}
+		else{
+			showRoles(selectedRowGen);
+		}
 	});
-	
-	
 	
 	$('#btnAddOuModal').on('click',function(event) {
 		getModalContent("modals/user/addOuModal", function content(data){
@@ -247,9 +256,6 @@ $(document).ready(function(){
 			    updateUserPassword(selectedRowGen.distinguishedName)
 			});
 		});
-		
-		
-		
 	});
 	
 	/**
@@ -321,22 +327,17 @@ $(document).ready(function(){
 							        html += '</table>';
 							        $("#policyDetail").html("")
 							        $("#policyDetail").html(html)
-								
 							});
 						}
-						 
 					}
 				});
 				
 				$('#setPasswordPolicydBtn').on('click', function(event) {
-					
 					var selectedPasswordPolicy=$('#passwordPolicyList').val();
-					
 					var params = {
 							"passwordPolicy" :	selectedPasswordPolicy,
 							"dn" : selectedRowGen.distinguishedName
 					};
-					
 					$.ajax({
 						type : 'POST',
 						url : 'lider/user/setPasswordPolicy',
@@ -352,9 +353,6 @@ $(document).ready(function(){
 								$("#treeGridUserHolderDivGrid").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 								$("#treeGridUserHolderDivGrid").jqxTreeGrid('selectRow', data.entryUUID);
 							}
-							
-							
-							
 						},
 						error: function (data, errorThrown) {
 							$.notify("Kullanıcı Parolası Güncellenirken Hata Oluştu.", "error");
@@ -408,7 +406,6 @@ function addUser(row) {
 			"telephoneNumber": telephoneNumber,
 			"homePostalAddress": homePostalAddress,
 	};
-    
     $.ajax({
 		type : 'POST',
 		url : 'lider/user/addUser',
@@ -446,7 +443,6 @@ function deleteUsers(row) {
 			type: row.type,
 			uid: row.uid
 		});
-		
     $.ajax({
 		type : 'POST',
 		url : 'lider/user/deleteUser',
@@ -475,7 +471,6 @@ function deleteUserOu(row) {
 			type: row.type,
 			uid: row.uid
 		});
-		
     $.ajax({
 		type : 'POST',
 		url : 'lider/user/deleteUserOu',
@@ -504,7 +499,6 @@ function editUser(userId) {
 		"telephoneNumber": $('#telephoneNumberEdit').val(),
 		"homePostalAddress": $('#homePostalAddressEdit').val()
 	};
-    
 	$.ajax({
 		type : 'POST',
 		url : 'lider/user/editUser',
@@ -587,7 +581,6 @@ function moveUserFolder(selectedEntry, ou) {
 				$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', selectedEntry.entryUUID); 
 				$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , selectedEntry.entryUUID , selectedEntry , 'last' , ou.entryUUID);
 			}
-			
 		},
 		error: function (data, errorThrown) {
 			$.notify("Kayıt taşınırken hata oluştu.", "error");
@@ -608,7 +601,6 @@ function hideUserButtons(){
 	$("#btnMoveUserModal").hide();
 	$("#btnMoveOuModal").hide();
 	$("#btnDisableUserModal").hide();
-	  
 }
 
 function setUserActionButtons(row,rootDNUser){
@@ -643,7 +635,6 @@ function setUserActionButtons(row,rootDNUser){
 		  }
 		  $("#btnAddUserModal").show();
 		  $("#btnAddOuModal").show();
-		  
 	  }
 	  else{
 		$("#btnDeleteOuModal").hide();
@@ -694,7 +685,6 @@ function showAttributes(row){
         }
     } 
     html += '</table>';
-    
     $('#selectedDnInfo').html("Seçili Kayıt: "+row.name);
     $('#ldapAttrInfoHolder').html(html);
     
@@ -706,10 +696,10 @@ function showAttributes(row){
    $('#tab-btn-userInfo').tab('show');
 }
 
-function showMembers(row){
+function showGroups(row){
 	var memberHtml='<table class="table table-striped table-bordered " id="attrMemberTable">';
-	memberHtml +='<thead> <tr><th> Kullanıcı Grup Adı </th> </tr> </thead>';
-	
+	memberHtml +='<thead> <tr><th style="width: 80%" > Kullanıcı Grup Adı </th> <th style="width: 20%"> </th></tr> </thead>';
+	console.log(row)
 	for (key in row.attributesMultiValues) {
 		if (row.attributesMultiValues.hasOwnProperty(key)) {
 			if((key == "memberOf")){
@@ -717,11 +707,13 @@ function showMembers(row){
 					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
 						memberHtml += '<tr>';
 						memberHtml += '<td>' + row.attributesMultiValues[key][i] + '</td>'; 
+						memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' > Gruptan Çıkar </button></td>'; 
 						memberHtml += '</tr>';
 					}
 				} else {
 					memberHtml += '<tr>';
 					memberHtml += '<td>' + row.attributesMultiValues[key] + '</td>';
+					memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' > Gruptan Çıkar </button></td>'; 
 					memberHtml += '</tr>';
 				}
 			}
@@ -729,7 +721,7 @@ function showMembers(row){
 	} 
 	memberHtml +='</table>';
 	
-	$('#ldapAttrMemberHolder').html(memberHtml);
+	$('#groupsDiv').html(memberHtml);
 	
 	$('.nav-link').each(function(){               
 		var $tweet = $(this);                    
@@ -737,27 +729,92 @@ function showMembers(row){
 	});
 	
 	$('#tab-btn-userGroups').tab('show');
+	
+	$('.deleteMember').on('click',function() {
+		var dn = $(this).data('user');
+		var value = $(this).data('value');
+		
+		var params = {
+				"dn" : value,
+				"attribute" : "memberOf",
+				"value": value
+		};
+		
+		$.ajax({
+			type : 'POST',
+			url : 'lider/ldap/removeAttributeWithValue',
+			data : params,
+			dataType: "json",
+			success : function(ldapResult) {
+				
+				var html='<table class="table table-striped table-bordered " id="attrRolesTable">';
+				html +='<thead> <tr><th>Yetki Grup Adı </th> </tr> </thead>';
+				
+				for (var m = 0; m < ldapResult.length; m++) {
+					var row = ldapResult[m];
+					
+					html += '<tr>';
+		            html += '<td title="'+row.description +'">' + row.name + '</td>';
+		            html += '</tr>';
+				}
+				
+				html +='</table>';
+				
+				$('#rolesDiv').html(html);
+				
+				$('.nav-link').each(function(){               
+					var $tweet = $(this);                    
+					$tweet.removeClass('active');
+				});
+				
+				$('#tab-btn-userRoles').tab('show');
+			},
+		    error: function (data, errorThrown) {
+				$.notify("Hata Oluştu.", "error");
+			}
+		 }); 
+		
+	});
 }
 
 function showRoles(row){
-	
-	$.ajax({ 
-		type: 'POST', 
-		url: '/lider/user/',
-		dataType: 'json',
-		data: params,
-		success: function (data) {
-			$.notify("Kayıt taşındı.", "success");
-			if(selectedEntry){
-            	$('#genericModal').trigger('click');
-				$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', selectedEntry.entryUUID); 
-				$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , selectedEntry.entryUUID , selectedEntry , 'last' , ou.entryUUID);
+	var params = {
+			"searchDn" : "",
+			"key" : "sudoUser",
+			"value": row.attributes['uid']
+	};
+	$.ajax({
+		type : 'POST',
+		url : 'lider/ldap/searchEntry',
+		data : params,
+		dataType: "json",
+		success : function(ldapResult) {
+			
+			var html='<table class="table table-striped table-bordered " id="attrRolesTable">';
+			html +='<thead> <tr><th>Yetki Grup Adı </th> </tr> </thead>';
+			
+			for (var m = 0; m < ldapResult.length; m++) {
+				var row = ldapResult[m];
+				
+				html += '<tr>';
+	            html += '<td title="'+row.description +'">' + row.name + '</td>';
+	            html += '</tr>';
 			}
 			
+			html +='</table>';
+			
+			$('#rolesDiv').html(html);
+			
+			$('.nav-link').each(function(){               
+				var $tweet = $(this);                    
+				$tweet.removeClass('active');
+			});
+			
+			$('#tab-btn-userRoles').tab('show');
 		},
-		error: function (data, errorThrown) {
-			$.notify("Kayıt taşınırken hata oluştu.", "error");
+	    error: function (data, errorThrown) {
+			$.notify("Hata Oluştu.", "error");
 		}
-	});
+	 }); 
 	
 }

@@ -13,16 +13,22 @@ if (ref) {
 scheduledParam = null;
 var ref=connection.addHandler(manageRootListener, null, 'message', null, null,  null);
 
-$("#entrySize").html(selectedEntries.length);		
 var dnlist=[]
-for (var i = 0; i < selectedEntries.length; i++) {
-	dnlist.push(selectedEntries[i].distinguishedName);
+if(selectedEntries){
+	for (var i = 0; i < selectedEntries.length; i++) {
+		dnlist.push(selectedEntries[i].distinguishedName);
+	}
 }
-selectedPluginTask.dnList=dnlist;
-selectedPluginTask.parameterMap={};
-selectedPluginTask.entryList=selectedEntries;
-selectedPluginTask.dnType="AHENK";
-var params = JSON.stringify(selectedPluginTask);
+
+
+for (var n = 0; n < pluginTaskList.length; n++) {
+	var pluginTask=pluginTaskList[n];
+	if(pluginTask.page == 'manage-root')
+	{
+		selectedPluginTask=pluginTask;
+	}
+}
+console.log(selectedPluginTask)
 
 var lockRootUser = "";
 var rootPassword;
@@ -43,6 +49,15 @@ function contains(rootPassword, allowedChars) {
 }
 
 function sendRootTask(params) {
+	
+	if(selectedPluginTask){
+		selectedPluginTask.dnList=dnlist;
+		selectedPluginTask.parameterMap={};
+		selectedPluginTask.entryList=selectedEntries;
+		selectedPluginTask.dnType="AHENK";
+		}
+		var params = JSON.stringify(selectedPluginTask);
+		
 	var content = "Görev Gönderilecek, emin misiniz?";
 	if (scheduledParam != null) {
 		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
@@ -163,7 +178,7 @@ $('#lockRootUserButton').click(function(e){
 	}
 });
 
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
+$('#sendTask-manage-root').click(function(e){
 	var entry=onlineEntryList[0];
 	var rootEntity = entry.jid;
 	rootPassword = $("#inputRootPassword").val();
@@ -193,8 +208,4 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	}
 });
 
-$('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);
-	scheduledParam = null;
-});
 

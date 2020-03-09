@@ -8,23 +8,33 @@
  * 
  */
 
-if (ref) {
-	connection.deleteHandler(ref);
+if (ref_execute_script) {
+	connection.deleteHandler(ref_execute_script);
 }
-
 scheduledParam = null;
 var table;
 var scriptTempList = [];
 
-var ref=connection.addHandler(executeScriptListener, null, 'message', null, null,  null);
-$("#entrySize").html(selectedEntries.length);
-var dnlist = []
-for (var i = 0; i < selectedEntries.length; i++) {
-	dnlist.push(selectedEntries[i].distinguishedName);
+var ref_execute_script=connection.addHandler(executeScriptListener, null, 'message', null, null,  null);
+
+
+var pluginTask_ExecuteScript=null
+for (var n = 0; n < pluginTaskList.length; n++) {
+	var pluginTask=pluginTaskList[n];
+	if(pluginTask.page == 'execute-script')
+	{
+		pluginTask_ExecuteScript=pluginTask;
+	}
 }
-selectedPluginTask.dnList=dnlist;
-selectedPluginTask.entryList=selectedEntries;
-selectedPluginTask.dnType="AHENK";
+
+if(selectedEntries){
+	var dnlist = []
+	for (var i = 0; i < selectedEntries.length; i++) {
+		dnlist.push(selectedEntries[i].distinguishedName);
+	}
+}
+console.log("betik")
+console.log(pluginTask_ExecuteScript)
 
 //get script templates from liderdb
 getScriptTemp();
@@ -37,7 +47,6 @@ function getScriptTemp() {
 		success: function(data) {
 			if(data != null && data.length > 0) {
 				scriptTempList = data;
-				$.notify("Betikler başarıyla listelendi.", "success");
 				for (var i = 0; i < data.length; i++) {
 					$('#scriptSelectBox').append($('<option>', {
 						id: data[i]["id"],
@@ -131,16 +140,22 @@ function executeScriptListener(msg) {
 	return true;
 }
 
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
-	selectedPluginTask.parameterMap={
+$('#sendTask-execute-script').click(function(e){
+	
+	if(pluginTask_ExecuteScript){
+		pluginTask_ExecuteScript.dnList=dnlist;
+		pluginTask_ExecuteScript.entryList=selectedEntries;
+		pluginTask_ExecuteScript.dnType="AHENK";
+	}
+	pluginTask_ExecuteScript.parameterMap={
 			"SCRIPT_FILE_ID": $('#scriptSelectBox').find('option:selected').attr('id'),
 			"SCRIPT_TYPE": $('#scriptSelectBox :selected').val(),
 			"SCRIPT_CONTENTS": $("#scriptContent").val(),
 			"SCRIPT_PARAMS": $("#scriptParameters").val()
 	};
-	selectedPluginTask.cronExpression = scheduledParam;
-	selectedPluginTask.commandId = "EXECUTE_SCRIPT";  		
-	var params = JSON.stringify(selectedPluginTask);
+	pluginTask_ExecuteScript.cronExpression = scheduledParam;
+	pluginTask_ExecuteScript.commandId = "EXECUTE_SCRIPT";  		
+	var params = JSON.stringify(pluginTask_ExecuteScript);
 
 //	if selected script. Default select box "Betik seçiniz... value = NA"
 	if ($('#scriptSelectBox :selected').val() != "NA") {
@@ -166,7 +181,3 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	}
 });
 
-$('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);
-	scheduledParam = null;
-});

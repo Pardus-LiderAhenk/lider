@@ -2,66 +2,42 @@
 <script type="text/javascript" src="js/computers/computers.js"></script>
 
 	<div class="row" >
-						<div class="col-lg-2" >
-							<div style="margin-top: 15px; margin-left: 15px">
-								<button id="btnAddAgents" type="button"	class=" btn btn-info" title="İstemcileri Ekle"> Ekle </button>
-								<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle"> Çevrimiçi </button>
-<!-- 								<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle">  <i class="pe-7s-folder"> </i> </button> -->
-							</div>
-							<hr>
-							<div id="computerTreeDiv" style="margin-left: 15px" ></div>
-						</div>
-						<div class="col-lg-10 green">
-								<div>
-									<div class="row" style="margin-top: 15px">
-										<div class="col-lg-10" >
-											<div >
-												<button role="tab"   data-toggle="tab"  >
-				   															   <i class="nav-link-icon fas fa-tv" >  </i>  </button>
-												<button role="tab"  class="btn btn-link" data-toggle="tab"  >
-				   															   <span id="selectedAgentInfo"> 		 Lütfen İstemci Seçiniz. </span>  </button>
-												<button role="tab" class="btn btn-info" id="btn-system" data-toggle="tab"  >
-				   															<i class="fas fa-server">  </i> Envanter Bilgisi </button>
-													
-												
-												<button role="tab" class="btn btn-info" id="btn-package" data-toggle="tab"  >
-				   															<i class="nav-link-icon fas fa-cubes"> </i> Paket ve Depo Yönetimi </button>
-													
-													
-												<button role="tab" class="btn btn-info" id="btn-service" data-toggle="tab"  >
-				   															<i class="nav-link-icon fas fa-tv"> </i> Servisler </button>
-													
-																						
-											</div>
-										</div>
-										<div class="col-lg-2" >
-											<a class="nav-link  pull-right"> <i class="nav-link-icon fas fa-info-circle"> </i> &nbsp; <span > </span> </a>
-										</div>
-									</div>
-									<hr>
-									<div>
-										<div id="systemPage">
-											<div class="row">
-												<div class="col-lg-4 ">
-<!-- 													must be plugin page name	 -->
-													<div id="manage-root"> 
-													</div>
-												</div>
-												<div class="col-lg-8 ">
-													<div id="resource-usage">
-													</div>
-												</div>
-<!-- 												<div class="col-lg-12 "> -->
-<!-- 													<div id="execute-script"></div> -->
-<!-- 												</div> -->
-												<div class="col-lg-6">
-													<div id="execute-script"></div>
-												</div>
-												<div class="col-lg-6">
-												</div>
-											</div>	
-										</div>
-									</div>
+		<div class="col-lg-2" >
+			<div style="margin-top: 15px; margin-left: 15px">
+				<button id="btnAddAgents" type="button"	class=" btn btn-info" title="İstemcileri Ekle"> Ekle </button>
+				<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle"> Çevrimiçi </button>
+<!-- 			<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle">  <i class="pe-7s-folder"> </i> </button> -->
+			</div>
+			<hr>
+			<div id="computerTreeDiv" style="margin-left: 15px"></div>
+		</div>
+		<div class="col-lg-10 green">
+			<div>
+				<div class="row" style="margin-top: 15px">
+					<div class="col-lg-10">
+						<div>
+							<button role="tab" data-toggle="tab"><i class="nav-link-icon fas fa-tv"></i></button>
+							<button role="tab" class="btn btn-link" data-toggle="tab">
+								<span id="selectedAgentInfo"> Lütfen İstemci Seçiniz.</span></button>
+							<button role="tab" class="btn btn-info" id="btn-system" data-toggle="tab"><i class="fas fa-server"></i> Envanter Bilgisi </button>
+							<button role="tab" class="btn btn-info" id="btn-package" data-toggle="tab"><i class="nav-link-icon fas fa-cubes"> </i> Paket ve Depo Yönetimi </button>
+							<button role="tab" class="btn btn-info" id="btn-service" data-toggle="tab"><i class="nav-link-icon fas fa-tv"> </i> Servisler </button>
 						</div>
 					</div>
+					<div class="col-lg-2" >
+						<a class="nav-link  pull-right"> <i class="nav-link-icon fas fa-info-circle"> </i> &nbsp; <span > </span> </a>
+					</div>
+				</div>
+					<hr>
+					<div>
+						<div id="systemPage">
+							<div id="resource-usage"></div>
+							<div class="row">
+								<div class="col-lg-6" id="manage-root"></div>
+								<div class="col-lg-6" id="execute-script"></div>
+							</div>	
+						</div>
+				</div>
+			</div>
+		</div>
 	</div>

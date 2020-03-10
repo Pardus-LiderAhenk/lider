@@ -152,10 +152,6 @@ function resourceUsageListener(msg) {
 					freeDisk = (100 - usageDisk).toFixed(2);
 //					cpu_actual = arrg["CPU Actual Hz"];
 //					cpu_advertised = arrg["CPU Advertised Hz"];
-
-					cpu_actual1 = 15;
-					cpu_advertised1 = 85;
-
 					systemChart1.destroy();
 					systemChart2.destroy();
 //					systemChart3.destroy();
@@ -163,7 +159,7 @@ function resourceUsageListener(msg) {
 					createCharts();
 
 				} else {
-					$("#plugin-result").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
+					$("#plugin-result-resource-usage").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
 					$.notify(xmppResponse.result.responseMessage, "error");
 				}
 			}
@@ -173,14 +169,7 @@ function resourceUsageListener(msg) {
 	return true;
 }
 
-
 function createCharts() {
-
-	console.log(usageMemory)
-	console.log(freeMemory)
-	console.log(usageDisk)
-	console.log(freeDisk)
-
 	var memoryChart = document.getElementById("memoryInfoChart").getContext('2d');
 	systemChart1 = new Chart(memoryChart, {
 		type: 'doughnut',

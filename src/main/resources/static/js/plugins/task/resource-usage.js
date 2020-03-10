@@ -145,21 +145,21 @@ function resourceUsageListener(msg) {
 					$("#usage_disk").html(arrg["Usage Disc"]+" MB");
 					$("#plugin-result-resource-usage").html("");
 					$.notify(xmppResponse.result.responseMessage, "success");
-					
+
 					usageMemory = (arrg["Usage"]/arrg["Total Memory"]*100).toFixed(2);
 					freeMemory = (100 - usageMemory).toFixed(2);
 					usageDisk = (arrg["Usage Disc"]/arrg["Total Disc"]*100).toFixed(2);
 					freeDisk = (100 - usageDisk).toFixed(2);
 //					cpu_actual = arrg["CPU Actual Hz"];
 //					cpu_advertised = arrg["CPU Advertised Hz"];
-					
+
 					cpu_actual1 = 15;
 					cpu_advertised1 = 85;
-					
+
 					systemChart1.destroy();
 					systemChart2.destroy();
-					systemChart3.destroy();
-					
+//					systemChart3.destroy();
+
 					createCharts();
 
 				} else {
@@ -175,17 +175,17 @@ function resourceUsageListener(msg) {
 
 
 function createCharts() {
-	
+
 	console.log(usageMemory)
 	console.log(freeMemory)
 	console.log(usageDisk)
 	console.log(freeDisk)
-	
+
 	var memoryChart = document.getElementById("memoryInfoChart").getContext('2d');
 	systemChart1 = new Chart(memoryChart, {
 		type: 'doughnut',
 		data: {
-			labels: ["Kullanılan (%)", "Boş (%)"],
+			labels: ["Kullanılan", "Boş"],
 			datasets: [{
 				data: [usageMemory, freeMemory],
 				backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
@@ -196,6 +196,10 @@ function createCharts() {
 			responsive: true,
 			legend: {
 				display: false
+			},
+			title: {
+				display: true,
+				text: 'Bellek Kullanımı (%)'
 			}
 		}
 	});
@@ -204,7 +208,7 @@ function createCharts() {
 	systemChart2 = new Chart(diskChart, {
 		type: 'doughnut',
 		data: {
-			labels: ["Kullanılan(%)", "Boş(%)"],
+			labels: ["Kullanılan", "Boş"],
 			datasets: [{
 				data: [usageDisk, freeDisk],
 				backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
@@ -215,27 +219,31 @@ function createCharts() {
 			responsive: true,
 			legend: {
 				display: false
+			},
+			title: {
+				display: true,
+				text: 'Disk Kullanımı (%)'
 			}
 		}
 	});
 
-	var processorChart = document.getElementById("processorInfoChart").getContext('2d');
-	systemChart3 = new Chart(processorChart, {
-		type: 'doughnut',
-		data: {
-			labels: ["Gerçek Frekans(GHz)", "Beklenen Frekans(GHz)"],
-			datasets: [{
-				data: [cpu_actual1, cpu_advertised1],
-				backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
-				hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
-			}]
-		},
-		options: {
-			responsive: true,
-			legend: {
-				display: false
-			}
-		}
-	});
+//	var processorChart = document.getElementById("processorInfoChart").getContext('2d');
+//	systemChart3 = new Chart(processorChart, {
+//	type: 'doughnut',
+//	data: {
+//	labels: ["Gerçek Frekans(GHz)", "Beklenen Frekans(GHz)"],
+//	datasets: [{
+//	data: [cpu_actual1, cpu_advertised1],
+//	backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360"],
+//	hoverBackgroundColor: ["#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774"]
+//	}]
+//	},
+//	options: {
+//	responsive: true,
+//	legend: {
+//	display: false
+//	}
+//	}
+//	});
 
 }

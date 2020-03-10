@@ -6,190 +6,171 @@
 <script type="text/javascript" src="js/plugins/task/resource-usage.js"></script>
 </head>
 <body>
-
-<div class="main-card mb-3 card">
-	<div class="card-body">
-		<div class="login-form-1">
-			<div class="login-group">
-				<div class="form-group">
-					<div class="row">
-						<div class="col-lg-7">
+	<div class="main-card mb-3 card">
+		<div class="card-body">
+			<div class="login-form-1">
+				<div class="login-group">
+					<div class="form-group">
 						<div class="row">
-						<!-- Bellek Bilgileri -->
-								<div class="col-lg-4">
-									<label>Bellek Bilgisi</label>
-									<canvas id="memoryInfoChart" width="100" height="100"></canvas>
-									<br>
-									<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-										<tbody>
-										    <tr>
-										      <td>Toplam</td>
-										      <td id="total_memory"></td>
-										    </tr>
-										    <tr>
-										      <td>Kullanılan</td>
-										      <td id="usage_memory"></td>
-										    </tr>
-										</tbody>
-									</table>
-								</div>
-								<div class="col-lg-4">
-									<label>Disk Bilgisi</label>
-									<canvas id="diskInfoChart" width="100" height="100"></canvas>
-									<br>
-									<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-										<tbody>
-										    <tr>
-										      <td>Toplam</td>
-										      <td id="total_disk"></td>
-										    </tr>
-										    <tr>
-										      <td>Kullanılan</td>
-										      <td id="usage_disk"></td>
-										    </tr>
-										</tbody>
-									</table>
-								</div>
-								<div class="col-lg-4">
-									<label>İşlemci Bilgisi</label>
-									<canvas id="processorInfoChart" width="100" height="100"></canvas>
-									<br>
-									<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-										<tbody>
-										    <tr>
-										      <td>Gerçek Frekans</td>
-										      <td id="cpu_actual"></td>
-										    </tr>
-										    <tr>
-										      <td>Beklenen Frekans</td>
-										      <td id="cpu_advertised"></td>
-										    </tr>
-										</tbody>
-									</table>
+							<div class="col-lg-5">
+								<div class="row">
+									<div class="main-card mb-3 card">
+										<div style="margin: 5px">
+											<table class="table table-bordered table-striped mh-100"
+												style="line-height: 0.5">
+												<tbody>
+													<!-- Platform Bilgileri -->
+													<tr>
+														<th class="col-md-12" colspan="2">İstemci Bilgileri</th>
+													</tr>
+													<tr>
+														<td>Bilgisayar Adı</td>
+														<td id="hostname"></td>
+													</tr>
+													<tr>
+														<td>Sistem</td>
+														<td id=system></td>
+													</tr>
+													<tr>
+														<td>Sürüm</td>
+														<td id="release"></td>
+													</tr>
+													<tr>
+														<td>Versiyon</td>
+														<td id="version"></td>
+													</tr>
+													<tr>
+														<td>Makine</td>
+														<td id="machine"></td>
+													</tr>
+													<tr>
+														<td>İP</td>
+														<td id="ip_addr"></td>
+													</tr>
+													<tr>
+														<td>MAC</td>
+														<td id="mac"></td>
+													</tr>
+													<tr>
+														<td>Faz</td>
+														<td id=phase></td>
+													</tr>
+													<tr>
+														<td>İşlemci</td>
+														<td id="processor"></td>
+													</tr>
+													<tr>
+														<td>Fiziksel Çekirdek Sayısı</td>
+														<td id="physical_core_count"></td>
+													</tr>
+													<tr>
+														<td>Mantıksal Çekirdek Sayısı</td>
+														<td id="logical_core_count"></td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+
+									<!-- 								<div class="col-lg-4"> -->
+									<!-- 									<label>İşlemci Bilgisi</label> -->
+									<!-- 									<canvas id="processorInfoChart"></canvas> -->
+									<!-- 									<br> -->
+									<!-- 									<table class="table table-bordered table-striped mh-100" style="line-height: 1.2"> -->
+									<!-- 										<tbody> -->
+									<!-- 										    <tr> -->
+									<!-- 										      <td>Gerçek Frekans</td> -->
+									<!-- 										      <td id="cpu_actual"></td> -->
+									<!-- 										    </tr> -->
+									<!-- 										    <tr> -->
+									<!-- 										      <td>Beklenen Frekans</td> -->
+									<!-- 										      <td id="cpu_advertised"></td> -->
+									<!-- 										    </tr> -->
+									<!-- 										</tbody> -->
+									<!-- 									</table> -->
+									<!-- 								</div> -->
 								</div>
 							</div>
-<!-- 							<table class="table table-bordered table-striped mh-100" style="line-height: 1.2"> -->
-<!-- 								<tbody> -->
-<!-- 									Platform Bilgileri -->
-<!-- 								    <tr> -->
-<!-- 								     <th class="col-md-12" colspan="2">Platform Bilgileri</th> -->
-<!-- 								    </tr> -->
-<!-- 								    <tr> -->
-<!-- 								      <td>Sistem</td> -->
-<!-- 								      <td id=system></td> -->
-<!-- 								    </tr> -->
-<!-- 								    <tr> -->
-<!-- 								      <td>Sürüm</td> -->
-<!-- 								      <td id="release"></td> -->
-<!-- 								    </tr> -->
-<!-- 								    <tr> -->
-<!-- 								      <td>Versiyon</td> -->
-<!-- 								      <td id="version"></td>  -->
-<!-- 								    </tr> -->
-<!-- 								    <tr> -->
-<!-- 								      <td>Makine</td> -->
-<!-- 								      <td id="machine"></td>  -->
-<!-- 								    </tr> -->
-<!-- 								    <tr> -->
-<!-- 								      <td>Faz</td> -->
-<!-- 								      <td id=phase></td>  -->
-<!-- 								    </tr>						     -->
-<!-- 								  </tbody> -->
-<!-- 							</table> -->
+							<div class="col-lg-7">
+								<div class="main-card mb-3 card">
+									<div class="row">
+										<!-- Bellek Bilgileri -->
+										<div class="col-lg-6">
+											<canvas id="memoryInfoChart"></canvas>
+											<br>
+											<div style="margin: 5px">
+												<table class="table table-bordered table-striped mh-100"
+													style="line-height: 1">
+													<tbody>
+														<tr>
+															<th class="col-md-12" colspan="2">Bellek Bilgisi</th>
+														</tr>
+														<tr>
+															<td>Toplam</td>
+															<td id="total_memory"></td>
+														</tr>
+														<tr>
+															<td>Kullanılan</td>
+															<td id="usage_memory"></td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+										<div class="col-lg-6">
+											<canvas id="diskInfoChart"></canvas>
+											<br>
+											<div style="margin: 5px">
+												<table class="table table-bordered table-striped mh-100"
+													style="line-height: 0.9">
+													<tbody>
+														<!--  Disk Bilgileri -->
+														<tr>
+															<th class="col-md-12" colspan="2">Disk Bilgisi</th>
+														</tr>
+														<tr>
+															<td>Bölüm İsmi</td>
+															<td id="device"></td>
+														</tr>
+														<tr>
+															<td>Toplam</td>
+															<td id="total_disk"></td>
+														</tr>
+														<tr>
+															<td>Kullanılan</td>
+															<td id="usage_disk"></td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
-						
-						<div class="col-lg-5">
-							<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-								<tbody>
-									<!-- İçlemci Bilgileri -->
-								    <tr>
-								     <th class="col-md-12" colspan="2">İşlemci Bilgisi</th>
-								    </tr>
-								    <tr>
-								      <td>İşlemci</td>
-								      <td id="processor"></td> 
-								    </tr>
-								    <tr>
-								      <td>Fiziksel Çekirdek Sayısı</td>
-								      <td id="physical_core_count"></td>
-								    </tr>
-								    <tr>
-								      <td>Mantıksal Çekirdek Sayısı</td>
-								      <td id="logical_core_count"></td>
-								    </tr>
-								    <tr>
-								      <td>Gerçek Frekans</td>
-								      <td id="cpu_actual"></td> 
-								    </tr>
-								    <tr>
-								      <td>Beklenen Frekans</td>
-								      <td id="cpu_advertised"></td> 
-								    </tr>
-								</tbody>
-							</table>				
-						 </div>
-						 
-<!-- 						 <div class="col-lg-6"> 	  -->
-<!-- 							 <table class="table table-bordered table-striped mh-100" style="line-height: 1.2"> -->
-<!-- 								<tbody> -->
-<!-- 									Bellek Bilgileri -->
-<!-- 								    <tr> -->
-<!-- 								     <th class="col-md-12" colspan="2">Bellek Bilgisi</th> -->
-<!-- 								    </tr> -->
-<!-- 								    <tr> -->
-<!-- 								      <td>Toplam Bellek</td> -->
-<!-- 								      <td id="total_memory"></td> -->
-<!-- 								    </tr> -->
-<!-- 								    <tr> -->
-<!-- 								      <td>Bellek Kullanımı</td> -->
-<!-- 								      <td id="usage_memory"></td> -->
-<!-- 								    </tr> -->
-<!-- 								</tbody> -->
-<!-- 							</table> -->
-<!-- 						</div> -->
-						
-						<div class="col-lg-6">
-							<table class="table table-bordered table-striped mh-100" style="line-height: 1.2">
-								<tbody>
-								<!--  Disk Bilgileri -->
-								    <tr>
-								     <th class="col-md-12" colspan="2">Disk Bilgisi</th>
-								    </tr>
-								    <tr>
-								      <td>Bölüm İsmi</td>
-								      <td id="device"></td>
-								    </tr>
-								    <tr>
-								      <td>Toplam Disk</td>
-								      <td id="total_disk"></td>
-								    </tr>
-								    <tr>
-								      <td>Kullanılan</td>
-								      <td id="usage_disk"></td> 
-								    </tr>
-							  </tbody>
-						</table>
-					 </div>
-				</div>
-				<br>
-				<div id="plugin-result-resource-usage"></div>
-				<br><br>
-	   				<div class="row">
-						<div class="col-lg-7">
-						<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-							<button id=sendTask-resource-usage type="button" class="btn-shadow btn btn-info"><i class="fa fa-play"></i> Çalıştır</button>
-							<button id=sendTaskCron-resource-usage type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri" data-toggle="modal" data-target="#scheduledTasksModal"><i class="fa fa-hourglass-start"></i> Görev Parametreleri</button>
+						<div id="plugin-result-resource-usage"></div>
+						<div class="row">
+							<div class="col-lg-7"></div>
+							<div class="col-lg-5 text-right">
+								<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+								<button id=sendTask-resource-usage type="button"
+									class="btn-shadow btn btn-info">
+									<i class="fa fa-play"></i> Çalıştır
+								</button>
+								<button id=sendTaskCron-resource-usage type="button"
+									class="btn-shadow btn btn-info"
+									title="Zamanlanmış Görev Parametreleri" data-toggle="modal"
+									data-target="#scheduledTasksModal">
+									<i class="fa fa-hourglass-start"></i> Görev Parametreleri
+								</button>
+							</div>
 						</div>
-						<div class="col-lg-5 text-right">
-	<!-- 				ids of the following buttons must be closePage-{plugin-page} -->
-							<button id=closePage-manage-root type="button" class="btn-shadow btn btn-info" data-dismiss="modal"><i class="fa fa-window-close"></i> Kapat</button>
-	 					</div>
 					</div>
 				</div>
-			</div>			
+			</div>
 		</div>
 	</div>
-</div>
 </body>
 </html>
 

@@ -11,6 +11,8 @@ if (refResUsage) {
 	connection.deleteHandler(refResUsage);
 }
 
+
+var scheduledModalResourceUsageOpened=false;
 var usageMemory = 50;
 var freeMemory = 50;
 var usageDisk = 50;
@@ -21,7 +23,7 @@ var systemChart1;
 var systemChart2;
 var systemChart3;
 
-scheduledParam=null;
+scheduledParamResUsage=null;
 var refResUsage=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
 
 var pluginTask_ResourceUsage=null
@@ -48,13 +50,13 @@ function getResourceUsage(){
 		pluginTask_ResourceUsage.parameterMap={};
 		pluginTask_ResourceUsage.entryList=selectedEntries;
 		pluginTask_ResourceUsage.dnType="AHENK";
-		pluginTask_ResourceUsage.cronExpression = scheduledParam;
+		pluginTask_ResourceUsage.cronExpression = scheduledParamResUsage;
 
 		var params = JSON.stringify(pluginTask_ResourceUsage);
 
 		var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
-		if (scheduledParam != null) {
-			message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri: "+ scheduledParam;
+		if (scheduledParamResUsage != null) {
+			message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri: "+ scheduledParamResUsage;
 		}
 
 		$.ajax({
@@ -90,7 +92,7 @@ $('#sendTask-resource-usage').click(function(e){
 	}
 
 	var content = "Görev Gönderilecek, emin misiniz?";
-	if (scheduledParam != null) {
+	if (scheduledParamResUsage != null) {
 		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
 	}
 	$.confirm({
@@ -99,8 +101,9 @@ $('#sendTask-resource-usage').click(function(e){
 		theme: 'light',
 		buttons: {
 			Evet: function () {
-				getResourceUsage();
-				scheduledParam=null;
+				console.log(scheduledParamResUsage)
+//				getResourceUsage();
+				scheduledParamResUsage=null;
 			},
 			Hayır: function () {
 			}
@@ -108,7 +111,20 @@ $('#sendTask-resource-usage').click(function(e){
 	});
 });
 
+$('#sendTaskCron-resource-usage').click(function(e){
+	$('#scheduledTasksModal').modal('toggle');
+	scheduledModalResourceUsageOpened=true;
+});
 
+
+$("#scheduledTasksModal").on('hidden.bs.modal', function(){
+	
+	if(scheduledModalResourceUsageOpened){
+		scheduledParamResUsage=scheduledParam;
+	}
+	scheduledModalResourceUsageOpened=false;
+	defaultScheduleSelection();
+});
 
 
 function resourceUsageListener(msg) {
@@ -240,3 +256,4 @@ function createCharts() {
 //	});
 
 }
+

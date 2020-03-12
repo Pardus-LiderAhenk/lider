@@ -1,29 +1,13 @@
 
 <script type="text/javascript" src="js/user/users.js"></script>
 <script type="text/javascript" src="js/user/ouManager.js"></script>
-
-<!-- <div class="app-page-title"> -->
-<!-- 	<div class="page-title-wrapper"> -->
-<!-- 		<div class="page-title-heading"> -->
-<!-- 			<div class="page-title-icon"> -->
-<!-- 				<i class="pe-7s-drawer icon-gradient bg-happy-itmeo"> </i> -->
-<!-- 			</div> -->
-<!-- 			<div> -->
-<!-- 				Kullanıcı Yönetimi -->
-<!-- 				<div class="page-title-subheading">Sistemde bulunan -->
-<!-- 					kullanıcıları listeleyebilir, kullanıcılarınızı yönetebilirsiniz.</div> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
-		
-<!-- 	</div> -->
-<!-- </div> -->
+<script type="text/javascript" src="js/custom.js"></script>
 
 <div class="row">
-
 	<div class="col-lg-2">
-					<div class="d-inline-block dropdown">
-							<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
-                                            <span class="btn-icon-wrapper pr-2 opacity-7">
+					<div  style="margin: 10px;">
+							<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info"  style="margin: 10px;">
+                                            <span class="btn-icon-wrapper pr-2 opacity-7" >
                                                 <i class="fa fa-business-time fa-w-20"></i>
                                             </span>
                                             Kullanıcı İşlemleri
@@ -62,24 +46,21 @@
                                                     </a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnEditUserModal" title="Kullanıcı Düzenle" data-target="#genericModal" data-toggle="modal">
-                                                        <i class="fa fa-edit"> &nbsp;</i>
-                                                        <span> Kullanıcı Düzenle </span>
-                                                    </a>
+                                                   
                                                 </li>
                                                 
                                                 <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnDisableUserModal" title="Kullanıcıyı Pasif Hale Getir" data-target="#genericModal" data-toggle="modal">
-                                                        <i class="fa fa-blind"> &nbsp;</i>
-                                                        <span> Kullanıcıyı Pasif Hale Getir </span>
-                                                    </a>
+<!--                                                     <a href="#" class="nav-link" id="btnDisableUserModal" title="Kullanıcıyı Pasif Hale Getir" data-target="#genericModal" data-toggle="modal"> -->
+<!--                                                         <i class="fa fa-blind"> &nbsp;</i> -->
+<!--                                                         <span> Kullanıcıyı Pasif Hale Getir </span> -->
+<!--                                                     </a> -->
                                                 </li>
 
                                                 <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnDeleteUserModal" title="Kullanıcı Sil" data-target="#genericModal" data-toggle="modal">
-                                                        <i class="fa fa-minus-circle"> &nbsp;</i>
-                                                        <span> Kullanıcı Sil </span>
-                                                    </a>
+<!--                                                     <a href="#" class="nav-link" id="btnDeleteUserModal" title="Kullanıcı Sil" data-target="#genericModal" data-toggle="modal"> -->
+<!--                                                         <i class="fa fa-minus-circle"> &nbsp;</i> -->
+<!--                                                         <span> Kullanıcı Sil </span> -->
+<!--                                                     </a> -->
                                                 </li>
                                                 <li class="nav-item">
                                                     <a href="#" class="nav-link" id="btnMoveUserModal" title="Kullanıcı Sil" data-target="#genericModal" data-toggle="modal">
@@ -102,54 +83,230 @@
                                                 </li>
                                             </ul>
                               </div>
-				<hr>
 				<div id="treeGridUserHolderDiv">
 					
 				</div>
 			</div>
 	</div>
 
-	<div class="col-lg-10">
-		<div class="main-card mb-3 card">
-			<div class="card-header card-header-tab-animation">
-				<ul class="nav nav-justified" >
-					<li class="nav-item">
-						<a role="tab" class="nav-link "
-							id="tab-btn-userInfo" data-toggle="tab" href="#tab-entry-info"> 
-							<span>Kullanıcı Detay</span>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a role="tab" class="nav-link "
-							id="tab-btn-userGroups" data-toggle="tab" href="#tab-user-groups"> 
-							<span>Kullanıcı Grupları</span>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a role="tab" class="nav-link "
-							id="tab-btn-userRoles" data-toggle="tab" href="#tab-user-roles"> 
-							<span>İstemci Yetki Grupları (Sudo)</span>
-						</a>
-					</li>
+	<div class="col-lg-10 white" style="height: 1200px;">
+									<div>
+										<div id="systemPage">
+											<div class="row">
+												<div class="x_panel">
+													<div class="x_title">
+													                    <h2>Kullanıcı Yönetimi </h2>
+													                    <ul class="nav navbar-right panel_toolbox">
+													                      
+													                    </ul>
+													                    <div class="clearfix"></div>
+													 </div>
+									                  <div class="x_content">
+									                    <div class="col-md-3 col-sm-3  profile_left">
+									                      <div class="profile_img">
+									                        <div id="crop-avatar">
+									                          <img class="img-responsive avatar-view" src="images/user_icon.png" width="320" height="220" alt="Avatar" title="Change the avatar">
+									                        </div>
+									                      </div>
+									                      <hr>
+									                      <h3 id="userName"></h3>
+									                       <hr>
+									
+									                      <ul class="list-unstyled user_data">
+									                        <li><i class="fa fa-map-marker user-profile-icon"></i> &nbsp; <span id="userAddress"></span>
+									                        </li>
+									
+									                        <li>
+									                          <i class="fas fa-phone user-profile-icon"></i> &nbsp; <span id="userPhone"></span>
+									                        </li>
+									
+									                        <li>
+									                          <i class="fas fa-mail-bulk user-profile-icon"></i>  &nbsp;<span id="userMail"></span>
+									                        </li>
+									
+									                        
+									                      </ul>
+									                       <hr>
+									                      <hr>
+									                       <a href="#" class="btn btn-success" id="btnEditUserModal" title="Kullanıcı Düzenle" data-target="#genericModal" data-toggle="modal">
+			                                                        <i class="fa fa-edit"> &nbsp; Düzenle</i>
+			                                               </a>
+									                       <a href="#" class="btn btn-info" id="btnDisableUserModal" title="Kullanıcıyı Pasif Hale Getir" data-target="#genericModal" data-toggle="modal">
+		                                                        <i class="fa fa-blind"> &nbsp; Pasif Hale Getir</i>
+		                                                   </a>
+									                       <a href="#" class="btn btn-danger" id="btnDeleteUserModal" title="Kullanıcı Sil" data-target="#genericModal" data-toggle="modal">
+		                                                        <i class="fa fa-minus-circle"> &nbsp; Sil</i>
+		                                                    </a>
+									
+<!-- 									                      <a class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Düzenle</a> -->
+									                      <hr>
+									
+									                      <h4> Login Olunan İstemciler </h4>
+									                      <ul class="list-unstyled user_data">
+									                        <li>
+									                          <p>Ahenk-1</p>
+									                          <div class="progress progress_sm">
+									                            <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="50"></div>
+									                          </div>
+									                        </li>
+									                        <li>
+									                          <p>Pardus</p>
+									                          <div class="progress progress_sm">
+									                            <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="70"></div>
+									                          </div>
+									                        </li>
+									                        <li>
+									                          <p>Pardus-2</p>
+									                          <div class="progress progress_sm">
+									                            <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="30"></div>
+									                          </div>
+									                        </li>
+									                      
+									                      </ul>
+									
+									                    </div>
+									                    <div class="col-md-9 col-sm-9 ">
+									                      <div class="" role="tabpanel" data-example-id="togglable-tabs">
+									                        <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+									                          <li role="presentation" class="active">
+									                          			<a role="tab" class="nav-link"
+																			id="tab-btn-psswordPolicy" data-toggle="tab" href="#tab-password-policy"> 
+																			<span>Parola Politikaları</span>
+																		</a>
+									                          </li>
+									                          <li role="presentation" class="active">
+									                          			<a role="tab" class="nav-link"
+																			id="tab-btn-userGroups" data-toggle="tab" href="#tab-user-groups"> 
+																			<span>Kullanıcı Grupları</span>
+																		</a>
+									                          </li>
+									                          <li role="presentation" class="active"><a href="#tab_content2" role="tab" class="nav-link" id="profile-tab" data-toggle="tab" aria-expanded="false">Bağlı Olunan Yetki Grupları</a>
+									                          </li>
+									                          <li role="presentation" class="active"><a href="#tab_content3" role="tab" class="nav-link" id="profile-tab2" data-toggle="tab" aria-expanded="false">Gönderilen Politikalar</a>
+									                          </li>
+									                        </ul>
+									                        <div id="myTabContent" class="tab-content">
+									                          <div role="tabpanel" class="tab-pane active " id="tab-password-policy" aria-labelledby="tab-btn-psswordPolicy">
+									         						 
+									                          </div>
+									                          <div role="tabpanel" class="tab-pane " id="tab-user-groups" aria-labelledby="tab-btn-userGroups">
+									         						 <div id="groupsDiv"></div>
+									                          </div>
+									                          <div role="tabpanel" class="tab-pane " id="tab_content2" aria-labelledby="profile-tab">
+									
+									                            <table class="data table table-striped no-margin">
+									                              <thead>
+									                                <tr>
+									                                  <th>#</th>
+									                                  <th>Project Name</th>
+									                                  <th>Client Company</th>
+									                                  <th class="hidden-phone">Hours Spent</th>
+									                                  <th>Contribution</th>
+									                                </tr>
+									                              </thead>
+									                              <tbody>
+									                                <tr>
+									                                  <td>1</td>
+									                                  <td>New Company Takeover Review</td>
+									                                  <td>Deveint Inc</td>
+									                                  <td class="hidden-phone">18</td>
+									                                  <td class="vertical-align-mid">
+									                                    <div class="progress">
+									                                      <div class="progress-bar progress-bar-success" data-transitiongoal="35"></div>
+									                                    </div>
+									                                  </td>
+									                                </tr>
+									                                <tr>
+									                                  <td>2</td>
+									                                  <td>New Partner Contracts Consultanci</td>
+									                                  <td>Deveint Inc</td>
+									                                  <td class="hidden-phone">13</td>
+									                                  <td class="vertical-align-mid">
+									                                    <div class="progress">
+									                                      <div class="progress-bar progress-bar-danger" data-transitiongoal="15"></div>
+									                                    </div>
+									                                  </td>
+									                                </tr>
+									                                <tr>
+									                                  <td>3</td>
+									                                  <td>Partners and Inverstors report</td>
+									                                  <td>Deveint Inc</td>
+									                                  <td class="hidden-phone">30</td>
+									                                  <td class="vertical-align-mid">
+									                                    <div class="progress">
+									                                      <div class="progress-bar progress-bar-success" data-transitiongoal="45"></div>
+									                                    </div>
+									                                  </td>
+									                                </tr>
+									                                <tr>
+									                                  <td>4</td>
+									                                  <td>New Company Takeover Review</td>
+									                                  <td>Deveint Inc</td>
+									                                  <td class="hidden-phone">28</td>
+									                                  <td class="vertical-align-mid">
+									                                    <div class="progress">
+									                                      <div class="progress-bar progress-bar-success" data-transitiongoal="75"></div>
+									                                    </div>
+									                                  </td>
+									                                </tr>
+									                              </tbody>
+									                            </table>
+									
+									                          </div>
+									                          <div role="tabpanel" class="tab-pane " id="tab_content3" aria-labelledby="profile-tab">
+									                            <p>xxFood truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui
+									                              photo booth letterpress, commodo enim craft beer mlkshk </p>
+									                          </div>
+									                        </div>
+									                      </div>
+									                    </div>
+									                  </div>
+                							</div>
+												
+											</div>	
+										</div>
+									</div>
+	
+<!-- 		<div class="main-card mb-3 card"> -->
+<!-- 			<div class="card-header card-header-tab-animation"> -->
+<!-- 				<ul class="nav nav-justified" > -->
+<!-- 					<li class="nav-item"> -->
+<!-- 						<a role="tab" class="nav-link " -->
+<!-- 							id="tab-btn-userInfo" data-toggle="tab" href="#tab-entry-info">  -->
+<!-- 							<span>Kullanıcı Detay</span> -->
+<!-- 						</a> -->
+<!-- 					</li> -->
+<!-- 					<li class="nav-item"> -->
+<!-- 						<a role="tab" class="nav-link " -->
+<!-- 							id="tab-btn-userGroups" data-toggle="tab" href="#tab-user-groups">  -->
+<!-- 							<span>Kullanıcı Grupları</span> -->
+<!-- 						</a> -->
+<!-- 					</li> -->
+<!-- 					<li class="nav-item"> -->
+<!-- 						<a role="tab" class="nav-link " -->
+<!-- 							id="tab-btn-userRoles" data-toggle="tab" href="#tab-user-roles">  -->
+<!-- 							<span>İstemci Yetki Grupları (Sudo)</span> -->
+<!-- 						</a> -->
+<!-- 					</li> -->
 					
-				</ul>
-			</div>
-			<div class="card-body">
-				<div class="tab-content">
-					<div class="tab-pane" id="tab-entry-info" role="tabpanel">
-							<p id="selectedDnInfo"></p>
-							<div id="ldapAttrInfoHolder"></div>
-					</div>
-					<div class="tab-pane" id="tab-user-groups" role="tabpanel">
-							<div id="groupsDiv">Kullanıcı herhangi bir gruba üye değildir.</div>
-					</div>
-					<div class="tab-pane" id="tab-user-roles" role="tabpanel">
-							<div id="rolesDiv">Kullanıcının istemci yönetim yetki grubu bulunmamaktadir.</div>
-					</div>
+<!-- 				</ul> -->
+<!-- 			</div> -->
+<!-- 			<div class="card-body"> -->
+<!-- 				<div class="tab-content"> -->
+<!-- 					<div class="tab-pane" id="tab-entry-info" role="tabpanel"> -->
+<!-- 							<p id="selectedDnInfo"></p> -->
+<!-- 							<div id="ldapAttrInfoHolder"></div> -->
+<!-- 					</div> -->
+<!-- 					<div class="tab-pane" id="tab-user-groups" role="tabpanel"> -->
+<!-- 							<div id="groupsDiv">Kullanıcı herhangi bir gruba üye değildir.</div> -->
+<!-- 					</div> -->
+<!-- 					<div class="tab-pane" id="tab-user-roles" role="tabpanel"> -->
+<!-- 							<div id="rolesDiv">Kullanıcının istemci yönetim yetki grubu bulunmamaktadir.</div> -->
+<!-- 					</div> -->
 					
-				</div>
-			</div>
-		</div>
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
 
 	</div>
 </div>

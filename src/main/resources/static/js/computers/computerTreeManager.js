@@ -54,7 +54,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 
 					//if((value.indexOf("online") != -1) || (rowData.online) ){
 					if(rowData.online){
-						return 'green';
+						return 'treeRowOnline';
 					}
 					
 //					if (rowData.online) {

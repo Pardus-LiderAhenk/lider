@@ -62,6 +62,7 @@ public class UserController {
 			attributes.put("objectClass", new String[] { "top", "posixAccount",
 					"person","pardusLider","pardusAccount","organizationalPerson","inetOrgPerson"});
 			attributes.put("cn", new String[] { selectedEntry.getCn() });
+			attributes.put("mail", new String[] { selectedEntry.getMail() });
 			attributes.put("gidNumber", new String[] { gidNumber });
 			attributes.put("homeDirectory", new String[] { home });
 			attributes.put("sn", new String[] { selectedEntry.getSn() });
@@ -130,6 +131,9 @@ public class UserController {
 			}
 			if(!"".equals(selectedEntry.getTelephoneNumber())){
 				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "telephoneNumber", selectedEntry.getTelephoneNumber());
+			}
+			if(!"".equals(selectedEntry.getMail())){
+				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "mail", selectedEntry.getMail());
 			}
 			if(!"".equals(selectedEntry.getHomePostalAddress())){
 				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "homePostalAddress", selectedEntry.getHomePostalAddress());
@@ -301,5 +305,34 @@ public class UserController {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	/**
+	 * delete user ous
+	 * @param selectedEntryArr
+	 * @return
+	 */
+	
+	@RequestMapping(method=RequestMethod.POST, value = "/getLastUser")
+	@ResponseBody
+	public LdapEntry getLastUser() {
+		String globalUserOu = configurationService.getUserLdapBaseDn();
+		LdapEntry lastUser=null;
+		try {
+			
+			String filter="(&(objectClass=inetOrgPerson)(createTimestamp>=20200301000000Z))";
+			
+			List<LdapEntry> usersEntrylist = ldapService.findSubEntries(globalUserOu, filter,new String[] { "*" }, SearchScope.SUBTREE);
+			System.out.println(usersEntrylist);
+			lastUser= usersEntrylist.get(usersEntrylist.size()-1);
+			
+			
+		} catch (LdapException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		return lastUser;
 	}
 }

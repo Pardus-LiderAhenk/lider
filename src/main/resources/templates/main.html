@@ -23,6 +23,7 @@
 <link href="css/main.css" rel="stylesheet">
 <link rel="stylesheet" href="css/jqx.base.css" type="text/css" />
 <link rel="stylesheet" type="text/css" href="css/main_b.css" />
+<link rel="stylesheet" type="text/css" href="css/custom.css" />
 <link rel="stylesheet" id="css-font-awesome" href="css/agent.info.css" />
 <link rel="stylesheet" type="text/css" href="/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
@@ -51,7 +52,12 @@
 .back{
  	background-color:#505165;  
 	}
-	
+
+.treeRowOnline {
+		color: black;
+		background-color:green ;
+	}
+
 .white {
 		color: black;
 		background-color: white;
@@ -98,6 +104,8 @@
 <script type="text/javascript" src="js/modal.js"></script>
 <script type="text/javascript" src="js/user/userTreeManager.js"></script>
 <script type="text/javascript" src="js/computers/computerTreeManager.js"></script>
+<script type="text/javascript" src="js/util.js"></script>
+
 </head>
 <body>
 	<div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
@@ -177,6 +185,24 @@
 					          <a class="dropdown-item dizin " href="#" data-page="sudo_groups"> Kullanıcı Yetkilendirme (Sudo) </a>
 					        </div>
                         </li>
+                        
+                        <!-- 							<li class="app-sidebar__heading">Raporlar</li> -->
+<!-- 							<li><a class="dizin" href="#" data-page="agent_info"> <i -->
+<!-- 									class="metismenu-icon pe-7s-news-paper"></i> Detaylı İstemci -->
+<!-- 									Raporu -->
+<!-- 							</a></li> -->
+                        
+                      <li class="dropdown nav-item">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                                <i class="nav-link-icon fa fa-cog"></i>
+                                Raporlar
+                            </a>
+                            
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					          <a class="dropdown-item dizin" href="#" data-page="agent_info">Detaylı İstemci Raporu</a>
+					        </div>
+                        </li>
+                        
                         <li class="dropdown nav-item">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                 <i class="nav-link-icon fa fa-cog"></i>
@@ -184,7 +210,7 @@
                             </a>
                             
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					          <a class="dropdown-item dizin" href="#" data-page="/plugins/definitions/script_definition">Betik Tanımlary</a>
+					          <a class="dropdown-item dizin" href="#" data-page="/plugins/definitions/script_definition">Betik Tanımları</a>
 					          <a class="dropdown-item dizin " href="#" data-page="/plugins/definitions/notify_definition">ETA Mesaj Tanımları</a>
 					        </div>
                         </li>

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 public class LdapEntry implements Serializable , Comparable<LdapEntry>{
-
-
 	/**
 	 * distinguished name
 	 */
@@ -59,6 +57,8 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 	private String telephoneNumber;
 	
 	private String homePostalAddress;
+	
+	private String mail;
 
 	public LdapEntry() {
 		// TODO Auto-generated constructor stub
@@ -303,6 +303,12 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 	public int compareTo(LdapEntry o) {
 		
 		return  o.getType().compareTo(getType());
+	}
+	public String getMail() {
+		return mail;
+	}
+	public void setMail(String mail) {
+		this.mail = mail;
 	}
 
 }

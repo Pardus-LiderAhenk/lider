@@ -80,7 +80,7 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 				     filterMode: "simple",
 				     selectionMode: "singleRow",
 				     localization: getLocalization(),
-				     pageSize: 15,
+				     pageSize: 50,
 				     pageSizeOptions: ['15', '25', '50'],
 				     icons: function (rowKey, dataRow) {
 				    	    var level = dataRow.level;

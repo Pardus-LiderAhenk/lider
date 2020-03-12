@@ -8,6 +8,8 @@ var treeGridHolderDiv="treeGridUserHolderDiv"
 
 //selected row function action behave different when selected tab change.. for this use selectedTab name
 var selectedUserTab="showAttributes";
+
+getLastUser()
 	
 $(document).ready(function(){
 	
@@ -19,22 +21,27 @@ $(document).ready(function(){
 	createUserTree(treeGridHolderDiv, false, false,
 			// row select
 			function(row, rootDnUser){
-				selectedRowGen=row;
 				setUserActionButtons(row,rootDnUser);
-				
-				if(selectedUserTab=="showAttributes")
-				{
-					showAttributes(row);
+				if(row.type=='USER'){
+					selectedRowGen=row;
+					
+					
+					if(selectedUserTab=="showAttributes")
+					{
+						showAttributes(row);
+					}
+					else if(selectedUserTab=="showGroups")
+					{
+						showGroups(row);
+					}
+					else if(selectedUserTab=="showRoles")
+					{
+						showRoles(row);
+					}
+					
+					
+					fillUserInfo(selectedRowGen)
 				}
-				else if(selectedUserTab=="showGroups")
-				{
-					showGroups(row);
-				}
-				else if(selectedUserTab=="showRoles")
-				{
-					showRoles(row);
-				}
-				
 			},
 			//check action
 			function(checkedRows, row){
@@ -103,6 +110,8 @@ $(document).ready(function(){
 	// Create ou for selected parent node. Ou modal will be open for all releated pages..
 	$('#btnDeleteOuModal').on('click',function(event) {
 		
+		alert("delete")
+		
 		getModalContent("modals/user/deleteOuModal", function content(data){
 			$('#genericModalHeader').html("Klasör Sil")
 			$('#genericModalBodyRender').html(data);
@@ -146,6 +155,7 @@ $(document).ready(function(){
 				$('#telephoneNumberEdit').val(selectedRowGen.attributes.telephoneNumber)
 				$('#homePostalAddressEdit').val(selectedRowGen.attributes.homePostalAddress)
 				$('#userPasswordEdit').val(selectedRowGen.userPassword)
+				$('#mailEdit').val(selectedRowGen.attributes.mail)
 				
 				$('#editUserBtn').on('click',function(event) {
 					editUser(selectedRowGen.distinguishedName)
@@ -372,6 +382,7 @@ function addUser(row) {
 	var uid=$('#uid').val();
 	var cn=$('#cn').val();
 	var sn=$('#sn').val();
+	var mail=$('#mail').val();
 	var homePostalAddress=$('#homePostalAddress').val();
 	var telephoneNumber=$('#telephoneNumber').val();
 	var userPassword=$('#userPassword').val();
@@ -405,6 +416,7 @@ function addUser(row) {
 			"parentName": parentDn,
 			"telephoneNumber": telephoneNumber,
 			"homePostalAddress": homePostalAddress,
+			"mail": mail
 	};
     $.ajax({
 		type : 'POST',
@@ -496,6 +508,7 @@ function editUser(userId) {
 		"uid" : $('#uidEdit').val(),
 		"cn": $('#cnEdit').val(),
 		"sn": $('#snEdit').val(), 
+		"mail": $('#mailEdit').val(), 
 		"telephoneNumber": $('#telephoneNumberEdit').val(),
 		"homePostalAddress": $('#homePostalAddressEdit').val()
 	};
@@ -510,10 +523,14 @@ function editUser(userId) {
 			console.log(data)
 			$('#genericModal').trigger('click');
 			var selectedData = $("#treeGridUserHolderDivGrid").jqxTreeGrid('getRow', data.entryUUID);
-			selectedData.attributes = data.attributes
-			$("#treeGridUserHolderDivGrid").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
-			$("#treeGridUserHolderDivGrid").jqxTreeGrid('selectRow', data.entryUUID);
+			if(selectedData){
+				selectedData.attributes = data.attributes
+				$("#treeGridUserHolderDivGrid").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
+				$("#treeGridUserHolderDivGrid").jqxTreeGrid('selectRow', data.entryUUID);
+			}
 			
+			selectedRowGen=data;
+			fillUserInfo(selectedRowGen);
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Kullanıcı Güncellenirken Hata Oluştu.", "error");
@@ -589,18 +606,16 @@ function moveUserFolder(selectedEntry, ou) {
 }
 
 function hideUserButtons(){
-	$("#btnEditUserModal").hide();
-	$("#btnDeleteUserModal").hide();
-	$("#btnEditUserModal").hide();
+//	$("#btnEditUserModal").hide();
+//	$("#btnDeleteUserModal").hide();
 	$("#btnChangePasswordUserModal").hide();
 	$("#btnSetPasswordPolicyModal").hide();
 	$("#btnAddOuModal").hide();
-	$("#btnDeleteUserModal").hide();
-	$("#btnAddUserModal").hide();
+//	$("#btnAddUserModal").hide();
 	$("#btnDeleteOuModal").hide();
-	$("#btnMoveUserModal").hide();
+//	$("#btnMoveUserModal").hide();
 	$("#btnMoveOuModal").hide();
-	$("#btnDisableUserModal").hide();
+//	$("#btnDisableUserModal").hide();
 }
 
 function setUserActionButtons(row,rootDNUser){
@@ -645,7 +660,7 @@ function setUserActionButtons(row,rootDNUser){
 		$("#btnChangePasswordUserModal").hide();
 		$("#btnSetPasswordPolicyModal").hide();
 		$("#btnDeleteUserModal").hide();
-		$("#btnMoveUserModal").hide();
+//		$("#btnMoveUserModal").hide();
 	  }
 }
 
@@ -816,5 +831,34 @@ function showRoles(row){
 			$.notify("Hata Oluştu.", "error");
 		}
 	 }); 
+	
+}
+
+function getLastUser() {
+	$.ajax({
+		type : 'POST',
+		url : 'lider/user/getLastUser',
+		dataType: "json",
+		success : function(ldapResult) {
+			selectedRowGen=ldapResult;
+			fillUserInfo(ldapResult)
+		},
+	    error: function (data, errorThrown) {
+			$.notify("Kullanıcı Bulunamadı", "warn");
+		}
+	 }); 
+}
+
+function fillUserInfo(ldapResult) {
+	
+	$('#userName').html("");
+	$('#userAddress').html("");
+	$('#userPhone').html("");
+	$('#userMail').html("");
+	
+	$('#userName').html(ldapResult.cn +" "+ldapResult.sn);
+	$('#userAddress').html(ldapResult.attributes.homePostalAddress);
+	$('#userPhone').html(ldapResult.attributes.telephoneNumber);
+	$('#userMail').html(ldapResult.attributes.mail);
 	
 }

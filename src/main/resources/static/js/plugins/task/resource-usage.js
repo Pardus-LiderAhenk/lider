@@ -10,6 +10,7 @@
 if (refResUsage) {
 	connection.deleteHandler(refResUsage);
 }
+
 var usageMemory = 50;
 var freeMemory = 50;
 var usageDisk = 50;
@@ -106,6 +107,9 @@ $('#sendTask-resource-usage').click(function(e){
 		}
 	});
 });
+
+
+
 
 function resourceUsageListener(msg) {
 	var to = msg.getAttribute('to');

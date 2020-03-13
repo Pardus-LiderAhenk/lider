@@ -14,9 +14,13 @@ var treeGridHolderDiv= "computerTreeDiv";
 var computerTreeCreated=false;
 var pluginTaskList=null;
 /**
- * getting pluginTasks From server
+ * when page loading getting system page info
+ * package and service management page hide
  */
-loadPluginTaskTable(false);
+setSystemPluginPage();
+$("#systemPage").show();
+$("#packageManagementPage").hide();
+$("#serviceManagementPage").hide();
 
 connection.addHandler(onPresence2, null, "presence");
 //selected row function action behave different when selected tab change.. for this use selectedTab name
@@ -78,16 +82,20 @@ createComputerTree('lider/ldap/getComputers',treeGridHolderDiv, false, false,
 );
 
 $('#btn-system').click(function() {
-	alert("sistem")
+	setSystemPluginPage();
 });
 
 $('#btn-package').click(function() {
-	alert("paket")
+	 setPackagePluginPage();
+});
+$('#btn-service').click(function() {
+	setServicePluginPage();
 });
 
 $('#btnAddAgents').click(function() {
 	addSelectedEntryToTable(selectedRow)
 });
+
 
 $('#addOnlyOnlineAgents').click(function() {
 	var selection =$('#computerTreeDivGrid').jqxTreeGrid('getSelection');
@@ -142,7 +150,11 @@ $('#addOnlyOnlineAgents').click(function() {
 	}
 });
 
-function loadPluginTaskTable(isMulti) {
+function setSystemPluginPage() {
+	
+	$("#systemPage").show();
+	$("#packageManagementPage").hide();
+	$("#serviceManagementPage").hide();
 	$.ajax({
 		type : 'POST',
 		url : 'getPluginTaskList',
@@ -201,6 +213,47 @@ function loadPluginTaskTable(isMulti) {
 			}
 		}
 	});
+}
+
+function setPackagePluginPage() {
+	$("#systemPage").hide();
+	$("#serviceManagementPage").hide();
+	$("#packageManagementPage").show();
+	for (var i = 0; i < pluginTaskList.length; i++) {
+		var pluginTask = pluginTaskList[i];
+		if(pluginTask.page == 'package-management'){
+			$.ajax({
+				type : 'POST',
+				url : 'getPluginTaskHtmlPage',
+				data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+				dataType : 'text',
+				success : function(res2) {
+					$('#package-management').html(res2);
+				}
+			});
+		}
+	}
+}
+
+function setServicePluginPage() {
+	$("#systemPage").hide();
+	$("#packageManagementPage").hide();
+	$("#serviceManagementPage").show();
+	
+	for (var i = 0; i < pluginTaskList.length; i++) {
+		var pluginTask = pluginTaskList[i];
+		if(pluginTask.page == 'package-management'){
+			$.ajax({
+				type : 'POST',
+				url : 'getPluginTaskHtmlPage',
+				data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+				dataType : 'text',
+				success : function(res2) {
+					$('#service-management').html(res2);
+				}
+			});
+		}
+	}
 }
 
 function executedTaskDetailClicked(executionDate, pluginName, commandExecutionResultID) {

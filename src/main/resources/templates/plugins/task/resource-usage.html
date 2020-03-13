@@ -6,7 +6,27 @@
 <script type="text/javascript" src="js/plugins/task/resource-usage.js"></script>
 </head>
 <body>
+	<div class="input-group mb-3">
+	    <div class="input-group-prepend">
+	      	<span class="input-group-text">İstemci Bigileri ve Kaynak Kullanımı</span>
+	    </div>
+	</div>
 	<div class="main-card mb-3 card">
+	<div class="page-title-wrapper">
+		<div class="page-title-heading">
+			<div class="page-title-icon">
+				<i class="pe-7s-drawer icon-gradient bg-happy-itmeo"> </i>
+			</div>
+			<div>
+				Conky Tanımlama
+				<div class="page-title-subheading">Metin tabanlı bilgilerin kullanıcının masaüstünde görülmesini sağlar. Conky İçeriği ve Conky Ayarları eksiksiz girilerek şablon kaydedilir. Conky 
+				İçeriği ve Conky Ayarları ayrı ayrı girilmelidir. Ayarlar, Conky Ayarları sekmesinde #VARSAYILAN olarak sunulan içerik gibi olacak şekilde özelleştirilebilir. 
+				Conky İçeriği sekmesinde kullanıcıya iletilmek istenen mesaj ya da istemci masaüstünde gösterilmek istenen sistem bilgisi, ip, mac vb bilgiler Conky formatına uygun olacak 
+				şekilde girilmelidir.</div>
+			</div>
+		</div>
+		<div class="page-title-actions"></div>
+	</div>
 		<div class="card-body">
 			<div class="login-form-1">
 				<div class="login-group">
@@ -75,24 +95,24 @@
 									</div>
 
 
-<!-- 									<div class="col-lg-4"> -->
-<!-- 										<label>İşlemci Bilgisi</label> -->
-<!-- 										<canvas id="processorInfoChart"></canvas> -->
-<!-- 										<br> -->
-<!-- 										<table class="table table-bordered table-striped mh-100" -->
-<!-- 											style="line-height: 1.2"> -->
-<!-- 											<tbody> -->
-<!-- 												<tr> -->
-<!-- 													<td>Gerçek Frekans</td> -->
-<!-- 													<td id="cpu_actual"></td> -->
-<!-- 												</tr> -->
-<!-- 												<tr> -->
-<!-- 													<td>Beklenen Frekans</td> -->
-<!-- 													<td id="cpu_advertised"></td> -->
-<!-- 												</tr> -->
-<!-- 											</tbody> -->
-<!-- 										</table> -->
-<!-- 									</div> -->
+									<!-- 									<div class="col-lg-4"> -->
+									<!-- 										<label>İşlemci Bilgisi</label> -->
+									<!-- 										<canvas id="processorInfoChart"></canvas> -->
+									<!-- 										<br> -->
+									<!-- 										<table class="table table-bordered table-striped mh-100" -->
+									<!-- 											style="line-height: 1.2"> -->
+									<!-- 											<tbody> -->
+									<!-- 												<tr> -->
+									<!-- 													<td>Gerçek Frekans</td> -->
+									<!-- 													<td id="cpu_actual"></td> -->
+									<!-- 												</tr> -->
+									<!-- 												<tr> -->
+									<!-- 													<td>Beklenen Frekans</td> -->
+									<!-- 													<td id="cpu_advertised"></td> -->
+									<!-- 												</tr> -->
+									<!-- 											</tbody> -->
+									<!-- 										</table> -->
+									<!-- 									</div> -->
 								</div>
 							</div>
 							<div class="col-lg-7">
@@ -158,19 +178,20 @@
 							</div>
 						</div>
 						<div id="plugin-result-resource-usage"></div>
+						<br>
+						<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
 						<div class="row">
-							<div class="col-lg-7"></div>
-							<div class="col-lg-5 text-right">
-								<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-								<button id=sendTask-resource-usage type="button"
+							<div class="col-lg-6">
+								<button id="sendTaskCron-resource-usage" type="button"
+									class="btn-shadow btn btn-info"
+									title="Zamanlanmış Görev Parametreleri">
+									<i class="fa fa-clock"></i> Görev Parametreleri
+								</button>
+							</div>
+							<div class="col-lg-6 text-right">
+								<button id="sendTask-resource-usage" type="button"
 									class="btn-shadow btn btn-info">
 									<i class="fa fa-play"></i> Çalıştır
-								</button>
-								<button id=sendTaskCron-resource-usage type="button"
-									class="btn-shadow btn btn-info"
-									title="Zamanlanmış Görev Parametreleri" data-toggle="modal"
-									data-target="#scheduledTasksModal">
-									<i class="fa fa-hourglass-start"></i> Görev Parametreleri
 								</button>
 							</div>
 						</div>

@@ -11,8 +11,6 @@ if (refResUsage) {
 	connection.deleteHandler(refResUsage);
 }
 
-
-var scheduledModalResourceUsageOpened=false;
 var usageMemory = 50;
 var freeMemory = 50;
 var usageDisk = 50;
@@ -23,16 +21,17 @@ var systemChart1;
 var systemChart2;
 var systemChart3;
 
-scheduledParamResUsage=null;
+var scheduledParamResUsage = null;
+var scheduledModalResUsageOpened = false;
 var refResUsage=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
 
-var pluginTask_ResourceUsage=null
+var pluginTask_ResourceUsage = null
 
 for (var n = 0; n < pluginTaskList.length; n++) {
 	var pluginTask=pluginTaskList[n];
 	if(pluginTask.page == 'resource-usage')
 	{
-		pluginTask_ResourceUsage=pluginTask;
+		pluginTask_ResourceUsage = pluginTask;
 	}
 }
 
@@ -101,8 +100,7 @@ $('#sendTask-resource-usage').click(function(e){
 		theme: 'light',
 		buttons: {
 			Evet: function () {
-				console.log(scheduledParamResUsage)
-//				getResourceUsage();
+				getResourceUsage();
 				scheduledParamResUsage=null;
 			},
 			Hayır: function () {
@@ -113,16 +111,16 @@ $('#sendTask-resource-usage').click(function(e){
 
 $('#sendTaskCron-resource-usage').click(function(e){
 	$('#scheduledTasksModal').modal('toggle');
-	scheduledModalResourceUsageOpened=true;
+	scheduledParam = null;
+	scheduledModalResUsageOpened = true;
 });
-
 
 $("#scheduledTasksModal").on('hidden.bs.modal', function(){
 	
-	if(scheduledModalResourceUsageOpened){
-		scheduledParamResUsage=scheduledParam;
+	if (scheduledModalResUsageOpened) {
+		scheduledParamResUsage = scheduledParam;
 	}
-	scheduledModalResourceUsageOpened=false;
+	scheduledModalResUsageOpened = false;
 	defaultScheduleSelection();
 });
 

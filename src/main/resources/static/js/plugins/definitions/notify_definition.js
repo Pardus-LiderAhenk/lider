@@ -145,6 +145,7 @@ $('#notifySaveBtn').click(function(e){
 								$("#notifySaveBtn").html("Kaydet");
 								$("#notifyContentTemp").val("");
 								$("#notifyDelBtn").hide();
+								$("#notifyCleanBtn").hide();
 							}else {
 								$.notify("Mesaj güncellenirken hata oluştu.", "error");
 							}

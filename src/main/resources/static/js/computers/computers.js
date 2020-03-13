@@ -78,6 +78,11 @@ createComputerTree('lider/ldap/getComputers',treeGridHolderDiv, false, false,
 );
 
 $('#btn-system').click(function() {
+	alert("sistem")
+});
+
+$('#btn-package').click(function() {
+	alert("paket")
 });
 
 $('#btnAddAgents').click(function() {
@@ -179,6 +184,17 @@ function loadPluginTaskTable(isMulti) {
 						dataType : 'text',
 						success : function(res1) {
 							$('#execute-script').html(res1);
+						}
+					});
+				}
+				if(pluginTask.page == 'end-sessions'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#end-sessions').html(res1);
 						}
 					});
 				}

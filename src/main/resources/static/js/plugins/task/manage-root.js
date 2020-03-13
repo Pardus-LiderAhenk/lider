@@ -7,11 +7,13 @@
  *  http://www.liderahenk.org/ 
  */
 
-if (ref) {
-	connection.deleteHandler(ref);
+if (ref_manage_root) {
+	connection.deleteHandler(ref_manage_root);
 }
-scheduledParam = null;
-var ref=connection.addHandler(manageRootListener, null, 'message', null, null,  null);
+var scheduledParamManageRoot = null;
+var scheduledModalManageRootOpened = false;
+
+var ref_manage_root=connection.addHandler(manageRootListener, null, 'message', null, null,  null);
 
 var dnlist=[]
 if(selectedEntries){
@@ -19,16 +21,12 @@ if(selectedEntries){
 		dnlist.push(selectedEntries[i].distinguishedName);
 	}
 }
-
-
 for (var n = 0; n < pluginTaskList.length; n++) {
 	var pluginTask=pluginTaskList[n];
-	if(pluginTask.page == 'manage-root')
-	{
-		selectedPluginTask=pluginTask;
+	if (pluginTask.page == 'manage-root') {
+		pluginTask_ManageRoot=pluginTask;
 	}
 }
-console.log(selectedPluginTask)
 
 var lockRootUser = "";
 var rootPassword;
@@ -49,17 +47,8 @@ function contains(rootPassword, allowedChars) {
 }
 
 function sendRootTask(params) {
-	
-	if(selectedPluginTask){
-		selectedPluginTask.dnList=dnlist;
-		selectedPluginTask.parameterMap={};
-		selectedPluginTask.entryList=selectedEntries;
-		selectedPluginTask.dnType="AHENK";
-		}
-		var params = JSON.stringify(selectedPluginTask);
-		
 	var content = "Görev Gönderilecek, emin misiniz?";
-	if (scheduledParam != null) {
+	if (scheduledParamManageRoot != null) {
 		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
 	}
 	$.confirm({
@@ -69,8 +58,8 @@ function sendRootTask(params) {
 		buttons: {
 			Evet: function () {
 				var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
-				if (scheduledParam != null) {
-					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+				if (scheduledParamManageRoot != null) {
+					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamManageRoot;
 				}
 
 				$.ajax({
@@ -88,7 +77,7 @@ function sendRootTask(params) {
 					success: function(result) {
 						var res = jQuery.parseJSON(result);
 						if(res.status=="OK"){
-							$("#plugin-result").html(message.bold());
+							$("#plugin-result-manage-root").html(message.bold());
 						}   	
 						/* $('#closePage').click(); */
 					},
@@ -96,7 +85,7 @@ function sendRootTask(params) {
 						$.notify(result, "error");
 					}
 				});
-				scheduledParam = null;
+				scheduledParamManageRoot = null;
 			},
 			Hayır: function () {
 			}
@@ -116,10 +105,10 @@ function manageRootListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		if(xmppResponse.commandClsId == "SET_ROOT_PASSWORD"){
 			if (xmppResponse.result.responseCode != "TASK_ERROR") {
-				$("#plugin-result").html("");
+				$("#plugin-result-manage-root").html("");
 				$.notify(xmppResponse.result.responseMessage, "success");
 			} else {
-				$("#plugin-result").html(xmppResponse.result.responseMessage);
+				$("#plugin-result-manage-root").html(xmppResponse.result.responseMessage);
 				$.notify(xmppResponse.result.responseMessage, "error");
 			}
 		}						 
@@ -178,15 +167,41 @@ $('#lockRootUserButton').click(function(e){
 	}
 });
 
+$('#sendTaskCron-manage-root').click(function(e){
+	$('#scheduledTasksModal').modal('toggle');
+	scheduledParam = null;
+	scheduledModalManageRootOpened = true;
+});
+
+$("#scheduledTasksModal").on('hidden.bs.modal', function(){
+	if (scheduledModalManageRootOpened) {
+		scheduledParamManageRoot = scheduledParam;
+	}
+	scheduledModalManageRootOpened = false;
+	defaultScheduleSelection();
+});
+
+
 $('#sendTask-manage-root').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+	
+	if(pluginTask_ManageRoot){
+		pluginTask_ManageRoot.dnList=dnlist;
+		pluginTask_ManageRoot.entryList=selectedEntries;
+		pluginTask_ManageRoot.dnType="AHENK";
+	}
+	
 	var entry=onlineEntryList[0];
 	var rootEntity = entry.jid;
 	rootPassword = $("#inputRootPassword").val();
 	rootPasswordConfirm = $("#inputRootPasswordConfirm").val();
-	selectedPluginTask.commandId = "SET_ROOT_PASSWORD";
-	selectedPluginTask.parameterMap={"RootPassword":rootPassword, "lockRootUser":lockRootUser, "rootEntity":rootEntity};
-	selectedPluginTask.cronExpression = scheduledParam;
-	var params = JSON.stringify(selectedPluginTask);
+	pluginTask_ManageRoot.commandId = "SET_ROOT_PASSWORD";
+	pluginTask_ManageRoot.parameterMap={"RootPassword":rootPassword, "lockRootUser":lockRootUser, "rootEntity":rootEntity};
+	pluginTask_ManageRoot.cronExpression = scheduledParamManageRoot;
+	var params = JSON.stringify(pluginTask_ManageRoot);
 	if(lockRootUser != true){
 		var ucaseFlag = contains(rootPassword, upperCase);
 		var lcaseFlag = contains(rootPassword, lowerCase);

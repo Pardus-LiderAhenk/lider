@@ -6,24 +6,34 @@
 <script type="text/javascript" src="js/plugins/task/end-sessions.js"></script>
 </head>
 <body>
-
-   	<div class="login-form-1">
-   		<small>
-    		<a>İstemcide açık olan kullanıcı oturumlarını sonlandırır.</a><br>
-     		<a>Açık olan oturumları sonlandırmak için Çalıştır ya da ileri bir zamanda sonlandırmak için Zamanlı Çalıştır butonuna tıklayınız.</a>
-     	</small>
-		<br><br>
-		<div id="plugin-result"></div>
-		<br><br>
-    	<div class="row">
-			<div class="col-lg-7">
-			<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-				<button id=sendTask-end-sessions type="button" class="btn-shadow btn btn-info"><i class="fa fa-play"></i> Çalıştır</button>
-				<button id=sendTaskCron-end-sessions type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri" data-toggle="modal" data-target="#scheduledTasksModal"><i class="fa fa-hourglass-start"></i> Görev Parametreleri</button>
-			</div>
-			<div class="col-lg-5 text-right">
-<!-- 			ids of the following buttons must be closePage-{plugin-page} -->
-				<button id=closePage-end-sessions type="button" class="btn-shadow btn btn-info" data-dismiss="modal"><i class="fa fa-window-close"></i> Kapat</button>
+	<div class="input-group mb-3">
+	    <div class="input-group-prepend">
+	      	<span class="input-group-text">Oturum ve Güç Yönetimi</span>
+	    </div>
+	</div>
+	<div class="main-card mb-3 card">
+		<div class="card-body">
+		   	<div class="login-form-1">
+		     	<div class="row ">
+				    <div class="input-group-prepend col-lg-1">
+				      	<span class="input-group-text"><i class="fas fa-laptop"></i></span>
+				    </div>
+				    <div class="col-lg-11"><span>İstemcide açık olan kullanıcı oturumlarını sonlandırır ve istemciyi uzaktan kapatır.</span></div>
+				</div>
+				<br>
+				<div id="plugin-result-end-sessions"></div>
+				<br>
+		    	<div class="row">
+					<div class="col-lg-6">
+					<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+						<button id="sendTaskCron-end-sessions" type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i> Görev Parametreleri</button>
+					</div>
+					<div class="col-lg-6 text-right">
+		<!-- 			ids of the following buttons must be sendTask-{plugin-page} -->
+						<button id="sendTask-end-sessions" type="button" class="btn-shadow btn btn-info"><i class="fas fa-sign-out-alt"></i> Oturum Kapat</button>
+						<button id="sendTask-shutdown" type="button" class="btn-shadow btn btn-info"><i class="fa fa-power-off"></i> İstemci Kapat</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

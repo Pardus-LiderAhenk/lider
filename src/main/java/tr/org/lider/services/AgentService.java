@@ -28,6 +28,10 @@ public class AgentService {
         return agentRepository.findById(agentID);
 	}
 	
+	public List<AgentImpl> findAgentByJid(String agentJid) {
+        return agentRepository.findByJid(agentJid);
+	}
+	
 	public Page<AgentImpl> findAllFiltered(int pageNumber, int pageSize, String status, Optional<String> field, Optional<String> text) {
         
 		PageRequest pageable = PageRequest.of(pageNumber - 1, pageSize);

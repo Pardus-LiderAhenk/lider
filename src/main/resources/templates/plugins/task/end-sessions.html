@@ -6,12 +6,17 @@
 <script type="text/javascript" src="js/plugins/task/end-sessions.js"></script>
 </head>
 <body>
-	<div class="input-group mb-3">
-	    <div class="input-group-prepend">
-	      	<span class="input-group-text">Oturum ve Güç Yönetimi</span>
-	    </div>
-	</div>
 	<div class="main-card mb-3 card">
+		<div class="card-header">
+				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+				<div class="col-lg-6 text-left">OTURUM VE GÜÇ YÖNETİMİ</div>
+				<div class="col-lg-6 text-right">
+				<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+					<button id="sendTaskCron-end-sessions" type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+					<button id="sendTask-end-sessions" type="button" class="btn-shadow btn btn-info" title="Oturum Kapat"><i class="fas fa-sign-out-alt"></i></button>
+					<button id="sendTask-shutdown" type="button" class="btn-shadow btn btn-info" title="İstemciyi Kapat"><i class="fa fa-power-off"></i></button>
+				</div>
+			</div>
 		<div class="card-body">
 		   	<div class="login-form-1">
 		     	<div class="row ">
@@ -22,18 +27,6 @@
 				</div>
 				<br>
 				<div id="plugin-result-end-sessions"></div>
-				<br>
-		    	<div class="row">
-					<div class="col-lg-6">
-					<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-						<button id="sendTaskCron-end-sessions" type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i> Görev Parametreleri</button>
-					</div>
-					<div class="col-lg-6 text-right">
-		<!-- 			ids of the following buttons must be sendTask-{plugin-page} -->
-						<button id="sendTask-end-sessions" type="button" class="btn-shadow btn btn-info"><i class="fas fa-sign-out-alt"></i> Oturum Kapat</button>
-						<button id="sendTask-shutdown" type="button" class="btn-shadow btn btn-info"><i class="fa fa-power-off"></i> İstemci Kapat</button>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>

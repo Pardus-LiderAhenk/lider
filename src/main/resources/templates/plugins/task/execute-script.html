@@ -6,12 +6,16 @@
 <script type="text/javascript" src="js/plugins/task/execute-script.js"></script>
 </head>
 <body>
-	<div class="input-group mb-3">
-	    <div class="input-group-prepend">
-	      	<span class="input-group-text">Betik Çalıştır</span>
-	    </div>
-	</div>
 	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">BETİK ÇALIŞTIR</div>
+			<div class="col-lg-6 text-right">
+			<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+				<button id="sendTaskCron-execute-script" type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+				<button id="sendTask-execute-script" type="button" title="Betik Çalıştır"	class="btn-shadow btn btn-info"><i class="fa fa-play"></i></button>
+			</div>
+		</div>
 		<div class="card-body">
 			<div class="login-form-1">
 				<div class="login-group">
@@ -35,22 +39,6 @@
 							<textarea class="form-control" id="scriptContent" rows="12"></textarea>
 						</div>
 						<div id="plugin-result-execute-script"></div>
-						<br>
-						<div class="row">
-						<!-- ids of the following buettons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-							<div class=col-lg-6>
-								<button id="sendTaskCron-execute-script" type="button"
-									class="btn-shadow btn btn-info"	title="Zamanlanmış Görev Parametreleri">
-									<i class="fa fa-clock"></i> Görev Parametreleri
-								</button>
-							</div>
-							<div class="col-lg-6 text-right">
-								<button id="sendTask-execute-script" type="button"
-									class="btn-shadow btn btn-info">
-									<i class="fa fa-play"></i> Çalıştır
-								</button>
-							</div>
-						</div>
 					</div>
 				</div>
 			</div>

@@ -157,12 +157,14 @@ $('#lockRootUserButton').click(function(e){
 		$("#generateRootPassword").prop('disabled', true);
 		$("#inputRootPassword").val("");
 		$("#inputRootPasswordConfirm").val("");
+		$("#rootPasswordImage").attr("src","images/lock-solid.svg");
 		lockRootUser = true;
 	}
 	else{
 		$("#inputRootPassword").prop("disabled", false);
 		$("#inputRootPasswordConfirm").prop("disabled", false);
 		$("#generateRootPassword").prop('disabled', false);
+		$("#rootPasswordImage").attr("src","images/unlock-solid.svg");
 		lockRootUser = "";
 	}
 });

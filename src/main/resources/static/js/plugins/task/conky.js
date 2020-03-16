@@ -8,24 +8,32 @@
  * 
  */
 
-if (ref) {
-	connection.deleteHandler(ref);
+if (ref_conky) {
+	connection.deleteHandler(ref_conky);
 }
 
-scheduledParam = null;
+var scheduledParamConky = null;
+var scheduledModalConkyOpened = false;
 var conkyTempList = [];
 var removeConkyMessage = false;
+var pluginTask_Conky = null;
+var dnlist = [];
 $('#conkyContentTabTask').tab('show');
 
-var ref=connection.addHandler(conkyListener, null, 'message', null, null,  null);
-$("#entrySize").html(selectedEntries.length);
-var dnlist = []
-for (var i = 0; i < selectedEntries.length; i++) {
-	dnlist.push(selectedEntries[i].distinguishedName);
+var ref_conky=connection.addHandler(conkyListener, null, 'message', null, null,  null);
+
+if(selectedEntries){
+	for (var i = 0; i < selectedEntries.length; i++) {
+		dnlist.push(selectedEntries[i].distinguishedName);
+	}
 }
-selectedPluginTask.dnList=dnlist;
-selectedPluginTask.entryList=selectedEntries;
-selectedPluginTask.dnType="AHENK";
+
+for (var n = 0; n < pluginTaskList.length; n++) {
+	var pluginTask=pluginTaskList[n];
+	if (pluginTask.page == 'conky') {
+		pluginTask_Conky=pluginTask;
+	}
+}
 
 //get Conky template from liderdb
 getConkyTemp();
@@ -76,8 +84,8 @@ $('#conkySelectBox').change(function(){
 
 function sendConkyTask(params) {
 	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
-	if (scheduledParam != null) {
-		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+	if (scheduledParamConky != null) {
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamConky;
 	}
 
 	$.ajax({
@@ -95,7 +103,7 @@ function sendConkyTask(params) {
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
 			if(res.status=="OK"){		    		
-				$("#plugin-result").html(message.bold());
+				$("#plugin-result-conky").html(message.bold());
 			}   	
 		},
 		error: function(result) {
@@ -120,11 +128,11 @@ function conkyListener(msg) {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					$.notify(responseMessage, "success");
-					$("#plugin-result").html("");
+					$("#plugin-result-conky").html("");
 				}
 				else {
 					$.notify(responseMessage, "error");
-					$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
+					$("#plugin-result-conky").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}
 		}
@@ -142,7 +150,6 @@ $('#removeConkyMessageBtn').click(function(e){
 		$("#conkySettingTemp").val("");
 		$('#conkySelectBox').val('NA');
 		removeConkyMessage = true;
-
 	}
 	else{
 		$("#conkySelectBox").prop("disabled", false);
@@ -152,21 +159,44 @@ $('#removeConkyMessageBtn').click(function(e){
 	}
 });
 
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
+$('#sendTaskCronConky').click(function(e){
+	$('#scheduledTasksModal').modal('toggle');
+	scheduledParam = null;
+	scheduledModalConkyOpened = true;
+});
 
+$("#scheduledTasksModal").on('hidden.bs.modal', function(){
+	if (scheduledModalConkyOpened) {
+		scheduledParamConky = scheduledParam;
+	}
+	scheduledModalConkyOpened = false;
+	defaultScheduleSelection();
+});
+
+$('#sendTaskConky').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
 	var conkyMessage = $("#conkySettingTemp").val() + "\n" + $("#conkyContentTemp").val();
-	selectedPluginTask.parameterMap={
-			"conkyMessage": conkyMessage,
-			"removeConkyMessage": removeConkyMessage
-	};
-	selectedPluginTask.cronExpression = scheduledParam;
-	selectedPluginTask.commandId = "EXECUTE_CONKY";  		
-	var params = JSON.stringify(selectedPluginTask);
+
+	if (pluginTask_Conky) {
+		pluginTask_Conky.dnList=dnlist;
+		pluginTask_Conky.entryList=selectedEntries;
+		pluginTask_Conky.dnType="AHENK";
+		pluginTask_Conky.parameterMap={
+				"conkyMessage": conkyMessage,
+				"removeConkyMessage": removeConkyMessage
+		};
+		pluginTask_Conky.cronExpression = scheduledParamConky;
+		pluginTask_Conky.commandId = "EXECUTE_CONKY";  		
+		var params = JSON.stringify(pluginTask_Conky);
+	}
 
 //	if selected message/Conky. Default select box "Conky seçiniz... value = NA"
 	if ($('#conkySelectBox :selected').val() != "NA" || $('#removeConkyMessageBtn').is(':checked')) {
 		var content = "Görev Gönderilecek, emin misiniz?";
-		if (scheduledParam != null) {
+		if (scheduledParamConky != null) {
 			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
 		}
 		$.confirm({
@@ -176,7 +206,7 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 			buttons: {
 				Evet: function () {
 					sendConkyTask(params);
-					scheduledParam = null;
+					scheduledParamConky = null;
 				},
 				Hayır: function () {
 				}
@@ -185,9 +215,4 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	}else {
 		$.notify("Lütfen Conky mesajı veya Conky mesajı kaldır seçerek Çalıştır butonuna tıklayınız.", "warn");
 	}
-});
-
-$('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);
-	scheduledParam = null;
 });

@@ -7,38 +7,38 @@
 <link rel="stylesheet" href="css/plugin.task.css" />
 </head>
 <body>
-	<div class="login-form-1">
-		<div class="login-group">
-			<div class="form-group">
-				<table class="table table-striped table-bordered display"
-					id="installedPackagesTable" border="1">
-					<tbody>
-					<thead>
-						<tr>
-							<th style="width: 7%">#</th>
-							<th style="width: 48%">Paket Adı</th>
-							<th style="width: 45%">Paket Versiyonu</th>
-						</tr>
-					</thead>
-					</tbody>
-				</table>
-				<br>
-				<div id="package-management-info"></div>
-				<div id="plugin-result"></div>
-				<br>
-				<div class="row">
-					<div class="col-lg-7">
-					<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-						<button id=sendTask-package-management type="button" class="btn-shadow btn btn-info"><i class="fa fa-play"></i> Çalıştır</button>
-						<button id=sendTaskCron-package-management type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri" data-toggle="modal" data-target="#scheduledTasksModal"><i class="fa fa-hourglass-start"></i> Görev Parametreleri</button>
-					</div>
-					<div class="col-lg-5 text-right">
-<!-- 					ids of the following buttons must be closePage-{plugin-page} -->
-						<button id=closePage-package-management type="button" class="btn-shadow btn btn-info" data-dismiss="modal"><i class="fa fa-window-close"></i> Kapat</button>
-  					</div>
-				</div>
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">PAKET LİSTELE VE KALDIR</div>
+			<div class="col-lg-6 text-right">
+				<button id="sendTaskCronPackageManagement" type="button"	class="btn-shadow btn btn-info"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+				<button id="sendTaskGetPackagesBtn" type="button" title="Paketleri Listele" class="btn-shadow btn btn-info"><i class="fa fa-list"></i></button>
+				<button id="sendTaskDeletePackageBtn" type="button" title="Sil" class="btn-shadow btn btn-info"><i class="fa fa-trash-alt"></i></button>
 			</div>
-		</div>			
+		</div>
+		<div class="card-body">
+			<div class="login-form-1">
+				<div class="login-group">
+					<div class="form-group">
+						<table class="table table-striped table-bordered display"
+							id="installedPackagesTable" border="1">
+							<thead>
+								<tr>
+									<th style="width: 7%">#</th>
+									<th style="width: 48%">Paket Adı</th>
+									<th style="width: 45%">Paket Versiyonu</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+						<div id="package-management-info"></div>
+						<div id="plugin-result-package-management"></div>
+						<br><br>
+					</div>
+				</div>
+			</div>		
+		</div>
 	</div>
 </body>
 </html>

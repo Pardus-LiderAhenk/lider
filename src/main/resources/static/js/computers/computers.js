@@ -232,6 +232,30 @@ function setPackagePluginPage() {
 				}
 			});
 		}
+		
+		if(pluginTask.page == 'packages'){
+			$.ajax({
+				type : 'POST',
+				url : 'getPluginTaskHtmlPage',
+				data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+				dataType : 'text',
+				success : function(res2) {
+					$('#packages').html(res2);
+				}
+			});
+		}
+		
+		if(pluginTask.page == 'repositories'){
+			$.ajax({
+				type : 'POST',
+				url : 'getPluginTaskHtmlPage',
+				data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+				dataType : 'text',
+				success : function(res2) {
+					$('#repositories').html(res2);
+				}
+			});
+		}
 	}
 }
 
@@ -242,14 +266,14 @@ function setServicePluginPage() {
 
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
-		if(pluginTask.page == 'package-management'){
+		if(pluginTask.page == 'service-list'){
 			$.ajax({
 				type : 'POST',
 				url : 'getPluginTaskHtmlPage',
 				data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
 				dataType : 'text',
 				success : function(res2) {
-					$('#service-management').html(res2);
+					$('#service-list').html(res2);
 				}
 			});
 		}

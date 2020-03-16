@@ -15,9 +15,10 @@ var scheduledParamExeScript = null;
 var scheduledModalExeScriptOpened = false;
 var table;
 var scriptTempList = [];
+var dnlist = [];
+var pluginTask_ExecuteScript = null;
 var ref_execute_script=connection.addHandler(executeScriptListener, null, 'message', null, null,  null);
 
-var pluginTask_ExecuteScript=null;
 for (var n = 0; n < pluginTaskList.length; n++) {
 	var pluginTask=pluginTaskList[n];
 	if (pluginTask.page == 'execute-script') {
@@ -26,7 +27,6 @@ for (var n = 0; n < pluginTaskList.length; n++) {
 }
 
 if (selectedEntries) {
-	var dnlist = []
 	for (var i = 0; i < selectedEntries.length; i++) {
 		dnlist.push(selectedEntries[i].distinguishedName);
 	}

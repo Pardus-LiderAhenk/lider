@@ -20,12 +20,11 @@ var cpu_advertised1 = 50;
 var systemChart1;
 var systemChart2;
 var systemChart3;
-
+var dnlist=[];
 var scheduledParamResUsage = null;
 var scheduledModalResUsageOpened = false;
+var pluginTask_ResourceUsage = null;
 var refResUsage=connection.addHandler(resourceUsageListener, null, 'message', null, null,  null); 
-
-var pluginTask_ResourceUsage = null
 
 for (var n = 0; n < pluginTaskList.length; n++) {
 	var pluginTask=pluginTaskList[n];
@@ -38,7 +37,6 @@ for (var n = 0; n < pluginTaskList.length; n++) {
 createCharts();
 
 function getResourceUsage(){
-	var dnlist=[]
 	for (var i = 0; i < selectedEntries.length; i++) {
 		dnlist.push(selectedEntries[i].distinguishedName);
 	}

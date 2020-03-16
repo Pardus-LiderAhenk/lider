@@ -8,33 +8,42 @@
  * 
  */
 
-if (ref) {
-	connection.deleteHandler(ref);
+if (ref_packages) {
+	connection.deleteHandler(ref_packages);
 }
-scheduledParam = null;
-var ref=connection.addHandler(packagesListener, null, 'message', null, null,  null);
+var scheduledParamPackages = null;
+var scheduledModalPackagesOpened = false;
+var packages_data = [];
+var packageInfoList = [];
+var tablePackages;
+var pluginTask_Packages = null;
 
-$("#entrySize").html(selectedEntries.length);		
-var dnlist=[]
+var ref_packages=connection.addHandler(packagesListener, null, 'message', null, null,  null);
+
+var dnlist=[];
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
 }
-selectedPluginTask.dnList=dnlist;
-selectedPluginTask.parameterMap={};
-selectedPluginTask.entryList=selectedEntries;
-selectedPluginTask.dnType="AHENK";
 
-var packages_data = [];
-var packageInfoList = [];
+for (var n = 0; n < pluginTaskList.length; n++) {
+	var pluginTask=pluginTaskList[n];
+	if (pluginTask.page == 'packages') {
+		pluginTask_Packages=pluginTask;
+	}
+}
 
 $("#installRadioBtn").prop("checked", true);
-$('#getPackagesListBtn').click(function(e){	
+$('#getPackagesListBtn').click(function(e){
+	if (tablePackages) {
+		tablePackages.clear().draw();
+		tablePackages.destroy();
+	}
 	var params = {
 			"type" : $('#packageType').val(),
 			"url": $('#repoUrl').val(),
 			"component": $('#repoComponent').val(),
 	};
-	$("#plugin-result").html("Görev gönderildi.. Lütfen bekleyiniz...".bold());
+	$("#plugin-result-packages").html("Görev gönderildi.. Lütfen bekleyiniz...".bold());
 	getPackagesList(params);
 });
 
@@ -71,8 +80,8 @@ function getPackagesList(params){
 			else {
 				packages_list_table.push( [ null, null, null, null, null, null] );
 			}
-			$("#plugin-result").html("");
-			var table = $('#packagesListTableId').DataTable( {
+			$("#plugin-result-packages").html("");
+			tablePackages = $('#packagesListTableId').DataTable( {
 				data:           packages_list_table,
 				deferRender:    true,
 				paging: true,
@@ -104,7 +113,7 @@ function getPackagesList(params){
 		},
 		error: function(data){
 			$.notify("Paketler listelenirken hata oluştu", "error");
-			$("#plugin-result").html("Paketler listelenirken hata oluştu");
+			$("#plugin-result-packages").html("Paketler listelenirken hata oluştu");
 		},
 	});
 }
@@ -122,10 +131,10 @@ function packagesListener(msg) {
 //		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		if(xmppResponse.commandClsId == "PACKAGES"){
 			if (xmppResponse.result.responseCode != "TASK_ERROR") {
-				$("#plugin-result").html("");
+				$("#plugin-result-packages").html("");
 				$.notify(xmppResponse.result.responseMessage, "success");
 			} else {
-				$("#plugin-result").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
+				$("#plugin-result-packages").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
 				$.notify(xmppResponse.result.responseMessage, "error");
 			}
 		}
@@ -250,11 +259,10 @@ function removePackageList(pName, pVersion) {
 	}
 }
 
-
 function sendPackagesTask(params) {
 	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
-	if (scheduledParam != null) {
-		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+	if (scheduledParamPackages != null) {
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamPackages;
 	}
 
 	$.ajax({
@@ -272,7 +280,7 @@ function sendPackagesTask(params) {
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
 			if(res.status=="OK"){		    		
-				$("#plugin-result").html(message.bold());
+				$("#plugin-result-packages").html(message.bold());
 			}   	
 		},
 		error: function(result) {
@@ -281,39 +289,55 @@ function sendPackagesTask(params) {
 	});
 }
 
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
-	if (packageInfoList.length > 0) {
-		selectedPluginTask.commandId = "PACKAGES";
-		selectedPluginTask.parameterMap={"packageInfoList":packageInfoList};
-		selectedPluginTask.entryList=selectedEntries;
-		selectedPluginTask.dnType="AHENK";
-		selectedPluginTask.cronExpression = scheduledParam;
-		var params = JSON.stringify(selectedPluginTask);
-
-		var content = "Görev Gönderilecek, emin misiniz?";
-		if (scheduledParam != null) {
-			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
-		}
-		$.confirm({
-			title: 'Uyarı!',
-			content: content,
-			theme: 'light',
-			buttons: {
-				Evet: function () {
-					sendPackagesTask(params);
-					scheduledParam = null;
-				},
-				Hayır: function () {
-				}
-			}
-		});
-	}
-	else {
-		$.notify("Lütfen yüklemek ve/veya kaldırmak istediğiniz paketi/leri seçerek Çalıştır butonuna tıklayınız.", "warn");
-	}
-});
-
-$('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);
+$('#sendTaskCron-packages').click(function(e){
+	$('#scheduledTasksModal').modal('toggle');
 	scheduledParam = null;
+	scheduledModalPackagesOpened = true;
 });
+
+$("#scheduledTasksModal").on('hidden.bs.modal', function(){
+	if (scheduledModalPackagesOpened) {
+		scheduledParamPackages = scheduledParam;
+	}
+	scheduledModalPackagesOpened = false;
+	defaultScheduleSelection();
+});
+
+$('#sendTask-packages').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+
+	if(pluginTask_Packages){
+		if (packageInfoList.length > 0) {
+			pluginTask_Packages.commandId = "PACKAGES";
+			pluginTask_Packages.parameterMap={"packageInfoList":packageInfoList};
+			pluginTask_Packages.entryList=selectedEntries;
+			pluginTask_Packages.dnType="AHENK";
+			pluginTask_Packages.cronExpression = scheduledParamPackages;
+			var params = JSON.stringify(pluginTask_Packages);
+
+			var content = "Görev Gönderilecek, emin misiniz?";
+			if (scheduledParamPackages != null) {
+				content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+			}
+			$.confirm({
+				title: 'Uyarı!',
+				content: content,
+				theme: 'light',
+				buttons: {
+					Evet: function () {
+						sendPackagesTask(params);
+						scheduledParamPackages = null;
+					},
+					Hayır: function () {
+					}
+				}
+			});
+		} else {
+			$.notify("Lütfen yüklemek ve/veya kaldırmak istediğiniz paketi/leri seçerek Çalıştır butonuna tıklayınız.", "warn");
+		}
+	}
+});
+

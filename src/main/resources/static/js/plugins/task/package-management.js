@@ -9,15 +9,18 @@
  */
 
 
-if (ref) {
-	connection.deleteHandler(ref);
+if (ref_package_management) {
+	connection.deleteHandler(ref_package_management);
 }
-scheduledParam = null;
-var packageInfoList = [];
-var dnlist = []
-var table;
 
-var ref=connection.addHandler(getPackagesListener, null, 'message', null, null,  null);
+var scheduledParamPackageManagement = null;
+var scheduledModalPacManagementOpened = false;
+var packageInfoList = [];
+var dnlist = [];
+var tableInsPackages;
+var pluginTask_PackageManagement = null;
+
+var ref_package_management=connection.addHandler(getPackagesListener, null, 'message', null, null,  null);
 
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
@@ -25,27 +28,18 @@ if(selectedEntries){
 	}
 }
 
-
-//get installed packages from agent when page opened. This action default parameterMap is null. CommandID is INSTALLED_PACKAGES
-//sendPackageManagementTask(params);
+for (var n = 0; n < pluginTaskList.length; n++) {
+	var pluginTask=pluginTaskList[n];
+	if (pluginTask.page == 'package-management') {
+		pluginTask_PackageManagement=pluginTask;
+	}
+}
 
 function sendPackageManagementTask(params){
-	
-	if(selectedPluginTask){
-		selectedPluginTask.dnList=dnlist;
-		selectedPluginTask.parameterMap={};
-		selectedPluginTask.entryList=selectedEntries;
-		selectedPluginTask.dnType="AHENK";
-		selectedPluginTask.commandId = "INSTALLED_PACKAGES";
-		selectedPluginTask.cronExpression = scheduledParam;
-		var params = JSON.stringify(selectedPluginTask);
-	}
 	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
-	if (scheduledParam != null) {
-		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+	if (scheduledParamPackageManagement != null) {
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamPackageManagement;
 	}
-
-	console.log(message);
 
 	$.ajax({
 		type: "POST",
@@ -61,9 +55,8 @@ function sendPackageManagementTask(params){
 		}, 
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			console.log(res);
 			if(res.status=="OK"){
-				$("#plugin-result").html(message.bold());
+				$("#plugin-result-package-management").html(message.bold());
 			}   	
 		},
 		error: function(result) {
@@ -121,45 +114,45 @@ function getPackagesListener(msg) {
 									}
 
 									var parser_packages = [];
-									createTable();
-									$("#plugin-result").html("");
+									createInstalledPackagesTable();
+									$("#plugin-result-package-management").html("");
 									$.notify(responseMessage, "success");
-									$('#package-management-info').html('<small style="color:red;">Silmek istediğiniz paket/leri seçerek Çalıştır butonuna tıklayınız.</small>');
+									$('#package-management-info').html('<small>Silmek istediğiniz paket/leri seçerek Sil butonuna tıklayınız.</small>');
 								}
 							}else {
-								createTable();
+								createInstalledPackagesTable();
 							}
 						},
 						error: function(result) {
 							$.notify(result, "error");
-							$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
+							$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
 						}
 					});
 				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
 					$.notify(responseMessage, "error");
-					$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
+					$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}
 			if (xmppResponse.commandClsId == "PACKAGE_MANAGEMENT") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 
 					$.notify(responseMessage, "success");
-					$("#plugin-result").html("");
+					$("#plugin-result-package-management").html("");
 //					return send task "INSTALLED_PACKAGES" for updated installed packages list after task uninstalled packages 
-					selectedPluginTask.dnList=dnlist;
-					selectedPluginTask.parameterMap={};
-					selectedPluginTask.entryList=selectedEntries;
-					selectedPluginTask.dnType="AHENK";
-					selectedPluginTask.commandId = "INSTALLED_PACKAGES";
-					selectedPluginTask.cronExpression = null;
-					var params = JSON.stringify(selectedPluginTask);
-					table.clear().draw();
-					table.destroy();
+					pluginTask_PackageManagement.dnList=dnlist;
+					pluginTask_PackageManagement.parameterMap={};
+					pluginTask_PackageManagement.entryList=selectedEntries;
+					pluginTask_PackageManagement.dnType="AHENK";
+					pluginTask_PackageManagement.commandId = "INSTALLED_PACKAGES";
+					pluginTask_PackageManagement.cronExpression = null;
+					var params = JSON.stringify(pluginTask_PackageManagement);
+					tableInsPackages.clear().draw();
+					tableInsPackages.destroy();
 					sendPackageManagementTask(params);
 
 				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
 					$.notify(responseMessage, "error");
-					$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
+					$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}
 		}
@@ -168,9 +161,9 @@ function getPackagesListener(msg) {
 	return true;
 }
 
-function createTable() {
-	table = $('#installedPackagesTable').DataTable( {
-		"scrollY": "600px",
+function createInstalledPackagesTable() {
+	tableInsPackages = $('#installedPackagesTable').DataTable( {
+		"scrollY": "500px",
 		"paging": false,
 		"scrollCollapse": true,
 		"oLanguage": {
@@ -190,7 +183,75 @@ function createTable() {
 	} );
 }
 
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
+$('#sendTaskCronPackageManagement').click(function(e){
+	$('#scheduledTasksModal').modal('toggle');
+	scheduledParam = null;
+	scheduledModalPacManagementOpened = true;
+});
+
+$("#scheduledTasksModal").on('hidden.bs.modal', function(){
+	if (scheduledModalPacManagementOpened) {
+		scheduledParamPackageManagement = scheduledParam;
+	}
+	scheduledModalPacManagementOpened = false;
+	defaultScheduleSelection();
+});
+
+//get installed packages from agent when clicked packages list button. This action default parameterMap is null. CommandID is INSTALLED_PACKAGES
+$('#sendTaskGetPackagesBtn').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+
+	if(pluginTask_PackageManagement){
+		pluginTask_PackageManagement.dnList=dnlist;
+		pluginTask_PackageManagement.parameterMap={};
+		pluginTask_PackageManagement.entryList=selectedEntries;
+		pluginTask_PackageManagement.dnType="AHENK";
+		pluginTask_PackageManagement.commandId = "INSTALLED_PACKAGES";
+		pluginTask_PackageManagement.cronExpression = scheduledParamPackageManagement;
+		var params = JSON.stringify(pluginTask_PackageManagement);
+	}
+
+	var content = "Görev Gönderilecek, emin misiniz?";
+	if (scheduledParamPackageManagement != null) {
+		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+	}
+	$.confirm({
+		title: 'Uyarı!',
+		content: content,
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+				if (tableInsPackages) {
+					tableInsPackages.clear().draw();
+					tableInsPackages.destroy();
+				}
+				sendPackageManagementTask(params);
+				packageInfoList = [];
+				scheduledParamPackageManagement = null;
+			},
+			Hayır: function () {
+			}
+		}
+	});
+
+});
+
+//delete selected packages when clicked detete button
+$('#sendTaskDeletePackageBtn').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+
+	if(pluginTask_PackageManagement){
+		pluginTask_PackageManagement.dnList=dnlist;
+		pluginTask_PackageManagement.entryList=selectedEntries;
+		pluginTask_PackageManagement.dnType="AHENK";
+	}
+
 	if($('input:checkbox[name=package_name]').is(':checked')) {
 		var packageInfo = {};
 		$('input:checkbox[name=package_name]').each(function() {
@@ -231,13 +292,13 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 				packageInfoList.push(packageInfo);
 			}
 		});
-		selectedPluginTask.commandId = "PACKAGE_MANAGEMENT";
-		selectedPluginTask.parameterMap={"packageInfoList":packageInfoList};
-		selectedPluginTask.cronExpression = scheduledParam;
-		var params = JSON.stringify(selectedPluginTask);
+		pluginTask_PackageManagement.commandId = "PACKAGE_MANAGEMENT";
+		pluginTask_PackageManagement.parameterMap={"packageInfoList":packageInfoList};
+		pluginTask_PackageManagement.cronExpression = scheduledParamPackageManagement;
+		var params = JSON.stringify(pluginTask_PackageManagement);
 
 		var content = "Görev Gönderilecek, emin misiniz?";
-		if (scheduledParam != null) {
+		if (scheduledParamPackageManagement != null) {
 			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
 		}
 		$.confirm({
@@ -248,7 +309,7 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 				Evet: function () {
 					sendPackageManagementTask(params);
 					packageInfoList = [];
-					scheduledParam = null;
+					scheduledParamPackageManagement = null;
 				},
 				Hayır: function () {
 				}
@@ -256,11 +317,7 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 		});
 	}
 	else {
-		$.notify("Lütfen silmek istediğiniz paketi/leri seçerek Çalıştır butonuna tıklayınız.", "warn");
+		$.notify("Lütfen silmek istediğiniz paketi/leri seçerek Sil butonuna tıklayınız.", "warn");
 	}
 });
 
-$('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);
-	scheduledParam = null;
-});

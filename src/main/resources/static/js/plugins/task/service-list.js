@@ -8,38 +8,76 @@
  * 
  */
 
-if (ref) {
-	connection.deleteHandler(ref);
+if (ref_service_list) {
+	connection.deleteHandler(ref_service_list);
 }
-scheduledParam = null;
 var serviceRequestParameters = [];
-var dnlist = []
-var table;
+var dnlist = [];
+var tableServiceList = null;
+var scheduledParamServiceList = null;
+var scheduledModalServiceListOpened = false;
+var pluginTask_ServiceList = null;
+var ref_service_list=connection.addHandler(getServiceListener, null, 'message', null, null,  null);
 
-var ref=connection.addHandler(getServiceListener, null, 'message', null, null,  null);
-$("#entrySize").html(selectedEntries.length);
-
-for (var i = 0; i < selectedEntries.length; i++) {
-	dnlist.push(selectedEntries[i].distinguishedName);
+if(selectedEntries){
+	for (var i = 0; i < selectedEntries.length; i++) {
+		dnlist.push(selectedEntries[i].distinguishedName);
+	}
 }
-selectedPluginTask.dnList=dnlist;
-selectedPluginTask.entryList=selectedEntries;
-selectedPluginTask.dnType="AHENK";
 
-getServices();
+for (var n = 0; n < pluginTaskList.length; n++) {
+	var pluginTask=pluginTaskList[n];
+	if (pluginTask.page == 'service-list') {
+		pluginTask_ServiceList=pluginTask;
+	}
+}
+
+// get services from agent
+$('#sendTaskGetServiceList').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+	var content = "Görev Gönderilecek, emin misiniz?";
+	if (scheduledParamServiceList != null) {
+		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+	}
+	$.confirm({
+		title: 'Uyarı!',
+		content: content,
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+				if (tableServiceList) {
+					tableServiceList.clear().draw();
+					tableServiceList.destroy();
+				}
+				getServices();
+				scheduledParamServiceList = null;
+			},
+			Hayır: function () {
+			}
+		}
+	});
+});
 
 function getServices() {
-	selectedPluginTask.commandId = "GET_SERVICES";
-	selectedPluginTask.parameterMap={};
-	selectedPluginTask.cronExpression = null;
-	var params = JSON.stringify(selectedPluginTask);
-	serviceManagementTask(params);
+	if (pluginTask_ServiceList) {
+		pluginTask_ServiceList.dnList=dnlist;
+		pluginTask_ServiceList.entryList=selectedEntries;
+		pluginTask_ServiceList.dnType="AHENK";
+		pluginTask_ServiceList.commandId = "GET_SERVICES";
+		pluginTask_ServiceList.parameterMap={};
+		pluginTask_ServiceList.cronExpression = scheduledParamServiceList;
+		var params = JSON.stringify(pluginTask_ServiceList);
+		serviceManagementTask(params);
+	}
 }
 
 function serviceManagementTask(params){
 	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
-	if (scheduledParam != null) {
-		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+	if (scheduledParamServiceList != null) {
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamServiceList;
 	}
 
 	$.ajax({
@@ -57,7 +95,7 @@ function serviceManagementTask(params){
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
 			if(res.status=="OK"){		    		
-				$("#plugin-result").html(message.bold());
+				$("#plugin-result-service-list").html(message.bold());
 			}   	
 		},
 		error: function(result) {
@@ -67,7 +105,6 @@ function serviceManagementTask(params){
 }
 
 function getServiceListener(msg) {
-	var num;
 	var to = msg.getAttribute('to');
 	var from = msg.getAttribute('from');
 	var type = msg.getAttribute('type');
@@ -147,13 +184,13 @@ function getServiceListener(msg) {
 											newRow.append(html);
 											$("#servicesListTableId").append(newRow);
 										}
-										createTable();
-										$("#plugin-result").html("");
+										createServiceListTable();
+										$("#plugin-result-service-list").html("");
 										$.notify(responseMessage, "success");
-										$("#serviceList-info").html("<small style='color:red;'>İşlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır butonuna tıklayınız.</small>");
+										$("#serviceList-info").html("<small>İşlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır butonuna tıklayınız.</small>");
 									}
 								}else {
-									createTable();
+									createServiceListTable();
 								}
 							},
 							error: function(result) {
@@ -164,20 +201,20 @@ function getServiceListener(msg) {
 				}
 				else {
 					$.notify(responseMessage, "error");
-					$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
+					$("#plugin-result-service-list").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}
 			if (xmppResponse.commandClsId == "SERVICE_LIST") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$("#plugin-result").html("");
+					$("#plugin-result-service-list").html("");
 					$.notify(responseMessage, "success");
-					table.clear().draw();
-					table.destroy();
+					tableServiceList.clear().draw();
+					tableServiceList.destroy();
 					getServices();
 				}
 				if (xmppResponse.result.responseCode == "TASK_ERROR") {
 					$.notify(responseMessage, "error");
-					$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
+					$("#plugin-result-service-list").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}
 		}
@@ -186,8 +223,8 @@ function getServiceListener(msg) {
 	return true;
 }
 
-function createTable() {
-	table = $('#servicesListTableId').DataTable( {
+function createServiceListTable() {
+	tableServiceList = $('#servicesListTableId').DataTable( {
 		"scrollY": "570px",
 		"paging": false,
 		"scrollCollapse": true,
@@ -241,11 +278,33 @@ function serviceChecked() {
 	});
 }
 
-$('#serviceExportPdf').click(function(e){
-	alert("export pdf");
+$('#serviceListExportPdf').click(function(e){
+	if (tableServiceList) {
+		alert("export pdf");
+	}
+	
 });
 
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
+$('#sendTaskCronPackageManagement').click(function(e){
+	$('#scheduledTasksModal').modal('toggle');
+	scheduledParam = null;
+	scheduledModalServiceListOpened = true;
+});
+
+$("#scheduledTasksModal").on('hidden.bs.modal', function(){
+	if (scheduledModalServiceListOpened) {
+		scheduledParamServiceList = scheduledParam;
+	}
+	scheduledModalServiceListOpened = false;
+	defaultScheduleSelection();
+});
+
+// service management task
+$('#sendTaskServiceManagement').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
 	if($('input:checkbox[name=service_name]').is(':checked')) {
 		var ServiceListItem = [];
 		$('input:checkbox[name=service_name]').each(function() {
@@ -279,14 +338,19 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 				serviceRequestParameters.push(ServiceListItem);
 			}
 		});
-		selectedPluginTask.commandId = "SERVICE_LIST";
-		selectedPluginTask.parameterMap={"serviceRequestParameters":serviceRequestParameters};
-		selectedPluginTask.dnType="AHENK";
-		selectedPluginTask.cronExpression = scheduledParam;
-		var params = JSON.stringify(selectedPluginTask);
+		
+		if (pluginTask_ServiceList) {
+			pluginTask_ServiceList.commandId = "SERVICE_LIST";
+			pluginTask_ServiceList.entryList=selectedEntries;
+			pluginTask_ServiceList.dnList=dnlist;
+			pluginTask_ServiceList.parameterMap={"serviceRequestParameters":serviceRequestParameters};
+			pluginTask_ServiceList.dnType="AHENK";
+			pluginTask_ServiceList.cronExpression = scheduledParamServiceList;
+			var params = JSON.stringify(pluginTask_ServiceList);
+		}
 
 		var content = "Görev Gönderilecek, emin misiniz?";
-		if (scheduledParam != null) {
+		if (scheduledParamServiceList != null) {
 			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
 		}
 		$.confirm({
@@ -296,7 +360,7 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 			buttons: {
 				Evet: function () {
 					serviceManagementTask(params);
-					scheduledParam = null;
+					scheduledParamServiceList = null;
 				},
 				Hayır: function () {
 				}
@@ -306,9 +370,4 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	else {
 		$.notify("Lütfen işlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır butonuna tıklayınız.", "warn");
 	}
-});
-
-$('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);
-	scheduledParam = null;
 });

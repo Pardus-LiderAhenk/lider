@@ -654,7 +654,7 @@ function createTreeModalForUserSelection(){
 			              root: "childEntries"
 			          },
 			      localData: data,
-			      id: "name"
+			      id: "uid"
 			  };
 			 //create user tree grid
 			 createUserTreeGridForCreatingGroup(source);
@@ -708,7 +708,7 @@ function createUserTreeGridForCreatingGroup(source) {
 			if(allrows.length==1){
 				var row=allrows[0];
 				if(row.childEntries==null ){
-					$("#selectMemberTreeGrid").jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.name);
+					$("#selectMemberTreeGrid").jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.uid);
 				}
 			}
 	    	$("#selectMemberTreeGrid").jqxTreeGrid('collapseAll'); 
@@ -733,7 +733,7 @@ function createUserTreeGridForCreatingGroup(source) {
 	    	var nameList=[];
 	    	for (var m = 0; m < row.records.length; m++) {
 	    		var childRow = row.records[m];
-	    		nameList.push(childRow.name);      
+	    		nameList.push(childRow.uid);      
 			}
 		      
 	    	for (var k = 0; k < nameList.length; k++) {
@@ -752,12 +752,12 @@ function createUserTreeGridForCreatingGroup(source) {
 					for (var m = 0; m < childs.length; m++) {
 						// get a row.
 						var childRow = childs[m];
-						$("#selectMemberTreeGrid").jqxTreeGrid('addRow', childRow.name, childRow, 'last', row.name);
+						$("#selectMemberTreeGrid").jqxTreeGrid('addRow', childRow.uid, childRow, 'last', row.uid);
 						//$("#selectMemberTreeGrid").jqxTreeGrid('checkRow', row.name);
 						if(childRow.hasSubordinates=="TRUE"){
-							$("#selectMemberTreeGrid").jqxTreeGrid('addRow', childRow.name+"1" , {}, 'last', childRow.name); 
+							$("#selectMemberTreeGrid").jqxTreeGrid('addRow', childRow.uid+"1" , {}, 'last', childRow.uid); 
 						}
-						$("#selectMemberTreeGrid").jqxTreeGrid('collapseRow', childRow.name);
+						$("#selectMemberTreeGrid").jqxTreeGrid('collapseRow', childRow.uid);
 					}
 					row.expandedUser = "TRUE";
 				},
@@ -788,6 +788,10 @@ function rowCheckAndUncheckOperationForCreatingGroup(event) {
     					type: checkedRows[row].type,
     					uid: checkedRows[row].uid
     				});
+    				console.log("------------------------->");
+    				console.log(checkedUsers);
+    				console.log("------------------------->");
+    				console.log(checkedRows[row]);
 
     			} else if(checkedRows[row].type == "ORGANIZATIONAL_UNIT" && checkedRows[row].expanded == false) {
     				checkedOUList.push({
@@ -884,6 +888,7 @@ function btnMembersSelectedFromUserTree() {
 			}
 		}
 		if(isExists == false) {
+			console.log(checkedUsers[i]);
 			selectedAttribute.push(["sudoUser", checkedUsers[i].uid]);
 		}
 	}
@@ -1008,17 +1013,6 @@ function btnEditOUNameClicked() {
 	}
 }
 
-/*
- * get readable strings for ldap attribute key values
- */
-function getReadableValueForLDAPAttributeName(key) {
-	if(key == "")
-		return "";
-	else if(key == "")
-		return "";
-	else 
-		return key;
-}
 
 /*
  * delete group member from tab list

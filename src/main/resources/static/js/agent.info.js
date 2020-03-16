@@ -186,7 +186,7 @@ function exportToExcel () {
 	var model;
 	var memory;
 	var disk;
-	var phase=1;
+	var phase="-";
 	
     var wb = XLSX.utils.book_new();
     wb.Props = {
@@ -214,7 +214,7 @@ function exportToExcel () {
     	day = element.createDate.substring(8,10);
     	time = element.createDate.substring(11,16);
 		createDate = day + '.' + month + '.' + year + ' ' + time;
-		
+		phase="-";
 		$.each(element.properties, function(index, property) {
 			if(property.propertyName == "os.distributionName") {
 				os = property.propertyValue;
@@ -321,7 +321,7 @@ function reloadTable(pNumber, pSize, field, text) {
 					var memory = 0;
 					var disk = 0;
 					var osDistributionVersion = "";
-
+					var phase = "-";
 					$.each(element.properties, function(j, property) {
 						if(property.propertyName == "hardware.baseboard.manufacturer") {
 							brand = property.propertyValue;
@@ -337,6 +337,9 @@ function reloadTable(pNumber, pSize, field, text) {
 						}
 						else if(property.propertyName == "os.distributionVersion") {
 							osDistributionVersion = property.propertyValue;
+						}
+						else if(property.propertyName == "phase") {
+							phase = property.propertyValue;
 						}
 					});
 		        	var trElement = '<tr>'
@@ -361,7 +364,8 @@ function reloadTable(pNumber, pSize, field, text) {
 		        	else {
 		        		trElement    += '<td><span class="status text-danger">&bull;</span> Kapalı</td>';
 		        	}
-		        	trElement += '<td>' + brand + '</td>'
+		        	trElement += '<td>' + phase + '</td>'
+		        			  + '<td>' + brand + '</td>'
 		        			  + '<td>' + os + '</td>'
 		        			  + '<td>' + osDistributionVersion + '</td>'
 		        			  + '<td>' + createDate + '</td>'

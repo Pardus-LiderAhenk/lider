@@ -38,5 +38,8 @@ public interface AgentRepository extends BaseJpaRepository<AgentImpl, Long>{
 	
 	@Query(value = "SELECT a FROM AgentImpl a LEFT JOIN a.properties p WHERE p.propertyName LIKE %?1% AND p.propertyValue LIKE %?2% AND a.jid in ?3")
 	Page<AgentImpl> findByAgentPropertyAndStatus(String name, String value, List<String> jidList, Pageable pageable);
+	
+	@Query(value = "SELECT a FROM AgentImpl a LEFT JOIN a.sessions s WHERE s.username = ?1")
+	List<AgentImpl> findBySessionUsername(String username);
 }
 

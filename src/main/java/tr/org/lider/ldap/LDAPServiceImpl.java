@@ -8,9 +8,11 @@ import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -85,6 +87,9 @@ import tr.org.lider.services.ConfigurationService;
 public class LDAPServiceImpl implements ILDAPService {
 
 	private final static Logger logger = LoggerFactory.getLogger(LDAPServiceImpl.class);
+	
+	
+	
 
 	@Autowired
 	private ConfigurationService configurationService;
@@ -849,7 +854,16 @@ public class LDAPServiceImpl implements ILDAPService {
 					
 					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, priviliges,convertObjectClass2DNType(entry.get("objectClass")));
 					
+					String dateStr= ldapEntry.get("createTimestamp");
+					String year=dateStr.substring(0,4);
+					String month=dateStr.substring(4,6);
+					String day=dateStr.substring(6,8);
+					String hour=dateStr.substring(8,10);
+					String min=dateStr.substring(10,12);
+					String sec=dateStr.substring(12,14);
+					String crtDate=day+"/"+ month+"/"+ year+" "+ hour +":"+min;
 					
+					ldapEntry.setCreateDateStr(crtDate);
 					if(ldapEntry.getType()==DNType.AHENK) {
 						ldapEntry.setOnline(xmppClientImpl.isRecipientOnline(ldapEntry.getUid()));
 					}

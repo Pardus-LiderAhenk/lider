@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import tr.org.lider.entities.AgentImpl;
+import tr.org.lider.entities.UserSessionImpl;
+
 public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 	/**
 	 * distinguished name
@@ -57,9 +60,13 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 	private String telephoneNumber;
 	
 	private String homePostalAddress;
+
+	private String createDateStr;
 	
 	private String mail;
 
+	private List<UserSessionImpl> sessionList;
+	
 	public LdapEntry() {
 		// TODO Auto-generated constructor stub
 	}
@@ -310,5 +317,16 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 	public void setMail(String mail) {
 		this.mail = mail;
 	}
-
+	public List<UserSessionImpl> getSessionList() {
+		return sessionList;
+	}
+	public void setSessionList(List<UserSessionImpl> sessionList) {
+		this.sessionList = sessionList;
+	}
+	public String getCreateDateStr() {
+		return createDateStr;
+	}
+	public void setCreateDateStr(String createDateStr) {
+		this.createDateStr = createDateStr;
+	}
 }

@@ -27,6 +27,7 @@ import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.services.ConfigurationService;
+import tr.org.lider.services.UserService;
 
 @RestController()
 @RequestMapping("/lider/user")
@@ -36,6 +37,9 @@ public class UserController {
 	
 	@Autowired
 	private LDAPServiceImpl ldapService;
+	
+	@Autowired
+	private UserService userService;
 	
 	@Autowired
 	private ConfigurationService configurationService;
@@ -323,10 +327,11 @@ public class UserController {
 			String filter="(&(objectClass=inetOrgPerson)(createTimestamp>=20200301000000Z))";
 			
 			List<LdapEntry> usersEntrylist = ldapService.findSubEntries(globalUserOu, filter,new String[] { "*" }, SearchScope.SUBTREE);
-			System.out.println(usersEntrylist);
 			lastUser= usersEntrylist.get(usersEntrylist.size()-1);
 			
 			
+			lastUser.setSessionList(userService.getUserSessions(lastUser.getUid()));
+			logger.info("last user : "+lastUser);
 		} catch (LdapException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

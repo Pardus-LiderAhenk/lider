@@ -4,12 +4,16 @@
  */
 
 var selectedRowGen = null
+var selectedFolder = null
 var treeGridHolderDiv="treeGridUserHolderDiv"
+var passwordPoliciesGen=null;
+
 
 //selected row function action behave different when selected tab change.. for this use selectedTab name
 var selectedUserTab="showAttributes";
 
 getLastUser()
+getPasswordPolicies()
 	
 $(document).ready(function(){
 	
@@ -24,8 +28,6 @@ $(document).ready(function(){
 				setUserActionButtons(row,rootDnUser);
 				if(row.type=='USER'){
 					selectedRowGen=row;
-					
-					
 					if(selectedUserTab=="showAttributes")
 					{
 						showAttributes(row);
@@ -41,6 +43,9 @@ $(document).ready(function(){
 					
 					
 					fillUserInfo(selectedRowGen)
+				}
+				if(row.type=='ORGANIZATIONAL_UNIT'){
+					selectedFolder=row;
 				}
 			},
 			//check action
@@ -78,70 +83,83 @@ $(document).ready(function(){
 	});
 	
 	$('#btnAddOuModal').on('click',function(event) {
-		getModalContent("modals/user/addOuModal", function content(data){
-				$('#genericModalHeader').html("Klasör Yönetimi")
-				$('#genericModalBodyRender').html(data);
-				$('#ouInfo').html(selectedRowGen.name +"/");
-				$('#addOu').on('click', function (event) {
-						console.log(selectedRowGen)
-						
-						var parentDn=selectedRowGen.distinguishedName; 
-						var parentName= selectedRowGen.name;
-						var parentEntryUUID= selectedRowGen.entryUUID;
-						var ouName= $('#ouName').val();
-						$.ajax({
-							type : 'POST',
-							url : 'lider/ldap/addOu',
-							data: 'parentName='+parentDn +'&ou='+ouName,
-							dataType : 'json',
-							success : function(data) {
-								
-								$.notify("Klasör Başarı İle Eklendi.", "success");
-							     
-								$('#genericModal').trigger('click');
-								$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
-								$("#treeGridUserHolderDivGrid").jqxTreeGrid('expandRow' , parentEntryUUID);
-							}
-						});
-				});
-			} 
-		);
+		if(selectedFolder==null){
+			$.notify("Lütfen Klasör Seçiniz","warn"  );
+			
+		}
+		else{
+		
+			getModalContent("modals/user/addOuModal", function content(data){
+					$('#genericModalHeader').html("Klasör Yönetimi")
+					$('#genericModalBodyRender').html(data);
+					$('#ouInfo').html(selectedFolder.name +"/");
+					$('#addOu').on('click', function (event) {
+							var parentDn=selectedFolder.distinguishedName; 
+							var parentName= selectedFolder.name;
+							var parentEntryUUID= selectedFolder.entryUUID;
+							
+							var ouName= $('#ouName').val();
+							$.ajax({
+								type : 'POST',
+								url : 'lider/ldap/addOu',
+								data: 'parentName='+parentDn +'&ou='+ouName,
+								dataType : 'json',
+								success : function(data) {
+									
+									$.notify("Klasör Başarı İle Eklendi.", "success");
+								     
+									$('#genericModal').trigger('click');
+									$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
+									$("#treeGridUserHolderDivGrid").jqxTreeGrid('expandRow' , parentEntryUUID);
+								}
+							});
+					});
+				} 
+			);
+		}
 	});
 	// Create ou for selected parent node. Ou modal will be open for all releated pages..
 	$('#btnDeleteOuModal').on('click',function(event) {
-		
-		alert("delete")
-		
 		getModalContent("modals/user/deleteOuModal", function content(data){
 			$('#genericModalHeader').html("Klasör Sil")
 			$('#genericModalBodyRender').html(data);
 			
 			$('#deleteOuBtn').on('click', function (event) {
-				deleteUserOu(selectedRowGen)
+				deleteUserOu(selectedFolder)
 			});
 		} 
 		);
 	});
 	
 	$('#btnAddUserModal').on('click',function(event) {
-		getModalContent("modals/user/addUserModal", function content(data){
-				$('#genericModalLargeHeader').html("Kullanıcı Ekle")
-				$('#genericModalLargeBodyRender').html(data);
-				
-				$('#ouName').val("")
-				$('#uid').val("")
-				$('#cn').val("")
-				$('#sn').val("")
-				$('#userPassword').val("")
-				$('#confirm_password').val("")
-				$('#addUserBtn').removeClass('disabled');
-				
-				userFolderInfo.append("Seçili Klasör : "+selectedRowGen.name)
-				$('#addUserBtn').on('click',function(event) {
-					addUser(selectedRowGen)
-				});
-			} 
-		);
+		
+		if(selectedFolder==null){
+			$.notify("Lütfen Klasör Seçiniz","warn"  );
+			
+		}
+		else{
+			getModalContent("modals/user/addUserModal", function content(data){
+					$('#genericModalLargeHeader').html("Kullanıcı Ekle")
+					$('#genericModalLargeBodyRender').html(data);
+					
+					$('#ouName').val("")
+					$('#uid').val("")
+					$('#cn').val("")
+					$('#sn').val("")
+					$('#userPassword').val("")
+					$('#confirm_password').val("")
+					$('#addUserBtn').removeClass('disabled');
+					
+					getPasswordPolicies();
+					
+					
+					userFolderInfo.append("Seçili Klasör : "+selectedFolder.name)
+					$('#addUserBtn').on('click',function(event) {
+						addUser(selectedFolder)
+					});
+				} 
+			);
+		}
 	});
 	
 	$('#btnEditUserModal').on('click',function(event) {
@@ -232,7 +250,7 @@ $(document).ready(function(){
 			}
 			);
 			$('#moveUserFolderBtn').on('click',function(event) {
-				moveUserFolder(selectedRowGen,selectedOu)
+				moveUserFolder(selectedFolder,selectedOu)
 			});
 		});
 	});
@@ -278,70 +296,6 @@ $(document).ready(function(){
 				$('#genericModalHeader').html("Parola Politikası Ata")
 				$('#genericModalBodyRender').html(data);
 				
-				$.ajax({
-					type : 'POST',
-					url : 'lider/user/getPasswordPolices',
-					dataType : 'json',
-					success : function(data) {
-						
-						if(data){
-							var option='<option> Politika Seçiniz</option>'
-							for (var i = 0; i < data.length; i++) {
-						    	  var row = data[i];
-						    	  option +='<option value="'+row.distinguishedName+'" >'+row.cn+'</option>'
-							}
-							$("#passwordPolicyList").append(option)
-							
-							$("#passwordPolicyList").on('change', function(event) {
-								var selectedVal=$("#passwordPolicyList").val();
-								var selectedPolicy=""
-									for (var k = 0; k < data.length; k++) {
-								    	  var row = data[k];
-								    	  if(row.distinguishedName==selectedVal){
-								    		  selectedPolicy=row
-								    	  }
-									}
-								var html='<table class="table">';
-									html += '<thead>';
-									html += '<tr>';
-									html += '<th style="width: 40%"></th>';
-									html += '<th style="width: 60%"></th>';
-									html += '</tr>';
-									html += '</thead>';
-							        
-							        for (key in selectedPolicy.attributes) {
-							            if (selectedPolicy.attributes.hasOwnProperty(key)) {
-							                
-							                if( (key =="pwdExpireWarning") 
-							                		|| (key =="cn") 
-							                		|| (key =="pwdFailureCountInterval") 
-							                		|| (key =="pwdGraceAuthNLimit") 
-							                		|| (key =="pwdInHistory") 
-							                		|| (key =="pwdLockout") 
-							                		|| (key =="pwdLockoutDuration") 
-							                		|| (key =="pwdMaxAge") 
-							                		|| (key =="pwdMinAge") 
-							                		|| (key =="pwdMaxFailure") 
-							                		|| (key =="pwdMinLength") 
-							                		|| (key =="pwdMustChange") 
-							                		|| (key =="pwdSafeModify") 
-							                		|| (key =="pwdCheckQuality") 
-							                		){
-							                	html += '<tr>';
-									            html += '<td>' + key + '</td>';
-									            html += '<td>' + selectedPolicy.attributes[key] + '</td>';
-									            html += '</tr>';
-							                }
-							            }
-							        } 
-							        html += '</table>';
-							        $("#policyDetail").html("")
-							        $("#policyDetail").html(html)
-							});
-						}
-					}
-				});
-				
 				$('#setPasswordPolicydBtn').on('click', function(event) {
 					var selectedPasswordPolicy=$('#passwordPolicyList').val();
 					var params = {
@@ -375,7 +329,6 @@ $(document).ready(function(){
 	 * end set password policy modal
 	 */
 });
-
 
 function addUser(row) {
 	var parentDn=row.distinguishedName; 
@@ -856,9 +809,76 @@ function fillUserInfo(ldapResult) {
 	$('#userPhone').html("");
 	$('#userMail').html("");
 	
+	$('#userId').html(ldapResult.attributes.uid);
 	$('#userName').html(ldapResult.cn +" "+ldapResult.sn);
 	$('#userAddress').html(ldapResult.attributes.homePostalAddress);
 	$('#userPhone').html(ldapResult.attributes.telephoneNumber);
+	$('#userCreateDate').html(ldapResult.createDateStr);
 	$('#userMail').html(ldapResult.attributes.mail);
+	$('#userHomeDirectory').html(ldapResult.attributes.homeDirectory);
+	
+	console.log(ldapResult)
+	
+}
+
+function getPasswordPolicies() {
+	$.ajax({
+		type : 'POST',
+		url : 'lider/user/getPasswordPolices',
+		dataType : 'json',
+		success : function(data) {
+			passwordPoliciesGen=data;
+			if(data){
+				var policyHtml=' <ul class="messages">'
+
+				for (var i = 0; i < data.length; i++) {
+			    	  var row = data[i];
+			    	policyHtml +='<li>'
+			    	policyHtml +='<img src="images/img.jpg" class="avatar" alt="Avatar">'
+			    	policyHtml +='<div class="message_wrapper">'
+			    	policyHtml +='<h4 class="heading"> '+ row.cn+'</h4>'
+			    	policyHtml +='<blockquote class="message">'
+			    					var html='<table class="table">';
+										html += '<thead>';
+										html += '<tr>';
+										html += '<th style="width: 40%"></th>';
+										html += '<th style="width: 60%"></th>';
+										html += '</tr>';
+										html += '</thead>';
+								        
+								        for (key in row.attributes) {
+								            if (row.attributes.hasOwnProperty(key)) {
+								                
+								                if( (key =="pwdExpireWarning") 
+								                		|| (key =="cn") 
+								                		|| (key =="pwdFailureCountInterval") 
+								                		|| (key =="pwdGraceAuthNLimit") 
+								                		|| (key =="pwdInHistory") 
+								                		|| (key =="pwdLockout") 
+								                		|| (key =="pwdLockoutDuration") 
+								                		|| (key =="pwdMaxAge") 
+								                		|| (key =="pwdMinAge") 
+								                		|| (key =="pwdMaxFailure") 
+								                		|| (key =="pwdMinLength") 
+								                		|| (key =="pwdMustChange") 
+								                		|| (key =="pwdSafeModify") 
+								                		|| (key =="pwdCheckQuality") 
+								                		){
+								                	html += '<tr>';
+										            html += '<td>' + key + '</td>';
+										            html += '<td>' + row.attributes[key] + '</td>';
+										            html += '</tr>';
+								                }
+								            }
+								        } 
+							        html += '</table>';
+			    	  policyHtml += html;
+			    	  policyHtml += '</blockquote>';
+				}
+				policyHtml += '</ul>'
+				$("#passwordPolicyList").append(policyHtml)
+			}
+		}
+	});
 	
 }

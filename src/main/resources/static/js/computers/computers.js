@@ -27,6 +27,7 @@ connection.addHandler(onPresence2, null, "presence");
 var selectedTab="sendTask";
 
 $("#dropdownButton").hide();
+$("#agentOnlineStatus").hide()
 $("#selectedAgentList").hide();
 
 computerTreeCreated=true;
@@ -68,17 +69,18 @@ taskHistory();
 createComputerTree('lider/ldap/getComputers',treeGridHolderDiv, false, false,
 		// row select
 		function(row, rootDnComputer){
-	selectedRow=row;
-	baseRootDnComputer=rootDnComputer;
-},
-//check action
-function(checkedRows, row){
-
-},
-//uncheck action
-function(unCheckedRows, row){
-
-}
+			selectedRow=row;
+			baseRootDnComputer=rootDnComputer;
+			addSelectedEntryToTable(selectedRow)
+		},
+		//check action
+		function(checkedRows, row){
+		
+		},
+		//uncheck action
+		function(unCheckedRows, row){
+		
+		}
 );
 
 $('#btn-system').click(function() {
@@ -567,9 +569,9 @@ function addNewGroup() {
 
 function addSelectedEntryToTable(row,rootDnComputer){
 	if(row.type=="AHENK"){
-		var indexx=$.grep(selectedEntries, function(item){
-			return item.entryUUID == row.entryUUID;
-		}).length
+//		var indexx=$.grep(selectedEntries, function(item){
+//			return item.entryUUID == row.entryUUID;
+//		}).length
 
 		data={}
 		data.type=row.type;
@@ -584,36 +586,60 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		 * selected entries should be one element 
 		 */
 		selectedEntries=[]
-
-		if(indexx == 0 ){
-			selectedEntries.push(data);
-		}
+		selectedEntries.push(data);
 		showSelectedEntries();
 	}
 }
 
 function showSelectedEntries() {
+
 	$("#selectedAgentList").show();
 
 	var html= '<button class="btn btn-outline-light" > <span id="btnAgent" > </span> </button> ';
 	html += ' <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" class="dropdown-toggle-split dropdown-toggle btn btn-light"> '
-		html += ' <span class="sr-only">Toggle Dropdown</span></button>'
-			html += ' <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu" >'
-				var dnVal=""
-					for (var i = 0; i < selectedEntries.length; i++) {
-
-						dnVal=selectedEntries[0].name;
-						var dn=selectedEntries[i].name;
-						html +='<button type="button" tabindex="0" class="dropdown-item"> <i class="nav-link-icon fas fa-network-wired"> ' +dn+'</i> </button>'
-					}
+	html += ' <span class="sr-only">Toggle Dropdown</span></button>'
+	html += ' <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu" >'
+	var dnVal=""
+			for (var i = 0; i < selectedEntries.length; i++) {
+					dnVal=selectedEntries[0].name;
+					var dn=selectedEntries[i].name;
+					html +='<button type="button" tabindex="0" class="dropdown-item"> ' +dn+' </button>'
+			}
 	html += ' </div> '	 
 	$('#selectedAgentList').html(html);
-	$("#selectedAgentInfo").html(dnVal)
+	$("#selectedAgentInfo").html(dnVal);
+	
+//	if(selectedEntries[0].type=='AHENK')
+//	{
+//		$("#agent_image").attr("src","img/person.png");
+//	}
+	
+	$("#agentOnlineStatus").show()
+	if(selectedEntries[0].online)
+	{
+		$("#agentOnlineStatus").attr("class","btn btn-success");
+		$("#agentOnlineStatus").html("Çevrimiçi");
+	}
+	else{
+		$("#agentOnlineStatus").attr("class","btn btn-danger");
+		$("#agentOnlineStatus").html("Çevrimdışı");
+	}
+	
 	var agentJid = selectedEntries[0].uid;
 
 	var params = {
 			"jid" : agentJid
 	};
+	
+	$("#agentHostname").html("");
+	$("#agentIpAddr").html("");
+	$("#agentMac").html("");
+	$("#agentCreateDate").html("");
+	$("#agentOsName").html("");
+//	$("#agentUsername").html("");
+	$("#agentProcessor").html("");
+	$("#agentOsName").html("");
+	
 	$.ajax({ 
 		type: 'POST', 
 		url: 'agents/agent',

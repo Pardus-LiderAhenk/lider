@@ -1,24 +1,27 @@
 <script type="text/javascript" src="js/computers/computerTreeManager.js"></script>
 <script type="text/javascript" src="js/computers/computers.js"></script>
 
-	<div class="row" >
 		<div class="col-lg-2" >
-			<div style="margin-top: 15px; margin-left: 15px">
-				<button id="btnAddAgents" type="button"	class=" btn btn-info" title="İstemcileri Ekle"> Ekle </button>
-				<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle"> Çevrimiçi </button>
-<!-- 			<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle">  <i class="pe-7s-folder"> </i> </button> -->
-			</div>
-			<hr>
-			<div id="computerTreeDiv" style="margin-left: 15px"></div>
+		<!-- 			<div style="margin-top: 15px; margin-left: 15px"> -->
+		<!-- 				<button id="btnAddAgents" type="button"	class=" btn btn-info" title="İstemcileri Ekle"> Ekle </button> -->
+		<!-- 				<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle"> Çevrimiçi </button> -->
+		<!--  			<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle">  <i class="pe-7s-folder"> </i> </button> -->
+		<!-- 			</div> -->
+<!-- 			<hr> -->
+			<br>
+			<div id="computerTreeDiv" ></div>
 		</div>
+		
 		<div class="col-lg-10 green">
 			<div>
 				<div class="row" style="margin-top: 15px">
 					<div class="col-lg-10">
 						<div>
-							<button role="tab" data-toggle="tab"><i class="nav-link-icon fas fa-tv"></i></button>
-							<button role="tab" class="btn btn-link" data-toggle="tab">
-								<span id="selectedAgentInfo"> Lütfen İstemci Seçiniz.</span></button>
+							<img id="agent_image" alt="" src="img/linux.png">
+							<button  class="btn btn-link agent-offline " id="selectedAgentInfo" >  Lütfen İstemci Seçiniz.</button>
+							<button  class="btn btn-danger" id="agentOnlineStatus" >  </button>
+							<button  class="btn"> </button>
+							
 							<button role="tab" class="btn btn-info" id="btn-system" data-toggle="tab"><i class="fas fa-server"></i> Sistem Yönetimi </button>
 							<button role="tab" class="btn btn-info" id="btn-package" data-toggle="tab"><i class="nav-link-icon fas fa-cubes"> </i> Paket ve Depo Yönetimi </button>
 							<button role="tab" class="btn btn-info" id="btn-service" data-toggle="tab"><i class="nav-link-icon fas fa-tv"> </i> Servisler </button>
@@ -107,4 +110,3 @@
 					</div>
 			</div>
 		</div>
-	</div>

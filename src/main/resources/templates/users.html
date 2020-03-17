@@ -3,9 +3,8 @@
 <script type="text/javascript" src="js/user/ouManager.js"></script>
 <script type="text/javascript" src="js/custom.js"></script>
 
-<div class="row">
 	<div class="col-lg-2">
-					<div  style="margin: 10px;">
+					<div>
 							<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info"  style="margin: 10px;">
                                             <span class="btn-icon-wrapper pr-2 opacity-7" >
                                                 <i class="fa fa-business-time fa-w-20"></i>
@@ -105,7 +104,7 @@
 									                    <div class="col-md-3 col-sm-3  profile_left">
 									                      <div class="profile_img">
 									                        <div id="crop-avatar">
-									                          <img class="img-responsive avatar-view" src="images/user_icon.png" width="320" height="220" alt="Avatar" title="Change the avatar">
+									                          <img class="img-responsive avatar-view" src="images/user_icon.png" width="200" height="160" alt="Avatar" title="Change the avatar">
 									                        </div>
 									                      </div>
 									                      <hr>
@@ -113,6 +112,8 @@
 									                       <hr>
 									
 									                      <ul class="list-unstyled user_data">
+									                        <li><i class="fa fa-address-card user-profile-icon"></i> &nbsp; <span id="userId"></span>
+									                        </li>
 									                        <li><i class="fa fa-map-marker user-profile-icon"></i> &nbsp; <span id="userAddress"></span>
 									                        </li>
 									
@@ -123,10 +124,8 @@
 									                        <li>
 									                          <i class="fas fa-mail-bulk user-profile-icon"></i>  &nbsp;<span id="userMail"></span>
 									                        </li>
-									
-									                        
+
 									                      </ul>
-									                       <hr>
 									                      <hr>
 									                       <a href="#" class="btn btn-success" id="btnEditUserModal" title="Kullanıcı Düzenle" data-target="#genericModal" data-toggle="modal">
 			                                                        <i class="fa fa-edit"> &nbsp; Düzenle</i>
@@ -141,26 +140,17 @@
 <!-- 									                      <a class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Düzenle</a> -->
 									                      <hr>
 									
-									                      <h4> Login Olunan İstemciler </h4>
+									                      <h4>  </h4>
 									                      <ul class="list-unstyled user_data">
 									                        <li>
-									                          <p>Ahenk-1</p>
-									                          <div class="progress progress_sm">
-									                            <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="50"></div>
-									                          </div>
+									                          <i class="user-profile-icon">Ev Dizini : </i>
+									                          <span id="userHomeDirectory"></span>
 									                        </li>
 									                        <li>
-									                          <p>Pardus</p>
-									                          <div class="progress progress_sm">
-									                            <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="70"></div>
-									                          </div>
+									                          <i class="user-profile-icon">Oluşturulma Tarihi : </i>
+									                          <span id="userCreateDate"></span>
 									                        </li>
-									                        <li>
-									                          <p>Pardus-2</p>
-									                          <div class="progress progress_sm">
-									                            <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="30"></div>
-									                          </div>
-									                        </li>
+									                      
 									                      
 									                      </ul>
 									
@@ -187,10 +177,13 @@
 									                        </ul>
 									                        <div id="myTabContent" class="tab-content">
 									                          <div role="tabpanel" class="tab-pane active " id="tab-password-policy" aria-labelledby="tab-btn-psswordPolicy">
-									         						 
+									         						<div id="passwordPolicyList"></div>
+									         						
 									                          </div>
 									                          <div role="tabpanel" class="tab-pane " id="tab-user-groups" aria-labelledby="tab-btn-userGroups">
-									         						 <div id="groupsDiv"></div>
+									         						 <div id="groupsDiv">
+									         						 	
+									         						 </div>
 									                          </div>
 									                          <div role="tabpanel" class="tab-pane " id="tab_content2" aria-labelledby="profile-tab">
 									
@@ -309,4 +302,3 @@
 <!-- 		</div> -->
 
 	</div>
-</div>

@@ -1,82 +1,90 @@
 
 <div class=row>
 <div class="col-lg-12">
-	<div class="main-card mb-3 card">
-		<div class="card-header">
 			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-			<div id="userFolderInfo">
-			</div>
-		</div>
-	</div>
-</div>
-<div class="col-lg-6">
-	<div class="main-card mb-3 card">
-		<div class="card-header">
-			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-			Kullanıcı Bilgileri
+			<h6 id="userFolderInfo"></h6>
 			<hr>
-		</div>
-		<div class="card-body">
-			<div class="form-group">
-				<label>Kullanıcı ID</label> <input class="form-control" type="text"
-					id="uid" name="uid" placeholder="ID Giriniz..(uid) " />
-			</div>
-			<div class="form-group">
-				<label>Kullanıcı Adı</label> <input class="form-control" type="text"
-					id="cn" name="cn" placeholder="Ad Giriniz.." />
-			</div>
-			<div class="form-group">
-				<label>Kullanıcı Soyadı</label> <input class="form-control"
-					type="text" id="sn" name="sn" placeholder="Soyad Giriniz.." />
-			</div>
-			
-			<div class="form-group">
-				<label>Mail Adresi</label> <input class="form-control"
-					type="text" id="mail" name="mail" placeholder="Mail Adresi Giriniz.." />
-			</div>
-			<div class="form-group">
-				<label>Telefon</label> <input class="form-control" type="text"
-					id="telephoneNumber" name="telephoneNumber"
-					placeholder="Telefon Giriniz.." />
-			</div>
-			<div class="form-group">
-				<label>Adres</label>
-				<textarea class="form-control" id="homePostalAddress"
-					name="homePostalAddress" placeholder="Adres Giriniz.." rows="4"
-					cols="4"></textarea>
-			</div>
-		</div>
-	</div>
 </div>
-	<div class="col-lg-6">
-		<div class="main-card mb-3 card">
-			<div class="card-header">
-				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-				Parola Bilgileri
-			</div>
-			<div class="card-body">
+  
+ <div class="col-lg-6">
+		 			<div class="item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="uid">Kimlik (ID) <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 ">
+                          <input class="form-control" type="text" id="uid" name="uid"  />
+                        </div>
+                      </div>
+                      <div class="item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="cn">Kullanıcı Adı <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 ">
+                          <input class="form-control" type="text"	id="cn" name="cn"  />
+                        </div>
+                      </div>
+                      <div class="item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="last-name">Kullanıcı Soyadı <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 ">
+                          <input class="form-control" type="text" id="sn" name="sn" />
+                        </div>
+                      </div>
+                      <div class="item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="mail">Mail Adresi <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 ">
+                          <input class="form-control" type="text" id="mail" name="mail"  />
+                        </div>
+                      </div>
+                      <div class="item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="telephoneNumber">Telefon <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 ">
+                          <input class="form-control" type="text"	id="telephoneNumber" name="telephoneNumber" 	 />
+                        </div>
+                      </div>
+                      <div class="item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="homePostalAddress">Adres <span class="required"></span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 ">
+                         <textarea class="form-control" id="homePostalAddress" name="homePostalAddress"  rows="4"		cols="4"></textarea>
+                        </div>
+                      </div>
+   </div>    
+   
+   <div class="col-lg-6">
+				 <div class="item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="userPassword">Parola <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 ">
+                         <input class="form-control" type="password" id="userPassword" name="userPassword"	/>
+                        </div>
+                 </div>
+				 <div class="item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="confirm_password">Parola Onayla <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 ">
+                         <input class="form-control" type="password" id="confirm_password" name="confirm_password"	 />
+                        </div>
+                 </div>
+				 <div class="item form-group">
+                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="confirm_password">Parola Politikası  <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 ">
+                         <select id="passwordPolicyList" class="form-control">	</select>
+                        </div>
+                 </div>
+                 
 
-				<div class="form-group">
-					<label>Parola </label> <input class="form-control"
-						type="password" id="userPassword" name="userPassword"
-						placeholder="Parola " />
-				</div>
-				<div class="form-group">
-					<label>Parola Onayla</label> <input class="form-control"
-						type="password" id="confirm_password" name="confirm_password"
-						placeholder="Parola Onayla" />
-				</div>
-				
-			</div>
-		</div>
-	</div>
+ </div>
+		
+	
 	<div class="col-lg-12">
 	
-	<div class="form-group pull-right">
+			<div class="form-group pull-right">
 					<a href="#" class="btn btn-primary submit-button" id="addUserBtn">
 						<span>Kaydet</span>
 					</a>
-				</div>
+			</div>
 	</div>
 </div>
 

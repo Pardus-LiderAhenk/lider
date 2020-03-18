@@ -285,7 +285,7 @@ $('#serviceListExportPdf').click(function(e){
 	
 });
 
-$('#sendTaskCronPackageManagement').click(function(e){
+$('#sendTaskCronServiceManagement').click(function(e){
 	$('#scheduledTasksModal').modal('toggle');
 	scheduledParam = null;
 	scheduledModalServiceListOpened = true;

@@ -51,6 +51,8 @@ public class RegistrationMessageImpl implements Serializable {
 	private String userPassword;
 
 	private Map<String, Object> data;
+	
+	private String directoryServer;
 
 	private Date timestamp;
 
@@ -140,6 +142,14 @@ public class RegistrationMessageImpl implements Serializable {
 
 	public void setUserPassword(String userPassword) {
 		this.userPassword = userPassword;
+	}
+
+	public String getDirectoryServer() {
+		return directoryServer;
+	}
+
+	public void setDirectoryServer(String directoryServer) {
+		this.directoryServer = directoryServer;
 	}
 
 }

@@ -53,6 +53,16 @@ public class RegistrationResponseMessageImpl implements IRegistrationResponseMes
 	private String ldapVersion;
 
 	private Date timestamp;
+	
+	private String adDomainName;
+	
+	private String adHostName;
+	
+	private String adIpAddress;
+	
+	private String adAdminPassword;
+
+	private String adAdminUserName;
 
 	public RegistrationResponseMessageImpl(StatusCode status, String message, String agentDn, String recipient,
 			Date timestamp) {
@@ -150,6 +160,46 @@ public class RegistrationResponseMessageImpl implements IRegistrationResponseMes
 
 	public void setLdapUserDn(String ldapUserDn) {
 		this.ldapUserDn = ldapUserDn;
+	}
+
+	public String getAdDomainName() {
+		return adDomainName;
+	}
+
+	public void setAdDomainName(String adDomainName) {
+		this.adDomainName = adDomainName;
+	}
+
+	public String getAdHostName() {
+		return adHostName;
+	}
+
+	public void setAdHostName(String adHostName) {
+		this.adHostName = adHostName;
+	}
+
+	public String getAdIpAddress() {
+		return adIpAddress;
+	}
+
+	public void setAdIpAddress(String adIpAddress) {
+		this.adIpAddress = adIpAddress;
+	}
+
+	public String getAdAdminPassword() {
+		return adAdminPassword;
+	}
+
+	public void setAdAdminPassword(String adAdminPassword) {
+		this.adAdminPassword = adAdminPassword;
+	}
+
+	public String getAdAdminUserName() {
+		return adAdminUserName;
+	}
+
+	public void setAdAdminUserName(String adAdminUserName) {
+		this.adAdminUserName = adAdminUserName;
 	}
 
 }

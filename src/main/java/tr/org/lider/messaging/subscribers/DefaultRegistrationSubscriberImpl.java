@@ -93,6 +93,9 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 	
 	
 	private String LDAP_VERSION = "3";
+	
+	private static String DIRECTORY_SERVER_LDAP="LDAP";
+	private static String DIRECTORY_SERVER_AD="AD";
 
 	/**
 	 * Check if agent defined in the received message is already registered, if
@@ -112,6 +115,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			
 			String userName = message.getUserName();
 			String userPassword = message.getUserPassword();
+			String directoryServer = message.getDirectoryServer();
 			
 			LdapEntry ldapUserEntry= getUserFromLdap(userName, userPassword);
 			
@@ -222,17 +226,40 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 				
 			}
 			
-			respMessage.setLdapServer(configurationService.getLdapServer());
-			respMessage.setLdapBaseDn(configurationService.getLdapRootDn());
-			respMessage.setLdapVersion(LDAP_VERSION);
-			respMessage.setLdapUserDn(dn);
+			if(directoryServer.equals(DIRECTORY_SERVER_LDAP)) {
+				respMessage.setLdapServer(configurationService.getLdapServer());
+				respMessage.setLdapBaseDn(configurationService.getUserLdapBaseDn());
+				respMessage.setLdapVersion(LDAP_VERSION);
+				respMessage.setLdapUserDn(dn);
+				
+				logger.info("Registration message created..  "
+						+ "Message details ldap base dn : " +respMessage.getLdapBaseDn() 
+						+ "  ldap server =" + respMessage.getLdapBaseDn()
+						+ "  ldap userdn =" + respMessage.getLdapUserDn()
+						+ "  ldap version =" + respMessage.getLdapVersion()
+						);
+				
+			}
+//			 # self.domain_name = "engerek.local"
+//			 # self.host_name = "liderahenk.engerek.local"
+//			 # self.ip_address = "172.16.103.28"
+//			 # self.password = "Pp123456"
+			else if(directoryServer.equals(DIRECTORY_SERVER_AD)) {
+				respMessage.setAdDomainName(configurationService.getAdDomainName());
+				respMessage.setAdHostName(configurationService.getAdHostName());
+				respMessage.setAdIpAddress(configurationService.getAdIpAddress());
+				respMessage.setAdAdminPassword(configurationService.getAdAdminPassword());
+				respMessage.setAdAdminUserName(configurationService.getAdAdminUserName());
+				
+				logger.info("Registration message created..  "
+						+ "Message details ldap base dn : " +respMessage.getLdapBaseDn() 
+						+ "  ldap server =" + respMessage.getLdapBaseDn()
+						+ "  ldap userdn =" + respMessage.getLdapUserDn()
+						+ "  ldap version =" + respMessage.getLdapVersion()
+						);
+			}
 			
-			logger.info("Registration message created..  "
-					+ "Message details ldap base dn : " +respMessage.getLdapBaseDn() 
-					+ "  ldap server =" + respMessage.getLdapBaseDn()
-					+ "  ldap userdn =" + respMessage.getLdapUserDn()
-					+ "  ldap version =" + respMessage.getLdapVersion()
-					);
+			
 			return respMessage;
 			
 		} else if (AgentMessageType.UNREGISTER == message.getType()) {

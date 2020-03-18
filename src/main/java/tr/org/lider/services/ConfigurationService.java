@@ -117,6 +117,13 @@ public class ConfigurationService{
 	private String cronTaskList;
 	private Integer entrySizeLimit;
 	private Integer cronIntervalEntrySize;
+	
+	
+	private String adDomainName;
+	private String adHostName;
+	private String adIpAddress;
+	private String adAdminUserName;
+	private String adAdminPassword;
 
 	@Autowired
 	private Environment env;
@@ -194,6 +201,13 @@ public class ConfigurationService{
 		setAhenkGroupLdapBaseDn(env.getProperty("agent.group.ldap.base.dn"));
 		
 		
+		// ldap ad configuration
+		
+		 adDomainName = env.getProperty("ad.domainname");
+		 adHostName = env.getProperty("ad.hostname");
+		 adIpAddress= env.getProperty("ad.ipaddress");
+		 adAdminUserName= env.getProperty("ad.adminusername");
+		 adAdminPassword= env.getProperty("ad.adminpassword");
 		
 	}
 
@@ -938,6 +952,46 @@ public class ConfigurationService{
 
 	public void setAhenkGroupLdapBaseDn(String ahenkGroupLdapBaseDn) {
 		this.ahenkGroupLdapBaseDn = ahenkGroupLdapBaseDn;
+	}
+
+	public String getAdDomainName() {
+		return adDomainName;
+	}
+
+	public void setAdDomainName(String adDomainName) {
+		this.adDomainName = adDomainName;
+	}
+
+	public String getAdHostName() {
+		return adHostName;
+	}
+
+	public void setAdHostName(String adHostName) {
+		this.adHostName = adHostName;
+	}
+
+	public String getAdIpAddress() {
+		return adIpAddress;
+	}
+
+	public void setAdIpAddress(String adIpAddress) {
+		this.adIpAddress = adIpAddress;
+	}
+
+	public String getAdAdminUserName() {
+		return adAdminUserName;
+	}
+
+	public void setAdAdminUserName(String adAdminUserName) {
+		this.adAdminUserName = adAdminUserName;
+	}
+
+	public String getAdAdminPassword() {
+		return adAdminPassword;
+	}
+
+	public void setAdAdminPassword(String adAdminPassword) {
+		this.adAdminPassword = adAdminPassword;
 	}
 
 }

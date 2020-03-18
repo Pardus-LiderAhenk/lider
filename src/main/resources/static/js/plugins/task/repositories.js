@@ -30,12 +30,8 @@ for (var n = 0; n < pluginTaskList.length; n++) {
 		pluginTask_Repositories=pluginTask;
 	}
 }
-pluginTask_Repositories.dnList=dnlist;
-pluginTask_Repositories.entryList=selectedEntries;
-pluginTask_Repositories.dnType="AHENK";
 
 //get REPOSITORIES from agent when page opened. This action default parameterMap is null. CommanID is REPOSITORIES
-
 $('#sendTaskGetRepositories').click(function(e){
 	if (selectedEntries.length == 0 ) {
 		$.notify("Lütfen istemci seçiniz.", "error");
@@ -43,6 +39,9 @@ $('#sendTaskGetRepositories').click(function(e){
 	}
 
 	if(pluginTask_Repositories){
+		pluginTask_Repositories.dnList=dnlist;
+		pluginTask_Repositories.entryList=selectedEntries;
+		pluginTask_Repositories.dnType="AHENK";
 		pluginTask_Repositories.commandId = "REPOSITORIES";
 		pluginTask_Repositories.parameterMap={};
 		pluginTask_Repositories.cronExpression = scheduledParamRepositories;
@@ -238,6 +237,9 @@ $('#sendTaskRepositories').click(function(e){
 	if(pluginTask_Repositories){
 		if(addedItems.length != 0 || deletedItems.length != 0){
 			// commandId is PACKAGE_SOURCES. This command id is used to add and delete repositories
+			pluginTask_Repositories.dnList=dnlist;
+			pluginTask_Repositories.entryList=selectedEntries;
+			pluginTask_Repositories.dnType="AHENK";
 			pluginTask_Repositories.commandId = "PACKAGE_SOURCES";  		
 			pluginTask_Repositories.parameterMap={"deletedItems":deletedItems, "addedItems":addedItems};
 			pluginTask_Repositories.cronExpression = scheduledParamRepositories;

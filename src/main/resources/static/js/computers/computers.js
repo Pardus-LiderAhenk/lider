@@ -21,6 +21,7 @@ setSystemPluginPage();
 $("#systemPage").show();
 $("#packageManagementPage").hide();
 $("#serviceManagementPage").hide();
+$("#scriptManagementPage").hide();
 
 connection.addHandler(onPresence2, null, "presence");
 //selected row function action behave different when selected tab change.. for this use selectedTab name
@@ -94,6 +95,10 @@ $('#btn-service').click(function() {
 	setServicePluginPage();
 });
 
+$('#btn-script').click(function() {
+	setScriptPluginPage();
+});
+
 $('#btnAddAgents').click(function() {
 	addSelectedEntryToTable(selectedRow)
 });
@@ -157,6 +162,7 @@ function setSystemPluginPage() {
 	$("#systemPage").show();
 	$("#packageManagementPage").hide();
 	$("#serviceManagementPage").hide();
+	$("#scriptManagementPage").hide();
 	$.ajax({
 		type : 'POST',
 		url : 'getPluginTaskList',
@@ -190,17 +196,6 @@ function setSystemPluginPage() {
 						}
 					});
 				}
-				if(pluginTask.page == 'execute-script'){
-					$.ajax({
-						type : 'POST',
-						url : 'getPluginTaskHtmlPage',
-						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
-						dataType : 'text',
-						success : function(res1) {
-							$('#execute-script').html(res1);
-						}
-					});
-				}
 				if(pluginTask.page == 'end-sessions'){
 					$.ajax({
 						type : 'POST',
@@ -223,6 +218,28 @@ function setSystemPluginPage() {
 						}
 					});
 				}
+				if(pluginTask.page == 'eta-notify'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#eta-notify').html(res1);
+						}
+					});
+				}
+				if(pluginTask.page == 'file-management'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#file-management').html(res1);
+						}
+					});
+				}
 			}
 		}
 	});
@@ -231,6 +248,7 @@ function setSystemPluginPage() {
 function setPackagePluginPage() {
 	$("#systemPage").hide();
 	$("#serviceManagementPage").hide();
+	$("#scriptManagementPage").hide();
 	$("#packageManagementPage").show();
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
@@ -275,6 +293,7 @@ function setPackagePluginPage() {
 function setServicePluginPage() {
 	$("#systemPage").hide();
 	$("#packageManagementPage").hide();
+	$("#scriptManagementPage").hide();
 	$("#serviceManagementPage").show();
 
 	for (var i = 0; i < pluginTaskList.length; i++) {
@@ -292,6 +311,30 @@ function setServicePluginPage() {
 		}
 	}
 }
+
+function setScriptPluginPage() {
+	$("#systemPage").hide();
+	$("#serviceManagementPage").hide();
+	$("#packageManagementPage").hide()
+	$("#scriptManagementPage").show();
+	
+	for (var i = 0; i < pluginTaskList.length; i++) {
+		var pluginTask = pluginTaskList[i];
+		if(pluginTask.page == 'execute-script'){
+			$.ajax({
+				type : 'POST',
+				url : 'getPluginTaskHtmlPage',
+				data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+				dataType : 'text',
+				success : function(res2) {
+					$('#execute-script').html(res2);
+				}
+			});
+		}
+	}
+	
+}
+
 
 function executedTaskDetailClicked(executionDate, pluginName, commandExecutionResultID) {
 
@@ -386,7 +429,6 @@ function generateAddToExistingGroupTreeGrid() {
 
 	}
 	);
-
 }
 
 function generateAddToNewGroupTreeGrid() {
@@ -625,10 +667,9 @@ function showSelectedEntries() {
 		$("#agentOnlineStatus").html("Çevrimdışı");
 	}
 	
-	var agentJid = selectedEntries[0].uid;
-
+	var agentDn = selectedEntries[0].distinguishedName;
 	var params = {
-			"jid" : agentJid
+			"jid" : agentDn
 	};
 	
 	$("#agentHostname").html("");
@@ -639,6 +680,7 @@ function showSelectedEntries() {
 //	$("#agentUsername").html("");
 	$("#agentProcessor").html("");
 	$("#agentOsName").html("");
+	$("#agentPhase").html("");
 	
 	$.ajax({ 
 		type: 'POST', 
@@ -666,6 +708,12 @@ function showSelectedEntries() {
 //					}
 					if (element.propertyName == "os.name") {
 						$("#agentOsName").html(element.propertyValue);
+					}
+					if (element.propertyName == "phase") {
+						var phase = "Faz bilgisi alınamadı"
+						if (element.propertyValue){
+							$("#agentPhase").html(phase);
+						}
 					}
 				});
 				$("#agentHostname").html(data.hostname);

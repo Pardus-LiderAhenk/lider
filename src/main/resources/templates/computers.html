@@ -25,6 +25,7 @@
 							<button role="tab" class="btn btn-info" id="btn-system" data-toggle="tab"><i class="fas fa-server"></i> Sistem Yönetimi </button>
 							<button role="tab" class="btn btn-info" id="btn-package" data-toggle="tab"><i class="nav-link-icon fas fa-cubes"> </i> Paket ve Depo Yönetimi </button>
 							<button role="tab" class="btn btn-info" id="btn-service" data-toggle="tab"><i class="nav-link-icon fas fa-tv"> </i> Servisler </button>
+							<button role="tab" class="btn btn-info" id="btn-script" data-toggle="tab"><i class="fas fa-hashtag"></i> Betik</button>
 						</div>
 					</div>
 					<div class="col-lg-2" >
@@ -42,13 +43,7 @@
 										<div>İSTEMCİ BİLGİLERİ</div>
 									</div>
 									<div class="card-body">
-										<table class="table table-striped table-hover table-bordered">
-<!-- 											<thead> -->
-<!-- 												<tr> -->
-<!-- 													<th style="width: 30%">Özellik Adı</th> -->
-<!-- 													<th style="width: 70%">Özellik Değeri</th> -->
-<!-- 												</tr> -->
-<!-- 											</thead> -->
+										<table class="table table-striped table-hover table-bordered" style="line-height: 1">
 											<tbody>
 												<tr>
 													<td><i class="fa fa-laptop-code"></i> Bilgisayar Adı</td>
@@ -75,6 +70,10 @@
 <!-- 													<td id=agentUsername></td> -->
 <!-- 												</tr> -->
 												<tr>
+													<td><i class="fas fa-list-ol"></i> Faz</td>
+													<td id=agentPhase></td>
+												</tr>
+												<tr>
 													<td><i class="fa fa-calendar-alt"></i> Oluşturma Tarihi</td>
 													<td id=agentCreateDate></td>
 												</tr>
@@ -82,13 +81,14 @@
 										</table>
 									</div>
 									</div>
-									<div id="manage-root"></div>
 									<div id="end-sessions"></div>
-									<div id="conky"></div>
+									<div id="manage-root"></div>
+									<div id="eta-notify"></div>
 								</div>
 								<div class="col-lg-7">
 									<div id="resource-usage"></div>
-									<div id="execute-script"></div>
+									<div id="file-management"></div>
+									<div id="conky"></div>
 								</div>
 							</div>
 					   </div>
@@ -106,6 +106,10 @@
 					  
 					  <div id="serviceManagementPage">
 						<div id="service-list"></div>
+					  </div>
+					  
+					  <div id="scriptManagementPage">
+						<div id="execute-script"></div>
 					  </div>
 					</div>
 			</div>

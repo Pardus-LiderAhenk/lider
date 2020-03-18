@@ -7,59 +7,44 @@
 <link rel="stylesheet" href="css/plugin.task.css" />
 </head>
 <body>
-	<div class="login-form-1">
-		<div class="login-group">
-			<div class="form-group">
-				<div class="form-group">
-					<div class="row">
-						<div class="col-lg-8">
-							<label for="notifySelectBox">Mesajı Adı</label> <select
-								class="form-control" id="notifySelectBox">
-								<option value="NA" selected>Mesaj seçiniz...</option>
-							</select>
-							<small class="form-text text-muted">Gönderilmek istenilen mesaj seçilerek Çalıştır butonuna tıklanır.</small>
-						</div>
-						<div class="col-lg-2">
-							<label for="notifyTime">Mesaj Süresi(sn)</label> <input
-								type="text" class="form-control" id="notifyTime">
-						</div>
-						<div class="col-lg-2">
-							<label for="notifySize">Mesaj Boyutu</label>
-							<select class="form-control" id="notifySize">
-								<option value="full" selected>Tam Ekran</option>
-								<option value="small">Küçük</option>
-							</select>
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">ETA BİLGİLENDİRME MESAJI</div>
+			<div class="col-lg-6 text-right">
+				<button id="sendTaskCronEtaNotify" type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+				<button id="sendTaskEtaNotify" type="button" title="Çalıştır" class="btn-shadow btn btn-info"><i class="fa fa-play"></i></button>
+			</div>
+		</div>
+		<div class="card-body">
+			<div class="login-form-1">
+				<div class="login-group">
+					<div class="form-group">
+						<div class="row">
+							<div class="col-lg-6">
+								<label for="notifySelectBox">Mesajı Adı</label>
+								<select	class="form-control" id="notifySelectBox">
+									<option value="NA" selected>Mesaj seçiniz...</option>
+								</select>
+								<small class="form-text text-muted">Gönderilmek istenilen mesaj seçilerek Çalıştır butonuna tıklanır.</small>
+							</div>
+							<div class="col-lg-3">
+								<label for="notifyTime">Mesaj Süresi(sn)</label> <input type="text" class="form-control" id="notifyTime">
+							</div>
+							<div class="col-lg-3">
+								<label for="notifySize">Mesaj Boyutu</label>
+								<select class="form-control" id="notifySize">
+									<option value="full" selected>Tam Ekran</option>
+									<option value="small">Küçük</option>
+								</select>
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="form-group">
-					<label for="notifyContent">Mesaj İçeriği</label>
-					<textarea class="form-control" id="notifyContent" rows="16"></textarea>
-				</div>
-				<br>
-				<div id="plugin-result"></div>
-				<br> <br>
-				<div class="row">
-					<div class="col-lg-7">
-						<!-- ids of the following buettons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-						<button id=sendTask-eta-notify type="button"
-							class="btn-shadow btn btn-info">
-							<i class="fa fa-play"></i> Çalıştır
-						</button>
-						<button id=sendTaskCron-eta-notify type="button"
-							class="btn-shadow btn btn-info"
-							title="Zamanlanmış Görev Parametreleri" data-toggle="modal"
-							data-target="#scheduledTasksModal">
-							<i class="fa fa-hourglass-start"></i> Görev Parametreleri
-						</button>
+					<div class="form-group">
+						<label for="notifyContent">Mesaj İçeriği</label>
+						<textarea class="form-control" id="notifyContent" rows="12"></textarea>
 					</div>
-					<div class="col-lg-5 text-right">
-						<!-- ids of the following buttons must be closePage-{plugin-page} -->
-						<button id=closePage-eta-notify type="button"
-							class="btn-shadow btn btn-info" data-dismiss="modal">
-							<i class="fa fa-window-close"></i> Kapat
-						</button>
-					</div>
+					<div id="plugin-result-eta-notify"></div>
 				</div>
 			</div>
 		</div>

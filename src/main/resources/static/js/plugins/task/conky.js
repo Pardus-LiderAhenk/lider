@@ -18,9 +18,8 @@ var conkyTempList = [];
 var removeConkyMessage = false;
 var pluginTask_Conky = null;
 var dnlist = [];
+var ref_conky = connection.addHandler(conkyListener, null, 'message', null, null,  null);
 $('#conkyContentTabTask').tab('show');
-
-var ref_conky=connection.addHandler(conkyListener, null, 'message', null, null,  null);
 
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
@@ -192,7 +191,7 @@ $('#sendTaskConky').click(function(e){
 		pluginTask_Conky.commandId = "EXECUTE_CONKY";  		
 		var params = JSON.stringify(pluginTask_Conky);
 	}
-
+	
 //	if selected message/Conky. Default select box "Conky seçiniz... value = NA"
 	if ($('#conkySelectBox :selected').val() != "NA" || $('#removeConkyMessageBtn').is(':checked')) {
 		var content = "Görev Gönderilecek, emin misiniz?";

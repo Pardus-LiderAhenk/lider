@@ -8,23 +8,28 @@
  * 
  */
 
-if (ref) {
-	connection.deleteHandler(ref);
+if (ref_eta_notify) {
+	connection.deleteHandler(ref_eta_notify);
 }
-
-scheduledParam = null;
-var table;
+var scheduledParamEtaNotify = null;
+var scheduledModalEtaNotifyOpened = false;
 var notifyFileList = [];
+var dnlist = [];
+var pluginTask_EtaNotify = null;
+var ref_eta_notify=connection.addHandler(etaNotifyListener, null, 'message', null, null,  null);
 
-var ref=connection.addHandler(etaNotifyListener, null, 'message', null, null,  null);
-$("#entrySize").html(selectedEntries.length);
-var dnlist = []
-for (var i = 0; i < selectedEntries.length; i++) {
-	dnlist.push(selectedEntries[i].distinguishedName);
+if(selectedEntries){
+	for (var i = 0; i < selectedEntries.length; i++) {
+		dnlist.push(selectedEntries[i].distinguishedName);
+	}
 }
-selectedPluginTask.dnList=dnlist;
-selectedPluginTask.entryList=selectedEntries;
-selectedPluginTask.dnType="AHENK";
+
+for (var n = 0; n < pluginTaskList.length; n++) {
+	var pluginTask=pluginTaskList[n];
+	if (pluginTask.page == 'eta-notify') {
+		pluginTask_EtaNotify=pluginTask;
+	}
+}
 
 //get notify template from liderdb
 getNotifyTemp();
@@ -76,8 +81,8 @@ $('#notifySelectBox').change(function(){
 
 function sendNotifyTask(params) {
 	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
-	if (scheduledParam != null) {
-		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+	if (scheduledParamEtaNotify != null) {
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamEtaNotify;
 	}
 
 	$.ajax({
@@ -95,7 +100,7 @@ function sendNotifyTask(params) {
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
 			if(res.status=="OK"){		    		
-				$("#plugin-result").html(message.bold());
+				$("#plugin-result-eta-notify").html(message.bold());
 			}   	
 		},
 		error: function(result) {
@@ -120,11 +125,11 @@ function etaNotifyListener(msg) {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					$.notify(responseMessage, "success");
-					$("#plugin-result").html("");
+					$("#plugin-result-eta-notify").html("");
 				}
 				else {
 					$.notify(responseMessage, "error");
-					$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
+					$("#plugin-result-eta-notify").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}
 		}
@@ -133,7 +138,25 @@ function etaNotifyListener(msg) {
 	return true;
 }
 
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
+$('#sendTaskCronEtaNotify').click(function(e){
+	$('#scheduledTasksModal').modal('toggle');
+	scheduledParam = null;
+	scheduledModalEtaNotifyOpened = true;
+});
+
+$("#scheduledTasksModal").on('hidden.bs.modal', function(){
+	if (scheduledModalEtaNotifyOpened) {
+		scheduledParamEtaNotify = scheduledParam;
+	}
+	scheduledModalEtaNotifyOpened = false;
+	defaultScheduleSelection();
+});
+
+$('#sendTaskEtaNotify').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
 	var date = new Date();
 	var day = date.getDate();
 	var month = date.getMonth() + 1;
@@ -149,8 +172,8 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 
 	var time = new Date();
 	var strTime = time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
-	if (scheduledParam != null) {
-		var sDate = scheduledParam;
+	if (scheduledParamEtaNotify != null) {
+		var sDate = scheduledParamEtaNotify;
 		var sNewDate = sDate.split(" ");
 		for (var i = 0; i < sNewDate.length; i++) {
 			var sDay = sNewDate[2];
@@ -172,21 +195,26 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 		}
 	}
 	var sendNotifyTime = strDate + " " + strTime;
-	
-	selectedPluginTask.parameterMap={
-			"size": $('#notifySize').val(),
-			"duration": $('#notifyTime').val(),
-			"notify_content": $("#notifySelectBox option:selected").text() + "\n" + $("#notifyContent").val(),
-			"send_time": sendNotifyTime
-	};
-	selectedPluginTask.cronExpression = scheduledParam;
-	selectedPluginTask.commandId = "ETA_NOTIFY";  		
-	var params = JSON.stringify(selectedPluginTask);
+
+	if (pluginTask_EtaNotify) {
+		pluginTask_EtaNotify.dnList=dnlist;
+		pluginTask_EtaNotify.entryList=selectedEntries;
+		pluginTask_EtaNotify.dnType="AHENK";
+		pluginTask_EtaNotify.parameterMap={
+				"size": $('#notifySize').val(),
+				"duration": $('#notifyTime').val(),
+				"notify_content": $("#notifySelectBox option:selected").text() + "\n" + $("#notifyContent").val(),
+				"send_time": sendNotifyTime
+		};
+		pluginTask_EtaNotify.cronExpression = scheduledParamEtaNotify;
+		pluginTask_EtaNotify.commandId = "ETA_NOTIFY";  		
+		var params = JSON.stringify(pluginTask_EtaNotify);
+	}
 
 //	if selected message/notify. Default select box "Mesaj seçiniz... value = NA"
 	if ($('#notifySelectBox :selected').val() != "NA") {
 		var content = "Görev Gönderilecek, emin misiniz?";
-		if (scheduledParam != null) {
+		if (scheduledParamEtaNotify != null) {
 			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
 		}
 		$.confirm({
@@ -196,7 +224,7 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 			buttons: {
 				Evet: function () {
 					sendNotifyTask(params);
-					scheduledParam = null;
+					scheduledParamEtaNotify = null;
 				},
 				Hayır: function () {
 				}
@@ -207,7 +235,3 @@ $('#sendTask-'+ selectedPluginTask.page).click(function(e){
 	}
 });
 
-$('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);
-	scheduledParam = null;
-});

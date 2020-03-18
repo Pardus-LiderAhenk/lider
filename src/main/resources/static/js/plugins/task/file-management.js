@@ -8,41 +8,58 @@
  * 
  */
 
-if (ref) {
-	connection.deleteHandler(ref);
+if (ref_file_management) {
+	connection.deleteHandler(ref_file_management);
 }
-scheduledParam = null;
+var scheduledParamFileMan = null;
+var scheduledModalFileManOpened = false;
+var pluginTask_FileManagement = null;
+var dnlist = [];
+var ref_file_management=connection.addHandler(fileManagementListener, null, 'message', null, null,  null);
 
-var ref=connection.addHandler(fileManagementListener, null, 'message', null, null,  null);
-$("#entrySize").html(selectedEntries.length);
-var dnlist = []
-for (var i = 0; i < selectedEntries.length; i++) {
-	dnlist.push(selectedEntries[i].distinguishedName);
+for (var n = 0; n < pluginTaskList.length; n++) {
+	var pluginTask=pluginTaskList[n];
+	if(pluginTask.page == 'file-management')
+	{
+		pluginTask_FileManagement = pluginTask;
+	}
 }
-selectedPluginTask.dnList=dnlist;
-selectedPluginTask.entryList=selectedEntries;
-selectedPluginTask.dnType="AHENK";
+
+if (selectedEntries) {
+	for (var i = 0; i < selectedEntries.length; i++) {
+		dnlist.push(selectedEntries[i].distinguishedName);
+	}
+}
 
 //get file content from agent
 $('#getFileBtn').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
 	var filePath = $("#filePath").val();
 	if (filePath != "") {
 
-		selectedPluginTask.parameterMap={
-				"file-path": filePath
-		};
-		selectedPluginTask.cronExpression = scheduledParam;
-		selectedPluginTask.commandId = "GET_FILE_CONTENT";  		
-		var params = JSON.stringify(selectedPluginTask);
+		if (pluginTask_FileManagement) {
+			pluginTask_FileManagement.parameterMap={
+					"file-path": filePath
+			};
+			pluginTask_FileManagement.dnList=dnlist;
+			pluginTask_FileManagement.entryList=selectedEntries;
+			pluginTask_FileManagement.dnType="AHENK";
+			pluginTask_FileManagement.cronExpression = scheduledParamFileMan;
+			pluginTask_FileManagement.commandId = "GET_FILE_CONTENT";  		
+			var params = JSON.stringify(pluginTask_FileManagement);
+		}
 		sendFileManagementTask(params);
 	}else {
-		$.notify("Lütfen dosya yolunu giriniz, daha sonra Ara butonuna tıklayınız.", "warn");
+		$.notify("Lütfen dosya yolunu giriniz, daha sonra Dosya Ara butonuna tıklayınız.", "warn");
 	}
 });
 
 function sendFileManagementTask(params) {
 	var content = "Görev Gönderilecek, emin misiniz?";
-	if (scheduledParam != null) {
+	if (scheduledParamFileMan != null) {
 		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
 	}
 	$.confirm({
@@ -52,8 +69,8 @@ function sendFileManagementTask(params) {
 		buttons: {
 			Evet: function () {
 				var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
-				if (scheduledParam != null) {
-					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+				if (scheduledParamFileMan != null) {
+					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamFileMan;
 				}
 
 				$.ajax({
@@ -71,14 +88,14 @@ function sendFileManagementTask(params) {
 					success: function(result) {
 						var res = jQuery.parseJSON(result);
 						if(res.status=="OK"){		    		
-							$("#plugin-result").html(message.bold());
+							$("#plugin-result-file-management").html(message.bold());
 						}   	
 					},
 					error: function(result) {
 						$.notify(result, "error");
 					}
 				});
-				scheduledParam = null;
+				scheduledParamFileMan = null;
 			},
 			Hayır: function () {
 			}
@@ -102,21 +119,21 @@ function fileManagementListener(msg) {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					$.notify(responseMessage, "success");
-					$("#plugin-result").html("");
+					$("#plugin-result-file-management").html("");
 					$("#fileContent").val(arrg.file_content);
 				}
 				else {
 					$.notify(responseMessage, "error");
-					$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
+					$("#plugin-result-file-management").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}else if (xmppResponse.commandClsId == "WRITE_TO_FILE") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					$.notify(responseMessage, "success");
-					$("#plugin-result").html("");
+					$("#plugin-result-file-management").html("");
 				}
 				else {
 					$.notify(responseMessage, "error");
-					$("#plugin-result").html(("HATA: " + responseMessage).fontcolor("red"));
+					$("#plugin-result-file-management").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}
 		}
@@ -125,24 +142,44 @@ function fileManagementListener(msg) {
 	return true;
 }
 
-//edited file content
-$('#sendTask-'+ selectedPluginTask.page).click(function(e){
-	var filePath = $("#filePath").val();
-	if (filePath != "") {
-		selectedPluginTask.parameterMap={
-				"file-path": filePath,
-				"file-content":$("#fileContent").val()
-		};
-		selectedPluginTask.cronExpression = scheduledParam;
-		selectedPluginTask.commandId = "WRITE_TO_FILE";  		
-		var params = JSON.stringify(selectedPluginTask);
-		sendFileManagementTask(params);
-	}else {
-		$.notify("Lütfen dosya yolunu giriniz, daha sonra Çalıştır butonuna tıklayınız.", "warn");
-	}
+$('#sendTaskCronFileManagement').click(function(e){
+	$('#scheduledTasksModal').modal('toggle');
+	scheduledParam = null;
+	scheduledModalFileManOpened = true;
 });
 
-$('#closePage-'+ selectedPluginTask.page).click(function(e){
-	connection.deleteHandler(ref);
-	scheduledParam = null;
+$("#scheduledTasksModal").on('hidden.bs.modal', function(){
+	if (scheduledModalFileManOpened) {
+		scheduledParamFileMan = scheduledParam;
+	}
+	scheduledModalFileManOpened = false;
+	defaultScheduleSelection();
+});
+
+//edited file content
+$('#sendTaskFileManagement').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+	var filePath = $("#filePath").val();
+
+	if (filePath != "") {
+
+		if (pluginTask_FileManagement) {
+			pluginTask_FileManagement.dnList=dnlist;
+			pluginTask_FileManagement.entryList=selectedEntries;
+			pluginTask_FileManagement.dnType="AHENK";
+			pluginTask_FileManagement.parameterMap={
+					"file-path": filePath,
+					"file-content":$("#fileContent").val()
+			};
+			pluginTask_FileManagement.cronExpression = scheduledParamFileMan;
+			pluginTask_FileManagement.commandId = "WRITE_TO_FILE";  		
+			var params = JSON.stringify(pluginTask_FileManagement);
+		}
+		sendFileManagementTask(params);
+	}else {
+		$.notify("Lütfen dosya yolunu giriniz, daha sonra Kaydet butonuna tıklayınız.", "warn");
+	}
 });

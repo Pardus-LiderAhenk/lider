@@ -6,57 +6,33 @@
 <script type="text/javascript" src="js/plugins/task/file-management.js"></script>
 </head>
 <body>
-	<div class="login-form-1">
-		<div class="login-group">
-			<div class="form-group">
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">DOSYA YÖNETİMİ</div>
+			<div class="col-lg-6 text-right">
+				<button id="sendTaskCronFileManagement" type="button"	class="btn-shadow btn btn-info"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+				<button id="sendTaskFileManagement" type="button" title="Kaydet" class="btn-shadow btn btn-info"><i class="fa fa-save"></i></button>
+			</div>
+		</div>
+		<div class="card-body">
+			<div class="login-form-1">
 				<div class="form-group">
-					<div class="row">
-						<div class="input-group mb-3 col-lg-11">
-							<div class="input-group-prepend">
-								<span class="input-group-text">Dosya Yolu</span>
-							</div>
-							<input type="text" id="filePath" class="form-control"
-								placeholder="/tmp/example.txt" aria-describedby="fileManagementHelp">
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text">Dosya Yolu</span>
 						</div>
-						<div class="col-lg-1">
-							<button id=getFileBtn type="button"
-								class="btn-shadow btn btn-info">
-								<i class="fa fa-search"></i> Ara
-							</button>
-						</div>
+						<input type="text" id="filePath" class="form-control" placeholder="/tmp/example.txt" aria-describedby="fileManagementHelp">
+						<button id=getFileBtn type="button"	class="btn-shadow btn btn-info" title=" Dosya Ara"><i class="fa fa-search"></i></button>
 					</div>
-					<small id="fileManagementHelp" class="form-text text-muted">Dosya yolu girilir ve Ara butonuna tıklanarak istemcide bulunan dosya içeriği getirilir. Getirilen veya yeni oluşturulmak istenen dosya,
-					dosya yolu ve içeriği girilerek/düzenlenerek Çalıştır butonuna tıklanır.</small>
-				</div>
-				<div class="form-group">
-					<label for="fileContent">Dosya İçeriği</label>
-					<textarea class="form-control" id="fileContent" rows="16"></textarea>
-				</div>
-				<br>
-				<div id="plugin-result"></div>
-				<br> <br>
-				<div class="row">
-					<div class="col-lg-7">
-						<!-- ids of the following buettons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
-						<button id=sendTask-file-management type="button"
-							class="btn-shadow btn btn-info">
-							<i class="fa fa-play"></i> Çalıştır
-						</button>
-						<button id=sendTaskCron-file-management type="button"
-							class="btn-shadow btn btn-info"
-							title="Zamanlanmış Görev Parametreleri" data-toggle="modal"
-							data-target="#scheduledTasksModal">
-							<i class="fa fa-hourglass-start"></i> Görev Parametreleri
-						</button>
+					<small id="fileManagementHelp" class="form-text text-muted">Dosya yolu girilir ve Dosya Ara butonuna tıklanarak istemcide bulunan dosya içeriği getirilir. Getirilen veya yeni oluşturulmak istenen dosya,
+					dosya yolu ve içeriği girilerek/düzenlenerek Kaydet butonuna tıklanır.</small>
 					</div>
-					<div class="col-lg-5 text-right">
-						<!-- ids of the following buttons must be closePage-{plugin-page} -->
-						<button id=closePage-file-management type="button"
-							class="btn-shadow btn btn-info" data-dismiss="modal">
-							<i class="fa fa-window-close"></i> Kapat
-						</button>
+					<div class="form-group">
+						<label for="fileContent">Dosya İçeriği</label>
+						<textarea class="form-control" id="fileContent" rows="16"></textarea>
 					</div>
-				</div>
+					<div id="plugin-result-file-management"></div>
 			</div>
 		</div>
 	</div>

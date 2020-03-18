@@ -17,39 +17,41 @@
 		</div>
 		<div class="card-body">
 				<div class="login-form-1">
-					<div class="login-group">
-						<div class="form-group">
+					<div class="form-group">
+						<div class="row">
+						<div class="col-lg-8">
+<!-- 							<label for="conkySelectBox">Conky Adı</label> -->
+							 <select
+								class="form-control" id="conkySelectBox">
+								<option value="NA" selected>Conky seçiniz...</option>
+							</select>
+						</div>
+						<div class="col-lg-4">
 							<div class="form-check">
 								<input type="checkbox" class="form-check-input"
 									id="removeConkyMessageBtn"> <label class="form-check-label"
 									for="removeConkyMessageBtn">Conky Mesajını Kaldır</label>
 							</div>
 							<small class="text-muted"> İstemci/lerde var olan Conky mesajını kaldırır. </small>
-							<br><br>
-							<div>
-								<label for="conkySelectBox">Conky Adı</label> <select
-									class="form-control" id="conkySelectBox">
-									<option value="NA" selected>Conky seçiniz...</option>
-								</select>
-<!-- 								<small class="form-text text-muted">Gönderilmek istenilen Conky seçilerek Çalıştır butonuna tıklanır.</small> -->
+						</div>
+<!-- 						<br><br> -->
+						</div>
+						<br>
+						<ul id="conkyTabsTask" class="nav nav-tabs">
+							<li class="nav-item"><a role="tab" class="nav-link active" data-toggle="tab" href="#conkyContentTabTask"><span><i class="fa fa-comments"></i> Conky İçeriği</span></a>
+							</li>
+							<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#conkySettingsTabTask"> <span><i class="fa fa-cog"></i> Conky Ayarları</span></a>
+							</li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane fade" id="conkyContentTabTask">
+								<textarea class="form-control" id="conkyContentTemp" rows="15"></textarea>
 							</div>
-							<br>
-							<ul id="conkyTabsTask" class="nav nav-tabs">
-								<li class="nav-item"><a role="tab" class="nav-link active" data-toggle="tab" href="#conkyContentTabTask"><span><i class="fa fa-comments"></i> Conky İçeriği</span></a>
-								</li>
-								<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#conkySettingsTabTask"> <span><i class="fa fa-cog"></i> Conky Ayarları</span></a>
-								</li>
-							</ul>
-							<div class="tab-content">
-								<div class="tab-pane fade" id="conkyContentTabTask">
-									<textarea class="form-control" id="conkyContentTemp" rows="12"></textarea>
-								</div>
-								<div class="tab-pane fade" id="conkySettingsTabTask">
-									<textarea class="form-control" id="conkySettingTemp" rows="12"></textarea>
-								</div>
-		             		</div>
-						<div id="plugin-result-conky"></div>
-					</div>
+							<div class="tab-pane fade" id="conkySettingsTabTask">
+								<textarea class="form-control" id="conkySettingTemp" rows="15"></textarea>
+							</div>
+	             		</div>
+					<div id="plugin-result-conky"></div>
 				</div>
 			</div>
 		</div>

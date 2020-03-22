@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tr.org.lider.entities.ConfigImpl;
-import tr.org.lider.entities.ConfigParams;
+import tr.org.lider.models.ConfigParams;
 import tr.org.lider.services.ConfigService;
 
 @Controller

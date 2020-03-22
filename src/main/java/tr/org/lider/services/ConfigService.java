@@ -11,25 +11,27 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import tr.org.lider.controllers.LoginController;
 import tr.org.lider.entities.ConfigImpl;
-import tr.org.lider.entities.ConfigParams;
+import tr.org.lider.models.ConfigParams;
 import tr.org.lider.repositories.ConfigRepository;
 
 @Service
 public class ConfigService {
 
 	Logger logger = LoggerFactory.getLogger(ConfigService.class);
-	
+
 	@Autowired
 	ConfigRepository configRepository;
 
-	public ConfigImpl save(ConfigImpl config) {
-		return configRepository.save(config);
-	}
+	//for singleton
+	private static ConfigParams configParams;
 
-	public List<ConfigImpl> saveAll(List<ConfigImpl> configList) {
-		return configRepository.saveAll(configList);
+	public ConfigImpl save(ConfigImpl config) {
+		//if configParams is updated delete configParams
+		if(config.getName().equals("liderConfigParams")) {
+			configParams = null;
+		}
+		return configRepository.save(config);
 	}
 
 	public List<ConfigImpl> findAll() {
@@ -52,15 +54,26 @@ public class ConfigService {
 		return configRepository.findByNameAndValue(name, value);
 	}
 
+	public void deleteByName(String name) {
+		//if configParams is updated delete configParams
+		if(name.equals("liderConfigParams")) {
+			configParams = null;
+		}
+		configRepository.deleteByName(name);
+	}
 	public ConfigParams getConfigParams() {
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			ConfigParams cParams = mapper.readValue(findByName("liderConfigParams").get().getValue(), ConfigParams.class);
-			return cParams;
-		} catch (JsonProcessingException e) {
-			logger.error("Error occured while retrieving config params from db.");
-			e.printStackTrace();
-			return null;
+		if (configParams == null) {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				configParams = mapper.readValue(findByName("liderConfigParams").get().getValue(), ConfigParams.class);
+				return configParams;
+			} catch (JsonProcessingException e) {
+				logger.error("Error occured while retrieving config params from db.");
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			return configParams;
 		}
 	}
 

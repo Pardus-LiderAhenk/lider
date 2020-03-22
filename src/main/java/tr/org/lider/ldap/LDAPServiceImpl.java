@@ -8,11 +8,9 @@ import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -64,20 +62,6 @@ import org.springframework.stereotype.Service;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.services.ConfigurationService;
 
-
-//import tr.org.liderahenk.lider.core.api.caching.ICacheService;
-//import tr.org.liderahenk.lider.core.api.configuration.IConfigurationService;
-//import tr.org.liderahenk.lider.core.api.ldap.ILDAPService;
-//import tr.org.liderahenk.lider.core.api.ldap.LdapSearchFilterAttribute;
-//import tr.org.liderahenk.lider.core.api.ldap.enums.SearchFilterEnum;
-//import tr.org.liderahenk.lider.core.api.ldap.exceptions.LdapException;
-//import tr.org.liderahenk.lider.core.api.ldap.model.IReportPrivilege;
-//import tr.org.liderahenk.lider.core.api.ldap.model.ITaskPrivilege;
-//import tr.org.liderahenk.lider.core.api.ldap.model.IUser;
-//import tr.org.liderahenk.lider.ldap.model.ReportPrivilegeImpl;
-//import tr.org.liderahenk.lider.ldap.model.TaskPrivilegeImpl;
-//import tr.org.liderahenk.lider.ldap.model.UserImpl;
-
 /**
  * Default implementation for {@link ILDAPService}
  * 
@@ -88,13 +72,9 @@ public class LDAPServiceImpl implements ILDAPService {
 
 	private final static Logger logger = LoggerFactory.getLogger(LDAPServiceImpl.class);
 	
-	
-	
-
 	@Autowired
 	private ConfigurationService configurationService;
 	//private ICacheService cacheService;
-	
 	
 	@Autowired
 	private XMPPClientImpl xmppClientImpl;

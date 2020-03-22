@@ -1,4 +1,4 @@
-package tr.org.lider.entities;
+package tr.org.lider.models;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,7 +76,6 @@ public class ConfigParams {
 	private String fileServerUrl;
 	private Integer fileServerPort;
 
-
 	// Task manager configuration
 	private Boolean taskManagerCheckFutureTask;
 	private Long taskManagerFutureTaskCheckPeriod;
@@ -105,8 +104,6 @@ public class ConfigParams {
 	// Hot deployment configuration
 	private String hotDeploymentPath;
 
-
-
 	// cron manipluate for performance
 	private String cronTaskList;
 	private Integer entrySizeLimit;
@@ -116,7 +113,6 @@ public class ConfigParams {
 		super();
 	}
 
-
 	public ConfigParams(String liderLocale, String ldapServer, String ldapPort, String ldapUsername,
 			String ldapPassword, String ldapRootDn, Boolean ldapUseSsl, String ldapSearchAttributes,
 			Boolean ldapAllowSelfSignedCert, String ldapMailNotifierAttributes, String ldapEmailAttribute,
@@ -124,19 +120,19 @@ public class ConfigParams {
 			String agentLdapObjectClasses, String userLdapBaseDn, String userLdapUidAttribute,
 			String userLdapPrivilegeAttribute, String userLdapObjectClasses, Boolean userAuthorizationEnabled,
 			String groupLdapObjectClasses, String roleLdapObjectClasses, String userLdapRolesDn, String groupLdapBaseDn,
-			String xmppHost, Integer xmppPort, String xmppUsername, String xmppPassword, String xmppResource,
-			String xmppServiceName, int xmppMaxRetryConnectionCount, int xmppPacketReplayTimeout,
-			Integer xmppPingTimeout, Boolean xmppUseSsl, Boolean xmppAllowSelfSignedCert, Boolean xmppUseCustomSsl,
-			Integer xmppPresencePriority, Protocol fileServerProtocol, String fileServerHost, String fileServerUsername,
-			String fileServerPassword, String fileServerPluginPath, String fileServerAgreementPath,
-			String fileServerAgentFilePath, String fileServerUrl, Integer fileServerPort,
-			Boolean taskManagerCheckFutureTask, Long taskManagerFutureTaskCheckPeriod, Boolean alarmCheckReport,
-			String mailAddress, String mailPassword, String mailHost, Integer mailSmtpPort, Boolean mailSmtpAuth,
-			Boolean mailSmtpStartTlsEnable, Boolean mailSmtpSslEnable, Integer mailSmtpConnTimeout,
-			Integer mailSmtpTimeout, Integer mailSmtpWriteTimeout, Boolean mailSendOnTaskCompletion,
-			Long mailCheckTaskCompletionPeriod, Boolean mailSendOnPolicyCompletion,
-			Long mailCheckPolicyCompletionPeriod, String hotDeploymentPath, String cronTaskList, Integer entrySizeLimit,
-			Integer cronIntervalEntrySize, String userGroupLdapBaseDn, String ahenkGroupLdapBaseDn) {
+			String userGroupLdapBaseDn, String ahenkGroupLdapBaseDn, String xmppHost, Integer xmppPort,
+			String xmppUsername, String xmppPassword, String xmppResource, String xmppServiceName,
+			int xmppMaxRetryConnectionCount, int xmppPacketReplayTimeout, Integer xmppPingTimeout, Boolean xmppUseSsl,
+			Boolean xmppAllowSelfSignedCert, Boolean xmppUseCustomSsl, Integer xmppPresencePriority,
+			Protocol fileServerProtocol, String fileServerHost, String fileServerUsername, String fileServerPassword,
+			String fileServerPluginPath, String fileServerAgreementPath, String fileServerAgentFilePath,
+			String fileServerUrl, Integer fileServerPort, Boolean taskManagerCheckFutureTask,
+			Long taskManagerFutureTaskCheckPeriod, Boolean alarmCheckReport, String mailAddress, String mailPassword,
+			String mailHost, Integer mailSmtpPort, Boolean mailSmtpAuth, Boolean mailSmtpStartTlsEnable,
+			Boolean mailSmtpSslEnable, Integer mailSmtpConnTimeout, Integer mailSmtpTimeout,
+			Integer mailSmtpWriteTimeout, Boolean mailSendOnTaskCompletion, Long mailCheckTaskCompletionPeriod,
+			Boolean mailSendOnPolicyCompletion, Long mailCheckPolicyCompletionPeriod, String hotDeploymentPath,
+			String cronTaskList, Integer entrySizeLimit, Integer cronIntervalEntrySize) {
 		super();
 		this.liderLocale = liderLocale;
 		this.ldapServer = ldapServer;
@@ -162,6 +158,8 @@ public class ConfigParams {
 		this.roleLdapObjectClasses = roleLdapObjectClasses;
 		this.userLdapRolesDn = userLdapRolesDn;
 		this.groupLdapBaseDn = groupLdapBaseDn;
+		this.userGroupLdapBaseDn = userGroupLdapBaseDn;
+		this.ahenkGroupLdapBaseDn = ahenkGroupLdapBaseDn;
 		this.xmppHost = xmppHost;
 		this.xmppPort = xmppPort;
 		this.xmppUsername = xmppUsername;
@@ -205,10 +203,7 @@ public class ConfigParams {
 		this.cronTaskList = cronTaskList;
 		this.entrySizeLimit = entrySizeLimit;
 		this.cronIntervalEntrySize = cronIntervalEntrySize;
-		this.userGroupLdapBaseDn = userGroupLdapBaseDn;
-		this.ahenkGroupLdapBaseDn = ahenkGroupLdapBaseDn;
 	}
-
 
 	public void setDefaultParams() {
 		this.liderLocale = "tr";
@@ -223,7 +218,6 @@ public class ConfigParams {
 		this.agentLdapIdAttribute = "cn";
 		this.agentLdapJidAttribute = "uid";
 		this.agentLdapObjectClasses = "pardusDevice,device";
-		this.ahenkGroupLdapBaseDn = "ou=Ahenk," + this.groupLdapBaseDn;
 		
 		// User configuration
 		this.userLdapBaseDn= "ou=People," + this.ldapRootDn ;
@@ -236,7 +230,7 @@ public class ConfigParams {
 		this.userLdapRolesDn = "ou=Roles," + this.ldapRootDn;
 		this.groupLdapBaseDn = "ou=Gruplar," + this.ldapRootDn;
 		this.userGroupLdapBaseDn = "ou=People," + this.groupLdapBaseDn;
-		
+		this.ahenkGroupLdapBaseDn = "ou=Ahenk," + this.groupLdapBaseDn;
 		// XMPP configuration
 		this.xmppResource = "Smack";
 		this.xmppServiceName = "im.liderahenk.org"; // service name / XMPP domain
@@ -252,8 +246,6 @@ public class ConfigParams {
 		this.fileServerPluginPath = "/plugins/ahenk-{0}_{1}_amd64.deb";
 		this.fileServerAgreementPath = "/home/pardus/sample-agreement.txt";
 		this.fileServerAgentFilePath = "/home/pardus/dev/agent-files/{0}/";
-
-
 	}
 
 	public String getLiderLocale() {

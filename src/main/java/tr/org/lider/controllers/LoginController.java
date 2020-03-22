@@ -10,11 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.constant.LiderConstants;
+import tr.org.lider.services.ConfigService;
 import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.services.LoginService;
 
@@ -22,7 +22,7 @@ import tr.org.lider.services.LoginService;
  * 
  * @author M. Edip YILDIZ
  */
-@Controller()
+@Controller
 public class LoginController {
 	
 	Logger logger = LoggerFactory.getLogger(LoginController.class);
@@ -34,39 +34,48 @@ public class LoginController {
 	public ServletContext servletContext;
 	
 	@Autowired
-	private ConfigurationService configService;
+	private ConfigurationService configurationService;
 
+	@Autowired
+	ConfigService configService;
+	
 	@RequestMapping(value = "/",method = {RequestMethod.GET, RequestMethod.POST})
-	public ModelAndView getMainPage(Model model, Authentication authentication) {
-
-		ModelAndView modelAndView = new ModelAndView();
+	public String getMainPage(Model model, Authentication authentication) {
 		try {
-
 			LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) authentication.getPrincipal();
-			
 			logger.info("User logged as " + userDetails.getAuthorities());
 			logger.info("User has authorities: " + userDetails.getAuthorities());
 			
-			modelAndView.setViewName(LiderConstants.Pages.PAGES_MAIN_PAGE);
-			modelAndView.addObject("user", userDetails);
-			modelAndView.addObject("password", userDetails.getPassword());
-			modelAndView.addObject("userNameJid", userDetails.getLiderUser().getName() + "@" + configService.getXmppServiceName());
-			modelAndView.addObject("xmppHost", configService.getXmppHost());
+			model.addAttribute("user", userDetails);
+			model.addAttribute("password", userDetails.getPassword());
+			model.addAttribute("userNameJid", userDetails.getLiderUser().getName() + "@" + configurationService.getXmppServiceName());
+			model.addAttribute("xmppHost", configurationService.getXmppHost());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		return modelAndView;
+		return LiderConstants.Pages.PAGES_MAIN_PAGE;
 	}
 	
 	@RequestMapping(value = "/logout")
 	public String logout(Model model, Authentication authentication) {
-		
 		return "login";
 	}
+	
 	@RequestMapping(value = "/login")
 	public String login(Model model, Authentication authentication) {
-		
+//		if(configService.isConfigurationDone()) {
+////			try {
+////				ObjectMapper mapper = new ObjectMapper();
+////				ConfigParams c = mapper.readValue(configService.findByName("liderConfigParams").get().getValue(), ConfigParams.class);
+////				System.err.println(c.getLdapRootDn());
+////			} catch (JsonProcessingException e) {
+////				// TODO Auto-generated catch block
+////				e.printStackTrace();
+////			}
+//			return "login";
+//		} else {
+//			return "config";
+//		}
 		return "login";
 	}
 

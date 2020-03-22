@@ -1,0 +1,280 @@
+<script src="assets/js/app.js"></script>
+<script src="assets/js/app-custom.js"></script>
+
+<div class="main-card mb-3 card" style="margin: 18px;">
+	<div class="card-body">
+		<div class="card-body">
+			<h5 class="card-title">Ayarlar</h5>
+			<ul class="nav nav-tabs">
+				<li class="nav-item"><a data-toggle="tab" href="#tab-users"
+					class="active nav-link">Kullanıcılar</a></li>
+				<li class="nav-item"><a data-toggle="tab" href="#tab-roles"
+					class="nav-link">Rol Tanımları</a></li>
+				<li class="nav-item"><a data-toggle="tab" href="#tab-ldap"
+					class="nav-link">LDAP Ayarları</a></li>
+				<li class="nav-item"><a data-toggle="tab" href="#tab-xmpp"
+					class="nav-link">XMPP Ayarları</a></li>
+				<li class="nav-item"><a data-toggle="tab" href="#tab-file-server"
+					class="nav-link">Dosya Sunucusu Ayarları</a></li>
+				<li class="nav-item"><a data-toggle="tab" href="#tab-other-settings"
+					class="nav-link">Diğer Ayarlar</a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active" id="tab-users" role="tabpanel">
+					<p>Kullanıcılar</p>
+				</div>
+				<div class="tab-pane" id="tab-roles" role="tabpanel">
+					<p>Rol Tanımları</p>
+				</div>
+				<div class="tab-pane" id="tab-ldap" role="tabpanel">
+					<div class="col-md-12">
+						<h3>LDAP Sunucusu Bilgileri</h3>
+						<!-- row 1 -->
+						<div class="form-row">
+							<div class="col-md-4">
+								<div class="position-relative form-group">
+									<label for="labelLdapServerAddress" class="control-label">LDAP Sunucu Adresi</label>
+									<input name="ldapServerAddress" id="ldapServerAddress" required="required"
+										type="text" placeholder="10.12.56.145" class="form-control" value="1.1.1.1" disabled>
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class="position-relative form-group">
+									<label for="labelLdapServerPort" class="control-label">Port</label>
+									<input name="ldapServerPort" id="ldapServerPort" required="required"
+										type="text" value="389" placeholder="389" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelLdabBaseDN" class="control-label">Domain Adı</label>
+									<input name="ldapBaseDN" id="ldapBaseDN" required="required"
+										type="text" placeholder="dc=liderahenk,dc=org" class="form-control" disabled>
+								</div>
+							</div>
+						</div>
+						
+						<!-- row 2 -->
+						<div class="form-row">
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelLdapServerAddress" class="control-label">LDAP Kullanıcı DN</label>
+									<input name="ldapUserDN" id="ldapUserDN" required="required"
+										type="text" placeholder="cn=admin,dc=liderahenk,dc=org" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelLdapUserPassword" class="control-label">LDAP Kullanıcı Şifresi</label>
+									<input name="ldapUserPassword" id="ldapUserPassword" required="required"
+										type="text" class="form-control" value="123" disabled>
+								</div>
+							</div>
+						</div>
+						
+						<!-- row 3 -->
+						<div class="form-row">
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelLdapServerAddress" class="">Ahenk Klasörü</label>
+									<input name="agentDN" id="agentDN"
+										value="ou=Agents,dc=liderahenk,dc=org" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelPeopleDN" class="">Kullanıcı Klasörü</label>
+									<input name="peopleDN" id="peopleDN"
+										value="ou=People,dc=liderahenk,dc=org" class="form-control" disabled>
+								</div>
+							</div>
+						</div>
+						
+						<!-- row 4 -->
+						<div class="form-row">
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelGroupDN" class="">Grup Klasörü</label>
+									<input name="groupDN" id="groupDN"
+										value="ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelComputerGroupDN" class="">İstemci Grubu Klasörü</label>
+									<input name="computerGroupDN" id="computerGroupDN"
+										value="cn=Computer,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+								</div>
+							</div>
+						</div>
+						
+						<!-- row 5 -->
+						<div class="form-row">
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelUserGroupDN" class="">Kullanıcı Grubu Klasörü</label>
+									<input name="userGroupDN" id="userGroupDN"
+										value="cn=User,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelSudoGroupDN" class="">Yetki Grubu Klasörü(Sudo)</label>
+									<input name="sudoGroupDN" id="sudoGroupDN"
+										value="cn=Sudo,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="position-relative form-group">
+									<button class="btn btn-primary pull-right" type="button">Düzenle</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane" id="tab-xmpp" role="tabpanel">
+					<div class="col-md-12">
+						<h3>XMPP Sunucusu Bilgileri</h3>
+						<!-- row 1 -->
+						<div class="form-row">
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelXMPPServerAddress" class="control-label">XMPP Sunucu Adresi</label>
+									<input name="XMPPServerAddress" id="XMPPServerAddress" required="required"
+										type="text" value="10.12.56.146" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelXMPPServerPort" class="control-label">Port</label>
+									<input name="XMPPServerPort" id="XMPPServerPort" required="required"
+										type="text" value="5222" placeholder="5222" class="form-control" disabled>
+								</div>
+							</div>
+						</div>
+						<!-- row 2 -->
+						<div class="form-row">
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelXMPPUserName" class="control-label">XMPP Kullanıcı Adı</label>
+									<input name="XMPPUserName" id="XMPPUserName" required="required"
+										type="text" value="lider_sunucu" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelXMPPUserPassword" class="control-label">XMPP Kullanıcı Şifresi</label>
+									<input name="XMPPUserPassword" id="XMPPUserPassword" required="required"
+										type="text" class="form-control" value="123" disabled>
+								</div>
+							</div>
+						</div>
+						<!-- row 3 -->
+						<div class="form-row">
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelXMPPResource" class="control-label">XMPP Kaynak Adı</label>
+									<input name="XMPPResourceName" id="XMPPResourceName" required="required"
+										type="text" value="Smack" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelXMPPServiceName" class="control-label">XMPP Servis Adı</label>
+									<input name="XMPPServiceName" id="XMPPServiceName" required="required"
+										type="text" class="form-control" value="im.liderahenk.org" disabled>
+								</div>
+							</div>
+						</div>
+						<!-- row 4 -->
+						<div class="form-row">
+							<div class="col-md-4">
+								<div class="position-relative form-group">
+									<label for="labelXMPPRetryConnCount" class="control-label">XMPP Retry Connection Count</label>
+									<input name="XMPPRetryConnCoun" id="XMPPRetryConnCoun" required="required"
+										type="text" class="form-control" value="5" disabled>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="position-relative form-group">
+									<label for="labelXMPPPacketReplayTimeout" class="control-label">XMPP Packet Replay Timeout</label>
+									<input name="XMPPPacketReplayTimeout" id="XMPPPacketReplayTimeout" required="required"
+										type="text" class="form-control" value="10000" disabled>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="position-relative form-group">
+									<label for="labelXMPPPingTimeout" class="control-label">XMPP Ping Timeout</label>
+									<input name="XMPPPingTimeout" id="XMPPPingTimeout" required="required"
+										type="text" class="form-control" value="300" disabled>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="position-relative form-group">
+									<button class="btn btn-primary pull-right" type="button">Düzenle</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane" id="tab-file-server" role="tabpanel">
+					<div class="col-md-12">
+						<h3>Dosya Sunucusu Bilgileri</h3>
+						<!-- row 1 -->
+						<div class="form-row">
+							<div class="col-md-2">
+								<div class="position-relative form-group">
+									<label for="labelFileTransferType" class="">Transfer Tipi</label>
+						  			<select class="form-control" id="fileTransferType" name="fileTransferType" disabled>
+										<option value="SSH">SSH</option>
+										<option value="HTTP">HTTP</option>
+										<option value="TORRENT">TORRENT</option>
+						  			</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelfileServerAddress" class="control-label">Dosya Sunucusu Adresi</label>
+									<input name="fileServerAddress" id="fileServerAddress" required="required"
+										type="text" value="10.12.56.147" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="position-relative form-group">
+									<label for="labelFileServerPort" class="control-label">Port</label>
+									<input name="fileServerPort" id="fileServerPort" required="required"
+										type="text" placeholder="22" class="form-control" value="22" disabled>
+								</div>
+							</div>
+						</div>
+						<!-- row 2 -->
+						<div class="form-row">
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelFileServerUserName" class="control-label">Sunucu Erişimi İçin Kullanıcı Adı</label>
+									<input name="fileServerUserName" id="fileServerUserName" required="required"
+										type="text" placeholder="lider" class="form-control" value="lider" disabled>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="position-relative form-group">
+									<label for="labelFileServerUserPassword" class="control-label">Kullanıcı Şifresi</label>
+									<input name="fileServerUserPassword" id="fileServerUserPassword" required="required"
+										type="text" class="form-control" value="123" disabled>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="position-relative form-group">
+									<button class="btn btn-primary pull-right" type="button">Düzenle</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane" id="tab-other-settings" role="tabpanel">
+					<p>Diğer Ayarlar</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

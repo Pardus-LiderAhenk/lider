@@ -240,6 +240,17 @@ function setSystemPluginPage() {
 						}
 					});
 				}
+				if(pluginTask.page == 'local-user'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#local-user').html(res1);
+						}
+					});
+				}
 			}
 		}
 	});

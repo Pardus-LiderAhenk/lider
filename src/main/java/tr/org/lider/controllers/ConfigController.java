@@ -55,7 +55,7 @@ public class ConfigController {
 			ObjectMapper mapper = new ObjectMapper();
 			String jsonString = mapper.writeValueAsString(configParams);
 			configurationService.save(new ConfigImpl("liderConfigParams", jsonString));
-			logger.error("Configuration settings are completed and saved to database.");
+			logger.info("Configuration settings are completed and saved to database.");
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			logger.error("Error occured while converting ConfigParams object to json string: " + e.getMessage());

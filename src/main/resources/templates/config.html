@@ -121,12 +121,12 @@ body {
 		$('div.setup-panel div a.btn-primary').trigger('click');
 		 
 		$('#ldapBaseDN').keyup(function () {
-			$('#agentDN').val("ou=Computers," + $('#ldapBaseDN').val());
-			$('#peopleDN').val("ou=People," + $('#ldapBaseDN').val());
+			$('#agentDN').val("ou=Agents," + $('#ldapBaseDN').val());
+			$('#peopleDN').val("ou=Users," + $('#ldapBaseDN').val());
 			$('#groupDN').val("ou=Groups," + $('#ldapBaseDN').val());
-			$('#computerGroupDN').val("ou=Computers," + $('#groupDN').val());
-			$('#userGroupDN').val("ou=Users," + $('#groupDN').val());
-			$('#sudoGroupDN').val("ou=Sudo," + $('#groupDN').val());
+			$('#computerGroupDN').val("ou=Agent," + $('#groupDN').val());
+			$('#userGroupDN').val("ou=User," + $('#groupDN').val());
+			$('#sudoGroupDN').val("ou=Role," + $('#groupDN').val());
 		});
 	});
 	function save() {
@@ -269,7 +269,7 @@ body {
 								<div class="position-relative form-group">
 									<label for="labelPeopleDN" class="">Kullanıcı Klasörü</label>
 									<input name="peopleDN" id="peopleDN"
-										value="ou=People,dc=liderahenk,dc=org" class="form-control" disabled>
+										value="ou=Users,dc=liderahenk,dc=org" class="form-control" disabled>
 								</div>
 							</div>
 						</div>
@@ -287,7 +287,7 @@ body {
 								<div class="position-relative form-group">
 									<label for="labelComputerGroupDN" class="">İstemci Grubu Klasörü</label>
 									<input name="computerGroupDN" id="computerGroupDN"
-										value="cn=Computer,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+										value="ou=Agent,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
 								</div>
 							</div>
 						</div>
@@ -298,14 +298,14 @@ body {
 								<div class="position-relative form-group">
 									<label for="labelUserGroupDN" class="">Kullanıcı Grubu Klasörü</label>
 									<input name="userGroupDN" id="userGroupDN"
-										value="cn=User,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+										value="ou=User,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="position-relative form-group">
 									<label for="labelSudoGroupDN" class="">Yetki Grubu Klasörü(Sudo)</label>
 									<input name="sudoGroupDN" id="sudoGroupDN"
-										value="cn=Sudo,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+										value="ou=Role,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
 								</div>
 							</div>
 							<div class="col-md-12">

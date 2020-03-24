@@ -235,23 +235,24 @@ public class ConfigParams {
 		this.ldapEmailAttribute = "mail";
 
 		// Agent configuration
-		this.agentLdapBaseDn= "ou=Ahenkler," + this.ldapRootDn;
+		this.agentLdapBaseDn= "ou=Agents," + this.ldapRootDn;
 		this.agentLdapIdAttribute = "cn";
 		this.agentLdapJidAttribute = "uid";
 		this.agentLdapObjectClasses = "pardusDevice,device";
 		
 		// User configuration
-		this.userLdapBaseDn= "ou=People," + this.ldapRootDn ;
+		this.userLdapBaseDn= "ou=Users," + this.ldapRootDn ;
 		this.userLdapUidAttribute  ="uid";
 		this.userLdapPrivilegeAttribute = "liderPrivilege";
 		this.userLdapObjectClasses = "pardusAccount,pardusLider";
 		this.userAuthorizationEnabled = true;
 		this.groupLdapObjectClasses = "groupOfNames";
 		this.roleLdapObjectClasses = "sudoRole";
-		this.userLdapRolesDn = "ou=Roles," + this.ldapRootDn;
-		this.groupLdapBaseDn = "ou=Gruplar," + this.ldapRootDn;
-		this.userGroupLdapBaseDn = "ou=People," + this.groupLdapBaseDn;
-		this.ahenkGroupLdapBaseDn = "ou=Ahenk," + this.groupLdapBaseDn;
+		
+		this.groupLdapBaseDn = "ou=Groups," + this.ldapRootDn;
+		this.userLdapRolesDn = "ou=Role," + this.groupLdapBaseDn;
+		this.userGroupLdapBaseDn = "ou=User," + this.groupLdapBaseDn;
+		this.ahenkGroupLdapBaseDn = "ou=Agent," + this.groupLdapBaseDn;
 		// XMPP configuration
 		this.xmppResource = "Smack";
 		this.xmppServiceName = "im.liderahenk.org"; // service name / XMPP domain

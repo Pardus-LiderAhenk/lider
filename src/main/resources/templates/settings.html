@@ -1,6 +1,61 @@
 <script src="assets/js/app.js"></script>
 <script src="assets/js/app-custom.js"></script>
 
+<script type="text/javascript">
+	$(document).ready(function () {
+		
+		getConfigurationParams();
+
+	});
+	function getConfigurationParams() {
+
+		$.ajax({ 
+		    type: 'GET', 
+		    url: "/settings/configurations",
+		    dataType: 'json',
+		    success: function (data) { 
+		    	console.log(data);
+		    	if(data != null) {
+		    		//set ldap configuration
+		    		$('#ldapServerAddress').val(data.ldapServer);
+		    		$('#ldapServerPort').val(data.ldapPort);
+		    		$('#ldapRootDN').val(data.ldapRootDn);
+		    		$('#ldapUserDN').val(data.ldapUsername);
+		    		$('#ldapUserPassword').val(data.ldapPassword);
+		    		$('#agentDN').val(data.agentLdapBaseDn);
+		    		$('#peopleDN').val(data.userLdapBaseDn);
+		    		$('#groupDN').val(data.groupLdapBaseDn);
+		    		$('#computerGroupDN').val(data.ahenkGroupLdapBaseDn);
+		    		$('#userGroupDN').val(data.userGroupLdapBaseDn);
+		    		$('#sudoGroupDN').val(data.userLdapRolesDn);
+		    		
+		    		//set XMPP configuration
+		    		$('#XMPPServerAddress').val(data.xmppHost);
+		    		$('#XMPPServerPort').val(data.xmppPort);
+		    		$('#XMPPUserName').val(data.xmppUsername);
+		    		$('#XMPPUserPassword').val(data.xmppPassword);
+		    		$('#XMPPResourceName').val(data.xmppResource);
+		    		$('#XMPPServiceName').val(data.xmppServiceName);
+		    		$('#XMPPRetryConnectionCount').val(data.xmppMaxRetryConnectionCount);
+		    		$('#XMPPPacketReplayTimeout').val(data.xmppPacketReplayTimeout);
+		    		$('#XMPPPingTimeout').val(data.xmppPingTimeout);
+		    		
+		    		//set file server configuration
+		    		$('#fileTransferType').val(data.fileServerProtocol);
+		    		$('#fileServerAddress').val(data.fileServerHost);
+		    		$('#fileServerPort').val(data.fileServerPort);
+		    		$('#fileServerUserName').val(data.fileServerUsername);
+		    		$('#fileServerUserPassword').val(data.fileServerPassword);
+		    	} else {
+		    		$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    	}
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    }
+		});
+	}
+</script>
 <div class="main-card mb-3 card" style="margin: 18px;">
 	<div class="card-body">
 		<div class="card-body">
@@ -35,7 +90,7 @@
 								<div class="position-relative form-group">
 									<label for="labelLdapServerAddress" class="control-label">LDAP Sunucu Adresi</label>
 									<input name="ldapServerAddress" id="ldapServerAddress" required="required"
-										type="text" placeholder="10.12.56.145" class="form-control" value="1.1.1.1" disabled>
+										type="text" placeholder="10.10.56.145" class="form-control"  disabled>
 								</div>
 							</div>
 							<div class="col-md-2">
@@ -47,8 +102,8 @@
 							</div>
 							<div class="col-md-6">
 								<div class="position-relative form-group">
-									<label for="labelLdabBaseDN" class="control-label">Domain Adı</label>
-									<input name="ldapBaseDN" id="ldapBaseDN" required="required"
+									<label for="labelLdaRootDN" class="control-label">Domain Adı</label>
+									<input name="ldapRootDN" id="ldapRootDN" required="required"
 										type="text" placeholder="dc=liderahenk,dc=org" class="form-control" disabled>
 								</div>
 							</div>
@@ -67,7 +122,7 @@
 								<div class="position-relative form-group">
 									<label for="labelLdapUserPassword" class="control-label">LDAP Kullanıcı Şifresi</label>
 									<input name="ldapUserPassword" id="ldapUserPassword" required="required"
-										type="text" class="form-control" value="123" disabled>
+										type="password" class="form-control" disabled>
 								</div>
 							</div>
 						</div>
@@ -85,7 +140,7 @@
 								<div class="position-relative form-group">
 									<label for="labelPeopleDN" class="">Kullanıcı Klasörü</label>
 									<input name="peopleDN" id="peopleDN"
-										value="ou=People,dc=liderahenk,dc=org" class="form-control" disabled>
+										value="ou=Users,dc=liderahenk,dc=org" class="form-control" disabled>
 								</div>
 							</div>
 						</div>
@@ -103,7 +158,7 @@
 								<div class="position-relative form-group">
 									<label for="labelComputerGroupDN" class="">İstemci Grubu Klasörü</label>
 									<input name="computerGroupDN" id="computerGroupDN"
-										value="cn=Computer,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+										value="ou=Agent,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
 								</div>
 							</div>
 						</div>
@@ -114,14 +169,14 @@
 								<div class="position-relative form-group">
 									<label for="labelUserGroupDN" class="">Kullanıcı Grubu Klasörü</label>
 									<input name="userGroupDN" id="userGroupDN"
-										value="cn=User,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+										value="ou=User,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="position-relative form-group">
 									<label for="labelSudoGroupDN" class="">Yetki Grubu Klasörü(Sudo)</label>
 									<input name="sudoGroupDN" id="sudoGroupDN"
-										value="cn=Sudo,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+										value="ou=Role,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
 								</div>
 							</div>
 							<div class="col-md-12">
@@ -141,7 +196,7 @@
 								<div class="position-relative form-group">
 									<label for="labelXMPPServerAddress" class="control-label">XMPP Sunucu Adresi</label>
 									<input name="XMPPServerAddress" id="XMPPServerAddress" required="required"
-										type="text" value="10.12.56.146" class="form-control" disabled>
+										type="text" value="10.10.56.146" class="form-control" disabled>
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -165,7 +220,7 @@
 								<div class="position-relative form-group">
 									<label for="labelXMPPUserPassword" class="control-label">XMPP Kullanıcı Şifresi</label>
 									<input name="XMPPUserPassword" id="XMPPUserPassword" required="required"
-										type="text" class="form-control" value="123" disabled>
+										type="password" class="form-control" value="123" disabled>
 								</div>
 							</div>
 						</div>
@@ -190,8 +245,8 @@
 						<div class="form-row">
 							<div class="col-md-4">
 								<div class="position-relative form-group">
-									<label for="labelXMPPRetryConnCount" class="control-label">XMPP Retry Connection Count</label>
-									<input name="XMPPRetryConnCoun" id="XMPPRetryConnCoun" required="required"
+									<label for="labelXMPPRetryConnectionCount" class="control-label">XMPP Retry Connection Count</label>
+									<input name="XMPPRetryConnectionCount" id="XMPPRetryConnectionCount" required="required"
 										type="text" class="form-control" value="5" disabled>
 								</div>
 							</div>
@@ -236,14 +291,14 @@
 								<div class="position-relative form-group">
 									<label for="labelfileServerAddress" class="control-label">Dosya Sunucusu Adresi</label>
 									<input name="fileServerAddress" id="fileServerAddress" required="required"
-										type="text" value="10.12.56.147" class="form-control" disabled>
+										type="text" placeholder="10.10.56.147" class="form-control" disabled>
 								</div>
 							</div>
 							<div class="col-md-4">
 								<div class="position-relative form-group">
 									<label for="labelFileServerPort" class="control-label">Port</label>
 									<input name="fileServerPort" id="fileServerPort" required="required"
-										type="text" placeholder="22" class="form-control" value="22" disabled>
+										type="text" placeholder="22" class="form-control" disabled>
 								</div>
 							</div>
 						</div>
@@ -253,14 +308,14 @@
 								<div class="position-relative form-group">
 									<label for="labelFileServerUserName" class="control-label">Sunucu Erişimi İçin Kullanıcı Adı</label>
 									<input name="fileServerUserName" id="fileServerUserName" required="required"
-										type="text" placeholder="lider" class="form-control" value="lider" disabled>
+										type="text" placeholder="lider" class="form-control" disabled>
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="position-relative form-group">
 									<label for="labelFileServerUserPassword" class="control-label">Kullanıcı Şifresi</label>
 									<input name="fileServerUserPassword" id="fileServerUserPassword" required="required"
-										type="text" class="form-control" value="123" disabled>
+										type="password" class="form-control" disabled>
 								</div>
 							</div>
 							<div class="col-md-12">

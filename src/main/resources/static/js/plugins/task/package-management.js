@@ -102,7 +102,7 @@ function getPackagesListener(msg) {
 
 										var newRow = $("<tr>");
 										var html = '<td class="text-center"><span class="cb-package-name">'
-											+ '<input class="text-center" type="checkbox" name="package_name" id="'+ package_version +'" value="' + package_name +'">'
+											+ '<input class="text-center" type="checkbox" onclick="onclickPackageChecked(this)" name="package_name" id="'+ package_version +'" value="' + package_name +'">'
 											+ '<label for="checkbox1"></label>'
 											+ '</span>'
 											+ '</td>';
@@ -183,6 +183,73 @@ function createInstalledPackagesTable() {
 	} );
 }
 
+function onclickPackageChecked(select) {
+	var selPackageName = select.value;
+	var selPackageVersion = select.id;
+	var packageInfo = {};
+	if(select.checked) {
+		packageInfo = {
+				"packageName": selPackageName,
+				"version": selPackageVersion,
+				"installed": true,
+				"desiredStatus": "UNINSTALL", //NA and UNINSTALL
+				"tag": "u", // i and u
+				"installedSize": null,
+				"maintainer": null,
+				"architecture": null,
+				"depends": null,
+				"recommends": null,
+				"breaks": null,
+				"descriptionMd5": null,
+				"homepage": null,
+				"suggests": null,
+				"multiArch": null,
+				"md5Sum": null,
+				"sha1": null,
+				"sha256": null,
+				"replaces": null,
+				"preDepends": null,
+				"provides": null,
+				"description": null,
+				"section": null,
+				"source": null,
+				"conflicts": null,
+				"filename": null,
+				"priority": null,
+				"size": null
+		};
+
+		if (checkPackagesList(selPackageName) == false) {
+			packageInfoList.push(packageInfo);
+		}
+	}else {
+		if (checkPackagesList(selPackageName) == true) {
+			removePackageFromList(selPackageName);
+		}
+	}
+}
+
+function checkPackagesList(packageName) {
+	var isExists = false;
+	if (packageInfoList.length > 0) {
+		for (var i = 0; i < packageInfoList.length; i++) {
+			if (packageName == packageInfoList[i]["packageName"]) {
+				isExists = true;
+			}
+		}
+	}
+	return isExists;
+}
+
+function removePackageFromList(packageName) {
+	var index = packageInfoList.findIndex(function(item, i){
+		return item.packageName === packageName;
+	});
+	if (index > -1) {
+		packageInfoList.splice(index, 1);
+	}
+}
+
 $('#sendTaskCronPackageManagement').click(function(e){
 	$('#scheduledTasksModal').modal('toggle');
 	scheduledParam = null;
@@ -250,53 +317,14 @@ $('#sendTaskDeletePackageBtn').click(function(e){
 		pluginTask_PackageManagement.dnList=dnlist;
 		pluginTask_PackageManagement.entryList=selectedEntries;
 		pluginTask_PackageManagement.dnType="AHENK";
-	}
-
-	if($('input:checkbox[name=package_name]').is(':checked')) {
-		var packageInfo = {};
-		$('input:checkbox[name=package_name]').each(function() {
-			var pName = $(this).val();
-			var pVersion = $(this).attr('id');
-
-			if($(this).is(':checked')) {
-				packageInfo = {
-						"packageName": pName,
-						"version": pVersion,
-						"installed": true,
-						"desiredStatus": "UNINSTALL", //NA and UNINSTALL
-						"tag": "u", // i and u
-						"installedSize": null,
-						"maintainer": null,
-						"architecture": null,
-						"depends": null,
-						"recommends": null,
-						"breaks": null,
-						"descriptionMd5": null,
-						"homepage": null,
-						"suggests": null,
-						"multiArch": null,
-						"md5Sum": null,
-						"sha1": null,
-						"sha256": null,
-						"replaces": null,
-						"preDepends": null,
-						"provides": null,
-						"description": null,
-						"section": null,
-						"source": null,
-						"conflicts": null,
-						"filename": null,
-						"priority": null,
-						"size": null
-				};
-				packageInfoList.push(packageInfo);
-			}
-		});
 		pluginTask_PackageManagement.commandId = "PACKAGE_MANAGEMENT";
 		pluginTask_PackageManagement.parameterMap={"packageInfoList":packageInfoList};
 		pluginTask_PackageManagement.cronExpression = scheduledParamPackageManagement;
 		var params = JSON.stringify(pluginTask_PackageManagement);
+	}
 
+//	if($('input:checkbox[name=package_name]').is(':checked')) {
+	if (packageInfoList.length > 0) {
 		var content = "Görev Gönderilecek, emin misiniz?";
 		if (scheduledParamPackageManagement != null) {
 			content = "Zamanlanmış görev gönderilecek, emin misiniz?";

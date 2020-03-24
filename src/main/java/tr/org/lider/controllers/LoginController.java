@@ -1,7 +1,5 @@
 package tr.org.lider.controllers;
 
-import javax.servlet.ServletContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.constant.LiderConstants;
-import tr.org.lider.services.ConfigService;
 import tr.org.lider.services.ConfigurationService;
 
 /**
@@ -27,9 +24,6 @@ public class LoginController {
 	
 	@Autowired
 	private ConfigurationService configurationService;
-
-	@Autowired
-	private ConfigService configService;
 	
 	@RequestMapping(value = "/",method = {RequestMethod.GET, RequestMethod.POST})
 	public String getMainPage(Model model, Authentication authentication) {
@@ -55,15 +49,7 @@ public class LoginController {
 	
 	@RequestMapping(value = "/login")
 	public String login(Model model, Authentication authentication) {
-		if(configService.isConfigurationDone()) {
-//			try {
-//				ObjectMapper mapper = new ObjectMapper();
-//				ConfigParams c = mapper.readValue(configService.findByName("liderConfigParams").get().getValue(), ConfigParams.class);
-//				System.err.println(c.getLdapRootDn());
-//			} catch (JsonProcessingException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+		if(configurationService.isConfigurationDone()) {
 			return "login";
 		} else {
 			return "config";

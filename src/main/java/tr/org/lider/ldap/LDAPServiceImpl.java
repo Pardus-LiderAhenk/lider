@@ -98,14 +98,14 @@ public class LDAPServiceImpl implements ILDAPService {
 
 	@PostConstruct
 	public void init() throws Exception {
+	}
 
-
+	public void setParams() throws Exception {
 		LdapConnectionConfig lconfig = new LdapConnectionConfig();
 		lconfig.setLdapHost(configurationService.getLdapServer());
 		lconfig.setLdapPort(Integer.parseInt(configurationService.getLdapPort()));
 		lconfig.setName(configurationService.getLdapUsername());
 		lconfig.setCredentials(configurationService.getLdapPassword());
-		
 		
 		if (configurationService.getLdapUseSsl()) {
 			lconfig.setUseSsl(true);
@@ -126,7 +126,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
 		logger.debug(this.toString());
 	}
-
+	
 	private TrustManager createCustomTrustManager() {
 		return new X509TrustManager() {
 			public X509Certificate[] getAcceptedIssuers() {
@@ -197,6 +197,7 @@ public class LDAPServiceImpl implements ILDAPService {
 	public LdapConnection getConnection() throws LdapException {
 		LdapConnection connection = null;
 		try {
+			setParams();
 			connection = pool.getConnection();
 		} catch (Exception e) {
 			throw new LdapException(e);

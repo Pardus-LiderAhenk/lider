@@ -1,22 +1,22 @@
 /*
-*
-*    Copyright © 2015-2016 Tübitak ULAKBIM
-*
-*    This file is part of Lider Ahenk.
-*
-*    Lider Ahenk is free software: you can redistribute it and/or modify
-*    it under the terms of the GNU General Public License as published by
-*    the Free Software Foundation, either version 3 of the License, or
-*    (at your option) any later version.
-*
-*    Lider Ahenk is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*    GNU General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with Lider Ahenk.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ *
+ *    Copyright © 2015-2016 Tübitak ULAKBIM
+ *
+ *    This file is part of Lider Ahenk.
+ *
+ *    Lider Ahenk is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    Lider Ahenk is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Lider Ahenk.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package tr.org.lider.messaging.messages;
 
 import java.io.IOException;
@@ -72,20 +72,13 @@ import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import tr.org.lider.messaging.subscribers.IPresenceSubscriber;
-import tr.org.lider.messaging.subscribers.IRegistrationSubscriber;
-import tr.org.lider.messaging.subscribers.ITaskStatusSubscriber;
-import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.messaging.listeners.OnlineRosterListener;
-import tr.org.lider.messaging.listeners.TaskStatusListener;
-import tr.org.lider.messaging.listeners.XMPPConnectionListener;
 import tr.org.lider.messaging.listeners.PacketListener;
 //import tr.org.liderahenk.lider.messaging.listeners.AgreementStatusListener;
 //import tr.org.liderahenk.lider.messaging.listeners.MissingPluginListener;
@@ -98,6 +91,12 @@ import tr.org.lider.messaging.listeners.PacketListener;
 //import tr.org.liderahenk.lider.messaging.listeners.TaskStatusListener;
 //import tr.org.liderahenk.lider.messaging.listeners.UserSessionListener;
 import tr.org.lider.messaging.listeners.RegistrationListener;
+import tr.org.lider.messaging.listeners.TaskStatusListener;
+import tr.org.lider.messaging.listeners.XMPPConnectionListener;
+import tr.org.lider.messaging.subscribers.IPresenceSubscriber;
+import tr.org.lider.messaging.subscribers.IRegistrationSubscriber;
+import tr.org.lider.messaging.subscribers.ITaskStatusSubscriber;
+import tr.org.lider.services.ConfigurationService;
 
 
 /**
@@ -132,36 +131,36 @@ public class XMPPClientImpl {
 	private PacketListener packetListener;
 	private TaskStatusListener taskStatusListener;
 
-//	private PolicyStatusListener policyStatusListener;
+	//	private PolicyStatusListener policyStatusListener;
 	private RegistrationListener registrationListener;
-//	private UserSessionListener userSessionListener;
-//	private MissingPluginListener missingPluginListener;
-//	private PolicyListener policyListener;
-//	private RequestAgreementListener reqAggrementListener;
-//	private AgreementStatusListener aggrementStatusListener;
-//	private ScriptResultListener scriptResultListener;
+	//	private UserSessionListener userSessionListener;
+	//	private MissingPluginListener missingPluginListener;
+	//	private PolicyListener policyListener;
+	//	private RequestAgreementListener reqAggrementListener;
+	//	private AgreementStatusListener aggrementStatusListener;
+	//	private ScriptResultListener scriptResultListener;
 
 	/**
 	 * Packet subscribers
 	 */
-	
+
 	@Autowired
 	private List<ITaskStatusSubscriber> taskStatusSubscribers;
-	
+
 	@Autowired
 	private List<IPresenceSubscriber> presenceSubscribers;
 
 	//	private List<IPolicyStatusSubscriber> policyStatusSubscribers;
-//	private IUserSessionSubscriber userSessionSubscriber;
-//	private IMissingPluginSubscriber missingPluginSubscriber;
-//	private IPolicySubscriber policySubscriber;
-//	private IRequestAgreementSubscriber reqAggrementSubscriber;
-	
+	//	private IUserSessionSubscriber userSessionSubscriber;
+	//	private IMissingPluginSubscriber missingPluginSubscriber;
+	//	private IPolicySubscriber policySubscriber;
+	//	private IRequestAgreementSubscriber reqAggrementSubscriber;
+
 	@Autowired
 	private IRegistrationSubscriber registrationSubscriber;
-//	private IAgreementStatusSubscriber aggrementStatusSubscriber;
-//	private IScriptResultSubscriber scriptResultSubscriber;
-//	private IRegistrationSubscriber defaultRegistrationSubscriber;
+	//	private IAgreementStatusSubscriber aggrementStatusSubscriber;
+	//	private IScriptResultSubscriber scriptResultSubscriber;
+	//	private IRegistrationSubscriber defaultRegistrationSubscriber;
 
 	/**
 	 * Lider services
@@ -172,16 +171,37 @@ public class XMPPClientImpl {
 	private XMPPTCPConnection connection;
 	private XMPPTCPConnectionConfiguration config;
 
+	
+	
 	@PostConstruct
 	public void init() throws Exception {
-		logger.info("XMPP service initialization is started");
-		setParameters();
-		createXmppTcpConfiguration();
-		connect();
-		login();
-		setServerSettings();
-		addListeners();
-		logger.info("XMPP service initialized");
+	}
+	
+	private Boolean isXMPPInitialized = false;
+	
+	//if configuration settings are changed set isXMPPInitialized to false and call initXMPPClient() again 
+	public Boolean getIsXMPPInitialized() {
+		return isXMPPInitialized;
+	}
+
+	public void setIsXMPPInitialized(Boolean isXMPPInitialized) throws Exception {
+		disconnect();
+		initXMPPClient();
+		this.isXMPPInitialized = isXMPPInitialized;
+	}
+
+	public void initXMPPClient() throws Exception  {
+		if(isXMPPInitialized == false) {
+			logger.info("XMPP service initialization is started");
+			setParameters();
+			createXmppTcpConfiguration();
+			connect();
+			login();
+			setServerSettings();
+			addListeners();
+			isXMPPInitialized = true;
+			logger.info("XMPP service initialized");
+		}
 	}
 
 	/**
@@ -196,6 +216,7 @@ public class XMPPClientImpl {
 		this.maxRetryConnectionCount = configurationService.getXmppMaxRetryConnectionCount();
 		this.packetReplyTimeout = configurationService.getXmppPacketReplayTimeout();
 		this.pingTimeout = configurationService.getXmppPingTimeout();
+		logger.info("XMPP parameters are initialized");
 		logger.info(this.toString());
 	}
 
@@ -234,7 +255,7 @@ public class XMPPClientImpl {
 		connection = new XMPPTCPConnection(config);
 		logger.info("XMPP configuration packetReplyTimeout : " +packetReplyTimeout);
 		connection.setPacketReplyTimeout(packetReplyTimeout);
-		
+
 		// Retry connection if it fails.
 		while (!connection.isConnected() && retryCount < maxRetryConnectionCount) {
 			retryCount++;
@@ -293,7 +314,7 @@ public class XMPPClientImpl {
 		ReconnectionManager.getInstanceFor(connection).enableAutomaticReconnection();
 		// Set reconnection policy to increasing delay
 		ReconnectionManager.getInstanceFor(connection)
-				.setReconnectionPolicy(ReconnectionPolicy.RANDOM_INCREASING_DELAY);
+		.setReconnectionPolicy(ReconnectionPolicy.RANDOM_INCREASING_DELAY);
 		// Set ping interval
 		PingManager.getInstanceFor(connection).setPingInterval(pingTimeout);
 		// Specifies when incoming message delivery receipt requests
@@ -312,61 +333,61 @@ public class XMPPClientImpl {
 		connection.addConnectionListener(connectionListener);
 		PingManager.getInstanceFor(connection).registerPingFailedListener(connectionListener);
 		connection.addAsyncStanzaListener(connectionListener, connectionListener);
-		
+
 		// Hook listener for roster changes
 		onlineRosterListener = new OnlineRosterListener(connection);
 		onlineRosterListener.setPresenceSubscribers(presenceSubscribers);
 		Roster.getInstanceFor(connection).addRosterListener(onlineRosterListener);
-		
+
 		// Hook listener for incoming packets
 		packetListener = new PacketListener();
 		connection.addAsyncStanzaListener(packetListener, packetListener);
-		
-		
+
+
 		// Hook listener for task status messages
 		taskStatusListener = new TaskStatusListener();
 		taskStatusListener.setSubscribers(taskStatusSubscribers);
 		connection.addAsyncStanzaListener(taskStatusListener, taskStatusListener);
-		
-		
-//		// Hook listener for get-policy messages
-//		policyListener = new PolicyListener(this);
-//		policyListener.setSubscriber(policySubscriber);
-//		connection.addAsyncStanzaListener(policyListener, policyListener);
-//	
-//		// Hook listener for policy status messages
-//		policyStatusListener = new PolicyStatusListener();
-//		policyStatusListener.setSubscribers(policyStatusSubscribers);
-//		connection.addAsyncStanzaListener(policyStatusListener, policyStatusListener);
-//		
+
+
+		//		// Hook listener for get-policy messages
+		//		policyListener = new PolicyListener(this);
+		//		policyListener.setSubscriber(policySubscriber);
+		//		connection.addAsyncStanzaListener(policyListener, policyListener);
+		//	
+		//		// Hook listener for policy status messages
+		//		policyStatusListener = new PolicyStatusListener();
+		//		policyStatusListener.setSubscribers(policyStatusSubscribers);
+		//		connection.addAsyncStanzaListener(policyStatusListener, policyStatusListener);
+		//		
 		// Hook listener for registration messages
 		registrationListener = new RegistrationListener(this);
 		registrationListener.setSubscriber(registrationSubscriber);
 		//registrationListener.setDefaultSubcriber(defaultRegistrationSubscriber);
 		connection.addAsyncStanzaListener(registrationListener, registrationListener);
-//		
-//		// Hook listener for user session messages
-//		userSessionListener = new UserSessionListener();
-//		userSessionListener.setSubscriber(userSessionSubscriber);
-//		connection.addAsyncStanzaListener(userSessionListener, userSessionListener);
-//		
-//		// Hook listener for missing plugin messages
-//		missingPluginListener = new MissingPluginListener(this);
-//		missingPluginListener.setSubscriber(missingPluginSubscriber);
-//		connection.addAsyncStanzaListener(missingPluginListener, missingPluginListener);
-//		
-//		// Hook listener for agreement messages
-//		reqAggrementListener = new RequestAgreementListener(this);
-//		reqAggrementListener.setSubscriber(reqAggrementSubscriber);
-//		connection.addAsyncStanzaListener(reqAggrementListener, reqAggrementListener);
-//		aggrementStatusListener = new AgreementStatusListener();
-//		aggrementStatusListener.setSubscriber(aggrementStatusSubscriber);
-//		connection.addAsyncStanzaListener(aggrementStatusListener, aggrementStatusListener);
-//		
-//		// Hook listener for script result messages
-//		scriptResultListener = new ScriptResultListener();
-//		scriptResultListener.setSubscriber(scriptResultSubscriber);
-//		connection.addAsyncStanzaListener(scriptResultListener, scriptResultListener);
+		//		
+		//		// Hook listener for user session messages
+		//		userSessionListener = new UserSessionListener();
+		//		userSessionListener.setSubscriber(userSessionSubscriber);
+		//		connection.addAsyncStanzaListener(userSessionListener, userSessionListener);
+		//		
+		//		// Hook listener for missing plugin messages
+		//		missingPluginListener = new MissingPluginListener(this);
+		//		missingPluginListener.setSubscriber(missingPluginSubscriber);
+		//		connection.addAsyncStanzaListener(missingPluginListener, missingPluginListener);
+		//		
+		//		// Hook listener for agreement messages
+		//		reqAggrementListener = new RequestAgreementListener(this);
+		//		reqAggrementListener.setSubscriber(reqAggrementSubscriber);
+		//		connection.addAsyncStanzaListener(reqAggrementListener, reqAggrementListener);
+		//		aggrementStatusListener = new AgreementStatusListener();
+		//		aggrementStatusListener.setSubscriber(aggrementStatusSubscriber);
+		//		connection.addAsyncStanzaListener(aggrementStatusListener, aggrementStatusListener);
+		//		
+		//		// Hook listener for script result messages
+		//		scriptResultListener = new ScriptResultListener();
+		//		scriptResultListener.setSubscriber(scriptResultSubscriber);
+		//		connection.addAsyncStanzaListener(scriptResultListener, scriptResultListener);
 
 		logger.debug("Successfully added listeners for connection: {}", connection.toString());
 	}
@@ -404,24 +425,24 @@ public class XMPPClientImpl {
 		if (null != connection && connection.isConnected()) {
 			// Remove listeners
 			Roster.getInstanceFor(connection).removeRosterListener(onlineRosterListener);
-			
+
 			connection.removeConnectionListener(connectionListener);
-			
+
 			connection.removeAsyncStanzaListener(packetListener);
 			connection.removeAsyncStanzaListener(taskStatusListener);
 			connection.removeAsyncStanzaListener(connectionListener);
-			
-			
-//			connection.removeAsyncStanzaListener(policyStatusListener);
-//			connection.removeAsyncStanzaListener(registrationListener);
-//			connection.removeAsyncStanzaListener(userSessionListener);
-//			connection.removeAsyncStanzaListener(missingPluginListener);
-//			connection.removeAsyncStanzaListener(policyListener);
-//			
-//			connection.removeAsyncStanzaListener(reqAggrementListener);
-//			connection.removeAsyncStanzaListener(aggrementStatusListener);
-//			connection.removeAsyncStanzaListener(scriptResultListener);
-			
+
+
+			//			connection.removeAsyncStanzaListener(policyStatusListener);
+			//			connection.removeAsyncStanzaListener(registrationListener);
+			//			connection.removeAsyncStanzaListener(userSessionListener);
+			//			connection.removeAsyncStanzaListener(missingPluginListener);
+			//			connection.removeAsyncStanzaListener(policyListener);
+			//			
+			//			connection.removeAsyncStanzaListener(reqAggrementListener);
+			//			connection.removeAsyncStanzaListener(aggrementStatusListener);
+			//			connection.removeAsyncStanzaListener(scriptResultListener);
+
 			logger.debug("Listeners are removed.");
 			PingManager.getInstanceFor(connection).setPingInterval(-1);
 			logger.debug("Disabled ping manager");
@@ -438,17 +459,17 @@ public class XMPPClientImpl {
 	 * @throws NotConnectedException
 	 */
 	public void sendMessage(String message, String jid) throws NotConnectedException {
-		
+
 		try{
-		String jidFinal = getFullJid(jid);
-		logger.info("Sending message: {} to user: {}", new Object[] { message, jidFinal });
-		Message msg = new Message(jidFinal, Message.Type.normal);
-		msg.setBody(message);
-		connection.sendStanza(msg);
-		logger.info("Successfully sent message to user: {}", jidFinal);}
+			String jidFinal = getFullJid(jid);
+			logger.info("Sending message: {} to user: {}", new Object[] { message, jidFinal });
+			Message msg = new Message(jidFinal, Message.Type.normal);
+			msg.setBody(message);
+			connection.sendStanza(msg);
+			logger.info("Successfully sent message to user: {}", jidFinal);}
 		catch(NotConnectedException ex){
 			ex.printStackTrace();
-			
+
 			try {
 				logger.debug("Tring again to connect..");
 				init();
@@ -466,7 +487,7 @@ public class XMPPClientImpl {
 	 * @throws NotConnectedException
 	 */
 	public void sendChatMessage(String message, String jid) throws NotConnectedException {
-		
+
 		try{
 			String jidFinal = getFullJid(jid);
 			logger.info("Sending message: {} to user: {}", new Object[] { message, jidFinal });
@@ -476,7 +497,7 @@ public class XMPPClientImpl {
 			logger.info("Successfully sent message to user: {}", jidFinal);}
 		catch(NotConnectedException ex){
 			ex.printStackTrace();
-			
+
 			try {
 				logger.debug("Tring again to connect..");
 				init();
@@ -753,7 +774,7 @@ public class XMPPClientImpl {
 			taskStatusListener.setSubscribers(taskStatusSubscribers);
 		}
 	}
-	
+
 	public void addTaskStatusSubscribers(ITaskStatusSubscriber taskStatusSubscriber) {
 		logger.info("Task status subscribers adding new subscriber");
 		if (taskStatusSubscriber != null && taskStatusSubscribers!=null) {
@@ -761,114 +782,114 @@ public class XMPPClientImpl {
 		}
 		taskStatusListener.setSubscribers(taskStatusSubscribers);
 	}
-//
-//	/**
-//	 * 
-//	 * @param policyStatusSubscribers
-//	 */
-//	public void setPolicyStatusSubscribers(List<IPolicyStatusSubscriber> policyStatusSubscribers) {
-//		this.policyStatusSubscribers = policyStatusSubscribers;
-//		logger.info("Policy status subscribers updated: {}",
-//				policyStatusSubscribers != null ? policyStatusSubscribers.size() : "empty");
-//		if (policyStatusListener != null) {
-//			policyStatusListener.setSubscribers(policyStatusSubscribers);
-//		}
-//	}
-//
-//	/**
-//	 * 
-//	 * @param userSessionSubscriber
-//	 */
-//	public void setUserSessionSubscriber(IUserSessionSubscriber userSessionSubscriber) {
-//		this.userSessionSubscriber = userSessionSubscriber;
-//		logger.info("User session subscriber updated: {}", userSessionSubscriber != null);
-//		if (userSessionListener != null) {
-//			userSessionListener.setSubscriber(userSessionSubscriber);
-//		}
-//	}
-//
-//	/**
-//	 * 
-//	 * @param missingPluginSubscriber
-//	 */
-//	public void setMissingPluginSubscriber(IMissingPluginSubscriber missingPluginSubscriber) {
-//		this.missingPluginSubscriber = missingPluginSubscriber;
-//		logger.info("Missing plugin subscriber updated: {}", missingPluginSubscriber != null);
-//		if (missingPluginListener != null) {
-//			missingPluginListener.setSubscriber(missingPluginSubscriber);
-//		}
-//	}
-//
-//	/**
-//	 * 
-//	 * @param policySubscriber
-//	 */
-//	public void setPolicySubscriber(IPolicySubscriber policySubscriber) {
-//		this.policySubscriber = policySubscriber;
-//		logger.info("Policy subscriber updated: {}", policySubscriber != null);
-//		if (policyListener != null) {
-//			policyListener.setSubscriber(policySubscriber);
-//		}
-//	}
-//
-//	/**
-//	 * 
-//	 * @param reqAggrementSubscriber
-//	 */
-//	public void setReqAggrementSubscriber(IRequestAgreementSubscriber reqAggrementSubscriber) {
-//		this.reqAggrementSubscriber = reqAggrementSubscriber;
-//		logger.info("Request agreement subscriber updated: {}", reqAggrementSubscriber != null);
-//		if (reqAggrementListener != null) {
-//			reqAggrementListener.setSubscriber(reqAggrementSubscriber);
-//		}
-//	}
-//
-//	/**
-//	 * 
-//	 * @param registrationSubscriber
-//	 */
-//	public void setRegistrationSubscriber(IRegistrationSubscriber registrationSubscriber) {
-//		this.registrationSubscriber = registrationSubscriber;
-//		logger.info("Registration subscriber updated: {}", registrationSubscriber != null);
-//		if (registrationListener != null) {
-//			registrationListener.setSubscriber(registrationSubscriber);
-//		}
-//	}
-//
-//	/**
-//	 * 
-//	 * @param aggrementStatusSubscriber
-//	 */
-//	public void setAggrementStatusSubscriber(IAgreementStatusSubscriber aggrementStatusSubscriber) {
-//		this.aggrementStatusSubscriber = aggrementStatusSubscriber;
-//		logger.info("Agreement status subscriber updated: {}", aggrementStatusSubscriber != null);
-//		if (aggrementStatusListener != null) {
-//			aggrementStatusListener.setSubscriber(aggrementStatusSubscriber);
-//		}
-//	}
-//
-//	/**
-//	 * 
-//	 * @param scriptResultSubscriber
-//	 */
-//	public void setScriptResultSubscriber(IScriptResultSubscriber scriptResultSubscriber) {
-//		this.scriptResultSubscriber = scriptResultSubscriber;
-//		logger.info("Script result subscriber updated: {}", scriptResultSubscriber != null);
-//		if (scriptResultListener != null) {
-//			scriptResultListener.setSubscriber(scriptResultSubscriber);
-//		}
-//	}
-//
-//	/**
-//	 * 
-//	 * @param defaultRegistrationSubscriber
-//	 */
-//	public void setDefaultRegistrationSubscriber(IRegistrationSubscriber defaultRegistrationSubscriber) {
-//		this.defaultRegistrationSubscriber = defaultRegistrationSubscriber;
-//		if (registrationListener != null) {
-//			registrationListener.setDefaultSubcriber(defaultRegistrationSubscriber);
-//		}
-//	}
+	//
+	//	/**
+	//	 * 
+	//	 * @param policyStatusSubscribers
+	//	 */
+	//	public void setPolicyStatusSubscribers(List<IPolicyStatusSubscriber> policyStatusSubscribers) {
+	//		this.policyStatusSubscribers = policyStatusSubscribers;
+	//		logger.info("Policy status subscribers updated: {}",
+	//				policyStatusSubscribers != null ? policyStatusSubscribers.size() : "empty");
+	//		if (policyStatusListener != null) {
+	//			policyStatusListener.setSubscribers(policyStatusSubscribers);
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * 
+	//	 * @param userSessionSubscriber
+	//	 */
+	//	public void setUserSessionSubscriber(IUserSessionSubscriber userSessionSubscriber) {
+	//		this.userSessionSubscriber = userSessionSubscriber;
+	//		logger.info("User session subscriber updated: {}", userSessionSubscriber != null);
+	//		if (userSessionListener != null) {
+	//			userSessionListener.setSubscriber(userSessionSubscriber);
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * 
+	//	 * @param missingPluginSubscriber
+	//	 */
+	//	public void setMissingPluginSubscriber(IMissingPluginSubscriber missingPluginSubscriber) {
+	//		this.missingPluginSubscriber = missingPluginSubscriber;
+	//		logger.info("Missing plugin subscriber updated: {}", missingPluginSubscriber != null);
+	//		if (missingPluginListener != null) {
+	//			missingPluginListener.setSubscriber(missingPluginSubscriber);
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * 
+	//	 * @param policySubscriber
+	//	 */
+	//	public void setPolicySubscriber(IPolicySubscriber policySubscriber) {
+	//		this.policySubscriber = policySubscriber;
+	//		logger.info("Policy subscriber updated: {}", policySubscriber != null);
+	//		if (policyListener != null) {
+	//			policyListener.setSubscriber(policySubscriber);
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * 
+	//	 * @param reqAggrementSubscriber
+	//	 */
+	//	public void setReqAggrementSubscriber(IRequestAgreementSubscriber reqAggrementSubscriber) {
+	//		this.reqAggrementSubscriber = reqAggrementSubscriber;
+	//		logger.info("Request agreement subscriber updated: {}", reqAggrementSubscriber != null);
+	//		if (reqAggrementListener != null) {
+	//			reqAggrementListener.setSubscriber(reqAggrementSubscriber);
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * 
+	//	 * @param registrationSubscriber
+	//	 */
+	//	public void setRegistrationSubscriber(IRegistrationSubscriber registrationSubscriber) {
+	//		this.registrationSubscriber = registrationSubscriber;
+	//		logger.info("Registration subscriber updated: {}", registrationSubscriber != null);
+	//		if (registrationListener != null) {
+	//			registrationListener.setSubscriber(registrationSubscriber);
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * 
+	//	 * @param aggrementStatusSubscriber
+	//	 */
+	//	public void setAggrementStatusSubscriber(IAgreementStatusSubscriber aggrementStatusSubscriber) {
+	//		this.aggrementStatusSubscriber = aggrementStatusSubscriber;
+	//		logger.info("Agreement status subscriber updated: {}", aggrementStatusSubscriber != null);
+	//		if (aggrementStatusListener != null) {
+	//			aggrementStatusListener.setSubscriber(aggrementStatusSubscriber);
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * 
+	//	 * @param scriptResultSubscriber
+	//	 */
+	//	public void setScriptResultSubscriber(IScriptResultSubscriber scriptResultSubscriber) {
+	//		this.scriptResultSubscriber = scriptResultSubscriber;
+	//		logger.info("Script result subscriber updated: {}", scriptResultSubscriber != null);
+	//		if (scriptResultListener != null) {
+	//			scriptResultListener.setSubscriber(scriptResultSubscriber);
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * 
+	//	 * @param defaultRegistrationSubscriber
+	//	 */
+	//	public void setDefaultRegistrationSubscriber(IRegistrationSubscriber defaultRegistrationSubscriber) {
+	//		this.defaultRegistrationSubscriber = defaultRegistrationSubscriber;
+	//		if (registrationListener != null) {
+	//			registrationListener.setDefaultSubcriber(defaultRegistrationSubscriber);
+	//		}
+	//	}
 
 	/**
 	 * 
@@ -885,7 +906,7 @@ public class XMPPClientImpl {
 	public List<String> getOfflineUsers() {
 		return onlineRosterListener.getOfflineUsers();
 	}
-	
+
 	/**
 	 * 
 	 * @return

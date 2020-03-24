@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,10 +22,8 @@ public class LiderSecurityUserService implements UserDetailsService {
 	@Autowired
 	LDAPServiceImpl ldapService;
 	
-	
 	@Override
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-		
 		LiderUser user=null;
 		
 		LdapEntry ldapEntry=null;

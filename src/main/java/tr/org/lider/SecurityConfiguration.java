@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -18,6 +19,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	UserDetailsService userDetailsService;
 
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
+    
+    @Autowired
+    public void WebSecurityConfig( AuthenticationSuccessHandler authenticationSuccessHandler) {
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+    }
+    
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService);
@@ -34,6 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		//.antMatchers("/").permitAll()
 		.and().formLogin()
 		.loginPage("/login")
+		.successHandler(authenticationSuccessHandler)
 	//	.failureUrl("/login?error")
 		.and()
 		.logout()

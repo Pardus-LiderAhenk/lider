@@ -12,6 +12,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import tr.org.lider.messaging.enums.Protocol;
 import tr.org.lider.messaging.messages.FileServerConf;
 
+/**
+ * Model for configuration parameters.
+ * 
+ * @author <a href="mailto:hasan.kara@pardus.org.tr">Hasan Kara</a>
+ * 
+ */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ConfigParams {
 	private static Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
@@ -109,9 +116,16 @@ public class ConfigParams {
 	private Integer entrySizeLimit;
 	private Integer cronIntervalEntrySize;
 
+	private String adDomainName;
+	private String adHostName;
+	private String adIpAddress;
+	private String adAdminUserName;
+	private String adAdminPassword;
+	
 	public ConfigParams() {
 		super();
 	}
+
 
 	public ConfigParams(String liderLocale, String ldapServer, String ldapPort, String ldapUsername,
 			String ldapPassword, String ldapRootDn, Boolean ldapUseSsl, String ldapSearchAttributes,
@@ -132,7 +146,8 @@ public class ConfigParams {
 			Boolean mailSmtpSslEnable, Integer mailSmtpConnTimeout, Integer mailSmtpTimeout,
 			Integer mailSmtpWriteTimeout, Boolean mailSendOnTaskCompletion, Long mailCheckTaskCompletionPeriod,
 			Boolean mailSendOnPolicyCompletion, Long mailCheckPolicyCompletionPeriod, String hotDeploymentPath,
-			String cronTaskList, Integer entrySizeLimit, Integer cronIntervalEntrySize) {
+			String cronTaskList, Integer entrySizeLimit, Integer cronIntervalEntrySize, String adDomainName,
+			String adHostName, String adIpAddress, String adAdminUserName, String adAdminPassword) {
 		super();
 		this.liderLocale = liderLocale;
 		this.ldapServer = ldapServer;
@@ -203,9 +218,15 @@ public class ConfigParams {
 		this.cronTaskList = cronTaskList;
 		this.entrySizeLimit = entrySizeLimit;
 		this.cronIntervalEntrySize = cronIntervalEntrySize;
+		this.adDomainName = adDomainName;
+		this.adHostName = adHostName;
+		this.adIpAddress = adIpAddress;
+		this.adAdminUserName = adAdminUserName;
+		this.adAdminPassword = adAdminPassword;
 	}
 
 	public void setDefaultParams() {
+		logger.info("Default paramaters are set for Configuration.");
 		this.liderLocale = "tr";
 		this.ldapUseSsl = false;
 		this.ldapSearchAttributes = "cn,objectClass,uid,liderPrivilege";
@@ -798,6 +819,46 @@ public class ConfigParams {
 
 	public void setAhenkGroupLdapBaseDn(String ahenkGroupLdapBaseDn) {
 		this.ahenkGroupLdapBaseDn = ahenkGroupLdapBaseDn;
+	}
+
+	public String getAdDomainName() {
+		return adDomainName;
+	}
+
+	public String getAdHostName() {
+		return adHostName;
+	}
+
+	public String getAdIpAddress() {
+		return adIpAddress;
+	}
+
+	public String getAdAdminUserName() {
+		return adAdminUserName;
+	}
+
+	public String getAdAdminPassword() {
+		return adAdminPassword;
+	}
+
+	public void setAdDomainName(String adDomainName) {
+		this.adDomainName = adDomainName;
+	}
+
+	public void setAdHostName(String adHostName) {
+		this.adHostName = adHostName;
+	}
+
+	public void setAdIpAddress(String adIpAddress) {
+		this.adIpAddress = adIpAddress;
+	}
+
+	public void setAdAdminUserName(String adAdminUserName) {
+		this.adAdminUserName = adAdminUserName;
+	}
+
+	public void setAdAdminPassword(String adAdminPassword) {
+		this.adAdminPassword = adAdminPassword;
 	}
 
 	public FileServerConf getFileServerConf(String jid) {

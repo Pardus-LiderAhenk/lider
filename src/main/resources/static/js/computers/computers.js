@@ -287,6 +287,17 @@ function setPackagePluginPage() {
 				}
 			});
 		}
+		if(pluginTask.page == 'application-restriction'){
+			$.ajax({
+				type : 'POST',
+				url : 'getPluginTaskHtmlPage',
+				data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+				dataType : 'text',
+				success : function(res2) {
+					$('#application-restriction').html(res2);
+				}
+			});
+		}
 	}
 }
 

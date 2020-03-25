@@ -45,6 +45,26 @@ public class ConfigurationService {
 		return configRepository.save(config);
 	}
 
+	public ConfigParams updateConfigParams(ConfigParams cParams) {
+		Optional<ConfigImpl> configImpl = findByName("liderConfigParams");
+		if(configImpl.isPresent()) {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				String jsonString = mapper.writeValueAsString(cParams);
+				configImpl.get().setValue(jsonString);
+				ConfigImpl updatedConfigImpl = configRepository.save(configImpl.get());
+				configParams = mapper.readValue(updatedConfigImpl.getValue(), ConfigParams.class);
+				return configParams;
+			} catch (JsonProcessingException e) {
+				logger.error("Error occured while updating configuration parameters.");
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			logger.error("Error occured while updating configuration parameters. liderConfigParams not found in database.");
+			return null;
+		}
+	}
 	public List<ConfigImpl> findAll() {
 		return configRepository.findAll();
 	}

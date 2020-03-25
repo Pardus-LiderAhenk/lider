@@ -14,38 +14,9 @@
 		    url: "/settings/configurations",
 		    dataType: 'json',
 		    success: function (data) { 
-		    	console.log(data);
 		    	if(data != null) {
 		    		//set ldap configuration
-		    		$('#ldapServerAddress').val(data.ldapServer);
-		    		$('#ldapServerPort').val(data.ldapPort);
-		    		$('#ldapRootDN').val(data.ldapRootDn);
-		    		$('#ldapUserDN').val(data.ldapUsername);
-		    		$('#ldapUserPassword').val(data.ldapPassword);
-		    		$('#agentDN').val(data.agentLdapBaseDn);
-		    		$('#peopleDN').val(data.userLdapBaseDn);
-		    		$('#groupDN').val(data.groupLdapBaseDn);
-		    		$('#computerGroupDN').val(data.ahenkGroupLdapBaseDn);
-		    		$('#userGroupDN').val(data.userGroupLdapBaseDn);
-		    		$('#sudoGroupDN').val(data.userLdapRolesDn);
-		    		
-		    		//set XMPP configuration
-		    		$('#XMPPServerAddress').val(data.xmppHost);
-		    		$('#XMPPServerPort').val(data.xmppPort);
-		    		$('#XMPPUserName').val(data.xmppUsername);
-		    		$('#XMPPUserPassword').val(data.xmppPassword);
-		    		$('#XMPPResourceName').val(data.xmppResource);
-		    		$('#XMPPServiceName').val(data.xmppServiceName);
-		    		$('#XMPPRetryConnectionCount').val(data.xmppMaxRetryConnectionCount);
-		    		$('#XMPPPacketReplayTimeout').val(data.xmppPacketReplayTimeout);
-		    		$('#XMPPPingTimeout').val(data.xmppPingTimeout);
-		    		
-		    		//set file server configuration
-		    		$('#fileTransferType').val(data.fileServerProtocol);
-		    		$('#fileServerAddress').val(data.fileServerHost);
-		    		$('#fileServerPort').val(data.fileServerPort);
-		    		$('#fileServerUserName').val(data.fileServerUsername);
-		    		$('#fileServerUserPassword').val(data.fileServerPassword);
+		    		setAttributes(data);
 		    	} else {
 		    		$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
 		    	}
@@ -54,6 +25,143 @@
 		    	$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
 		    }
 		});
+	}
+	
+	function setAttributes(data) {
+		$('#ldapServerAddress').val(data.ldapServer);
+		$('#ldapServerPort').val(data.ldapPort);
+		$('#ldapRootDN').val(data.ldapRootDn);
+		$('#ldapUserDN').val(data.ldapUsername);
+		$('#ldapUserPassword').val(data.ldapPassword);
+		$('#agentDN').val(data.agentLdapBaseDn);
+		$('#peopleDN').val(data.userLdapBaseDn);
+		$('#groupDN').val(data.groupLdapBaseDn);
+		$('#computerGroupDN').val(data.ahenkGroupLdapBaseDn);
+		$('#userGroupDN').val(data.userGroupLdapBaseDn);
+		$('#sudoGroupDN').val(data.userLdapRolesDn);
+		
+		//set XMPP configuration
+		$('#XMPPServerAddress').val(data.xmppHost);
+		$('#XMPPServerPort').val(data.xmppPort);
+		$('#XMPPUserName').val(data.xmppUsername);
+		$('#XMPPUserPassword').val(data.xmppPassword);
+		$('#XMPPResourceName').val(data.xmppResource);
+		$('#XMPPServiceName').val(data.xmppServiceName);
+		$('#XMPPRetryConnectionCount').val(data.xmppMaxRetryConnectionCount);
+		$('#XMPPPacketReplayTimeout').val(data.xmppPacketReplayTimeout);
+		$('#XMPPPingTimeout').val(data.xmppPingTimeout);
+		
+		//set file server configuration
+		$('#fileTransferType').val(data.fileServerProtocol);
+		$('#fileServerAddress').val(data.fileServerHost);
+		$('#fileServerPort').val(data.fileServerPort);
+		$('#fileServerUserName').val(data.fileServerUsername);
+		$('#fileServerUserPassword').val(data.fileServerPassword);
+	}
+	function removeDisableClass(type) {
+		if(type == 'ldap') {
+			//remove disabled attribute from editableLDAP class
+			$('.editableLDAP').prop('disabled', false);
+			//change button name and onClick event to save
+			 $("#editLDAPAttributes").html("Değişiklikleri Kaydet");
+			 $("#editLDAPAttributes").attr("onclick","saveChanges('ldap')");
+		} else if(type == 'xmpp') {
+			//remove disabled attribute from editableXMPP class
+			$('.editableXMPP').prop('disabled', false);
+			//change button name and onClick event to save
+			 $("#editXMPPAttributes").html("Değişiklikleri Kaydet");
+			 $("#editXMPPAttributes").attr("onclick","saveChanges('xmpp')");
+		} else if(type == 'fileServer') {
+			//remove disabled attribute from editableFileServer class
+			$('.editableFileServer').prop('disabled', false);
+			//change button name and onClick event to save
+			 $("#editFileServerAttributes").html("Değişiklikleri Kaydet");
+			 $("#editFileServerAttributes").attr("onclick","saveChanges('fileServer')");
+		}
+
+		
+	}
+	function saveChanges(type) {
+		if(type == 'ldap') {
+			var params = {
+				    "ldapServer" : $('#ldapServerAddress').val(),
+				    "ldapPort": $('#ldapServerPort').val(),
+				    "ldapUsername": $('#ldapUserDN').val(),
+				    "ldapPassword": $('#ldapUserPassword').val()
+				};
+			$.ajax({ 
+			    type: 'POST', 
+			    url: "/settings/update/ldap",
+			    dataType: 'json',
+			    data: params,
+			    success: function (data) { 
+			    	if(data != null) {
+			    		$.notify("LDAP sunucu bilgileri başarıyla güncellendi. Şimdi tekrar giriş yapabilmeniz için giriş ekranına yönlendirileceksiniz.", "success");
+			    		//redirect to login
+			    		setTimeout( function() 
+		   					{
+		   						window.location.replace("/logout")
+		   					}, 1000);
+			    		
+			    	} else {
+			    		$.notify("LDAP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			    	}
+			    },
+			    error: function (data, errorThrown) {
+			    	$.notify("LDAP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			    }
+			});
+		} else if(type == 'xmpp') {
+			var params = {
+					"xmppHost": $('#XMPPServerAddress').val(),
+					"xmppPort": $('#XMPPServerPort').val(),
+					"xmppUsername": $('#XMPPUserName').val(),
+					"xmppPassword": $('#XMPPUserPassword').val(),
+					"xmppMaxRetryConnectionCount": $('#XMPPRetryConnectionCount').val(),
+					"xmppPacketReplayTimeout": $('#XMPPPacketReplayTimeout').val(),
+					"xmppPingTimeout": $('#XMPPPingTimeout').val()
+				};
+			$.ajax({ 
+			    type: 'POST', 
+			    url: "/settings/update/xmpp",
+			    dataType: 'json',
+			    data: params,
+			    success: function (data) { 
+			    	if(data != null) {
+			    		$.notify("XMPP sunucu bilgileri başarıyla güncellendi.", "success");
+			    	} else {
+			    		$.notify("XMPP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			    	}
+			    },
+			    error: function (data, errorThrown) {
+			    	$.notify("XMPP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			    }
+			});
+		} else if(type == 'fileServer') {
+			var params = {
+					"fileTransferType": $('#fileTransferType').val(),
+					"fileServerAddress": $('#fileServerAddress').val(),
+					"fileServerUsername": $('#fileServerUserName').val(),
+					"fileServerPassword": $('#fileServerUserPassword').val(),
+					"fileServerPort": $('#fileServerPort').val()
+				};
+			$.ajax({ 
+			    type: 'POST', 
+			    url: "/settings/update/fileServer",
+			    dataType: 'json',
+			    data: params,
+			    success: function (data) { 
+			    	if(data != null) {
+			    		$.notify("Dosya sunucusu bilgileri başarıyla güncellendi.", "success");
+			    	} else {
+			    		$.notify("Dosya sunucusu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			    	}
+			    },
+			    error: function (data, errorThrown) {
+			    	$.notify("Dosya sunucusu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			    }
+			});
+		}
 	}
 </script>
 <div class="main-card mb-3 card" style="margin: 18px;">
@@ -90,14 +198,14 @@
 								<div class="position-relative form-group">
 									<label for="labelLdapServerAddress" class="control-label">LDAP Sunucu Adresi</label>
 									<input name="ldapServerAddress" id="ldapServerAddress" required="required"
-										type="text" placeholder="10.10.56.145" class="form-control"  disabled>
+										type="text" placeholder="10.10.56.145" class="form-control editableLDAP"  disabled>
 								</div>
 							</div>
 							<div class="col-md-2">
 								<div class="position-relative form-group">
 									<label for="labelLdapServerPort" class="control-label">Port</label>
 									<input name="ldapServerPort" id="ldapServerPort" required="required"
-										type="text" value="389" placeholder="389" class="form-control" disabled>
+										type="text" value="389" placeholder="389" class="form-control editableLDAP" disabled>
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -115,14 +223,14 @@
 								<div class="position-relative form-group">
 									<label for="labelLdapServerAddress" class="control-label">LDAP Kullanıcı DN</label>
 									<input name="ldapUserDN" id="ldapUserDN" required="required"
-										type="text" placeholder="cn=admin,dc=liderahenk,dc=org" class="form-control" disabled>
+										type="text" placeholder="cn=admin,dc=liderahenk,dc=org" class="form-control editableLDAP" disabled>
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="position-relative form-group">
 									<label for="labelLdapUserPassword" class="control-label">LDAP Kullanıcı Şifresi</label>
 									<input name="ldapUserPassword" id="ldapUserPassword" required="required"
-										type="password" class="form-control" disabled>
+										type="password" class="form-control editableLDAP" disabled>
 								</div>
 							</div>
 						</div>
@@ -181,7 +289,8 @@
 							</div>
 							<div class="col-md-12">
 								<div class="position-relative form-group">
-									<button class="btn btn-primary pull-right" type="button">Düzenle</button>
+									<button class="btn btn-primary pull-right" id="editLDAPAttributes" 
+										type="button" onclick="removeDisableClass('ldap')">Düzenle</button>
 								</div>
 							</div>
 						</div>
@@ -196,14 +305,14 @@
 								<div class="position-relative form-group">
 									<label for="labelXMPPServerAddress" class="control-label">XMPP Sunucu Adresi</label>
 									<input name="XMPPServerAddress" id="XMPPServerAddress" required="required"
-										type="text" value="10.10.56.146" class="form-control" disabled>
+										type="text" value="10.10.56.146" class="form-control editableXMPP" disabled>
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="position-relative form-group">
 									<label for="labelXMPPServerPort" class="control-label">Port</label>
 									<input name="XMPPServerPort" id="XMPPServerPort" required="required"
-										type="text" value="5222" placeholder="5222" class="form-control" disabled>
+										type="text" value="5222" placeholder="5222" class="form-control editableXMPP" disabled>
 								</div>
 							</div>
 						</div>
@@ -213,14 +322,14 @@
 								<div class="position-relative form-group">
 									<label for="labelXMPPUserName" class="control-label">XMPP Kullanıcı Adı</label>
 									<input name="XMPPUserName" id="XMPPUserName" required="required"
-										type="text" value="lider_sunucu" class="form-control" disabled>
+										type="text" value="lider_sunucu" class="form-control editableXMPP" disabled>
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="position-relative form-group">
 									<label for="labelXMPPUserPassword" class="control-label">XMPP Kullanıcı Şifresi</label>
 									<input name="XMPPUserPassword" id="XMPPUserPassword" required="required"
-										type="password" class="form-control" value="123" disabled>
+										type="password" class="form-control editableXMPP" disabled>
 								</div>
 							</div>
 						</div>
@@ -247,26 +356,27 @@
 								<div class="position-relative form-group">
 									<label for="labelXMPPRetryConnectionCount" class="control-label">XMPP Retry Connection Count</label>
 									<input name="XMPPRetryConnectionCount" id="XMPPRetryConnectionCount" required="required"
-										type="text" class="form-control" value="5" disabled>
+										type="text" class="form-control editableXMPP" placeholder="5" disabled>
 								</div>
 							</div>
 							<div class="col-md-4">
 								<div class="position-relative form-group">
 									<label for="labelXMPPPacketReplayTimeout" class="control-label">XMPP Packet Replay Timeout</label>
 									<input name="XMPPPacketReplayTimeout" id="XMPPPacketReplayTimeout" required="required"
-										type="text" class="form-control" value="10000" disabled>
+										type="text" class="form-control editableXMPP" placeholder="10000" disabled>
 								</div>
 							</div>
 							<div class="col-md-4">
 								<div class="position-relative form-group">
 									<label for="labelXMPPPingTimeout" class="control-label">XMPP Ping Timeout</label>
 									<input name="XMPPPingTimeout" id="XMPPPingTimeout" required="required"
-										type="text" class="form-control" value="300" disabled>
+										type="text" class="form-control editableXMPP" placeholder="300" disabled>
 								</div>
 							</div>
 							<div class="col-md-12">
 								<div class="position-relative form-group">
-									<button class="btn btn-primary pull-right" type="button">Düzenle</button>
+									<button class="btn btn-primary pull-right" id="editXMPPAttributes" 
+										onclick="removeDisableClass('xmpp')" type="button">Düzenle</button>
 								</div>
 							</div>
 						</div>
@@ -280,7 +390,7 @@
 							<div class="col-md-2">
 								<div class="position-relative form-group">
 									<label for="labelFileTransferType" class="">Transfer Tipi</label>
-						  			<select class="form-control" id="fileTransferType" name="fileTransferType" disabled>
+						  			<select class="form-control editableFileServer" id="fileTransferType" name="fileTransferType" disabled>
 										<option value="SSH">SSH</option>
 										<option value="HTTP">HTTP</option>
 										<option value="TORRENT">TORRENT</option>
@@ -291,14 +401,14 @@
 								<div class="position-relative form-group">
 									<label for="labelfileServerAddress" class="control-label">Dosya Sunucusu Adresi</label>
 									<input name="fileServerAddress" id="fileServerAddress" required="required"
-										type="text" placeholder="10.10.56.147" class="form-control" disabled>
+										type="text" placeholder="10.10.56.147" class="form-control editableFileServer" disabled>
 								</div>
 							</div>
 							<div class="col-md-4">
 								<div class="position-relative form-group">
 									<label for="labelFileServerPort" class="control-label">Port</label>
 									<input name="fileServerPort" id="fileServerPort" required="required"
-										type="text" placeholder="22" class="form-control" disabled>
+										type="text" placeholder="22" class="form-control editableFileServer" disabled>
 								</div>
 							</div>
 						</div>
@@ -306,21 +416,22 @@
 						<div class="form-row">
 							<div class="col-md-6">
 								<div class="position-relative form-group">
-									<label for="labelFileServerUserName" class="control-label">Sunucu Erişimi İçin Kullanıcı Adı</label>
+									<label for="labelFileServerUserName" class="control-label">Kullanıcı Adı</label>
 									<input name="fileServerUserName" id="fileServerUserName" required="required"
-										type="text" placeholder="lider" class="form-control" disabled>
+										type="text" placeholder="lider" class="form-control editableFileServer" disabled>
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="position-relative form-group">
 									<label for="labelFileServerUserPassword" class="control-label">Kullanıcı Şifresi</label>
 									<input name="fileServerUserPassword" id="fileServerUserPassword" required="required"
-										type="password" class="form-control" disabled>
+										type="password" class="form-control editableFileServer" disabled>
 								</div>
 							</div>
 							<div class="col-md-12">
 								<div class="position-relative form-group">
-									<button class="btn btn-primary pull-right" type="button">Düzenle</button>
+									<button class="btn btn-primary pull-right" id="editFileServerAttributes" 
+										onclick="removeDisableClass('fileServer')" type="button">Düzenle</button>
 								</div>
 							</div>
 						</div>

@@ -19,12 +19,14 @@
 		<div class="card-body">
 			<div class="login-form-1">
 				<div class="login-group">
-					<div class="form-group form-check ">
+					<div class="custom-control custom-checkbox">
 						<div>
-							<input type="checkbox" class="form-check-input"	id="lockRootUserButton"> <label class="form-check-label" for="lockRootUserButton">Root Kullanıcısını Kilitle</label>
+						 	 <input type="checkbox" class="custom-control-input" id="lockRootUserButton">
+						 	 <label class="custom-control-label" for="lockRootUserButton">Root Kullanıcısını Kilitle</label>
 						</div>
-						<small id="passwordHelpInline" class="text-muted"> Root	Kullanıcısı, Root Parola Yönetimi eklentisinden tekrar parola verilene kadar istemcide kullanılamaz. </small>
+						<small id="passwordHelpInline" class="text-muted"> Root Kullanıcısı, Root Parola Yönetimi eklentisinden tekrar parola verilene kadar istemcide kullanılamaz.</small>
 					</div>
+					<br>
 					<div class="row">
 						<div class="col-lg-2">
 							<img id="rootPasswordImage" height="90" width="70" src="images/unlock-solid.svg"/>
@@ -53,8 +55,8 @@
 								</div>
 			 				</div>
 						</div>
+						<small id="passwordHelpInline" class="text-muted"> Parolanız en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve	karakter içermelidir. İzin verilen özel karakterler: +=.@*! </small>
 					</div>
-		 			<small id="passwordHelpInline" class="text-muted"> Parolanız en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve	karakter içermelidir. İzin verilen özel karakterler: +=.@*! </small>
 					<div id="plugin-result-manage-root"></div>
 				</div>
 			</div>

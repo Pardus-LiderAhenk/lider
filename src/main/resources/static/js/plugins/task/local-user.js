@@ -371,10 +371,13 @@ $('#sendTaskEditLocalUser').click(function(e){
 	if ($('#kioskModeCb').is(':checked')) {
 		kioskMode = "true";
 	}
-
+	var newUsername = $("#localUserName").val();
+	if (newUsername == selectUserName) {
+		newUsername = "";
+	}
 	var parameterMap={
 			"username": selectUserName,
-			"new_username": $("#localUserName").val(),
+			"new_username": newUsername,
 			"password": $("#localUserNewPassword").val(),
 			"desktop_write_permission": "true",
 			"active": $("#localUserActiveSb").val().toString(),
@@ -383,15 +386,21 @@ $('#sendTaskEditLocalUser').click(function(e){
 			"home": $("#localUserHomeDirectory").val()
 	};
 	if ($("#localUserName").val() != "" && $("#localUserHomeDirectory").val() != "") {
-		if (generateLocalUserPassword()) {
-			if ($("#localUserNewPassword").val() == $("#localUserVerifyPassword").val()) {
-				sendLocalUserTaskConfirm("EDIT_USER", parameterMap);
+
+		if ($("#localUserNewPassword").val() != "") {
+			if (generateLocalUserPassword()) {
+				if ($("#localUserNewPassword").val() == $("#localUserVerifyPassword").val()) {
+					sendLocalUserTaskConfirm("EDIT_USER", parameterMap);
+				}else {
+					$.notify("Parola uyuşmamaktadır.","warn");
+				}
 			}else {
-				$.notify("Parola uyuşmamaktadır.","warn");
+				$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
 			}
 		}else {
-			$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
+			sendLocalUserTaskConfirm("EDIT_USER", parameterMap);
 		}
+
 	}else {
 		$.notify("Lütfen kullanıcı adını ve ev dizinini giriniz.", "warn");
 	}
@@ -435,7 +444,7 @@ $('#sendTaskAddLocalUser').click(function(e){
 		}
 
 	}else {
-		$.notify("Lütfen kullanıcı adını ve ev dizinini giriniz.", "warn");
+		$.notify("Lütfen kullanıcı adını, parolasını ve ev dizinini giriniz.", "warn");
 	}
 });
 

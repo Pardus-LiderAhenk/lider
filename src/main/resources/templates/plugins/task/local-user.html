@@ -9,33 +9,90 @@
 	<div class="main-card mb-3 card">
 		<div class="card-header">
 			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-			<div class="col-lg-6 text-left">YEREL KULLANICI</div>
+			<div class="col-lg-6 text-left">YEREL KULLANICI YÖNETİMİ</div>
 			<div class="col-lg-6 text-right">
 				<button id="sendTaskCronLocalUser" type="button"	class="btn-shadow btn btn-info"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
-				<button id="sendTaskAddLocalUserBtn" type="button"	class="btn-shadow btn btn-info" title="Yeni Kullanıcı Ekle"><i class="fa fa-user-plus"></i></button>
-				<button id="sendTaskEditLocalUser" type="button" class="btn-shadow btn btn-info" title="Kullanıcı Düzenle"><i class="fa fa-user-edit"></i></button>
-				<button id="sendTaskDeleteLocalUser" type="button" class="btn-shadow btn btn-info" title="Kullanıc Sil"><i class="fa fa-user-minus"></i></button>
+				<button id="sendTaskAddLocalUser" type="button"	class="btn-shadow btn btn-info" title="Yeni Kullanıcı Ekle"><i class="fa fa-user-plus"></i></button>
+				<button id="sendTaskEditLocalUser" type="button" class="btn-shadow btn btn-info" title="Kullanıcı Güncelle"><i class="fa fa-user-edit"></i></button>
+				<button id="sendTaskDeleteLocalUser" type="button" class="btn-shadow btn btn-info" title="Kullanıcı Sil"><i class="fa fa-user-minus"></i></button>
 				<button id="sendTaskGetLocalUsers" type="button" class="btn-shadow btn btn-info" title="Kullanıcı Listele"><i class="fa fa-users"></i></button>
 			</div>
 		</div>
 		<div class="card-body">
 			<div class="login-form-1">
 				<div class="form-group">
-					<table class="table table-striped table-bordered display table-hover"
-						id="locaUsersTable" border="1">
-						<thead>
-							<tr>
-								<th style="width: 30%">Adı</th>
-								<th style="width: 15%">Aktif</th>
-								<th style="width: 30%">Masaüstü Yazma Yetkisi</th>
-								<th style="width: 25%">Masaüstü Kilitle</th>
-							</tr>
-						</thead>
-						<tbody></tbody>
-					</table>
-					
+					<div class="main-card mb-3 card">
+						<div class="card-body">
+							<table class="table table-striped table-bordered display table-hover" id="localUsersTable" border="1">
+								<thead>
+									<tr>
+										<th style="width: 40%">Kullanıcı Adı</th>
+										<th style="width: 20%">Durum</th>
+										<th style="width: 40%">Ev Dizini</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
 					</div>
-					<div id="plugin-result-local-user"></div>
+					<div class="main-card mb-3 card" id="localUserForm">
+						<div class="card-body">
+							<div class="form-group row">
+							    <label for="colFormLabel" class="col-sm-3 col-form-label"><i class="fa fa-user"></i> Kullanıcı Adı</label>
+							    <div class="col-sm-6">
+							      	<input type="text" class="form-control" id="localUserName" placeholder="lider" onkeyup="userNameFocus()">
+							    </div>
+							    <div class="col-sm-3">
+									<select class="form-control" id="localUserActiveSb">
+										<option value="true" selected>Aktif</option>
+										<option value="false">Pasif</option>
+									</select>
+								</div>
+							 </div>
+							 <div class="form-group row">
+							    <label for="colFormLabel" class="col-sm-3 col-form-label"><i class="fa fa-lock"></i> Yeni Parola</label>
+							    <div class="col-sm-9">
+							      	<input type="password" class="form-control" id="localUserNewPassword" placeholder="Yeni Parola...">
+							    </div>
+							 </div>
+							 <div class="form-group row">
+							    <label for="colFormLabel" class="col-sm-3 col-form-label"><i class="fa fa-lock"></i> Parola Doğrula</label>
+							    <div class="col-sm-9">
+							    	<input type="password" class="form-control" id="localUserVerifyPassword" placeholder="Parola Doğrula...">
+							    </div>
+							 </div>
+							 <div class="form-group row">
+							    <label for="colFormLabel" class="col-sm-3 col-form-label"><i class="fa fa-home"></i> Ev Dizini</label>
+							    <div class="col-sm-9">
+							      <input type="text" class="form-control" id="localUserHomeDirectory" placeholder="/home/lider">
+							    </div>
+							 </div>
+							 <div class="form-group row">
+							 	<label for="colFormLabel" class="col-sm-3 col-form-label"><i class="fas fa-layer-group"></i> Kullanıcı Grupları</label>
+							   	<div class="col-sm-9">
+									<select class="form-control" id="localUserOfGroups" multiple="multiple">
+									</select>
+								</div>
+							 </div>
+<!--             				 <div class="row"> -->
+<!-- 								 <div class="col-lg-6"> -->
+<!-- 									 <div class="custom-control custom-checkbox"> -->
+<!-- 									 	 <input type="checkbox" class="custom-control-input" id="desktopWritePermissionCb"> -->
+<!-- 									 	 <label class="custom-control-label" for="desktopWritePermissionCb">Masaüstü yazma yetkisi</label> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+<!-- 								<div class="col-lg-6"> -->
+<!-- 									<div class="custom-control custom-checkbox"> -->
+<!-- 									 	 <input type="checkbox" class="custom-control-input" id="kioskModeCb"> -->
+<!-- 									 	 <label class="custom-control-label" for="kioskModeCb">Masaüstü kilitle(KIOSK Modu)</label> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+							<small class="text-muted"> Parolanız en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve	karakter içermelidir. İzin verilen özel karakterler: +=.@*! </small>
+						</div>
+					</div>
+				</div>
+				<div id="plugin-result-local-user"></div>
 			</div>
 		</div>
 	</div>

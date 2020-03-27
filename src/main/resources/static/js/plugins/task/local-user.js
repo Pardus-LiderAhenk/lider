@@ -69,13 +69,13 @@ function localUserListener(msg) {
 						var username = users[j]["user"];
 						var home = users[j]["home"];
 						var groups = users[j]["groups"];
-						var isActive = "Pasif";
+						var isActive = '<td><i class="fa fa-user-times"></i> Pasif</td>';
 						if (users[j]["is_active"] == "true") {
-							isActive = "Aktif";
+							isActive = '<td><i class="fa fa-user-check"></i> Aktif</td>';
 						}
 						var newRow = $("<tr id="+ username +">");
 						var html = '<td>'+ username +'</td>';
-						html += '<td>'+ isActive +'</td>';
+						html += isActive;
 						html += '<td>'+ home +'</td>';
 						newRow.append(html);
 						$("#localUsersTable").append(newRow);
@@ -102,6 +102,11 @@ function localUserListener(msg) {
 						tableLocalUser.destroy();
 //						$("#localUserForm").hide();
 					}
+					allGroups = [];
+					$("#localUserOfGroups").multiselect('destroy');
+					$("#localUserOfGroups option").remove();
+					createGroupsSelectBox();
+					defaultSettings();
 					sendLocalUserTask(getUsers());
 
 				}else {
@@ -140,6 +145,7 @@ function sendLocalUserTaskConfirm(commandId, parameterMap) {
 					if (tableLocalUser) {
 						tableLocalUser.clear().draw();
 						tableLocalUser.destroy();
+						allGroups = [];
 //						$("#localUserForm").hide();
 					}
 				}
@@ -195,7 +201,7 @@ function getUsers() {
 		pluginTask_LocalUser.cronExpression = scheduledParamLocalUser;
 		pluginTask_LocalUser.commandId = "GET_USERS";  		
 		var params = JSON.stringify(pluginTask_LocalUser);
-		return params
+		return params;
 	}
 }
 
@@ -252,7 +258,7 @@ function createLocalUsersTable() {
 			"sZeroRecords" : "Kullanıcı bulunamadı",
 			"sInfoFiltered": " - _MAX_ kullanıcı arasından",
 		},
-	} );
+	});
 }
 
 function defaultSettings() {

@@ -9,7 +9,14 @@
 	var selectedName = "";
 	
 	$(document).ready(function () {
-		$('[data-toggle="tooltip"]').tooltip()
+		$(".adSettings").hide();
+		$('#cbShowADSettings').change(function() {
+	        if($(this).is(":checked")) {
+	        	$(".adSettings").show();
+	        } else {
+	        	$(".adSettings").hide();
+	        }
+	    });
 		getConsoleUsers();
 		getConfigurationParams();
 	});
@@ -310,6 +317,18 @@
 		    	if(data != null) {
 		    		//set ldap configuration
 		    		setAttributes(data);
+		    		if((data.adDomainName != null && data.adDomainName != "") &&
+		    				(data.adIpAddress != null && data.adIpAddress != "") &&
+		    				(data.adAdminUserName != null && data.adAdminUserName != "") &&
+		    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
+		    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
+		    				(data.adPort != null && data.adPort != "")) {
+		    				$(".adSettings").show();
+		    				$("#checkboxDiv").hide();
+		    		} else {
+	    				$(".adSettings").hide();
+	    				$("#checkboxDiv").show();
+		    		}
 		    	} else {
 		    		$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
 		    	}
@@ -321,6 +340,7 @@
 	}
 	
 	function setAttributes(data) {
+		//set LDAP configuration
 		$('#ldapServerAddress').val(data.ldapServer);
 		$('#ldapServerPort').val(data.ldapPort);
 		$('#ldapRootDN').val(data.ldapRootDn);
@@ -332,6 +352,21 @@
 		$('#computerGroupDN').val(data.ahenkGroupLdapBaseDn);
 		$('#userGroupDN').val(data.userGroupLdapBaseDn);
 		$('#sudoGroupDN').val(data.userLdapRolesDn);
+		
+		//set active directory configuration if exists
+		if((data.adDomainName != null && data.adDomainName != "") &&
+		    				(data.adIpAddress != null && data.adIpAddress != "") &&
+		    				(data.adAdminUserName != null && data.adAdminUserName != "") &&
+		    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
+		    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
+		    				(data.adPort != null && data.adPort != "")) {
+			$('#adIpAddress').val(data.adIpAddress);
+			$('#adPort').val(data.adPort);
+			$('#adDomainName').val(data.adDomainName);
+			$('#adAdminUserName').val(data.adAdminUserName);
+			$('#adAdminPassword').val(data.adAdminPassword);
+			$('#adHostName').val(data.adHostName);
+		} 
 		
 		//set XMPP configuration
 		$('#XMPPServerAddress').val(data.xmppHost);
@@ -355,6 +390,7 @@
 		if(type == 'ldap') {
 			//remove disabled attribute from editableLDAP class
 			$('.editableLDAP').prop('disabled', false);
+			$('.editableAD').prop('disabled', false);
 			//change button name and onClick event to save
 			 $("#editLDAPAttributes").html("Değişiklikleri Kaydet");
 			 $("#editLDAPAttributes").attr("onclick","saveChanges('ldap')");
@@ -376,34 +412,48 @@
 	}
 	function saveChanges(type) {
 		if(type == 'ldap') {
-			var params = {
-				    "ldapServer" : $('#ldapServerAddress').val(),
-				    "ldapPort": $('#ldapServerPort').val(),
-				    "ldapUsername": $('#ldapUserDN').val(),
-				    "ldapPassword": $('#ldapUserPassword').val()
-				};
-			$.ajax({ 
-			    type: 'POST', 
-			    url: "/settings/update/ldap",
-			    dataType: 'json',
-			    data: params,
-			    success: function (data) { 
-			    	if(data != null) {
-			    		$.notify("LDAP sunucu bilgileri başarıyla güncellendi. Şimdi tekrar giriş yapabilmeniz için giriş ekranına yönlendirileceksiniz.", "success");
-			    		//redirect to login
-			    		setTimeout( function() 
-		   					{
-		   						window.location.replace("/logout")
-		   					}, 1000);
-			    		
-			    	} else {
-			    		$.notify("LDAP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-			    	}
-			    },
-			    error: function (data, errorThrown) {
-			    	$.notify("LDAP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-			    }
-			});
+			if($('#ldapServerAddress').val() != ""
+					&& $('#ldapServerPort').val() != ""
+					&& $('#ldapUserDN').val() != ""
+					&& $('#ldapUserPassword').val() != "" ) {
+				var params = {
+					    "ldapServer" : $('#ldapServerAddress').val(),
+					    "ldapPort": $('#ldapServerPort').val(),
+					    "ldapUsername": $('#ldapUserDN').val(),
+					    "ldapPassword": $('#ldapUserPassword').val(),
+					    "adIpAddress": $('#adIpAddress').val(),
+					    "adPort": $('#ldapUserPassword').val(),
+					    "adDomainName": $('#adDomainName').val(),
+					    "adAdminUserName": $('#adAdminUserName').val(),
+					    "adAdminPassword": $('#adAdminPassword').val(),
+					    "adHostName": $('#adHostName').val()
+					};
+				$.ajax({ 
+				    type: 'POST', 
+				    url: "/settings/update/ldap",
+				    dataType: 'json',
+				    data: params,
+				    success: function (data) { 
+				    	if(data != null) {
+				    		$.notify("LDAP sunucu bilgileri başarıyla güncellendi. Şimdi tekrar giriş yapabilmeniz için giriş ekranına yönlendirileceksiniz.", "success");
+				    		//redirect to login
+				    		setTimeout( function() 
+			   					{
+			   						window.location.replace("/logout")
+			   					}, 1000);
+				    		
+				    	} else {
+				    		$.notify("LDAP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+				    	}
+				    },
+				    error: function (data, errorThrown) {
+				    	$.notify("LDAP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+				    }
+				});
+			} else {
+				$.notify("Lütfen boş alanları doldurunuz.", "error");
+			}
+
 		} else if(type == 'xmpp') {
 			var params = {
 					"xmppHost": $('#XMPPServerAddress').val(),
@@ -561,7 +611,7 @@
 							</div>
 							<div class="col-md-6">
 								<div class="position-relative form-group">
-									<label for="labelLdaRootDN" class="control-label">Domain Adı</label>
+									<label for="labelLdapRootDN" class="control-label">Domain Adı</label>
 									<input name="ldapRootDN" id="ldapRootDN" required="required"
 										type="text" placeholder="dc=liderahenk,dc=org" class="form-control" disabled>
 								</div>
@@ -636,6 +686,58 @@
 									<label for="labelSudoGroupDN" class="">Yetki Grubu Klasörü(Sudo)</label>
 									<input name="sudoGroupDN" id="sudoGroupDN"
 										value="ou=Role,ou=Groups,dc=liderahenk,dc=org" class="form-control" disabled>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="custom-checkbox custom-control" id="checkboxDiv">
+								<input type="checkbox" id="cbShowADSettings" class="custom-control-input">
+									<label class="custom-control-label" for="cbShowADSettings">
+										Aktif Dizin ayarları (Hibrit yapılı kurulumlar için bu ayarlar yapılmalıdır)
+									</label>
+								</div>
+							</div>
+
+							<!-- AD Settings -->
+							<div class="col-md-4 adSettings">
+								<div class="position-relative form-group">
+									<label for="labelAdIpAddress" class="control-label">AD Sunucu Adresi</label>
+									<input name="adIpAddress" id="adIpAddress" required="required"
+										type="text" placeholder="10.10.56.148" class="form-control editableAD"  disabled>
+								</div>
+							</div>
+							<div class="col-md-2 adSettings">
+								<div class="position-relative form-group">
+									<label for="labelAdPort" class="control-label">AD Port</label>
+									<input name="adPort" id="adPort" required="required"
+										type="text" placeholder="1025" class="form-control editableAD" disabled>
+								</div>
+							</div>
+							<div class="col-md-6 adSettings">
+								<div class="position-relative form-group">
+									<label for="labelAdDomainName" class="control-label">AD Domain Adı</label>
+									<input name="adDomainName" id="adDomainName" required="required"
+										type="text" placeholder="liderahenk.tr" class="form-control editableAD" disabled>
+								</div>
+							</div>
+							<div class="col-md-6 adSettings">
+								<div class="position-relative form-group">
+									<label for="labelAdAdminUserName" class="control-label">AD Yönetici Kullanıcı Adı</label>
+									<input name="adAdminUserName" id="adAdminUserName" required="required"
+										type="text" placeholder="Administrator" class="form-control editableAD" disabled>
+								</div>
+							</div>
+							<div class="col-md-6 adSettings">
+								<div class="position-relative form-group">
+									<label for="labelAdAdminPassword" class="control-label">AD Yönetici Şifresi</label>
+									<input name="adAdminPassword" id="adAdminPassword" required="required"
+										type="password" class="form-control editableAD" disabled>
+								</div>
+							</div>
+							<div class="col-md-6 adSettings">
+								<div class="position-relative form-group">
+									<label for="labelAdHostName" class="control-label">AD Host Adresi</label>
+									<input name="adHostName" id="adHostName" required="required"
+										type="text" placeholder="pardus.liderahenk.org" class="form-control editableAD" disabled>
 								</div>
 							</div>
 							<div class="col-md-12">

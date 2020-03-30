@@ -44,13 +44,25 @@ public class SettingsController {
 	public ConfigParams updateLdapSettings(@RequestParam (value = "ldapServer", required = true) String ldapServer,
 			@RequestParam (value = "ldapPort", required = true) String ldapPort,
 			@RequestParam (value = "ldapUsername", required = true) String ldapUsername,
-			@RequestParam (value = "ldapPassword", required = true) String ldapPassword) {
+			@RequestParam (value = "ldapPassword", required = true) String ldapPassword,
+			@RequestParam (value = "adIpAddress", required = true) String adIpAddress,
+			@RequestParam (value = "adPort", required = true) String adPort,
+			@RequestParam (value = "adDomainName", required = true) String adDomainName,
+			@RequestParam (value = "adAdminUserName", required = true) String adAdminUserName,
+			@RequestParam (value = "adAdminPassword", required = true) String adAdminPassword,
+			@RequestParam (value = "adHostName", required = true) String adHostName) {
 
 		ConfigParams configParams = configurationService.getConfigParams();
 		configParams.setLdapServer(ldapServer);
 		configParams.setLdapPort(ldapPort);
 		configParams.setLdapUsername(ldapUsername);
 		configParams.setLdapPassword(ldapPassword);
+		configParams.setAdIpAddress(adIpAddress);
+		configParams.setAdPort(adPort);
+		configParams.setAdDomainName(adDomainName);
+		configParams.setAdAdminUserName(adAdminUserName);
+		configParams.setAdAdminPassword(adAdminPassword);
+		configParams.setAdHostName(adHostName);
 		return configurationService.updateConfigParams(configParams);
 	}
 	

@@ -112,6 +112,10 @@ public class ConfigurationService {
 		}
 	}
 
+	//if user logins to system recreate config params
+	public void destroyConfigParams() {
+		configParams = null;
+	}
 	public Boolean isConfigurationDone() {
 		if(findByName("liderConfigParams").isPresent()) {
 			return true;
@@ -417,6 +421,10 @@ public class ConfigurationService {
 		return getConfigParams().getAdAdminPassword();
 	}
 
+	public String getAdPort() {
+		return getConfigParams().getAdPort();
+	}
+	
 	public FileServerConf getFileServerConf(String jid) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		switch (getConfigParams().getFileServerProtocol()) {

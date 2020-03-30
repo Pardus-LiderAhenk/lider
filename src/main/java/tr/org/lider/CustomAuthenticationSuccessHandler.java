@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import tr.org.lider.messaging.messages.XMPPClientImpl;
+import tr.org.lider.services.ConfigurationService;
 
 /**
  * Handler for setting up XMPP Service and start it after successfull login.
@@ -29,11 +30,15 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 	
 	@Autowired
 	private XMPPClientImpl xmppClientImpl;
-
+	
+	@Autowired
+	private ConfigurationService configurationService;
+	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		try {
+			configurationService.destroyConfigParams();
 			xmppClientImpl.initXMPPClient();
 		} catch (Exception e) {
 			e.printStackTrace();

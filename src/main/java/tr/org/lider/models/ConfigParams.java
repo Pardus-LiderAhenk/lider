@@ -121,7 +121,7 @@ public class ConfigParams {
 	private String adIpAddress;
 	private String adAdminUserName;
 	private String adAdminPassword;
-	
+	private String adPort;
 	public ConfigParams() {
 		super();
 	}
@@ -147,7 +147,7 @@ public class ConfigParams {
 			Integer mailSmtpWriteTimeout, Boolean mailSendOnTaskCompletion, Long mailCheckTaskCompletionPeriod,
 			Boolean mailSendOnPolicyCompletion, Long mailCheckPolicyCompletionPeriod, String hotDeploymentPath,
 			String cronTaskList, Integer entrySizeLimit, Integer cronIntervalEntrySize, String adDomainName,
-			String adHostName, String adIpAddress, String adAdminUserName, String adAdminPassword) {
+			String adHostName, String adIpAddress, String adAdminUserName, String adAdminPassword, String adPort) {
 		super();
 		this.liderLocale = liderLocale;
 		this.ldapServer = ldapServer;
@@ -223,6 +223,7 @@ public class ConfigParams {
 		this.adIpAddress = adIpAddress;
 		this.adAdminUserName = adAdminUserName;
 		this.adAdminPassword = adAdminPassword;
+		this.adPort = adPort;
 	}
 
 	public void setDefaultParams() {
@@ -861,6 +862,15 @@ public class ConfigParams {
 	public void setAdAdminPassword(String adAdminPassword) {
 		this.adAdminPassword = adAdminPassword;
 	}
+
+	public String getAdPort() {
+		return adPort;
+	}
+
+	public void setAdPort(String adPort) {
+		this.adPort = adPort;
+	}
+
 
 	public FileServerConf getFileServerConf(String jid) {
 		Map<String, Object> params = new HashMap<String, Object>();

@@ -1,74 +1,58 @@
 <!DOCTYPE HTML>
-
-<html lang="en" class="app-ui" xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="en" class="app-ui" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"rel="stylesheet" id="bootstrap-css">
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
 
-<link rel="stylesheet" type="text/css"  />
+<link rel="stylesheet" type="text/css" />
 
-<style type="text/css">
-
-</style>
-
-   <!-- AppUI CSS stylesheets -->
+<!-- AppUI CSS stylesheets -->
 <link rel="stylesheet" type="text/css" href="css/main_b.css" />
-<script type="text/javascript"	src="/js/jquery-3.1.1.min.js" ></script>
-<script type="text/javascript"	src="/js/bootstrap.min.js" ></script>
+<script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
 <script type="text/javascript" src="assets/scripts/main.js"></script>
-     <script src='js/jquery-ui.min.js'></script>
-    
+<script src='js/jquery-ui.min.js'></script>
 
 <title>Lider Ahenk Merkezi Yonetim Sistemi</title>
 </head>
-  <body class="bg-white">
-    			<div class="container center bg-white"  >
-    				
-    				<div class="row">
-    					<div class="card col-lg-6 col-md-6" >
-    					
-    					<img class = "img-responsive" width = "100%"  alt="" src="img/arkaplanyok.png">
-    					</div>
-    					<div class="col-lg-6 col-md-6" >
-                                <!-- Normal Form -->
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5>Lütfen Giriş Yapınız</h5>
-                                       
-                                    </div>
-                                    <div class="card-block">
-                                        
-                                        <form action="/login" method="post">
-                                        		<div th:if="${param.error}" class="alert alert-error">    
-							                    Kullanıcı Adı veya Parola Yanlış
-								                </div>
-								                <div th:if="${param.logout}" class="alert alert-success"> 
-								                    Çıkış yaptınız.
-								                </div>
-                                            <div class="form-group">
-                                                <label for="username">Kullanıcı Adı</label>
-                                                <input class="form-control" id="username" name="username" placeholder="Kullanıcı Adı.." />
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="password" />Parola</label>
-                                                <input class="form-control" type="password" id="password" name="password" placeholder="Parola.." />
-                                            </div>
-                                            <div class="form-group m-b-0">
-                                                <button class="btn btn-app" type="submit">Giriş</button>
-                                            </div>
-                                        </form>
-                                        
-                                    </div>
-                                </div>
-    					</div>
-    					</div>
-    					
-    				</div>
-  </body>
+<body class="bg-white">
+	<div class="container center bg-white">
+		<div class="row">
+			<div class="card col-lg-6 col-md-6">
+
+				<img class="img-responsive" width="100%" alt=""
+					src="img/arkaplanyok.png">
+			</div>
+			<div class="col-lg-6 col-md-6">
+				<!-- Normal Form -->
+				<div class="card">
+					<div class="card-header">
+						<h5>Lütfen Giriş Yapınız</h5>
+					</div>
+					<div class="card-block">
+						<form action="/login" method="post">
+							<div th:if="${param.error}" class="alert alert-error">Kullanıcı Adı veya Parola Yanlış</div>
+							<div th:if="${param.logout}" class="alert alert-success">Çıkış yaptınız.</div>
+							<div th:if="${noAccess}" class="alert alert-error">Yetkiniz Bulunmamaktadır.</div>
+							<div class="form-group">
+								<label for="username">Kullanıcı Adı</label>
+								<input class="form-control" id="username" name="username" placeholder="Kullanıcı Adı.." />
+							</div>
+							<div class="form-group">
+								<label for="password">Parola</label>
+								<input class="form-control" type="password" id="password" name="password" placeholder="Parola.." />
+							</div>
+							<div class="form-group m-b-0">
+								<button class="btn btn-app" type="submit">Giriş</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
 </html>
-
-

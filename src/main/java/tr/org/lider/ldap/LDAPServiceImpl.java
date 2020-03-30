@@ -182,7 +182,9 @@ public class LDAPServiceImpl implements ILDAPService {
 	public void destroy() {
 		logger.info("Destroying LDAP service...");
 		try {
-			pool.close();
+			if(pool != null) {
+				pool.close();
+			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}

@@ -36,7 +36,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		try {
 			xmppClientImpl.initXMPPClient();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			logger.error("Error occured during initialization of XMPP parameters.");
 		}

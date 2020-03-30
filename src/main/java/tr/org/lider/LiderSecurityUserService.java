@@ -28,7 +28,7 @@ public class LiderSecurityUserService implements UserDetailsService {
 		
 		LdapEntry ldapEntry=null;
 		try {
-			String filter= "(&(objectClass=pardusAccount)(objectClass=pardusLider)(cn=$1))".replace("$1", userName);
+			String filter= "(&(objectClass=pardusAccount)(objectClass=pardusLider)(liderPrivilege=ROLE_USER)(uid=$1))".replace("$1", userName);
 			List<LdapEntry> ldapEntries  = ldapService.findSubEntries(filter,
 					new String[] { "*" }, SearchScope.SUBTREE);
 			

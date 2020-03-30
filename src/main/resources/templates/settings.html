@@ -2,13 +2,306 @@
 <script src="assets/js/app-custom.js"></script>
 
 <script type="text/javascript">
+	var users;
+	var selectedTrIndex = "";
+	var selectedDN = "";
+	var selectedEntryUUID = "";
+	var selectedName = "";
+	
 	$(document).ready(function () {
-		
+		$('[data-toggle="tooltip"]').tooltip()
+		getConsoleUsers();
 		getConfigurationParams();
-
 	});
-	function getConfigurationParams() {
+	
+	function getConsoleUsers() {
+		$.ajax({ 
+		    type: 'GET', 
+		    url: "/lider/ldap/getConsoleUsers",
+		    dataType: 'json',
+		    success: function (data) { 
+		    	if(data != null) {
+		    		users = data;
+		    		//set ldap configuration
+		    		var trElement = "";
+		    		$.each(data, function(index, element) {
+		    			trElement += '<tr id="user_' + index + '"><td>' + (index+1) + '</td>';
+		    			trElement += "<td>" + element.uid + "</td>";
+		    			trElement += "<td>" + element.distinguishedName + "</td>";
+		    			trElement += '<td>';
+		    			trElement += '<a href="#" class="mr-1" title="Konsol Yetkisini Sil" data-toggle="tooltip" ';
+		    			trElement += 'onclick=deleteUser("' + element.distinguishedName + '")>';
+			    		trElement += '<i class="material-icons" style="font-size:24px;color:#E34724;">&#xE872;</i></a>';
+		    			trElement += '<a href="#" title="Kullanıcı Rollerini Görüntüle" '; 
+		    			trElement += 'onclick=showUserDetail("user_' + index+ '","' + element.distinguishedName+ '")>';
+		    			trElement += '<i class="material-icons" style="font-size:24px;color:#3F6AD8;">chevron_right</i></a>';
+		    			trElement += '</td></tr>';
+		    		});
+		    		$('#existingUsers').html(trElement);
+		    	} else {
+		    		$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    	}
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    },
+			complete: function() {
+				$('#user_0').css("background-color", "#E0F3FF");
+				showUserDetail("user_0", users[0].distinguishedName);
+			}
+		});
+	}
+	
+	function deleteUser(dn) {
+		alert(dn);
+	}
+	
+	function showUserDetail(index, dn) {
+		//E0F3FF
+		if(selectedTrIndex == "") {
+			$('#' + index).css("background-color", "#E0F3FF");
+			selectedTrIndex = index;
+			
+		} else if(selectedTrIndex != index) {
+			$('#' + selectedTrIndex).css("background-color", "");
+			$('#' + index).css("background-color", "#E0F3FF");
+			selectedTrIndex = index;
+		}
 
+		$('#headerForSelectedUserRoles').html('Seçili Kullanıcı Rolleri (Kayıt DN: ' + dn + ')');
+		var trElement = "";
+		$.each(users, function(index, element) {
+			var counter = 1;
+			if(element.distinguishedName == dn) {
+				for(var i = 0; i< element.attributesMultiValues["liderPrivilege"].length; i++) {
+					if(element.attributesMultiValues["liderPrivilege"][i].startsWith("ROLE_")) {
+						trElement += '<tr>';
+						trElement += '<td>' + (counter++) + '</td>';
+						trElement += '<td>' + element.attributesMultiValues["liderPrivilege"][i] + '</td>';
+						trElement += '<td>';
+						trElement += '<a class="delete mr-1" title="Rolü Kaldır" data-toggle="tooltip" onclick=deleteRoleFromUser("' + dn + '","' + element.attributesMultiValues["liderPrivilege"][i] +'")>';
+			    		trElement += '<i class="material-icons" style="font-size:24px;color:#E34724;">&#xE872;</i></a>';
+		    			trElement += '<a class="edit" title="Sayfaları Listele" data-toggle="tooltip"  onclick=showRolePages("' + element.distinguishedName + '")>';
+		    			trElement += '<i class="material-icons" style="font-size:24px;color:#3F6AD8;">format_list_bulleted</i></a>';
+			    		trElement += '</td>';
+			    		trElement += '</tr>';
+					}
+				}
+			}
+		});
+		$('#userRoles').html(trElement);
+	}
+	
+	function btnAddNewConsoleUserClicked() {
+		getModalContent("modals/settings/select_console_user", function content(data){
+			$('#genericModalHeader').html("Konsol Kullanıcısı Ekle");
+			$('#genericModalBodyRender').html(data);
+			generateTreeToAddMembersToExistingGroup();
+		});
+	}
+	
+	/*
+	 * adding new members to existing group functions
+	 */
+	function generateTreeToAddMembersToExistingGroup(){
+		$.ajax({
+			type : 'POST',
+			url : 'lider/user/getUsers',
+			dataType : 'json',
+			success : function(data) {
+				 var source =
+				  {
+				      dataType: "json",
+				      dataFields: [
+				           { name: "name", type: "string" },
+				           { name: "online", type: "string" },
+				           { name: "uid", type: "string" },
+				           { name: "type", type: "string" },
+				           { name: "cn", type: "string" },
+				           { name: "ou", type: "string" },
+				           { name: "parent", type: "string" },
+				           { name: "distinguishedName", type: "string" },
+				           { name: "hasSubordinates", type: "string" },
+				           { name: "expandedUser", type: "string" },
+				           { name: "entryUUID", type: "string" },
+				           { name: "attributes", type: "array" },
+				           { name: "attributesMultiValues", type: "array" },
+				           { name: "childEntries", type: "array" }
+				      ],
+				      hierarchy:
+				          {
+				              root: "childEntries"
+				          },
+				      localData: data,
+				      id: "entryUUID"
+				  };
+				 //create user tree grid
+				 createTreeToAddMembersToExistingGroup(source);
+			},
+		    error: function (data, errorThrown) {
+		    	$.notify("Kullanıcılar getirilirken hata oluştu.", "error");
+		    }
+		});
+	}
+
+	function createTreeToAddMembersToExistingGroup(source) {
+		$("#selectConsoleUserTreeGrid").jqxTreeGrid('destroy');
+		$("#selectConsoleUserTreeDiv").append('<div id="selectConsoleUserTreeGrid"></div> ');
+		var dataAdapter = new $.jqx.dataAdapter(source, {
+			loadComplete: function () {
+		    }
+		});
+		
+		var getLocalization = function () {
+			var localizationobj = {};
+	        localizationobj.filterSearchString = "Ara :";
+	        return localizationobj;
+		};
+		// create jqxTreeGrid.
+		$("#selectConsoleUserTreeGrid").jqxTreeGrid(
+		{
+			width: '100%',
+			source: dataAdapter,
+			altRows: true,
+			sortable: true,
+			columnsResize: true,
+			filterable: true,
+			hierarchicalCheckboxes: true,
+			pageable: true,
+			pagerMode: 'default',
+			checkboxes: false,
+			selectionMode: "singleRow",
+			filterMode: "simple",
+			localization: getLocalization(),
+			pageSize: 50,
+			pageSizeOptions: ['15', '25', '50'],
+			icons: function (rowKey, dataRow) {
+			var level = dataRow.level;
+			if(dataRow.type == "USER"){
+				return "img/checked-user-32.png";
+			}
+			else return "img/folder.png";
+			},
+			ready: function () {
+				var allrows =$("#selectConsoleUserTreeGrid").jqxTreeGrid('getRows');
+				if(allrows.length==1){
+					var row=allrows[0];
+					if(row.childEntries==null ){
+						$("#selectConsoleUserTreeGrid").jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
+					}
+				}
+		    	$("#selectConsoleUserTreeGrid").jqxTreeGrid('collapseAll'); 
+		    }, 
+		    rendered: function () {
+		   	},
+		   	columns: [{ text: "Kullanıcılar", align: "center", dataField: "name", width: '100%' }]  	
+		});
+
+		$('#selectConsoleUserTreeGrid').on('rowExpand', function (event) {
+			var args = event.args;
+			var row = args.row;
+		    if(row.expandedUser == "FALSE") {
+		    	var nameList=[];
+		    	for (var m = 0; m < row.records.length; m++) {
+		    		var childRow = row.records[m];
+		    		nameList.push(childRow.uid);      
+				}
+			      
+		    	for (var k = 0; k < nameList.length; k++) {
+		    		// get a row.
+		    		var childRowname = nameList[k];
+					$("#selectConsoleUserTreeGrid").jqxTreeGrid('deleteRow', childRowname); 
+		    	}  
+				$.ajax({
+					type : 'POST',
+					url : 'lider/ldap/getOuDetails',
+					data : 'uid=' + row.distinguishedName + '&type=' + row.type
+							+ '&name=' + row.name + '&parent=' + row.parent,
+					dataType : 'text',
+					success : function(ldapResult) {
+						var childs = jQuery.parseJSON(ldapResult);
+						for (var m = 0; m < childs.length; m++) {
+							// get a row.
+							var childRow = childs[m];
+							$("#selectConsoleUserTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
+							//$("#createNewUserGroupTreeGridUser").jqxTreeGrid('checkRow', row.name);
+							if(childRow.hasSubordinates=="TRUE"){
+								$("#selectConsoleUserTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
+							}
+							$("#selectConsoleUserTreeGrid").jqxTreeGrid('collapseRow', childRow.entryUUID);
+						}
+						row.expandedUser = "TRUE";
+					},
+				    error: function (data, errorThrown) {
+				    	$.notify("Klasör bilgisi getirilirken hata oluştu.", "error");
+				    }
+				});
+	    	}
+		});
+		
+		$('#selectConsoleUserTreeGrid').on('rowSelect', function (event) {
+			var args = event.args;
+			var row = args.row;
+			var name= row.name;
+			selectedDN = row.distinguishedName;
+			selectedEntryUUID = row.entryUUID;
+			selectedName = row.name;
+			
+			if(row.type == "ORGANIZATIONAL_UNIT") {
+				$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', true);
+				$('#alreadyConsoleUser').html("");
+			} else {
+				//check if user already has role for console
+				var selectedRows = $("#selectConsoleUserTreeGrid").jqxTreeGrid('getSelection');
+				var selectedRowData=selectedRows[0];
+				var isUserAlreadyConsoleUser = false;
+				if(selectedRowData.priviliges != null) {
+					for(var i = 0; i< selectedRowData.priviliges.length; i++) {
+						if(selectedRowData.priviliges[i] == "ROLE_USER") {
+							isUserAlreadyConsoleUser = true;
+						}
+					}
+				}
+				if(isUserAlreadyConsoleUser) {
+					$('#alreadyConsoleUser').html("<br>Seçili kullanıcının konsol yetkisi bulunmaktadır. Lütfen başka bir kullanıcı seçiniz.");
+					$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', true);
+				} else {
+					$('#alreadyConsoleUser').html("");
+					$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', false);
+				}
+			}
+		});
+	}
+
+	function btnGiveConsoleAccessToSelectedUserClicked() {
+		if(selectedDN != "") {
+			var params = {
+				    "dn": selectedDN,
+				    "roles": "ROLE_USER"
+				};
+			$.ajax({ 
+			    type: 'POST', 
+			    url: "/settings/add/role",
+			    dataType: 'json',
+			    data: params,
+			    success: function (data) { 
+					$.notify("Kullanıcıya konsol erişim yetkisi verildi.", "success");
+					//get selected data and update it with new data result from service call
+					getConsoleUsers();
+					$('#genericModal').trigger('click');
+			    },
+			    error: function (data, errorThrown) {
+			    	$.notify("Kullanıcıya konsol erişim yetkisi verilirken hata oluştu.", "error");
+			    }
+			});
+		} else {
+			$.notify("Lütfen bir kullanıcı seçiniz.", "error");
+			return;
+		}
+	}
+
+	
+	function getConfigurationParams() {
 		$.ajax({ 
 		    type: 'GET', 
 		    url: "/settings/configurations",
@@ -164,13 +457,13 @@
 		}
 	}
 </script>
-<div class="main-card mb-3 card" style="margin: 18px;">
+<div class="main-card mb-3 card h-100" style="margin: 18px;" id="divSettings">
 	<div class="card-body">
 		<div class="card-body">
 			<h5 class="card-title">Ayarlar</h5>
 			<ul class="nav nav-tabs">
 				<li class="nav-item"><a data-toggle="tab" href="#tab-users"
-					class="active nav-link">Kullanıcılar</a></li>
+					class="active nav-link">Konsol Kullanıcı Ayarları</a></li>
 				<li class="nav-item"><a data-toggle="tab" href="#tab-roles"
 					class="nav-link">Rol Tanımları</a></li>
 				<li class="nav-item"><a data-toggle="tab" href="#tab-ldap"
@@ -184,14 +477,72 @@
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="tab-users" role="tabpanel">
-					<p>Kullanıcılar</p>
+					<div class="col-12">
+						<div class="form-row">
+							<div class="col-6">
+								<div class="mr-5">
+									<div class="col-12 p-0 m-0 mb-2">
+										<div class="form-row">
+											<div class="col-6">
+												<h6>Mevcut Konsol Kullanıcıları</h6>
+											</div>
+											<div class="col-6">
+												<button class="btn btn-primary pull-right" id="btnAddNewConsoleUser" data-toggle="modal" data-target="#genericModal"
+													type="button" onclick="btnAddNewConsoleUserClicked()">Konsol Kullanıcısı Ekle</button>
+											</div>
+										</div>
+									</div>
+									<table class="table table-bordered table-hover table-sm">
+										<thead>
+											<tr>
+												<th style="width: 6%">#</th>
+												<th style="width: 20%">UID</th>
+												<th style="width: 64%">Kayıt DN</th>
+												<th style="width: 10%"></th>
+											</tr>
+										</thead>
+										<tbody id="existingUsers">
+											<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="col-6">
+								<div class="mr-1">
+									<div class="col-12 p-0 m-0 mb-2">
+										<div class="form-row">
+											<div class="col-10">
+												<h6 id="headerForSelectedUserRoles"></h6>
+											</div>
+											<div class="col-2">
+												<button class="btn btn-primary pull-right" id="btnAddNewConsoleUser" 
+													type="button" onclick="btnAddNewRoleClicked()">Yeni Rol Ekle</button>
+											</div>
+										</div>
+									</div>
+									<table class="table table-bordered table-hover table-sm">
+										<thead>
+											<tr>
+												<th style="width: 6%">#</th>
+												<th style="width: 93%">Rol Adı</th>
+												<th style="width: 11%"></th>
+											</tr>
+										</thead>
+										<tbody id="userRoles">
+											<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 				<div class="tab-pane" id="tab-roles" role="tabpanel">
-					<p>Rol Tanımları</p>
+					<h5>Rol Tanımları</h5>
 				</div>
 				<div class="tab-pane" id="tab-ldap" role="tabpanel">
 					<div class="col-md-12">
-						<h3>LDAP Sunucusu Bilgileri</h3>
+						<h5>LDAP Sunucusu Bilgileri</h5>
 						<!-- row 1 -->
 						<div class="form-row">
 							<div class="col-md-4">
@@ -298,7 +649,7 @@
 				</div>
 				<div class="tab-pane" id="tab-xmpp" role="tabpanel">
 					<div class="col-md-12">
-						<h3>XMPP Sunucusu Bilgileri</h3>
+						<h5>XMPP Sunucusu Bilgileri</h5>
 						<!-- row 1 -->
 						<div class="form-row">
 							<div class="col-md-6">
@@ -384,7 +735,7 @@
 				</div>
 				<div class="tab-pane" id="tab-file-server" role="tabpanel">
 					<div class="col-md-12">
-						<h3>Dosya Sunucusu Bilgileri</h3>
+						<h5>Dosya Sunucusu Bilgileri</h5>
 						<!-- row 1 -->
 						<div class="form-row">
 							<div class="col-md-2">
@@ -438,7 +789,7 @@
 					</div>
 				</div>
 				<div class="tab-pane" id="tab-other-settings" role="tabpanel">
-					<p>Diğer Ayarlar</p>
+					<h5>Diğer Ayarlar</h5>
 				</div>
 			</div>
 		</div>

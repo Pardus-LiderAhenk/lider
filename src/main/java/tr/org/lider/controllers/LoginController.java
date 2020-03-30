@@ -55,5 +55,4 @@ public class LoginController {
 			return "config";
 		}
 	}
-
 }

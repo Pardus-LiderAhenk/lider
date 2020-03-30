@@ -67,10 +67,10 @@ public class AgentInfoController {
 		}
 	}
 	
-	//get agent detail by DN and ID
+	//get agent detail by agentDn
 		@RequestMapping(method=RequestMethod.POST ,value = "/agent", produces = MediaType.APPLICATION_JSON_VALUE)
 		@ResponseBody
-		public Optional<AgentImpl> findAgentByJIDRest(@RequestParam (value = "jid") String agentDn) {
+		public Optional<AgentImpl> findAgentByJIDRest(@RequestParam (value = "agentDn") String agentDn) {
 			List<AgentImpl> agent = agentService.findAgentByDn(agentDn);
 			Long agentId = agent.get(0).getId();
 			return agentService.findAgentByID(agentId);

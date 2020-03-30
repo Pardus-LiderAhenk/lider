@@ -251,6 +251,17 @@ function setSystemPluginPage() {
 						}
 					});
 				}
+				if(pluginTask.page == 'ldap-login'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#ldap-login').html(res1);
+						}
+					});
+				}
 			}
 		}
 	});
@@ -691,7 +702,7 @@ function showSelectedEntries() {
 	
 	var agentDn = selectedEntries[0].distinguishedName;
 	var params = {
-			"jid" : agentDn
+			"agentDn" : agentDn
 	};
 	
 	$("#agentHostname").html("");

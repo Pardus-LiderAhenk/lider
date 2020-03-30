@@ -523,19 +523,5 @@ public class LdapController {
 		}
 		return entry ;
 	}
-	
-	@RequestMapping(method=RequestMethod.GET ,value = "/getConsoleUsers", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public List<LdapEntry> getLiderConsoleUsers() {
-		List<LdapEntry> ldapEntries = null;
-		try {
-			String filter= "(&(objectClass=pardusAccount)(objectClass=pardusLider)(liderPrivilege=ROLE_USER))";
-			ldapEntries  = ldapService.findSubEntries(filter,
-					new String[] { "*" }, SearchScope.SUBTREE);
-		} catch (LdapException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return ldapEntries;
-	}
+
 }

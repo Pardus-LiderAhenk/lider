@@ -1,18 +1,26 @@
 package tr.org.lider.controllers;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.messaging.enums.Protocol;
@@ -38,6 +46,21 @@ public class SettingsController {
 	@RequestMapping(method=RequestMethod.GET, value = "/configurations", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConfigParams getConfigParams() {
 		return configurationService.getConfigParams();
+	}
+	
+	@RequestMapping(method=RequestMethod.GET ,value = "/getConsoleUsers", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<LdapEntry> getLiderConsoleUsers() {
+		List<LdapEntry> ldapEntries = null;
+		try {
+			String filter= "(&(objectClass=pardusAccount)(objectClass=pardusLider)(liderPrivilege=ROLE_USER))";
+			ldapEntries  = ldapService.findSubEntries(filter,
+					new String[] { "*" }, SearchScope.SUBTREE);
+		} catch (LdapException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ldapEntries;
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value = "/update/ldap", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -140,26 +163,38 @@ public class SettingsController {
 		return ldapEntries;
 	}
 	
-//	@RequestMapping(method=RequestMethod.POST, value = "/add/role", produces = MediaType.APPLICATION_JSON_VALUE)
-//	public List<LdapEntry> removeUserAccessToConsole(@RequestParam (value = "dn", required = true) String dn) {
-//		String[] listOfRoles = roles.split(",");
-//		try {
-//			for (int i = 0; i < listOfRoles.length; i++) {
-//				ldapService.updateEntryAddAtribute(dn, "liderPrivilege", listOfRoles[i]);
-//			}
-//		} catch (LdapException e) {
-//			e.printStackTrace();
-//			return null;
-//		}
-//		List<LdapEntry> ldapEntries = null;
-//		try {
-//			String filter= "(&(objectClass=pardusAccount)(objectClass=pardusLider)(liderPrivilege=ROLE_USER))";
-//			ldapEntries  = ldapService.findSubEntries(filter,
-//					new String[] { "*" }, SearchScope.SUBTREE);
-//		} catch (LdapException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return ldapEntries;
-//	}
+	@RequestMapping(method=RequestMethod.POST, value = "/deleteConsoleUser", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<LdapEntry>> deleteConsoleUser(@RequestParam (value = "dn", required = true) String dn,
+			Authentication authentication, HttpServletResponse response) {
+		List<LdapEntry> ldapEntries = null;
+		try {
+			LdapEntry entry = ldapService.getEntryDetail(dn);
+			if(entry != null) {
+				if(entry.getAttributesMultiValues().get("liderPrivilege") != null) {
+					String[] priviliges = entry.getAttributesMultiValues().get("liderPrivilege");
+					for (int i = 0; i < priviliges.length; i++) {
+						if(priviliges[i].startsWith("ROLE_")) {
+							ldapService.updateEntryRemoveAttributeWithValue(dn, "liderPrivilege", priviliges[i]);
+						}
+					}
+				}
+			}
+			//if user deleted own console roles redirect to logout
+			LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) authentication.getPrincipal();
+			if(userDetails.getLiderUser().getDn().equals(dn)) {
+				authentication.setAuthenticated(false);
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			} else {
+				String filter= "(&(objectClass=pardusAccount)(objectClass=pardusLider)(liderPrivilege=ROLE_USER))";
+				ldapEntries  = ldapService.findSubEntries(filter,
+						new String[] { "*" }, SearchScope.SUBTREE);
+				return new ResponseEntity<>(ldapEntries, HttpStatus.OK);
+			}
+
+				
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

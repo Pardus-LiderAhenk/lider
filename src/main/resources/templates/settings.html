@@ -7,7 +7,7 @@
 	var selectedDN = "";
 	var selectedEntryUUID = "";
 	var selectedName = "";
-	
+	var userTableSelectedEntryDN = "";
 	$(document).ready(function () {
 		$(".adSettings").hide();
 		$('#cbShowADSettings').change(function() {
@@ -24,27 +24,11 @@
 	function getConsoleUsers() {
 		$.ajax({ 
 		    type: 'GET', 
-		    url: "/lider/ldap/getConsoleUsers",
+		    url: "/settings/getConsoleUsers",
 		    dataType: 'json',
 		    success: function (data) { 
 		    	if(data != null) {
 		    		users = data;
-		    		//set ldap configuration
-		    		var trElement = "";
-		    		$.each(data, function(index, element) {
-		    			trElement += '<tr id="user_' + index + '"><td>' + (index+1) + '</td>';
-		    			trElement += "<td>" + element.uid + "</td>";
-		    			trElement += "<td>" + element.distinguishedName + "</td>";
-		    			trElement += '<td>';
-		    			trElement += '<a href="#" class="mr-1" title="Konsol Yetkisini Sil" data-toggle="tooltip" ';
-		    			trElement += 'onclick=deleteUser("' + element.distinguishedName + '")>';
-			    		trElement += '<i class="material-icons" style="font-size:24px;color:#E34724;">&#xE872;</i></a>';
-		    			trElement += '<a href="#" title="Kullanıcı Rollerini Görüntüle" '; 
-		    			trElement += 'onclick=showUserDetail("user_' + index+ '","' + element.distinguishedName+ '")>';
-		    			trElement += '<i class="material-icons" style="font-size:24px;color:#3F6AD8;">chevron_right</i></a>';
-		    			trElement += '</td></tr>';
-		    		});
-		    		$('#existingUsers').html(trElement);
 		    	} else {
 		    		$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
 		    	}
@@ -53,18 +37,64 @@
 		    	$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
 		    },
 			complete: function() {
-				$('#user_0').css("background-color", "#E0F3FF");
-				showUserDetail("user_0", users[0].distinguishedName);
+				setConsoleUsersTable();
 			}
 		});
 	}
 	
-	function deleteUser(dn) {
-		alert(dn);
+	function setConsoleUsersTable() {
+		var trElement = "";
+		$.each(users, function(index, element) {
+			trElement += '<tr id="user_' + index + '" onclick=showUserDetail("user_' + index + '","' + element.distinguishedName + '")><td>' + (index+1) + '</td>';
+			trElement += "<td>" + element.uid + "</td>";
+			trElement += "<td>" + element.distinguishedName + "</td>";
+			trElement += '</tr>';
+		});
+		$('#existingUsers').html(trElement);
+		$('#user_0').css("background-color", "#E0F3FF");
+		showUserDetail("user_0", users[0].distinguishedName);
+		
+	}
+	
+	function btnDeleteUserClicked() {
+		if(userTableSelectedEntryDN != null && userTableSelectedEntryDN != "") {
+			var params = {
+				    "dn": userTableSelectedEntryDN
+				};
+			$.ajax({ 
+			    type: 'POST', 
+			    url: "/settings/deleteConsoleUser",
+			    dataType: 'json',
+			    data: params,
+			    success: function (data, textStatus, jqXHR) { 
+			    	console.log(data);
+			    	console.log(textStatus);
+			    	console.log(jqXHR);
+			    	if(data != null) {
+			    		$.notify("Kullanıcının konsol yetkileri başarıyla silindi.", "success");
+						users = data;
+						setConsoleUsersTable();
+			    	} else {
+			    		$.notify("Kullanıcının konsol yetkileri alınırken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			    	}
+			    },
+			    error: function (jqXHR, textStatus, errorThrown) {
+			    	if(jqXHR.status == 401) {
+			    		window.location.replace("/logout")
+			    	} else {
+			    		$.notify("Kullanıcının konsol yetkileri alınırken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			    	}
+			    },
+				complete: function() {
+					//$('#user_0').css("background-color", "#E0F3FF");
+					//showUserDetail("user_0", users[0].distinguishedName);
+				}
+			});
+		}
 	}
 	
 	function showUserDetail(index, dn) {
-		//E0F3FF
+		userTableSelectedEntryDN = dn;
 		if(selectedTrIndex == "") {
 			$('#' + index).css("background-color", "#E0F3FF");
 			selectedTrIndex = index;
@@ -533,10 +563,12 @@
 								<div class="mr-5">
 									<div class="col-12 p-0 m-0 mb-2">
 										<div class="form-row">
-											<div class="col-6">
+											<div class="col-5">
 												<h6>Mevcut Konsol Kullanıcıları</h6>
 											</div>
-											<div class="col-6">
+											<div class="col-7">
+												<button class="btn btn-danger pull-right ml-1" id="btnDeleteConsoleUser"
+													type="button" onclick="btnDeleteUserClicked()">Kullanıcının Konsol Yetkisini Sil</button>
 												<button class="btn btn-primary pull-right" id="btnAddNewConsoleUser" data-toggle="modal" data-target="#genericModal"
 													type="button" onclick="btnAddNewConsoleUserClicked()">Konsol Kullanıcısı Ekle</button>
 											</div>
@@ -547,8 +579,7 @@
 											<tr>
 												<th style="width: 6%">#</th>
 												<th style="width: 20%">UID</th>
-												<th style="width: 64%">Kayıt DN</th>
-												<th style="width: 10%"></th>
+												<th style="width: 74%">Kayıt DN</th>
 											</tr>
 										</thead>
 										<tbody id="existingUsers">

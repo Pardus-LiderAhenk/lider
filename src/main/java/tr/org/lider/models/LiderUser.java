@@ -16,7 +16,7 @@ public class LiderUser {
 	private String password;
 	private String name;
 	private String surname;
-	private String uid;
+	private String dn;
 	
 	private List<String> roles;
 
@@ -92,12 +92,12 @@ public class LiderUser {
 		this.roles = roles;
 	}
 
-	public String getUid() {
-		return uid;
+	public String getDn() {
+		return dn;
 	}
 
-	public void setUid(String uid) {
-		this.uid = uid;
+	public void setDn(String dn) {
+		this.dn = dn;
 	}
 
 }

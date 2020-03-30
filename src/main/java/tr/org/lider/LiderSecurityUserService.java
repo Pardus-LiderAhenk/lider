@@ -43,7 +43,7 @@ public class LiderSecurityUserService implements UserDetailsService {
 			user.setName(ldapEntry.getUid());
 			user.setPassword(ldapEntry.getUserPassword());
 			user.setSurname(ldapEntry.getSn());
-			user.setUid(ldapEntry.getDistinguishedName());
+			user.setDn(ldapEntry.getDistinguishedName());
 			user.setRoles(ldapEntry.getPriviliges());
 		}
 		else {

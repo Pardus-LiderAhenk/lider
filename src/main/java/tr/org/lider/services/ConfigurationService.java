@@ -425,6 +425,10 @@ public class ConfigurationService {
 		return getConfigParams().getAdPort();
 	}
 	
+	public Boolean getDisableLocalUser() {
+		return getConfigParams().getDisableLocalUser();
+	}
+	
 	public FileServerConf getFileServerConf(String jid) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		switch (getConfigParams().getFileServerProtocol()) {

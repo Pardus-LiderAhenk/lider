@@ -116,12 +116,17 @@ public class ConfigParams {
 	private Integer entrySizeLimit;
 	private Integer cronIntervalEntrySize;
 
+	//ad settings for hybrid systems
 	private String adDomainName;
 	private String adHostName;
 	private String adIpAddress;
 	private String adAdminUserName;
 	private String adAdminPassword;
 	private String adPort;
+	
+	//other settings
+	private Boolean disableLocalUser;
+	
 	public ConfigParams() {
 		super();
 	}
@@ -147,7 +152,8 @@ public class ConfigParams {
 			Integer mailSmtpWriteTimeout, Boolean mailSendOnTaskCompletion, Long mailCheckTaskCompletionPeriod,
 			Boolean mailSendOnPolicyCompletion, Long mailCheckPolicyCompletionPeriod, String hotDeploymentPath,
 			String cronTaskList, Integer entrySizeLimit, Integer cronIntervalEntrySize, String adDomainName,
-			String adHostName, String adIpAddress, String adAdminUserName, String adAdminPassword, String adPort) {
+			String adHostName, String adIpAddress, String adAdminUserName, String adAdminPassword, String adPort,
+			Boolean disableLocalUser) {
 		super();
 		this.liderLocale = liderLocale;
 		this.ldapServer = ldapServer;
@@ -224,6 +230,7 @@ public class ConfigParams {
 		this.adAdminUserName = adAdminUserName;
 		this.adAdminPassword = adAdminPassword;
 		this.adPort = adPort;
+		this.disableLocalUser = disableLocalUser;
 	}
 
 	public void setDefaultParams() {
@@ -269,6 +276,9 @@ public class ConfigParams {
 		this.fileServerPluginPath = "/plugins/ahenk-{0}_{1}_amd64.deb";
 		this.fileServerAgreementPath = "/home/pardus/sample-agreement.txt";
 		this.fileServerAgentFilePath = "/home/pardus/dev/agent-files/{0}/";
+		
+		//other settings
+		this.disableLocalUser = false;
 	}
 
 	public String getLiderLocale() {
@@ -871,6 +881,13 @@ public class ConfigParams {
 		this.adPort = adPort;
 	}
 
+	public Boolean getDisableLocalUser() {
+		return disableLocalUser;
+	}
+
+	public void setDisableLocalUser(Boolean disableLocalUser) {
+		this.disableLocalUser = disableLocalUser;
+	}
 
 	public FileServerConf getFileServerConf(String jid) {
 		Map<String, Object> params = new HashMap<String, Object>();

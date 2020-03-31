@@ -415,6 +415,14 @@
 		$('#fileServerPort').val(data.fileServerPort);
 		$('#fileServerUserName').val(data.fileServerUsername);
 		$('#fileServerUserPassword').val(data.fileServerPassword);
+		console.log("----");
+		console.log(data);
+		if(data.disableLocalUser == true) {
+			$('#cbDisableLocalUser').prop("checked", true);
+		} else {
+			$('#cbDisableLocalUser').prop("checked", false);
+		}
+		
 	}
 	function removeDisableClass(type) {
 		if(type == 'ldap') {
@@ -436,6 +444,12 @@
 			//change button name and onClick event to save
 			 $("#editFileServerAttributes").html("Değişiklikleri Kaydet");
 			 $("#editFileServerAttributes").attr("onclick","saveChanges('fileServer')");
+		}  else if(type == 'otherSettings') {
+			//remove disabled attribute from editableFileServer class
+			$('.editableOtherSettings').prop('disabled', false);
+			//change button name and onClick event to save
+			 $("#editOtherSettings").html("Değişiklikleri Kaydet");
+			 $("#editOtherSettings").attr("onclick","saveChanges('otherSettings')");
 		}
 
 		
@@ -532,6 +546,27 @@
 			    },
 			    error: function (data, errorThrown) {
 			    	$.notify("Dosya sunucusu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			    }
+			});
+		} else if(type == 'otherSettings') {
+			alert("Save other settings");
+			var params = {
+					"disableLocalUser": $('#cbDisableLocalUser').is(':checked')
+				};
+			$.ajax({ 
+			    type: 'POST', 
+			    url: "/settings/update/otherSettings",
+			    dataType: 'json',
+			    data: params,
+			    success: function (data) { 
+			    	if(data != null) {
+			    		$.notify("Ayarlar başarıyla güncellendi.", "success");
+			    	} else {
+			    		$.notify("Ayarlar güncellenirken güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			    	}
+			    },
+			    error: function (data, errorThrown) {
+			    	$.notify("Ayarlar güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
 			    }
 			});
 		}
@@ -922,7 +957,29 @@
 					</div>
 				</div>
 				<div class="tab-pane" id="tab-other-settings" role="tabpanel">
-					<h5>Diğer Ayarlar</h5>
+					<div class="col-md-12">
+						<h5>Diğer Ayarlar</h5>
+						<!-- row 1 -->
+						<div class="form-row">
+							<div class="col-md-5">
+								<div class="position-relative form-group">
+									<div class="custom-control custom-switch">
+										<input type="checkbox" class="custom-control-input editableOtherSettings" id="cbDisableLocalUser" disabled>
+										<label class="custom-control-label" for="cbDisableLocalUser">
+											Bilgisayarlar domaine alındığında yerel kullanıcıları pasif hale getir
+										</label>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12 pt-5">
+								<div class="position-relative form-group">
+									<br><br><br><br><br>
+									<button class="btn btn-primary pull-right" id="editOtherSettings" 
+										onclick="removeDisableClass('otherSettings')" type="button">Düzenle</button>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

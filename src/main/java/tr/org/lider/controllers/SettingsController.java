@@ -138,6 +138,13 @@ public class SettingsController {
 		return configurationService.updateConfigParams(configParams);
 	}
 	
+	@RequestMapping(method=RequestMethod.POST, value = "/update/otherSettings", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ConfigParams updateOtherSettings(@RequestParam (value = "disableLocalUser", required = true) Boolean disableLocalUser) {
+		ConfigParams configParams = configurationService.getConfigParams();
+		configParams.setDisableLocalUser(disableLocalUser);
+		return configurationService.updateConfigParams(configParams);
+	}
+	
 	//add roles to user. roles string will be splitted with comma if more than one role is sent
 	@RequestMapping(method=RequestMethod.POST, value = "/add/role", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<LdapEntry> addRoleToUser(@RequestParam (value = "dn", required = true) String dn,
@@ -190,7 +197,6 @@ public class SettingsController {
 						new String[] { "*" }, SearchScope.SUBTREE);
 				return new ResponseEntity<>(ldapEntries, HttpStatus.OK);
 			}
-
 				
 		} catch (LdapException e) {
 			e.printStackTrace();

@@ -21,11 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import tr.org.lider.entities.UserSessionImpl;
 import tr.org.lider.ldap.DNType;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
+import tr.org.lider.models.UserSessionsModel;
 import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.services.UserService;
 
@@ -329,15 +331,48 @@ public class UserController {
 			List<LdapEntry> usersEntrylist = ldapService.findSubEntries(globalUserOu, filter,new String[] { "*" }, SearchScope.SUBTREE);
 			lastUser= usersEntrylist.get(usersEntrylist.size()-1);
 			
+			List<UserSessionImpl> userSessionsDb=	userService.getUserSessions(lastUser.getUid());
+			List<UserSessionsModel> userSessions=new ArrayList<>();
+			for (UserSessionImpl userSessionImpl : userSessionsDb) {
+				UserSessionsModel model= new UserSessionsModel();
+				model.setAgent(userSessionImpl.getAgent());
+				model.setCreateDate(userSessionImpl.getCreateDate());
+				model.setSessionEvent(userSessionImpl.getSessionEvent());
+				model.setId(userSessionImpl.getId());
+				model.setUserIp(userSessionImpl.getUserIp());
+				model.setUsername(userSessionImpl.getUsername());
+				userSessions.add(model);
+			}
 			
-			lastUser.setSessionList(userService.getUserSessions(lastUser.getUid()));
+			lastUser.setSessionList(userSessions);
 			logger.info("last user : "+lastUser);
 		} catch (LdapException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		
 		return lastUser;
+	}
+	
+	@RequestMapping(method=RequestMethod.POST, value = "/getUserSessions")
+	@ResponseBody
+	public List<UserSessionsModel> getUserSessions(LdapEntry user) {
+		List<UserSessionsModel> userSessions=null;
+		try {
+			List<UserSessionImpl> userSessionsDb=	userService.getUserSessions(user.getUid());
+			userSessions=new ArrayList<>();
+			for (UserSessionImpl userSessionImpl : userSessionsDb) {
+				UserSessionsModel model= new UserSessionsModel();
+				model.setAgent(userSessionImpl.getAgent());
+				model.setCreateDate(userSessionImpl.getCreateDate());
+				model.setId(userSessionImpl.getId());
+				model.setSessionEvent(userSessionImpl.getSessionEvent());
+				model.setUserIp(userSessionImpl.getUserIp());
+				model.setUsername(userSessionImpl.getUsername());
+				userSessions.add(model);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return userSessions;
 	}
 }

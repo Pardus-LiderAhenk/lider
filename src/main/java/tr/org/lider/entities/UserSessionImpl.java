@@ -133,6 +133,14 @@ public class UserSessionImpl{
 		this.createDate = createDate;
 	}
 
+	public String getUserIp() {
+		return userIp;
+	}
+
+	public void setUserIp(String userIp) {
+		this.userIp = userIp;
+	}
+
 	
 //	public String toString() {
 //		return "UserSessionImpl [id=" + id + ", username=" + username + ", sessionEvent=" + sessionEvent

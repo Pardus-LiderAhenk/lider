@@ -104,12 +104,12 @@
 									                    <div class="col-md-3 col-sm-3  profile_left">
 									                      <div class="profile_img">
 									                        <div id="crop-avatar">
-									                          <img class="img-responsive avatar-view" src="images/user_icon.png" width="200" height="160" alt="Avatar" title="Change the avatar">
+									                          <img class="img-responsive avatar-view" src="images/user_icon.png" width="90" height="70" alt="Avatar" title="Change the avatar">
 									                        </div>
 									                      </div>
 									                      <hr>
 									                      <h3 id="userName"></h3>
-									                       <hr>
+									                      <hr>
 									
 									                      <ul class="list-unstyled user_data">
 									                        <li><i class="fa fa-address-card user-profile-icon"></i> &nbsp; <span id="userId"></span>
@@ -143,6 +143,10 @@
 									                      <h4>  </h4>
 									                      <ul class="list-unstyled user_data">
 									                        <li>
+									                          <i class="user-profile-icon">Bulunduğu Dizin : </i>
+									                          <span id="userDistinguishedName"></span>
+									                        </li>
+									                        <li>
 									                          <i class="user-profile-icon">Ev Dizini : </i>
 									                          <span id="userHomeDirectory"></span>
 									                        </li>
@@ -156,14 +160,42 @@
 									
 									                    </div>
 									                    <div class="col-md-9 col-sm-9 ">
+									                    	<div class="col-lg-6">
+									                    			<div class="main-card mb-3 card">
+																			<div class="card-header">
+																				<div class="col-lg-6 text-left">Login Geçmişi</div>
+																				<div class="col-lg-6 text-right">
+																					<button id="sendTaskCron-manage-root" type="button"	class="btn-shadow btn btn-info"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+																					<button id="sendTask-manage-root" type="button" title="Çalıştır" class="btn-shadow btn btn-info"><i class="fa fa-play"></i></button>
+																				</div>
+																			</div>
+																			<div class="card-body">
+																				<div id="sessionListDiv">
+																				</div>
+																			</div>
+																	</div>
+									                    	</div>
+									                    	<div  class="col-lg-6">
+									                    		<div class="main-card mb-3 card">
+																			<div class="card-header">
+																				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+																				<div class="col-lg-6 text-left">Parola Politikası</div>
+																				<div class="col-lg-6 text-right">
+																					<button id="sendTaskCron-manage-root" type="button"	class="btn-shadow btn btn-info"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+																					<button id="sendTask-manage-root" type="button" title="Çalıştır" class="btn-shadow btn btn-info"><i class="fa fa-play"></i></button>
+																				</div>
+																			</div>
+																			<div class="card-body">
+																			<span id="userPasswordPolicy"></span>
+																			<div id="userPolicyDetails"></div>
+																			</div>
+																	</div>
+									                    	</div>
+									                    	
+									                    
 									                      <div class="" role="tabpanel" data-example-id="togglable-tabs">
 									                        <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-									                          <li role="presentation" class="active">
-									                          			<a role="tab" class="nav-link"
-																			id="tab-btn-psswordPolicy" data-toggle="tab" href="#tab-password-policy"> 
-																			<span>Parola Politikaları</span>
-																		</a>
-									                          </li>
+									                         
 									                          <li role="presentation" class="active">
 									                          			<a role="tab" class="nav-link"
 																			id="tab-btn-userGroups" data-toggle="tab" href="#tab-user-groups"> 
@@ -176,10 +208,6 @@
 									                          </li>
 									                        </ul>
 									                        <div id="myTabContent" class="tab-content">
-									                          <div role="tabpanel" class="tab-pane active " id="tab-password-policy" aria-labelledby="tab-btn-psswordPolicy">
-									         						<div id="passwordPolicyList"></div>
-									         						
-									                          </div>
 									                          <div role="tabpanel" class="tab-pane " id="tab-user-groups" aria-labelledby="tab-btn-userGroups">
 									         						 <div id="groupsDiv">
 									         						 	

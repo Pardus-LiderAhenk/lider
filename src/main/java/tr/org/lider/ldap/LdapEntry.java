@@ -6,6 +6,7 @@ import java.util.Map;
 
 import tr.org.lider.entities.AgentImpl;
 import tr.org.lider.entities.UserSessionImpl;
+import tr.org.lider.models.UserSessionsModel;
 
 public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 	/**
@@ -65,7 +66,7 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 	
 	private String mail;
 
-	private List<UserSessionImpl> sessionList;
+	private List<UserSessionsModel> sessionList;
 	
 	public LdapEntry() {
 		// TODO Auto-generated constructor stub
@@ -317,10 +318,10 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 	public void setMail(String mail) {
 		this.mail = mail;
 	}
-	public List<UserSessionImpl> getSessionList() {
+	public List<UserSessionsModel> getSessionList() {
 		return sessionList;
 	}
-	public void setSessionList(List<UserSessionImpl> sessionList) {
+	public void setSessionList(List<UserSessionsModel> sessionList) {
 		this.sessionList = sessionList;
 	}
 	public String getCreateDateStr() {

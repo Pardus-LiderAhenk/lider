@@ -8,12 +8,10 @@ var selectedFolder = null
 var treeGridHolderDiv="treeGridUserHolderDiv"
 var passwordPoliciesGen=null;
 
-
 //selected row function action behave different when selected tab change.. for this use selectedTab name
 var selectedUserTab="showAttributes";
-
-getLastUser()
 getPasswordPolicies()
+getLastUser()
 	
 $(document).ready(function(){
 	
@@ -41,8 +39,8 @@ $(document).ready(function(){
 						showRoles(row);
 					}
 					
-					
 					fillUserInfo(selectedRowGen)
+					fillUserSessions(selectedRowGen)
 				}
 				if(row.type=='ORGANIZATIONAL_UNIT'){
 					selectedFolder=row;
@@ -149,9 +147,6 @@ $(document).ready(function(){
 					$('#userPassword').val("")
 					$('#confirm_password').val("")
 					$('#addUserBtn').removeClass('disabled');
-					
-					getPasswordPolicies();
-					
 					
 					userFolderInfo.append("Seçili Klasör : "+selectedFolder.name)
 					$('#addUserBtn').on('click',function(event) {
@@ -295,6 +290,9 @@ $(document).ready(function(){
 		getModalContent("modals/user/setPasswordPolicyModal", function content(data){
 				$('#genericModalHeader').html("Parola Politikası Ata")
 				$('#genericModalBodyRender').html(data);
+				
+				
+				fillPasswordPolicyDiv();
 				
 				$('#setPasswordPolicydBtn').on('click', function(event) {
 					var selectedPasswordPolicy=$('#passwordPolicyList').val();
@@ -795,6 +793,8 @@ function getLastUser() {
 		success : function(ldapResult) {
 			selectedRowGen=ldapResult;
 			fillUserInfo(ldapResult)
+			fillUserSessions(ldapResult)
+			
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Kullanıcı Bulunamadı", "warn");
@@ -816,11 +816,105 @@ function fillUserInfo(ldapResult) {
 	$('#userCreateDate').html(ldapResult.createDateStr);
 	$('#userMail').html(ldapResult.attributes.mail);
 	$('#userHomeDirectory').html(ldapResult.attributes.homeDirectory);
+	$('#userDistinguishedName').html(ldapResult.distinguishedName);
+//	$('#userPasswordPolicy').html();
 	
-	console.log(ldapResult)
+	var policy=""
+		for (var k = 0; k < passwordPoliciesGen.length; k++) {
+	    	  var row = passwordPoliciesGen[k];
+	    	  if(row.distinguishedName==ldapResult.attributes.pwdPolicySubentry){
+	    		  policy=row
+	    	  }
+		}
+	var html='<table class="table">';
+	
+	html += '<thead>';
+	html += '<tr>';
+	html += '<th colspan= 2>'+policy.name+'</th>';
+	html += '</tr>';
+	html += '</thead>';
+    for (key in policy.attributes) {
+        if (policy.attributes.hasOwnProperty(key)) {
+            
+            if( (key =="pwdExpireWarning") 
+//            		|| (key =="cn") 
+            		|| (key =="pwdFailureCountInterval") 
+            		|| (key =="pwdGraceAuthNLimit") 
+            		|| (key =="pwdInHistory") 
+            		|| (key =="pwdLockout") 
+            		|| (key =="pwdLockoutDuration") 
+            		|| (key =="pwdMaxAge") 
+            		|| (key =="pwdMinAge") 
+            		|| (key =="pwdMaxFailure") 
+            		|| (key =="pwdMinLength") 
+            		|| (key =="pwdMustChange") 
+            		|| (key =="pwdSafeModify") 
+            		|| (key =="pwdCheckQuality") 
+            		){
+            	html += '<tr>';
+            	
+            	var keyStr="";
+            	var value="";
+            	if(key =="pwdExpireWarning"){keyStr="Parola Geçerlilik Süresi (Sn)"}
+            	if(key =="pwdFailureCountInterval"){keyStr="Hatalı Parola Deneme Sayısı"}
+            	if(key =="pwdGraceAuthNLimit"){keyStr="Eski Parola Geçerlilik Süresi (sn)"}
+            	if(key =="pwdInHistory"){keyStr="Eski Parola Deneme Sayısı"}
+            	if(key =="pwdLockout"){keyStr="Hesabı Kilitle"}
+            	if(key =="pwdLockoutDuration"){keyStr="Hesap Kilitlenme Süresi(sn)"}
+            	if(key =="pwdMaxAge"){keyStr="Parola Geçerlilik Süresi (sn)"}
+            	if(key =="pwdMinAge"){keyStr="Parola Değiştirme Süresi (sn)"}
+            	if(key =="pwdMaxFailure"){keyStr="Hatalı Giriş Sayısı"}
+            	if(key =="pwdMinLength"){keyStr="Parola Uzunluğu"}
+            	if(key =="pwdMustChange"){keyStr="Parolayı Değiştirsin"}
+            	if(key =="pwdSafeModify"){keyStr="Parola değişikliğini sisteme gönder"}
+            	
+            	if(key =="pwdCheckQuality"){
+            		keyStr="Şifre Kalite Kontrolü"
+            		if(policy.attributes[key]==1){
+            			value=""
+            		}
+            	
+            	}
+	            html += '<td>' + keyStr + '</td>';
+	            html += '<td>' + policy.attributes[key] + '</td>';
+	            html += '</tr>';
+            }
+        }
+    } 
+    html += '</table>';
+    $("#userPolicyDetails").html("")
+    $("#userPolicyDetails").html(html)
+    console.log(policy)
 	
 }
-
+function fillUserSessions(ldapResult) {
+	
+	var html = '<ul class="messages">'
+		
+		if(ldapResult.sessionList){
+				for (var m = 0; m < ldapResult.sessionList.length; m++) {
+					var row = ldapResult.sessionList[m];
+				html += '<li> '
+				html += ' <img src="img/linux.png" class="avatar" alt="Avatar"> '
+				html +=' <div class="message_date"> ' 
+				html +='  <h3 class="date text-info">24</h3> ' 
+				html +='  <p class="month">May</p> '
+				html +='  </div> '
+				html +=' <div class="message_wrapper"> '
+				html +='    <h4 class="heading">'+row.agent.hostname+'</h4> '
+				html +=' <blockquote class="message">' + row.agent.ipAddresses+ '</blockquote>'
+				html +=' <blockquote class="message">' + row.agent.dn+ '</blockquote>'
+				html +=' <br /> '
+				html +='   <p class="url"> '
+				html +='  <span class="fs1 text-info" aria-hidden="true" data-icon=""></span> '
+				html +=' </p> '
+				html +=' </div> '
+				html +='  </li> '
+				}
+		}
+	html += '</ul">'
+	$("#sessionListDiv").html(html);
+}
 function getPasswordPolicies() {
 	$.ajax({
 		type : 'POST',
@@ -828,57 +922,115 @@ function getPasswordPolicies() {
 		dataType : 'json',
 		success : function(data) {
 			passwordPoliciesGen=data;
-			if(data){
-				var policyHtml=' <ul class="messages">'
-
-				for (var i = 0; i < data.length; i++) {
-			    	  var row = data[i];
-			    	policyHtml +='<li>'
-			    	policyHtml +='<img src="images/img.jpg" class="avatar" alt="Avatar">'
-			    	policyHtml +='<div class="message_wrapper">'
-			    	policyHtml +='<h4 class="heading"> '+ row.cn+'</h4>'
-			    	policyHtml +='<blockquote class="message">'
-			    					var html='<table class="table">';
-										html += '<thead>';
-										html += '<tr>';
-										html += '<th style="width: 40%"></th>';
-										html += '<th style="width: 60%"></th>';
-										html += '</tr>';
-										html += '</thead>';
-								        
-								        for (key in row.attributes) {
-								            if (row.attributes.hasOwnProperty(key)) {
-								                
-								                if( (key =="pwdExpireWarning") 
-								                		|| (key =="cn") 
-								                		|| (key =="pwdFailureCountInterval") 
-								                		|| (key =="pwdGraceAuthNLimit") 
-								                		|| (key =="pwdInHistory") 
-								                		|| (key =="pwdLockout") 
-								                		|| (key =="pwdLockoutDuration") 
-								                		|| (key =="pwdMaxAge") 
-								                		|| (key =="pwdMinAge") 
-								                		|| (key =="pwdMaxFailure") 
-								                		|| (key =="pwdMinLength") 
-								                		|| (key =="pwdMustChange") 
-								                		|| (key =="pwdSafeModify") 
-								                		|| (key =="pwdCheckQuality") 
-								                		){
-								                	html += '<tr>';
-										            html += '<td>' + key + '</td>';
-										            html += '<td>' + row.attributes[key] + '</td>';
-										            html += '</tr>';
-								                }
-								            }
-								        } 
-							        html += '</table>';
-			    	  policyHtml += html;
-			    	  policyHtml += '</blockquote>';
-				}
-				policyHtml += '</ul>'
-				$("#passwordPolicyList").append(policyHtml)
-			}
+			
+//			if(data){
+//				var policyHtml=' <ul class="messages">'
+//
+//				for (var i = 0; i < data.length; i++) {
+//			    	  var row = data[i];
+//			    	policyHtml +='<li>'
+//			    	policyHtml +='<img src="images/img.jpg" class="avatar" alt="Avatar">'
+//			    	policyHtml +='<div class="message_wrapper">'
+//			    	policyHtml +='<h4 class="heading"> '+ row.cn+'</h4>'
+//			    	policyHtml +='<blockquote class="message">'
+//			    					var html='<table class="table">';
+//										html += '<thead>';
+//										html += '<tr>';
+//										html += '<th style="width: 40%"></th>';
+//										html += '<th style="width: 60%"></th>';
+//										html += '</tr>';
+//										html += '</thead>';
+//								        
+//								        for (key in row.attributes) {
+//								            if (row.attributes.hasOwnProperty(key)) {
+//								                
+//								                if( (key =="pwdExpireWarning") 
+//								                		|| (key =="cn") 
+//								                		|| (key =="pwdFailureCountInterval") 
+//								                		|| (key =="pwdGraceAuthNLimit") 
+//								                		|| (key =="pwdInHistory") 
+//								                		|| (key =="pwdLockout") 
+//								                		|| (key =="pwdLockoutDuration") 
+//								                		|| (key =="pwdMaxAge") 
+//								                		|| (key =="pwdMinAge") 
+//								                		|| (key =="pwdMaxFailure") 
+//								                		|| (key =="pwdMinLength") 
+//								                		|| (key =="pwdMustChange") 
+//								                		|| (key =="pwdSafeModify") 
+//								                		|| (key =="pwdCheckQuality") 
+//								                		){
+//								                	html += '<tr>';
+//										            html += '<td>' + key + '</td>';
+//										            html += '<td>' + row.attributes[key] + '</td>';
+//										            html += '</tr>';
+//								                }
+//								            }
+//								        } 
+//							        html += '</table>';
+//			    	  policyHtml += html;
+//			    	  policyHtml += '</blockquote>';
+//				}
+//				policyHtml += '</ul>'
+//				$("#passwordPolicyList").append(policyHtml)
+//			}
 		}
 	});
-	
+}
+function fillPasswordPolicyDiv() {
+	if(passwordPoliciesGen){
+		var option='<option> Politika Seçiniz</option>'
+		for (var i = 0; i < passwordPoliciesGen.length; i++) {
+	    	  var row = passwordPoliciesGen[i];
+	    	  option +='<option value="'+row.distinguishedName+'" >'+row.cn+'</option>'
+		}
+		
+		$("#passwordPolicyList").append(option)
+		
+		$("#passwordPolicyList").on('change', function(event) {
+			var selectedVal=$("#passwordPolicyList").val();
+			var selectedPolicy=""
+				for (var k = 0; k < passwordPoliciesGen.length; k++) {
+			    	  var row = passwordPoliciesGen[k];
+			    	  if(row.distinguishedName==selectedVal){
+			    		  selectedPolicy=row
+			    	  }
+				}
+			var html='<table class="table">';
+				html += '<thead>';
+				html += '<tr>';
+				html += '<th style="width: 40%"></th>';
+				html += '<th style="width: 60%"></th>';
+				html += '</tr>';
+				html += '</thead>';
+		        
+		        for (key in selectedPolicy.attributes) {
+		            if (selectedPolicy.attributes.hasOwnProperty(key)) {
+		                
+		                if( (key =="pwdExpireWarning") 
+		                		|| (key =="cn") 
+		                		|| (key =="pwdFailureCountInterval") 
+		                		|| (key =="pwdGraceAuthNLimit") 
+		                		|| (key =="pwdInHistory") 
+		                		|| (key =="pwdLockout") 
+		                		|| (key =="pwdLockoutDuration") 
+		                		|| (key =="pwdMaxAge") 
+		                		|| (key =="pwdMinAge") 
+		                		|| (key =="pwdMaxFailure") 
+		                		|| (key =="pwdMinLength") 
+		                		|| (key =="pwdMustChange") 
+		                		|| (key =="pwdSafeModify") 
+		                		|| (key =="pwdCheckQuality") 
+		                		){
+		                	html += '<tr>';
+				            html += '<td>' + key + '</td>';
+				            html += '<td>' + selectedPolicy.attributes[key] + '</td>';
+				            html += '</tr>';
+		                }
+		            }
+		        } 
+		        html += '</table>';
+		        $("#policyDetail").html("")
+		        $("#policyDetail").html(html)
+		});
+	}	
 }

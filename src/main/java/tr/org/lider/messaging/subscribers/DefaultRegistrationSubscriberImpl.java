@@ -230,7 +230,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			
 			if(directoryServer.equals(DIRECTORY_SERVER_LDAP)) {
 				respMessage.setLdapServer(configurationService.getLdapServer());
-				respMessage.setLdapBaseDn(configurationService.getUserLdapBaseDn());
+				respMessage.setLdapBaseDn(configurationService.getLdapRootDn());
 				respMessage.setLdapVersion(LDAP_VERSION);
 				respMessage.setLdapUserDn(dn);
 				

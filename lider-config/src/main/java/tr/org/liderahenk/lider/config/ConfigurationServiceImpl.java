@@ -145,6 +145,8 @@ public class ConfigurationServiceImpl implements IConfigurationService {
 	private String adAdminUserName;
 	private String adAdminPassword;
 	
+	private Boolean disableLocalUser;
+	
 
 	public void refresh() {
 		logger.info("Configuration updated using blueprint: {}", prettyPrintConfig());
@@ -931,6 +933,18 @@ public class ConfigurationServiceImpl implements IConfigurationService {
 
 	public void setAdAdminUserName(String adAdminUserName) {
 		this.adAdminUserName = adAdminUserName;
+	}
+
+
+
+	public Boolean getDisableLocalUser() {
+		return disableLocalUser;
+	}
+
+
+
+	public void setDisableLocalUser(Boolean disableLocalUser) {
+		this.disableLocalUser = disableLocalUser;
 	}
 
 }

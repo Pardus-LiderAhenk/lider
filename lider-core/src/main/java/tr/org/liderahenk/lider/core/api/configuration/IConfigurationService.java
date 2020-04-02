@@ -421,5 +421,9 @@ public interface IConfigurationService {
 	public String getAdAdminUserName();
 
 	public void setAdAdminUserName(String adAdminUserName);
+	
+	public Boolean getDisableLocalUser();
+
+	public void setDisableLocalUser(Boolean disableLocalUser);
 
 }

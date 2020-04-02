@@ -101,6 +101,8 @@
 		<property name="adIpAddress" value="${ad.ipaddress}" />
 		<property name="adAdminPassword" value="${ad.adminpassword}" />
 		<property name="adAdminUserName" value="${ad.adminusername}" />
+
+		<property name="disableLocalUser" value="${disableLocalUser}" />
 		
 		
 	</bean>

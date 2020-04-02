@@ -68,6 +68,8 @@ public class RegistrationResponseMessageImpl implements IRegistrationResponseMes
 	private String adAdminUserName;
 	
 	private Date timestamp;
+	
+	private Boolean disableLocalUser;
 
 	public RegistrationResponseMessageImpl(StatusCode status, String message, String agentDn, String recipient,
 			Date timestamp) {
@@ -205,6 +207,14 @@ public class RegistrationResponseMessageImpl implements IRegistrationResponseMes
 
 	public void setAdAdminUserName(String adAdminUserName) {
 		this.adAdminUserName = adAdminUserName;
+	}
+
+	public Boolean getDisableLocalUser() {
+		return disableLocalUser;
+	}
+
+	public void setDisableLocalUser(Boolean disableLocalUser) {
+		this.disableLocalUser = disableLocalUser;
 	}
 
 }

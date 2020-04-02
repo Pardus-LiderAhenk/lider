@@ -171,6 +171,9 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 				respMessage = new RegistrationResponseMessageImpl(StatusCode.REGISTERED,
 						dn + " and its related database record created successfully!", dn, null, new Date());
 			}
+			
+			respMessage.setDisableLocalUser(configurationService.getDisableLocalUser());
+			
 			if(directoryServer.equals(DIRECTORY_SERVER_LDAP)) {
 				respMessage.setLdapServer(configurationService.getLdapServer());
 				respMessage.setLdapBaseDn(configurationService.getUserLdapBaseDn());

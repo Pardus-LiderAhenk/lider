@@ -700,9 +700,9 @@ function showSelectedEntries() {
 		$("#agentOnlineStatus").html("Çevrimdışı");
 	}
 	
-	var agentDn = selectedEntries[0].distinguishedName;
+	var agentJid = selectedEntries[0]['attributes'].uid;
 	var params = {
-			"agentDn" : agentDn
+			"agentJid" : agentJid
 	};
 	
 	$("#agentHostname").html("");

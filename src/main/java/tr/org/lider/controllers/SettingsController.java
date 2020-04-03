@@ -1,6 +1,5 @@
 package tr.org.lider.controllers;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -14,19 +13,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import tr.org.lider.LiderSecurityUserDetails;
+import tr.org.lider.entities.MenuImpl;
+import tr.org.lider.entities.RoleImpl;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.messaging.enums.Protocol;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.models.ConfigParams;
 import tr.org.lider.services.ConfigurationService;
+import tr.org.lider.services.MenuService;
+import tr.org.lider.services.RoleService;
 
 @RestController
 @RequestMapping("settings")
@@ -43,13 +51,18 @@ public class SettingsController {
 	@Autowired
 	private LDAPServiceImpl ldapService;
 	
+	@Autowired
+	private RoleService roleService;
+	
+	@Autowired
+	private MenuService menuService;
+	
 	@RequestMapping(method=RequestMethod.GET, value = "/configurations", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConfigParams getConfigParams() {
 		return configurationService.getConfigParams();
 	}
 	
 	@RequestMapping(method=RequestMethod.GET ,value = "/getConsoleUsers", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
 	public List<LdapEntry> getLiderConsoleUsers() {
 		List<LdapEntry> ldapEntries = null;
 		try {
@@ -145,34 +158,51 @@ public class SettingsController {
 		return configurationService.updateConfigParams(configParams);
 	}
 	
-	//add roles to user. roles string will be splitted with comma if more than one role is sent
-	@RequestMapping(method=RequestMethod.POST, value = "/add/role", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<LdapEntry> addRoleToUser(@RequestParam (value = "dn", required = true) String dn,
-			@RequestParam (value = "roles", required = true) String roles) {
-		String[] listOfRoles = roles.split(",");
+	//add roles to user. 
+	@RequestMapping(method=RequestMethod.POST, value = "/editUserRoles", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<LdapEntry>> addRoleToUser(@RequestParam (value = "dn", required = true) String dn,
+			@RequestParam(value = "roles[]", required=true) String[] roles,
+			Authentication authentication) {
+		List<LdapEntry> ldapEntries = null;
 		try {
-			for (int i = 0; i < listOfRoles.length; i++) {
-				ldapService.updateEntryAddAtribute(dn, "liderPrivilege", listOfRoles[i]);
+			LdapEntry entry = ldapService.getEntryDetail(dn);
+			if(entry != null) {
+				if(entry.getAttributesMultiValues().get("liderPrivilege") != null) {
+					String[] priviliges = entry.getAttributesMultiValues().get("liderPrivilege");
+					for (int i = 0; i < priviliges.length; i++) {
+						if(priviliges[i].startsWith("ROLE_")) {
+							ldapService.updateEntryRemoveAttributeWithValue(dn, "liderPrivilege", priviliges[i]);
+						}
+					}
+					for (int i = 0; i < roles.length; i++) {
+						ldapService.updateEntryAddAtribute(dn, "liderPrivilege", roles[i]);
+					}
+				} else {
+					for (int i = 0; i < roles.length; i++) {
+						ldapService.updateEntryAddAtribute(dn, "liderPrivilege", roles[i]);
+					}
+				}
+			}
+			//if user edited own console roles redirect to logout
+			LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) authentication.getPrincipal();
+			if(userDetails.getLiderUser().getDn().equals(dn)) {
+				authentication.setAuthenticated(false);
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			} else {
+				String filter= "(&(objectClass=pardusAccount)(objectClass=pardusLider)(liderPrivilege=ROLE_USER))";
+				ldapEntries  = ldapService.findSubEntries(filter,
+						new String[] { "*" }, SearchScope.SUBTREE);
+				return new ResponseEntity<>(ldapEntries, HttpStatus.OK);
 			}
 		} catch (LdapException e) {
 			e.printStackTrace();
 			return null;
 		}
-		List<LdapEntry> ldapEntries = null;
-		try {
-			String filter= "(&(objectClass=pardusAccount)(objectClass=pardusLider)(liderPrivilege=ROLE_USER))";
-			ldapEntries  = ldapService.findSubEntries(filter,
-					new String[] { "*" }, SearchScope.SUBTREE);
-		} catch (LdapException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return ldapEntries;
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value = "/deleteConsoleUser", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LdapEntry>> deleteConsoleUser(@RequestParam (value = "dn", required = true) String dn,
-			Authentication authentication, HttpServletResponse response) {
+			Authentication authentication) {
 		List<LdapEntry> ldapEntries = null;
 		try {
 			LdapEntry entry = ldapService.getEntryDetail(dn);
@@ -202,5 +232,50 @@ public class SettingsController {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	@RequestMapping(method=RequestMethod.GET ,value = "/getRoles", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<RoleImpl> getRoles() {
+		return roleService.getRoles();
+	}
+	
+	@RequestMapping(method=RequestMethod.GET ,value = "/getMenus", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<MenuImpl> getMenus() {
+		return menuService.getMenuList();
+	}
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/addNewRole", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<RoleImpl> addRole(@RequestParam (value = "roleName", required = true) String roleName) {
+		RoleImpl role = new RoleImpl();
+		role.setName("ROLE_" + roleName);
+		role.setMenus(null);
+		roleService.saveRole(role);
+		return roleService.getRoles();
+	}
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/deleteRole", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<RoleImpl> deleteRole(@RequestParam (value = "roleName", required = true) String roleName) {
+		if(!roleName.toUpperCase().equals("ADMIN") && !roleName.toUpperCase().equals("USER")) {
+			RoleImpl role = roleService.findRoleByName(roleName);
+			if(role != null) {
+				roleService.deleteRole(role.getId());
+				return roleService.getRoles();
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/saveMenusForRole", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<RoleImpl> saveMenusForRole(@RequestBody RoleImpl role) {
+		if(!role.getName().equals("ROLE_ADMIN")) {
+			roleService.saveRole(role);
+			return roleService.getRoles();
+		} else {
+			return null;
+		}
+
 	}
 }

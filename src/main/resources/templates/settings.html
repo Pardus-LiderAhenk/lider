@@ -1,593 +1,32 @@
 <script src="assets/js/app.js"></script>
 <script src="assets/js/app-custom.js"></script>
+<script src="js/settings.js"></script>
 
+<style>
+	.menuList{
+	     list-style:none;
+	}
+</style>
 <script type="text/javascript">
-	var users;
-	var selectedTrIndex = "";
-	var selectedDN = "";
-	var selectedEntryUUID = "";
-	var selectedName = "";
-	var userTableSelectedEntryDN = "";
-	$(document).ready(function () {
-		$(".adSettings").hide();
-		$('#cbShowADSettings').change(function() {
-	        if($(this).is(":checked")) {
-	        	$(".adSettings").show();
-	        } else {
-	        	$(".adSettings").hide();
-	        }
-	    });
-		getConsoleUsers();
-		getConfigurationParams();
-	});
-	
-	function getConsoleUsers() {
-		$.ajax({ 
-		    type: 'GET', 
-		    url: "/settings/getConsoleUsers",
-		    dataType: 'json',
-		    success: function (data) { 
-		    	if(data != null) {
-		    		users = data;
-		    	} else {
-		    		$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-		    	}
-		    },
-		    error: function (data, errorThrown) {
-		    	$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-		    },
-			complete: function() {
-				setConsoleUsersTable();
-			}
-		});
-	}
-	
-	function setConsoleUsersTable() {
-		var trElement = "";
-		$.each(users, function(index, element) {
-			trElement += '<tr id="user_' + index + '" onclick=showUserDetail("user_' + index + '","' + element.distinguishedName + '")><td>' + (index+1) + '</td>';
-			trElement += "<td>" + element.uid + "</td>";
-			trElement += "<td>" + element.distinguishedName + "</td>";
-			trElement += '</tr>';
-		});
-		$('#existingUsers').html(trElement);
-		$('#user_0').css("background-color", "#E0F3FF");
-		showUserDetail("user_0", users[0].distinguishedName);
-		
-	}
-	
-	function btnDeleteUserClicked() {
-		if(userTableSelectedEntryDN != null && userTableSelectedEntryDN != "") {
-			var params = {
-				    "dn": userTableSelectedEntryDN
-				};
-			$.ajax({ 
-			    type: 'POST', 
-			    url: "/settings/deleteConsoleUser",
-			    dataType: 'json',
-			    data: params,
-			    success: function (data, textStatus, jqXHR) { 
-			    	console.log(data);
-			    	console.log(textStatus);
-			    	console.log(jqXHR);
-			    	if(data != null) {
-			    		$.notify("Kullanıcının konsol yetkileri başarıyla silindi.", "success");
-						users = data;
-						setConsoleUsersTable();
-			    	} else {
-			    		$.notify("Kullanıcının konsol yetkileri alınırken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-			    	}
-			    },
-			    error: function (jqXHR, textStatus, errorThrown) {
-			    	if(jqXHR.status == 401) {
-			    		window.location.replace("/logout")
-			    	} else {
-			    		$.notify("Kullanıcının konsol yetkileri alınırken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-			    	}
-			    },
-				complete: function() {
-					//$('#user_0').css("background-color", "#E0F3FF");
-					//showUserDetail("user_0", users[0].distinguishedName);
-				}
-			});
-		}
-	}
-	
-	function showUserDetail(index, dn) {
-		userTableSelectedEntryDN = dn;
-		if(selectedTrIndex == "") {
-			$('#' + index).css("background-color", "#E0F3FF");
-			selectedTrIndex = index;
-			
-		} else if(selectedTrIndex != index) {
-			$('#' + selectedTrIndex).css("background-color", "");
-			$('#' + index).css("background-color", "#E0F3FF");
-			selectedTrIndex = index;
-		}
 
-		$('#headerForSelectedUserRoles').html('Seçili Kullanıcı Rolleri (Kayıt DN: ' + dn + ')');
-		var trElement = "";
-		$.each(users, function(index, element) {
-			var counter = 1;
-			if(element.distinguishedName == dn) {
-				for(var i = 0; i< element.attributesMultiValues["liderPrivilege"].length; i++) {
-					if(element.attributesMultiValues["liderPrivilege"][i].startsWith("ROLE_")) {
-						trElement += '<tr>';
-						trElement += '<td>' + (counter++) + '</td>';
-						trElement += '<td>' + element.attributesMultiValues["liderPrivilege"][i] + '</td>';
-						trElement += '<td>';
-						trElement += '<a class="delete mr-1" title="Rolü Kaldır" data-toggle="tooltip" onclick=deleteRoleFromUser("' + dn + '","' + element.attributesMultiValues["liderPrivilege"][i] +'")>';
-			    		trElement += '<i class="material-icons" style="font-size:24px;color:#E34724;">&#xE872;</i></a>';
-		    			trElement += '<a class="edit" title="Sayfaları Listele" data-toggle="tooltip"  onclick=showRolePages("' + element.distinguishedName + '")>';
-		    			trElement += '<i class="material-icons" style="font-size:24px;color:#3F6AD8;">format_list_bulleted</i></a>';
-			    		trElement += '</td>';
-			    		trElement += '</tr>';
-					}
-				}
-			}
-		});
-		$('#userRoles').html(trElement);
-	}
-	
-	function btnAddNewConsoleUserClicked() {
-		getModalContent("modals/settings/select_console_user", function content(data){
-			$('#genericModalHeader').html("Konsol Kullanıcısı Ekle");
-			$('#genericModalBodyRender').html(data);
-			generateTreeToAddMembersToExistingGroup();
-		});
-	}
-	
-	/*
-	 * adding new members to existing group functions
-	 */
-	function generateTreeToAddMembersToExistingGroup(){
-		$.ajax({
-			type : 'POST',
-			url : 'lider/user/getUsers',
-			dataType : 'json',
-			success : function(data) {
-				 var source =
-				  {
-				      dataType: "json",
-				      dataFields: [
-				           { name: "name", type: "string" },
-				           { name: "online", type: "string" },
-				           { name: "uid", type: "string" },
-				           { name: "type", type: "string" },
-				           { name: "cn", type: "string" },
-				           { name: "ou", type: "string" },
-				           { name: "parent", type: "string" },
-				           { name: "distinguishedName", type: "string" },
-				           { name: "hasSubordinates", type: "string" },
-				           { name: "expandedUser", type: "string" },
-				           { name: "entryUUID", type: "string" },
-				           { name: "attributes", type: "array" },
-				           { name: "attributesMultiValues", type: "array" },
-				           { name: "childEntries", type: "array" }
-				      ],
-				      hierarchy:
-				          {
-				              root: "childEntries"
-				          },
-				      localData: data,
-				      id: "entryUUID"
-				  };
-				 //create user tree grid
-				 createTreeToAddMembersToExistingGroup(source);
-			},
-		    error: function (data, errorThrown) {
-		    	$.notify("Kullanıcılar getirilirken hata oluştu.", "error");
-		    }
-		});
-	}
-
-	function createTreeToAddMembersToExistingGroup(source) {
-		$("#selectConsoleUserTreeGrid").jqxTreeGrid('destroy');
-		$("#selectConsoleUserTreeDiv").append('<div id="selectConsoleUserTreeGrid"></div> ');
-		var dataAdapter = new $.jqx.dataAdapter(source, {
-			loadComplete: function () {
-		    }
-		});
-		
-		var getLocalization = function () {
-			var localizationobj = {};
-	        localizationobj.filterSearchString = "Ara :";
-	        return localizationobj;
-		};
-		// create jqxTreeGrid.
-		$("#selectConsoleUserTreeGrid").jqxTreeGrid(
-		{
-			width: '100%',
-			source: dataAdapter,
-			altRows: true,
-			sortable: true,
-			columnsResize: true,
-			filterable: true,
-			hierarchicalCheckboxes: true,
-			pageable: true,
-			pagerMode: 'default',
-			checkboxes: false,
-			selectionMode: "singleRow",
-			filterMode: "simple",
-			localization: getLocalization(),
-			pageSize: 50,
-			pageSizeOptions: ['15', '25', '50'],
-			icons: function (rowKey, dataRow) {
-			var level = dataRow.level;
-			if(dataRow.type == "USER"){
-				return "img/checked-user-32.png";
-			}
-			else return "img/folder.png";
-			},
-			ready: function () {
-				var allrows =$("#selectConsoleUserTreeGrid").jqxTreeGrid('getRows');
-				if(allrows.length==1){
-					var row=allrows[0];
-					if(row.childEntries==null ){
-						$("#selectConsoleUserTreeGrid").jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
-					}
-				}
-		    	$("#selectConsoleUserTreeGrid").jqxTreeGrid('collapseAll'); 
-		    }, 
-		    rendered: function () {
-		   	},
-		   	columns: [{ text: "Kullanıcılar", align: "center", dataField: "name", width: '100%' }]  	
-		});
-
-		$('#selectConsoleUserTreeGrid').on('rowExpand', function (event) {
-			var args = event.args;
-			var row = args.row;
-		    if(row.expandedUser == "FALSE") {
-		    	var nameList=[];
-		    	for (var m = 0; m < row.records.length; m++) {
-		    		var childRow = row.records[m];
-		    		nameList.push(childRow.uid);      
-				}
-			      
-		    	for (var k = 0; k < nameList.length; k++) {
-		    		// get a row.
-		    		var childRowname = nameList[k];
-					$("#selectConsoleUserTreeGrid").jqxTreeGrid('deleteRow', childRowname); 
-		    	}  
-				$.ajax({
-					type : 'POST',
-					url : 'lider/ldap/getOuDetails',
-					data : 'uid=' + row.distinguishedName + '&type=' + row.type
-							+ '&name=' + row.name + '&parent=' + row.parent,
-					dataType : 'text',
-					success : function(ldapResult) {
-						var childs = jQuery.parseJSON(ldapResult);
-						for (var m = 0; m < childs.length; m++) {
-							// get a row.
-							var childRow = childs[m];
-							$("#selectConsoleUserTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
-							//$("#createNewUserGroupTreeGridUser").jqxTreeGrid('checkRow', row.name);
-							if(childRow.hasSubordinates=="TRUE"){
-								$("#selectConsoleUserTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
-							}
-							$("#selectConsoleUserTreeGrid").jqxTreeGrid('collapseRow', childRow.entryUUID);
-						}
-						row.expandedUser = "TRUE";
-					},
-				    error: function (data, errorThrown) {
-				    	$.notify("Klasör bilgisi getirilirken hata oluştu.", "error");
-				    }
-				});
-	    	}
-		});
-		
-		$('#selectConsoleUserTreeGrid').on('rowSelect', function (event) {
-			var args = event.args;
-			var row = args.row;
-			var name= row.name;
-			selectedDN = row.distinguishedName;
-			selectedEntryUUID = row.entryUUID;
-			selectedName = row.name;
-			
-			if(row.type == "ORGANIZATIONAL_UNIT") {
-				$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', true);
-				$('#alreadyConsoleUser').html("");
-			} else {
-				//check if user already has role for console
-				var selectedRows = $("#selectConsoleUserTreeGrid").jqxTreeGrid('getSelection');
-				var selectedRowData=selectedRows[0];
-				var isUserAlreadyConsoleUser = false;
-				if(selectedRowData.priviliges != null) {
-					for(var i = 0; i< selectedRowData.priviliges.length; i++) {
-						if(selectedRowData.priviliges[i] == "ROLE_USER") {
-							isUserAlreadyConsoleUser = true;
-						}
-					}
-				}
-				if(isUserAlreadyConsoleUser) {
-					$('#alreadyConsoleUser').html("<br>Seçili kullanıcının konsol yetkisi bulunmaktadır. Lütfen başka bir kullanıcı seçiniz.");
-					$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', true);
-				} else {
-					$('#alreadyConsoleUser').html("");
-					$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', false);
-				}
-			}
-		});
-	}
-
-	function btnGiveConsoleAccessToSelectedUserClicked() {
-		if(selectedDN != "") {
-			var params = {
-				    "dn": selectedDN,
-				    "roles": "ROLE_USER"
-				};
-			$.ajax({ 
-			    type: 'POST', 
-			    url: "/settings/add/role",
-			    dataType: 'json',
-			    data: params,
-			    success: function (data) { 
-					$.notify("Kullanıcıya konsol erişim yetkisi verildi.", "success");
-					//get selected data and update it with new data result from service call
-					getConsoleUsers();
-					$('#genericModal').trigger('click');
-			    },
-			    error: function (data, errorThrown) {
-			    	$.notify("Kullanıcıya konsol erişim yetkisi verilirken hata oluştu.", "error");
-			    }
-			});
-		} else {
-			$.notify("Lütfen bir kullanıcı seçiniz.", "error");
-			return;
-		}
-	}
-
-	
-	function getConfigurationParams() {
-		$.ajax({ 
-		    type: 'GET', 
-		    url: "/settings/configurations",
-		    dataType: 'json',
-		    success: function (data) { 
-		    	if(data != null) {
-		    		//set ldap configuration
-		    		setAttributes(data);
-		    		if((data.adDomainName != null && data.adDomainName != "") &&
-		    				(data.adIpAddress != null && data.adIpAddress != "") &&
-		    				(data.adAdminUserName != null && data.adAdminUserName != "") &&
-		    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
-		    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
-		    				(data.adPort != null && data.adPort != "")) {
-		    				$(".adSettings").show();
-		    				$("#checkboxDiv").hide();
-		    		} else {
-	    				$(".adSettings").hide();
-	    				$("#checkboxDiv").show();
-		    		}
-		    	} else {
-		    		$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-		    	}
-		    },
-		    error: function (data, errorThrown) {
-		    	$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-		    }
-		});
-	}
-	
-	function setAttributes(data) {
-		//set LDAP configuration
-		$('#ldapServerAddress').val(data.ldapServer);
-		$('#ldapServerPort').val(data.ldapPort);
-		$('#ldapRootDN').val(data.ldapRootDn);
-		$('#ldapUserDN').val(data.ldapUsername);
-		$('#ldapUserPassword').val(data.ldapPassword);
-		$('#agentDN').val(data.agentLdapBaseDn);
-		$('#peopleDN').val(data.userLdapBaseDn);
-		$('#groupDN').val(data.groupLdapBaseDn);
-		$('#computerGroupDN').val(data.ahenkGroupLdapBaseDn);
-		$('#userGroupDN').val(data.userGroupLdapBaseDn);
-		$('#sudoGroupDN').val(data.userLdapRolesDn);
-		
-		//set active directory configuration if exists
-		if((data.adDomainName != null && data.adDomainName != "") &&
-		    				(data.adIpAddress != null && data.adIpAddress != "") &&
-		    				(data.adAdminUserName != null && data.adAdminUserName != "") &&
-		    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
-		    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
-		    				(data.adPort != null && data.adPort != "")) {
-			$('#adIpAddress').val(data.adIpAddress);
-			$('#adPort').val(data.adPort);
-			$('#adDomainName').val(data.adDomainName);
-			$('#adAdminUserName').val(data.adAdminUserName);
-			$('#adAdminPassword').val(data.adAdminPassword);
-			$('#adHostName').val(data.adHostName);
-		} 
-		
-		//set XMPP configuration
-		$('#XMPPServerAddress').val(data.xmppHost);
-		$('#XMPPServerPort').val(data.xmppPort);
-		$('#XMPPUserName').val(data.xmppUsername);
-		$('#XMPPUserPassword').val(data.xmppPassword);
-		$('#XMPPResourceName').val(data.xmppResource);
-		$('#XMPPServiceName').val(data.xmppServiceName);
-		$('#XMPPRetryConnectionCount').val(data.xmppMaxRetryConnectionCount);
-		$('#XMPPPacketReplayTimeout').val(data.xmppPacketReplayTimeout);
-		$('#XMPPPingTimeout').val(data.xmppPingTimeout);
-		
-		//set file server configuration
-		$('#fileTransferType').val(data.fileServerProtocol);
-		$('#fileServerAddress').val(data.fileServerHost);
-		$('#fileServerPort').val(data.fileServerPort);
-		$('#fileServerUserName').val(data.fileServerUsername);
-		$('#fileServerUserPassword').val(data.fileServerPassword);
-		console.log("----");
-		console.log(data);
-		if(data.disableLocalUser == true) {
-			$('#cbDisableLocalUser').prop("checked", true);
-		} else {
-			$('#cbDisableLocalUser').prop("checked", false);
-		}
-		
-	}
-	function removeDisableClass(type) {
-		if(type == 'ldap') {
-			//remove disabled attribute from editableLDAP class
-			$('.editableLDAP').prop('disabled', false);
-			$('.editableAD').prop('disabled', false);
-			//change button name and onClick event to save
-			 $("#editLDAPAttributes").html("Değişiklikleri Kaydet");
-			 $("#editLDAPAttributes").attr("onclick","saveChanges('ldap')");
-		} else if(type == 'xmpp') {
-			//remove disabled attribute from editableXMPP class
-			$('.editableXMPP').prop('disabled', false);
-			//change button name and onClick event to save
-			 $("#editXMPPAttributes").html("Değişiklikleri Kaydet");
-			 $("#editXMPPAttributes").attr("onclick","saveChanges('xmpp')");
-		} else if(type == 'fileServer') {
-			//remove disabled attribute from editableFileServer class
-			$('.editableFileServer').prop('disabled', false);
-			//change button name and onClick event to save
-			 $("#editFileServerAttributes").html("Değişiklikleri Kaydet");
-			 $("#editFileServerAttributes").attr("onclick","saveChanges('fileServer')");
-		}  else if(type == 'otherSettings') {
-			//remove disabled attribute from editableFileServer class
-			$('.editableOtherSettings').prop('disabled', false);
-			//change button name and onClick event to save
-			 $("#editOtherSettings").html("Değişiklikleri Kaydet");
-			 $("#editOtherSettings").attr("onclick","saveChanges('otherSettings')");
-		}
-
-		
-	}
-	function saveChanges(type) {
-		if(type == 'ldap') {
-			if($('#ldapServerAddress').val() != ""
-					&& $('#ldapServerPort').val() != ""
-					&& $('#ldapUserDN').val() != ""
-					&& $('#ldapUserPassword').val() != "" ) {
-				var params = {
-					    "ldapServer" : $('#ldapServerAddress').val(),
-					    "ldapPort": $('#ldapServerPort').val(),
-					    "ldapUsername": $('#ldapUserDN').val(),
-					    "ldapPassword": $('#ldapUserPassword').val(),
-					    "adIpAddress": $('#adIpAddress').val(),
-					    "adPort": $('#adPort').val(),
-					    "adDomainName": $('#adDomainName').val(),
-					    "adAdminUserName": $('#adAdminUserName').val(),
-					    "adAdminPassword": $('#adAdminPassword').val(),
-					    "adHostName": $('#adHostName').val()
-					};
-				$.ajax({ 
-				    type: 'POST', 
-				    url: "/settings/update/ldap",
-				    dataType: 'json',
-				    data: params,
-				    success: function (data) { 
-				    	if(data != null) {
-				    		$.notify("LDAP sunucu bilgileri başarıyla güncellendi. Şimdi tekrar giriş yapabilmeniz için giriş ekranına yönlendirileceksiniz.", "success");
-				    		//redirect to login
-				    		setTimeout( function() 
-			   					{
-			   						window.location.replace("/logout")
-			   					}, 1000);
-				    		
-				    	} else {
-				    		$.notify("LDAP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-				    	}
-				    },
-				    error: function (data, errorThrown) {
-				    	$.notify("LDAP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-				    }
-				});
-			} else {
-				$.notify("Lütfen boş alanları doldurunuz.", "error");
-			}
-
-		} else if(type == 'xmpp') {
-			var params = {
-					"xmppHost": $('#XMPPServerAddress').val(),
-					"xmppPort": $('#XMPPServerPort').val(),
-					"xmppUsername": $('#XMPPUserName').val(),
-					"xmppPassword": $('#XMPPUserPassword').val(),
-					"xmppMaxRetryConnectionCount": $('#XMPPRetryConnectionCount').val(),
-					"xmppPacketReplayTimeout": $('#XMPPPacketReplayTimeout').val(),
-					"xmppPingTimeout": $('#XMPPPingTimeout').val()
-				};
-			$.ajax({ 
-			    type: 'POST', 
-			    url: "/settings/update/xmpp",
-			    dataType: 'json',
-			    data: params,
-			    success: function (data) { 
-			    	if(data != null) {
-			    		$.notify("XMPP sunucu bilgileri başarıyla güncellendi.", "success");
-			    	} else {
-			    		$.notify("XMPP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-			    	}
-			    },
-			    error: function (data, errorThrown) {
-			    	$.notify("XMPP sunucu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-			    }
-			});
-		} else if(type == 'fileServer') {
-			var params = {
-					"fileTransferType": $('#fileTransferType').val(),
-					"fileServerAddress": $('#fileServerAddress').val(),
-					"fileServerUsername": $('#fileServerUserName').val(),
-					"fileServerPassword": $('#fileServerUserPassword').val(),
-					"fileServerPort": $('#fileServerPort').val()
-				};
-			$.ajax({ 
-			    type: 'POST', 
-			    url: "/settings/update/fileServer",
-			    dataType: 'json',
-			    data: params,
-			    success: function (data) { 
-			    	if(data != null) {
-			    		$.notify("Dosya sunucusu bilgileri başarıyla güncellendi.", "success");
-			    	} else {
-			    		$.notify("Dosya sunucusu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-			    	}
-			    },
-			    error: function (data, errorThrown) {
-			    	$.notify("Dosya sunucusu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-			    }
-			});
-		} else if(type == 'otherSettings') {
-			alert("Save other settings");
-			var params = {
-					"disableLocalUser": $('#cbDisableLocalUser').is(':checked')
-				};
-			$.ajax({ 
-			    type: 'POST', 
-			    url: "/settings/update/otherSettings",
-			    dataType: 'json',
-			    data: params,
-			    success: function (data) { 
-			    	if(data != null) {
-			    		$.notify("Ayarlar başarıyla güncellendi.", "success");
-			    	} else {
-			    		$.notify("Ayarlar güncellenirken güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-			    	}
-			    },
-			    error: function (data, errorThrown) {
-			    	$.notify("Ayarlar güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-			    }
-			});
-		}
-	}
 </script>
+
 <div class="main-card mb-3 card h-100" style="margin: 18px;" id="divSettings">
 	<div class="card-body">
 		<div class="card-body">
 			<h5 class="card-title">Ayarlar</h5>
-			<ul class="nav nav-tabs">
-				<li class="nav-item"><a data-toggle="tab" href="#tab-users"
+			<ul class="nav nav-tabs" id="tabs">
+				<li class="nav-item"><a data-toggle="tab" href="#tab-users" onclick="tabConsoleSettingsClicked()" 
 					class="active nav-link">Konsol Kullanıcı Ayarları</a></li>
-				<li class="nav-item"><a data-toggle="tab" href="#tab-roles"
+				<li class="nav-item"><a data-toggle="tab" href="#tab-roles" onclick="tabRoleSettingsClicked()" 
 					class="nav-link">Rol Tanımları</a></li>
-				<li class="nav-item"><a data-toggle="tab" href="#tab-ldap"
+				<li class="nav-item"><a data-toggle="tab" href="#tab-ldap" onclick="tabLDAPSettingsClicked()" 
 					class="nav-link">LDAP Ayarları</a></li>
-				<li class="nav-item"><a data-toggle="tab" href="#tab-xmpp"
+				<li class="nav-item"><a data-toggle="tab" href="#tab-xmpp" onclick="tabXMPPSettingsClicked()" 
 					class="nav-link">XMPP Ayarları</a></li>
-				<li class="nav-item"><a data-toggle="tab" href="#tab-file-server"
+				<li class="nav-item"><a data-toggle="tab" href="#tab-file-server" onclick="tabFileServerSettingsClicked()" 
 					class="nav-link">Dosya Sunucusu Ayarları</a></li>
-				<li class="nav-item"><a data-toggle="tab" href="#tab-other-settings"
+				<li class="nav-item"><a data-toggle="tab" href="#tab-other-settings" onclick="tabOtherSettingsClicked()" 
 					class="nav-link">Diğer Ayarlar</a></li>
 			</ul>
 			<div class="tab-content">
@@ -612,9 +51,9 @@
 									<table class="table table-bordered table-hover table-sm">
 										<thead>
 											<tr>
-												<th style="width: 6%">#</th>
+												<th style="width: 10%">#</th>
 												<th style="width: 20%">UID</th>
-												<th style="width: 74%">Kayıt DN</th>
+												<th style="width: 70%">Kayıt DN</th>
 											</tr>
 										</thead>
 										<tbody id="existingUsers">
@@ -627,21 +66,21 @@
 								<div class="mr-1">
 									<div class="col-12 p-0 m-0 mb-2">
 										<div class="form-row">
-											<div class="col-10">
+											<div class="col-9">
 												<h6 id="headerForSelectedUserRoles"></h6>
 											</div>
-											<div class="col-2">
-												<button class="btn btn-primary pull-right" id="btnAddNewConsoleUser" 
-													type="button" onclick="btnAddNewRoleClicked()">Yeni Rol Ekle</button>
+											<div class="col-3">
+												<button class="btn btn-primary pull-right" id="btnEditUserRoles" 
+													type="button" onclick="btnEditUserRolesClicked()">Değişiklikleri Kaydet</button>
 											</div>
 										</div>
 									</div>
 									<table class="table table-bordered table-hover table-sm">
 										<thead>
 											<tr>
-												<th style="width: 6%">#</th>
-												<th style="width: 93%">Rol Adı</th>
-												<th style="width: 11%"></th>
+												<th style="width: 10%">#</th>
+												<th style="width: 90%">Rol Adı</th>
+												<th style="width: 10%"></th>
 											</tr>
 										</thead>
 										<tbody id="userRoles">
@@ -654,7 +93,89 @@
 					</div>
 				</div>
 				<div class="tab-pane" id="tab-roles" role="tabpanel">
-					<h5>Rol Tanımları</h5>
+					<div class="col-12">
+						<div class="form-row">
+							<div class="col-6">
+								<div class="mr-5">
+									<div class="col-12 p-0 m-0 mb-2">
+										<div class="form-row">
+											<div class="col-5">
+												<h6>Mevcut Roller</h6>
+											</div>
+											<div class="col-7">
+												<button class="btn btn-danger pull-right ml-1" id="btnDeleteRole"
+													type="button" onclick="btnDeleteRoleClicked()">Seçili Rolü Sil</button>
+												<button class="btn btn-primary pull-right" id="btnAddNewRole" data-toggle="modal" data-target="#genericModal"
+													type="button" onclick="btnAddNewRoleClicked()">Yeni Rol Ekle</button>
+											</div>
+										</div>
+									</div>
+									<table class="table table-bordered table-hover table-sm">
+										<thead>
+											<tr>
+												<th style="width: 10%">#</th>
+												<th style="width: 65%">Role Adı</th>
+												<th style="width: 25%">Oluşturulma Tarihi</th>
+											</tr>
+										</thead>
+										<tbody id="existingRoles">
+											<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="col-6">
+								<div class="mr-1">
+									<div class="col-12 p-0 m-0 mb-2">
+										<div class="form-row">
+											<div class="col-8">
+												<h6 id="headerForSelectedRoleMenus"></h6>
+											</div>
+											<div class="col-4">
+												<button class="btn btn-primary pull-right" id="btnSaveMenuChangeForRole" 
+													type="button" onclick="btnSaveMenuChangeForRoleClicked()">Sayfa Düzenlemesini Kaydet</button>
+											</div>
+										</div>
+									</div>
+									<ul id="pageList" class="menuList">
+										<li>
+											<div class="custom-checkbox custom-control" id="checkboxDiv2">
+												<input type="checkbox" id="cbShowADSettings2" class="custom-control-input">
+												<label class="custom-control-label" for="cbShowADSettings2">
+													İstemci Yönetimi
+												</label>
+											</div>
+										</li>
+										<li>
+											<div class="custom-checkbox custom-control" id="checkboxDiv2">
+												<input type="checkbox" id="cbShowADSettings2" class="custom-control-input">
+												<label class="custom-control-label" for="cbShowADSettings2">
+													Kullanıcı Yönetimi
+												</label>
+											</div>
+											<ul>
+												<li>
+													<div class="custom-checkbox custom-control" id="checkboxDiv2">
+														<input type="checkbox" id="cbShowADSettings2" class="custom-control-input">
+														<label class="custom-control-label" for="cbShowADSettings2">
+															İstemci Yönetimi
+														</label>
+													</div>
+												</li>
+											</ul>
+										</li>
+										<li>Tea
+											<ul>
+												<li>Black tea</li>
+												<li>Green tea</li>
+											</ul>
+										</li>
+										<li>Milk</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 				<div class="tab-pane" id="tab-ldap" role="tabpanel">
 					<div class="col-md-12">

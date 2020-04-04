@@ -1,6 +1,6 @@
 /**
  *  ldap-login
- *  This page authentication to OpenLDAP or Active Directory and cancel authentication from directory 
+ *  This page authentication to OpenLDAP or Active Directory and cancel authentication from directory manager
  *  Tuncay ÇOLAK
  *  tuncay.colak@tubitak.gov.tr
 
@@ -199,7 +199,7 @@ $('#sendTaskLdapLogin').click(function(e){
 					"dn": directoryData.ldapRootDn,
 					"admin-dn": selectedEntries[0]["attributes"].entryDN,
 					"admin-password": selectedEntries[0]["attributes"].userPassword,
-					"disabled_local_user": false
+					"disableLocalUser": directoryData.disableLocalUser
 
 			};
 			pluginTask_LdapLogin.commandId = "EXECUTE_LDAP_LOGIN";
@@ -213,7 +213,7 @@ $('#sendTaskLdapLogin').click(function(e){
 					"ad_username": directoryData.adAdminUserName,
 					"admin_password": directoryData.adAdminPassword,
 					"ad_port": directoryData.adPort,
-					"disabled_local_user": false
+					"disableLocalUser": directoryData.disableLocalUser
 			};
 			pluginTask_LdapLogin.commandId = "EXECUTE_AD_LOGIN";
 		}
@@ -232,7 +232,6 @@ $('#sendTaskLdapLogin').click(function(e){
 			var params = JSON.stringify(pluginTask_LdapLogin);
 		}
 		sendLdapLogin(params);
-
 	}else {
 		$.notify("Lütfen kaynak dizin(OpenLDAP / Active Directory) seçiniz veya Oturum açma ayarlarını iptal seçeneğine tıklayınız.", "warn");
 	}

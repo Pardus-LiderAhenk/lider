@@ -97,17 +97,17 @@ function getPackagesListener(msg) {
 										parser_packages.push(packages[i].split(","));
 									}
 									for (var j = 0; j < parser_packages.length; j++) {
-										var package_name = parser_packages[j][1];
-										var package_version = parser_packages[j][2];
+										var packageName = parser_packages[j][1];
+										var packageVersion = parser_packages[j][2];
 
 										var newRow = $("<tr>");
 										var html = '<td class="text-center"><span class="cb-package-name">'
-											+ '<input class="text-center" type="checkbox" onclick="onclickPackageChecked(this)" name="package_name" id="'+ package_version +'" value="' + package_name +'">'
+											+ '<input class="text-center" type="checkbox" onclick="onclickPackageChecked(this)" name="packageName" id="'+ packageVersion +'" value="' + packageName +'">'
 											+ '<label for="checkbox1"></label>'
 											+ '</span>'
 											+ '</td>';
-										html += '<td>'+ package_name +'</td>';
-										html += '<td>'+ package_version +'</td>';
+										html += '<td>'+ packageName +'</td>';
+										html += '<td>'+ packageVersion +'</td>';
 
 										newRow.append(html);
 										$("#installedPackagesTable").append(newRow);
@@ -188,39 +188,42 @@ function onclickPackageChecked(select) {
 	var selPackageVersion = select.id;
 	var packageInfo = {};
 	if(select.checked) {
-		packageInfo = {
-				"packageName": selPackageName,
-				"version": selPackageVersion,
-				"installed": true,
-				"desiredStatus": "UNINSTALL", //NA and UNINSTALL
-				"tag": "u", // i and u
-				"installedSize": null,
-				"maintainer": null,
-				"architecture": null,
-				"depends": null,
-				"recommends": null,
-				"breaks": null,
-				"descriptionMd5": null,
-				"homepage": null,
-				"suggests": null,
-				"multiArch": null,
-				"md5Sum": null,
-				"sha1": null,
-				"sha256": null,
-				"replaces": null,
-				"preDepends": null,
-				"provides": null,
-				"description": null,
-				"section": null,
-				"source": null,
-				"conflicts": null,
-				"filename": null,
-				"priority": null,
-				"size": null
-		};
-
-		if (checkPackagesList(selPackageName) == false) {
-			packageInfoList.push(packageInfo);
+		if (selPackageName.includes('ahenk')) {
+			$.notify(selPackageName +" paketi silinemez.", "error");
+		}else {
+			packageInfo = {
+					"packageName": selPackageName,
+					"version": selPackageVersion,
+					"installed": true,
+					"desiredStatus": "UNINSTALL", //NA and UNINSTALL
+					"tag": "u", // i and u
+					"installedSize": null,
+					"maintainer": null,
+					"architecture": null,
+					"depends": null,
+					"recommends": null,
+					"breaks": null,
+					"descriptionMd5": null,
+					"homepage": null,
+					"suggests": null,
+					"multiArch": null,
+					"md5Sum": null,
+					"sha1": null,
+					"sha256": null,
+					"replaces": null,
+					"preDepends": null,
+					"provides": null,
+					"description": null,
+					"section": null,
+					"source": null,
+					"conflicts": null,
+					"filename": null,
+					"priority": null,
+					"size": null
+			};
+			if (checkPackagesList(selPackageName) == false) {
+				packageInfoList.push(packageInfo);
+			}
 		}
 	}else {
 		if (checkPackagesList(selPackageName) == true) {
@@ -323,7 +326,7 @@ $('#sendTaskDeletePackageBtn').click(function(e){
 		var params = JSON.stringify(pluginTask_PackageManagement);
 	}
 
-//	if($('input:checkbox[name=package_name]').is(':checked')) {
+//	if($('input:checkbox[name=packageName]').is(':checked')) {
 	if (packageInfoList.length > 0) {
 		var content = "Görev Gönderilecek, emin misiniz?";
 		if (scheduledParamPackageManagement != null) {

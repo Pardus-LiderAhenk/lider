@@ -22,6 +22,7 @@ $("#systemPage").show();
 $("#packageManagementPage").hide();
 $("#serviceManagementPage").hide();
 $("#scriptManagementPage").hide();
+$("#securityAndNetworkManagementPage").hide();
 
 connection.addHandler(onPresence2, null, "presence");
 //selected row function action behave different when selected tab change.. for this use selectedTab name
@@ -99,10 +100,13 @@ $('#btn-script').click(function() {
 	setScriptPluginPage();
 });
 
+$('#btn-securityAndNetwork').click(function() {
+	setSecurityAndNetworkPluginPage();
+});
+
 $('#btnAddAgents').click(function() {
 	addSelectedEntryToTable(selectedRow)
 });
-
 
 $('#addOnlyOnlineAgents').click(function() {
 	var selection =$('#computerTreeDivGrid').jqxTreeGrid('getSelection');
@@ -163,6 +167,7 @@ function setSystemPluginPage() {
 	$("#packageManagementPage").hide();
 	$("#serviceManagementPage").hide();
 	$("#scriptManagementPage").hide();
+	$("#securityAndNetworkManagementPage").hide();
 	$.ajax({
 		type : 'POST',
 		url : 'getPluginTaskList',
@@ -272,6 +277,7 @@ function setPackagePluginPage() {
 	$("#serviceManagementPage").hide();
 	$("#scriptManagementPage").hide();
 	$("#packageManagementPage").show();
+	$("#securityAndNetworkManagementPage").hide();
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
 		if(pluginTask.page == 'package-management'){
@@ -328,6 +334,7 @@ function setServicePluginPage() {
 	$("#packageManagementPage").hide();
 	$("#scriptManagementPage").hide();
 	$("#serviceManagementPage").show();
+	$("#securityAndNetworkManagementPage").hide();
 
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
@@ -350,6 +357,7 @@ function setScriptPluginPage() {
 	$("#serviceManagementPage").hide();
 	$("#packageManagementPage").hide()
 	$("#scriptManagementPage").show();
+	$("#securityAndNetworkManagementPage").hide();
 	
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
@@ -366,6 +374,29 @@ function setScriptPluginPage() {
 		}
 	}
 	
+}
+
+function setSecurityAndNetworkPluginPage() {
+	$("#systemPage").hide();
+	$("#serviceManagementPage").hide();
+	$("#packageManagementPage").hide()
+	$("#scriptManagementPage").hide();
+	$("#securityAndNetworkManagementPage").show();
+	
+	for (var i = 0; i < pluginTaskList.length; i++) {
+		var pluginTask = pluginTaskList[i];
+		if(pluginTask.page == 'network-manager'){
+			$.ajax({
+				type : 'POST',
+				url : 'getPluginTaskHtmlPage',
+				data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+				dataType : 'text',
+				success : function(res2) {
+					$('#network-manager').html(res2);
+				}
+			});
+		}
+	}
 }
 
 

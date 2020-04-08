@@ -16,17 +16,23 @@ var scheduledParamNetworkManager = null;
 var scheduledModalNetworkManagerOpened = false;
 var pluginTask_NetworkManager = null;
 var dnlist = [];
-var newDnsIsActive = true;
+var newIsActive = true;
 var newDns = null;
 var newDomainName = null;
 var newDnsType = null;
 var selectDnsRow = null;
+var selectHostRow = null;
+var newHostIp = null;
+var newServerName = null;
+
 var ref_network_manager = connection.addHandler(networkManagerListener, null, 'message', null, null,  null);
 
 $('#currentConfigurationTabTask').tab('show');
 $('#deleteDnsBtn').hide();
+$('#deleteHostBtn').hide();
 $("#updateMachineHostnameBtn").prop('disabled', true);
-//$("#addDnsBtn").prop('disabled', true);
+$("#addDnsBtn").prop('disabled', true);
+$("#addHostBtn").prop('disabled', true);
 
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
@@ -138,9 +144,11 @@ function networkManagerListener(msg) {
 
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+					$("#addDnsBtn").prop('disabled', false);
+					$("#addHostBtn").prop('disabled', false);
+					$("#updateMachineHostnameBtn").prop('disabled', false);
+					
 					if (clsId == "GET_NETWORK_INFORMATION") {
-						$("#updateMachineHostnameBtn").prop('disabled', false);
-						$("#addDnsBtn").prop('disabled', false);
 						clearNetworkData();
 						$("#currentNetworkInterfaces").html(arrg.interfaces);
 						$("#currentHosts").html(arrg.hosts);
@@ -149,34 +157,58 @@ function networkManagerListener(msg) {
 						dnsManagement(arrg);
 						interfacesManagement(arrg);
 						portManagement(arrg);
-						$.notify(responseMessage, "success");
-						$("#plugin-result-network-manager").html("");
+						
 					} else if (clsId == "ADD_DNS" || clsId == "ADD_DOMAIN") {
-						if (newDnsIsActive == true) {
-							newDnsIsActive = "Evet";
+						if (newIsActive == true) {
+							newIsActive = "Evet";
 						}else {
-							newDnsIsActive = "Hayır";
+							newIsActive = "Hayır";
 						}
 
 						var html = '<tr>';
 						html += '<td>' + newDns + '</td>';
 						html += '<td>' + newDnsType + '</td>';
-						html += '<td>' + newDnsIsActive + '</td>';
+						html += '<td>' + newIsActive + '</td>';
 						html += '</tr>';
 
 						$("#dnsSettingsBody").append(html);
 						$("#definitionDnsForm").val("");
-						newDnsIsActive = true;
+						newIsActive = true;
 						newDns = null;
 						newDnsType = null;
-						$.notify(responseMessage, "success");
-						$("#plugin-result-network-manager").html("");
+
 					} else if (clsId == "DELETE_DNS" || clsId == "DELETE_DOMAIN") {
 						selectDnsRow.remove();
 						selectDnsRow = null;
-						$.notify(responseMessage, "success");
-						$("#plugin-result-network-manager").html("");
+
+					} else if (clsId == "ADD_HOST") {
+						if (newIsActive == true) {
+							newIsActive = "Evet";
+						}else {
+							newIsActive = "Hayır";
+						}
+
+						var html = '<tr>';
+						html += '<td>' + newHostIp + '</td>';
+						html += '<td>' + newServerName + '</td>';
+						html += '<td>' + newIsActive + '</td>';
+						html += '</tr>';
+						$("#hostsSettingsBody").append(html);
+
+						$("#definitionHostServerForm").val("");
+						$("#definitionHostIpForm").val("");
+						newIsActive = true;
+						newHostIp = null;
+						newServerName = null;
+
+					} else if (clsId == "DELETE_HOST") {
+						selectHostRow.remove();
+						selectHostRow = null;
 					}
+
+					$.notify(responseMessage, "success");
+					$("#plugin-result-network-manager").html("");
+
 				}else {
 					$.notify(responseMessage, "error");
 					$("#plugin-result-network-manager").html(("HATA: " + responseMessage).fontcolor("red"));
@@ -207,7 +239,7 @@ function clearNetworkData() {
 	$("#machineHostname").val("");
 }
 
-//configured hosts file
+//configured HOST file
 function hostManagement(arrg) {
 	var hostList = arrg.hosts.split("\n");
 	for (var i = 0; i < hostList.length; i++) {
@@ -337,11 +369,12 @@ $('#dnsSettingsTable').on('click', 'tbody tr', function(event) {
 $('#hostsSettingsTable').on('click', 'tbody tr', function(event) {
 	if($(this).hasClass('networksettingsselect')){
 		$(this).removeClass('networksettingsselect');
+		$('#deleteHostBtn').hide();
+		selectHostRow = null;
 	} else {
 		$(this).addClass('networksettingsselect').siblings().removeClass('networksettingsselect');
-
-		var customerId = $(this).find("td:first").html();    
-//		alert(customerId)
+		$('#deleteHostBtn').show();
+		selectHostRow = $(this);
 	}
 });
 
@@ -401,7 +434,7 @@ $('#addDnsBtn').click(function(e){
 			newDns = $("#definitionDnsForm").val();
 			var parameterMap = {
 					"ip": newDns,
-					"is_active": newDnsIsActive
+					"is_active": newIsActive
 			};
 			var commandId = "ADD_DNS";
 		} else {
@@ -446,3 +479,47 @@ $('#deleteDnsBtn').click(function(e){
 });
 //DNS Button actions --------->> STOP
 
+//HOSTS Button actions ------------->> START
+$('#addHostBtn').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+	if ($("#definitionHostIpForm").val() != "" && $("#definitionHostServerForm").val() != "") {
+		newHostIp = $("#definitionHostIpForm").val();
+		newServerName = $("#definitionHostServerForm").val();
+		var parameterMap = {
+				"ip": newHostIp,
+				"hostname": newServerName,
+				"is_active": newIsActive
+		};
+		var commandId = "ADD_HOST";
+		sendNetworkManagerTask(commandId, parameterMap);
+	} else {
+		$.notify("İP Adresi ve Sunucu Adı boş bırakılamaz.", "warn");
+	}
+});
+
+$('#deleteHostBtn').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+	var selectHostIp = selectHostRow.closest("tr")[0].children[0].textContent;
+	var selectHostActive = selectHostRow.closest("tr")[0].children[2].textContent;
+	var selectHostname = selectHostRow.closest("tr")[0].children[1].textContent;
+	
+	var isActive = false;
+	if (selectHostActive == "Evet") {
+		isActive = true;
+	}
+	var parameterMap = {
+			"ip": selectHostIp,
+			"hostname": selectHostname,
+			"is_active": isActive
+	}
+	var commandId = "DELETE_HOST";
+	sendNetworkManagerTask(commandId, parameterMap);
+	$('#deleteHostBtn').hide();
+});
+//HOSTS Button actions --------->> STOP

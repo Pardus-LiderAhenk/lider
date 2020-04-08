@@ -148,7 +148,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 				agentDao.update(agent);
 			} else {
 				// Create new agent database record
-				agent = entityFactory.createAgent(null, jid, dn, message.getPassword(), message.getHostname(),
+				agent = entityFactory.createAgent(jid, dn, message.getPassword(), message.getHostname(),
 						message.getIpAddresses(), message.getMacAddresses(), message.getData());
 				agentDao.save(agent);
 			}

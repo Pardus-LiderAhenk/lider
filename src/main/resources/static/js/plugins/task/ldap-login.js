@@ -36,7 +36,7 @@ getDirectoryParams();
 function getDirectoryParams() {
 	$.ajax({ 
 		type: 'GET', 
-		url: "/settings/configurations",
+		url: "lider/settings/configurations",
 		dataType: 'json',
 		success: function (data) { 
 			if(data != null) {

@@ -124,61 +124,71 @@
 									alt=""> <i class="fa ml-2 opacity-8"></i>
 						   </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTERS')}">
                             <a class="nav-link dizin" href="#" data-page="computers" >
                                 <i class="nav-link-icon fas fa-network-wired"> </i>
                                 İstemci Yönetimi
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}">
                             <a class="nav-link dizin" href="#" data-page="users" >
                                 <i class="nav-link-icon fa fa-users"></i>
                                 Kullanıcı Yönetimi
                             </a>
                         </li>
-                        <li class="dropdown nav-item">
+                        <li class="dropdown nav-item" 
+                        th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+                        		or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')} 
+                        		or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')} 
+                        		or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}">
                             <a class="nav-link dropdown-toggle " href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
                                 <i class="nav-link-icon fa fa-cog"></i>
                                 Grup Yönetimi
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					          <a class="dropdown-item dizin" href="#" data-page="user_groups">Kullanıcı Grup Yönetimi</a>
-					          <a class="dropdown-item dizin " href="#" data-page="agent_groups">İstemci Grup Yönetimi</a>
-					          <a class="dropdown-item dizin " href="#" data-page="sudo_groups"> Kullanıcı Yetkilendirme (Sudo) </a>
+					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}" 
+					          	class="dropdown-item dizin" href="#" data-page="user_groups">Kullanıcı Grup Yönetimi</a>
+					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')}" 
+					          	class="dropdown-item dizin " href="#" data-page="computer_groups">İstemci Grup Yönetimi</a>
+					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}" 
+					          	class="dropdown-item dizin " href="#" data-page="sudo_groups"> Kullanıcı Yetkilendirme (Sudo) </a>
 					        </div>
                         </li>
                         
-                        <!-- 							<li class="app-sidebar__heading">Raporlar</li> -->
-<!-- 							<li><a class="dizin" href="#" data-page="agent_info"> <i -->
-<!-- 									class="metismenu-icon pe-7s-news-paper"></i> Detaylı İstemci -->
-<!-- 									Raporu -->
-<!-- 							</a></li> -->
-                        
-                      <li class="dropdown nav-item">
+                      <li class="dropdown nav-item" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                 <i class="nav-link-icon fa fa-cog"></i>
                                 Raporlar
                             </a>
                             
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					          <a class="dropdown-item dizin" href="#" data-page="agent_info">Detaylı İstemci Raporu</a>
+					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}" 
+					          class="dropdown-item dizin" href="#" data-page="agent_info">Detaylı İstemci Raporu</a>
 					        </div>
                         </li>
                         
-                        <li class="dropdown nav-item">
+                        <li class="dropdown nav-item" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+                        		or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')} 
+                        		or ${#lists.contains(roleNames, 'ROLE_NOTIFY_DEFINITION')} 
+                        		or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')} 
+                        		or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                 <i class="nav-link-icon fa fa-cog"></i>
                                 Tanımlar
                             </a>
                             
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					          <a class="dropdown-item dizin" href="#" data-page="/plugins/definitions/script_definition">Betik Tanımları</a>
-					          <a class="dropdown-item dizin " href="#" data-page="/plugins/definitions/notify_definition">ETA Mesaj Tanımları</a>
-					           <a class="dropdown-item dizin " href="#" data-page="/plugins/definitions/conky_definition">Conky Tanımları</a>
-					           <a class="dropdown-item dizin " href="#" data-page="/registration_template">Kayıt Şablonları</a>
+					          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}" 
+					          		class="dropdown-item dizin" href="#" data-page="plugins/definitions/script_definition">Betik Tanımları</a>
+					          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_NOTIFY_DEFINITION')}" 
+					          		class="dropdown-item dizin " href="#" data-page="plugins/definitions/notify_definition">ETA Mesaj Tanımları</a>
+					          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')}" 
+					          		class="dropdown-item dizin " href="#" data-page="plugins/definitions/conky_definition">Conky Tanımları</a>
+					           	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}" 
+					           		class="dropdown-item dizin " href="#" data-page="plugins/definitions/registration_template">Kayıt Şablonları</a>
 					        </div>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SETTINGS')}" >
                             <a class="nav-link dizin" href="#" data-page="settings" >
                                 <i class="nav-link-icon fas fa-cog"> </i>
                                 Ayarlar

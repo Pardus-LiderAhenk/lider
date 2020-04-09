@@ -1,6 +1,5 @@
 package tr.org.lider.models;
 
-import java.util.ArrayList;
 import java.util.List;
 
 //import tr.org.liderahenk.lider.ldap.IReportPrivilege;

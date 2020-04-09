@@ -17,7 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
- * Entity class for agent.
+ * Entity class for config.
  * 
  */
 @Entity
@@ -36,7 +36,7 @@ public class ConfigImpl implements Serializable{
 	private Long id;
 
 	@Column(name = "NAME", nullable = false, unique = true)
-	private String name; // XMPP JID = LDAP UID
+	private String name;
 
 	@Lob
 	@Column(name = "VALUE")

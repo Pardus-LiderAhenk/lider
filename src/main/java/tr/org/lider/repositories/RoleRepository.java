@@ -11,5 +11,6 @@ public interface RoleRepository extends BaseJpaRepository<RoleImpl, Long>{
 	List<RoleImpl> findAllByName(String name);
 	RoleImpl findByName(String name);
 	Long countByName(String name);
+	List<RoleImpl> findAllByOrderByOrderNumberAsc();
 }
 

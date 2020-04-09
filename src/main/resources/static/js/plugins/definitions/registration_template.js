@@ -27,7 +27,7 @@ function fillRegistrationTemplateTable() {
 	html = "";
 	$.ajax({ 
 	    type: 'POST', 
-	    url: 'registration/template/',
+	    url: '/lider/registration_template/list',
 	    dataType: 'json',
 	    success: function (data) {
 	    	if(data != null && data.length > 0) {
@@ -82,7 +82,7 @@ function btnCreateRegistrationTemplateClicked() {
 			};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: 'registration/template/create',
+		    url: '/lider/registration_template/create',
 		    data: params,
 		    dataType: 'json',
 		    success: function (data) {
@@ -106,7 +106,7 @@ function btnCreateRegistrationTemplateClicked() {
  * create tree for auth group selection
  */
 function btnCreateTreeForAuthSelectionClicked() {
-	getModalContent("plugins/definitions/registration_template/select_auth_group", function content(data){
+	getModalContent("modals/definitions/registration_template/select_auth_group", function content(data){
 		$('#genericModalHeader').html("Kullanıcı veya Kullanıcı Grubu Seç");
 		$('#genericModalBodyRender').html(data);
 		createTreeModalForAuthGroupSelection();
@@ -118,7 +118,7 @@ function createTreeModalForAuthGroupSelection(){
 	//so new created groups can be under root user groups
 	$.ajax({
 		type : 'POST',
-		url : 'lider/user/getUsers',
+		url : '/lider/registration_template/getUsers',
 		dataType : 'json',
 		success : function(data) {
 			 var source =
@@ -230,7 +230,7 @@ function createUserTreeGridForSelection(source) {
 	    	}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : '/lider/registration_template/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 						+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -273,7 +273,7 @@ function btnUseSelectedAuthGroupClicked() {
  * create tree for group selection of agent creation
  */
 function btnCreateTreeForAgentGroupSelectionClicked() {
-	getModalContent("plugins/definitions/registration_template/select_agent_creation_dn", function content(data){
+	getModalContent("modals/definitions/registration_template/select_agent_creation_dn", function content(data){
 		$('#genericModalHeader').html("Ahenk'in oluşturulmasını istediğiniz grubu seçiniz.");
 		$('#genericModalBodyRender').html(data);
 		createTreeModalForAgentGroupSelection();
@@ -283,7 +283,7 @@ function btnCreateTreeForAgentGroupSelectionClicked() {
 function createTreeModalForAgentGroupSelection(){
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/getComputers',
+		url : '/lider/registration_template/getComputers',
 		dataType : 'json',
 		success : function(data) {
 			 var source =
@@ -395,7 +395,7 @@ function createUserTreeGridForAgentCreationDNSelection(source) {
 	    	}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : '/lider/registration_template/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 						+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -443,7 +443,7 @@ function deleteTemplate(id) {
 	};
 	$.ajax({ 
 	    type: 'POST', 
-	    url: 'registration/template/delete',
+	    url: '/lider/registration_template/delete',
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) {

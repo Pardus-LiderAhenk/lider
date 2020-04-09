@@ -37,39 +37,39 @@ function dropdownButtonClicked(operation) {
 	if(operation == "createNewSudoGroup") {
 		selectedAttribute = [];
 		$('#attributeValue').val("");
-		getModalContent("modals/groups/sudo/creategroup", function content(data){
+		getModalContent("modals/groups/sudo_groups/creategroup", function content(data){
 			$('#genericModalLargeHeader').html("Yeni Yetki Grubu Oluştur");
 			$('#genericModalLargeBodyRender').html(data);
 		});
 	} else if(operation == "deleteSudoGroup") {
-		getModalContent("modals/groups/sudo/deletegroup", function content(data){
+		getModalContent("modals/groups/sudo_groups/deletegroup", function content(data){
 			$('#genericModalHeader').html("Yetki Grubunu Sil");
 			$('#genericModalBodyRender').html(data);
 		});
 	} else if(operation == "editSudoGroup") {
-		getModalContent("modals/groups/sudo/editgroup", function content(data){
+		getModalContent("modals/groups/sudo_groups/editgroup", function content(data){
 			$('#genericModalLargeHeader').html("Yetki Grubunu Düzenle");
 			$('#genericModalLargeBodyRender').html(data);
 			fillAttributeTableForEditingGroup();
 		});
 	} else if(operation == "createNewOrganizationalUnit") {
-		getModalContent("modals/groups/agent/createou", function content(data){
+		getModalContent("modals/groups/sudo_groups/createou", function content(data){
 			$('#genericModalHeader').html("Yeni Klasör Oluştur");
 			$('#genericModalBodyRender').html(data);
 		});
 	} else if(operation == "deleteOrganizationalUnit") {
-		getModalContent("modals/groups/sudo/deleteou", function content(data){
+		getModalContent("modals/groups/sudo_groups/deleteou", function content(data){
 			$('#genericModalHeader').html("Klasörü Sil");
 			$('#genericModalBodyRender').html(data);
 		});
 	} else if(operation == "moveEntry") {
-		getModalContent("modals/groups/sudo/moveentry", function content(data){
+		getModalContent("modals/groups/sudo_groups/moveentry", function content(data){
 			$('#genericModalHeader').html("Kayıt Taşı");
 			$('#genericModalBodyRender').html(data);
 			generateTreeToMoveEntry();
 		});
 	} else if(operation == "editOrganizationalUnit") {
-		getModalContent("modals/groups/sudo/editouname", function content(data){
+		getModalContent("modals/groups/sudo_groups/editouname", function content(data){
 			$('#genericModalHeader').html("Klasör Adı Düzenle");
 			$('#genericModalBodyRender').html(data);
 			$('#ouName').val(selectedName);
@@ -90,7 +90,7 @@ function createMainTree() {
 	$('#operationDropDown').html(html);
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/getSudoGroups',
+		url : 'lider/sudo_groups/getGroups',
 		dataType : 'json',
 		success : function(data) {
 			var source =
@@ -190,7 +190,7 @@ function createMainTree() {
 			}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : 'lider/sudo_groups/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 				+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -336,7 +336,7 @@ function btnCreateNewOUClicked() {
 		};
 		$.ajax({ 
 			type: 'POST', 
-			url: '/lider/ldap/addOu',
+			url: '/lider/sudo_groups/addOu',
 			dataType: 'json',
 			data: params,
 			success: function (data) {
@@ -359,7 +359,7 @@ function btnDeleteOUClicked() {
 	};
 	$.ajax({ 
 		type: 'POST', 
-		url: '/lider/ldap/deleteEntry',
+		url: '/lider/sudo_groups/deleteEntry',
 		dataType: 'json',
 		data: params,
 		success: function (data) {
@@ -380,7 +380,7 @@ function btnDeleteOUClicked() {
 function generateTreeToMoveEntry(){
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/getSudoGroups',
+		url : 'lider/sudo_groups/getGroups',
 		dataType : 'json',
 		success : function(data) {
 			 var source =
@@ -489,7 +489,7 @@ function createTreeToMoveEntry(source) {
 	    	}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : 'lider/sudo_groups/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 						+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -535,7 +535,7 @@ function btnMoveEntryClicked() {
 		};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: '/lider/ldap/move/entry',
+		    url: '/lider/sudo_groups/move/entry',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -628,7 +628,7 @@ function createTreeModalForUserSelection(){
 	//so new created groups can be under root user groups
 	$.ajax({
 		type : 'POST',
-		url : 'lider/user/getUsers',
+		url : 'lider/sudo_groups/getUsers',
 		dataType : 'json',
 		success : function(data) {
 			 var source =
@@ -743,7 +743,7 @@ function createUserTreeGridForCreatingGroup(source) {
 	    	}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : 'lider/sudo_groups/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 						+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -788,10 +788,6 @@ function rowCheckAndUncheckOperationForCreatingGroup(event) {
     					type: checkedRows[row].type,
     					uid: checkedRows[row].uid
     				});
-    				console.log("------------------------->");
-    				console.log(checkedUsers);
-    				console.log("------------------------->");
-    				console.log(checkedRows[row]);
 
     			} else if(checkedRows[row].type == "ORGANIZATIONAL_UNIT" && checkedRows[row].expanded == false) {
     				checkedOUList.push({
@@ -806,7 +802,7 @@ function rowCheckAndUncheckOperationForCreatingGroup(event) {
     		//get users under checkboxes from service and add them to user list also
     		if(checkedOUList.length > 0) {
     			$.ajax({
-    				url : 'lider/user/getUsersUnderOU',
+    				url : 'lider/sudo_groups/getUsersUnderOU',
     				type : 'POST',
     				data: JSON.stringify(checkedOUList),
     				dataType: "json",
@@ -863,7 +859,7 @@ function btnCreateSudoGroupClicked() {
 	};
 	$.ajax({ 
 	    type: 'POST', 
-	    url: "/lider/ldap/createSudoGroup",
+	    url: "/lider/sudo_groups/createSudoGroup",
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) { 
@@ -888,7 +884,6 @@ function btnMembersSelectedFromUserTree() {
 			}
 		}
 		if(isExists == false) {
-			console.log(checkedUsers[i]);
 			selectedAttribute.push(["sudoUser", checkedUsers[i].uid]);
 		}
 	}
@@ -904,7 +899,7 @@ function btnDeleteGroupClicked() {
 	};
 	$.ajax({ 
 	    type: 'POST', 
-	    url: '/lider/ldap/deleteEntry',
+	    url: '/lider/sudo_groups/deleteEntry',
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) {
@@ -954,6 +949,7 @@ function btnEditSudoGroupClicked() {
 		return;
 	}
 	var params = {
+			"newName" : "cn=" + $('#groupName').val(),
 			"selectedDN" : selectedDN,
 		    "sudoUserList" : sudoUserList,
 		    "sudoCommandList" : sudoCommandList,
@@ -962,17 +958,13 @@ function btnEditSudoGroupClicked() {
 
 	$.ajax({ 
 	    type: 'POST', 
-	    url: "/lider/ldap/editSudoGroup",
+	    url: "/lider/sudo_groups/editSudoGroup",
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) { 
-	    	$.notify("Grup düzenlendi.", "success");
-			var selectedData= $("#treeGridSudoGroups").jqxTreeGrid('getRow', data.entryUUID);
-			selectedData.attributesMultiValues = data.attributesMultiValues;
-			$("#treeGridSudoGroups").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
-			$("#treeGridSudoGroups").jqxTreeGrid('getRow', data.entryUUID);
-			$("#treeGridSudoGroups").jqxTreeGrid('selectRow', data.entryUUID);
-			$('#genericModalLarge').trigger('click');
+			$.notify("Grup düzenlendi.", "success");
+            $('#genericModalLarge').trigger('click');
+            createMainTree();
 	    },
 	    error: function (data, errorThrown) {
 	    	$.notify("Yeni sudo grubu oluştururken hata oluştu.", "error");
@@ -998,7 +990,7 @@ function btnEditOUNameClicked() {
 		};
 		$.ajax({
 		    type: 'POST', 
-		    url: '/lider/ldap/rename/entry',
+		    url: '/lider/sudo_groups/rename/entry',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -1024,7 +1016,7 @@ function deleteMemberFromTabList(uid) {
 	};
 	$.ajax({
 		type : 'POST',
-		url  : 'lider/ldap/delete/sudo/user',
+		url  : 'lider/sudo_groups/delete/sudo/user',
 		data : params,
 		dataType : 'json',
 		success : function(data) {

@@ -25,7 +25,7 @@ public class AdminController {
 	public ModelAndView getAdminLoginPage(HttpServletRequest request,Model model) {
 		
 		ModelAndView modelAndView = new ModelAndView();
-	    modelAndView.setViewName(LiderConstants.Pages.PAGES_ADMIN_LOGIN_PAGE);
+	    modelAndView.setViewName(LiderConstants.Pages.ADMIN_LOGIN_PAGE);
 	    return modelAndView;
 	}
 	
@@ -34,7 +34,7 @@ public class AdminController {
 	public ModelAndView getAdmin(HttpServletRequest request,Model model) {
 		
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName(LiderConstants.Pages.PAGES_ADMIN_PAGE);
+		modelAndView.setViewName(LiderConstants.Pages.ADMIN_PAGE);
 		return modelAndView;
 	}
 

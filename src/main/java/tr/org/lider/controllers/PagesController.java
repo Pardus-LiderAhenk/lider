@@ -1,7 +1,6 @@
 package tr.org.lider.controllers;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -15,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @RequestMapping("/lider/pages")
 public class PagesController {
-	
-	@RequestMapping(value="/getInnerHtmlPage", method = {RequestMethod.POST })
-	public String getInnerHtmlPage(Model model, String innerPage) {
 
-	    return innerPage;
+	@RequestMapping(value="/getInnerHtmlPage", method = {RequestMethod.POST })
+	public String getInnerHtmlPage(String innerPage) {
+		return innerPage;
 	}
 }
+ 

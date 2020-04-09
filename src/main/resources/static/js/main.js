@@ -19,7 +19,4 @@ $(document).ready(function(){
 		});
 	
 	});
-	
-	
 });
-

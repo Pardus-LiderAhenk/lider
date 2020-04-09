@@ -1,5 +1,3 @@
-<script src="assets/js/app.js"></script>
-<script src="assets/js/app-custom.js"></script>
 <script src="js/settings.js"></script>
 
 <style>
@@ -7,9 +5,6 @@
 	     list-style:none;
 	}
 </style>
-<script type="text/javascript">
-
-</script>
 
 <div class="main-card mb-3 card h-100" style="margin: 18px;" id="divSettings">
 	<div class="card-body">
@@ -17,9 +12,7 @@
 			<h5 class="card-title">Ayarlar</h5>
 			<ul class="nav nav-tabs" id="tabs">
 				<li class="nav-item"><a data-toggle="tab" href="#tab-users" onclick="tabConsoleSettingsClicked()" 
-					class="active nav-link">Konsol Kullanıcı Ayarları</a></li>
-				<li class="nav-item"><a data-toggle="tab" href="#tab-roles" onclick="tabRoleSettingsClicked()" 
-					class="nav-link">Rol Tanımları</a></li>
+					class="active nav-link">Konsol Kullanıcısı Ayarları</a></li>
 				<li class="nav-item"><a data-toggle="tab" href="#tab-ldap" onclick="tabLDAPSettingsClicked()" 
 					class="nav-link">LDAP Ayarları</a></li>
 				<li class="nav-item"><a data-toggle="tab" href="#tab-xmpp" onclick="tabXMPPSettingsClicked()" 
@@ -87,91 +80,6 @@
 											<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>
 										</tbody>
 									</table>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="tab-pane" id="tab-roles" role="tabpanel">
-					<div class="col-12">
-						<div class="form-row">
-							<div class="col-6">
-								<div class="mr-5">
-									<div class="col-12 p-0 m-0 mb-2">
-										<div class="form-row">
-											<div class="col-5">
-												<h6>Mevcut Roller</h6>
-											</div>
-											<div class="col-7">
-												<button class="btn btn-danger pull-right ml-1" id="btnDeleteRole"
-													type="button" onclick="btnDeleteRoleClicked()">Seçili Rolü Sil</button>
-												<button class="btn btn-primary pull-right" id="btnAddNewRole" data-toggle="modal" data-target="#genericModal"
-													type="button" onclick="btnAddNewRoleClicked()">Yeni Rol Ekle</button>
-											</div>
-										</div>
-									</div>
-									<table class="table table-bordered table-hover table-sm">
-										<thead>
-											<tr>
-												<th style="width: 10%">#</th>
-												<th style="width: 65%">Role Adı</th>
-												<th style="width: 25%">Oluşturulma Tarihi</th>
-											</tr>
-										</thead>
-										<tbody id="existingRoles">
-											<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
-							<div class="col-6">
-								<div class="mr-1">
-									<div class="col-12 p-0 m-0 mb-2">
-										<div class="form-row">
-											<div class="col-8">
-												<h6 id="headerForSelectedRoleMenus"></h6>
-											</div>
-											<div class="col-4">
-												<button class="btn btn-primary pull-right" id="btnSaveMenuChangeForRole" 
-													type="button" onclick="btnSaveMenuChangeForRoleClicked()">Sayfa Düzenlemesini Kaydet</button>
-											</div>
-										</div>
-									</div>
-									<ul id="pageList" class="menuList">
-										<li>
-											<div class="custom-checkbox custom-control" id="checkboxDiv2">
-												<input type="checkbox" id="cbShowADSettings2" class="custom-control-input">
-												<label class="custom-control-label" for="cbShowADSettings2">
-													İstemci Yönetimi
-												</label>
-											</div>
-										</li>
-										<li>
-											<div class="custom-checkbox custom-control" id="checkboxDiv2">
-												<input type="checkbox" id="cbShowADSettings2" class="custom-control-input">
-												<label class="custom-control-label" for="cbShowADSettings2">
-													Kullanıcı Yönetimi
-												</label>
-											</div>
-											<ul>
-												<li>
-													<div class="custom-checkbox custom-control" id="checkboxDiv2">
-														<input type="checkbox" id="cbShowADSettings2" class="custom-control-input">
-														<label class="custom-control-label" for="cbShowADSettings2">
-															İstemci Yönetimi
-														</label>
-													</div>
-												</li>
-											</ul>
-										</li>
-										<li>Tea
-											<ul>
-												<li>Black tea</li>
-												<li>Green tea</li>
-											</ul>
-										</li>
-										<li>Milk</li>
-									</ul>
 								</div>
 							</div>
 						</div>

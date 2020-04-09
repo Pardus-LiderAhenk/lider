@@ -1,6 +1,5 @@
 var users;
 var roles;
-var menus;
 var userTableSelectedTrIndex = "";
 var roleTableSelectedTrIndex = "";
 var roleTableSelectedRoleName = "";
@@ -26,10 +25,6 @@ function tabConsoleSettingsClicked() {
 	getConsoleUsers();
 }
 
-function tabRoleSettingsClicked() {
-	getRoles();
-}
-
 function tabLDAPSettingsClicked() {
 	getConfigurationParams();
 }
@@ -49,7 +44,7 @@ function tabOtherSettingsClicked() {
 function getConsoleUsers() {
 	$.ajax({ 
 	    type: 'GET', 
-	    url: "/settings/getConsoleUsers",
+	    url: "/lider/settings/getConsoleUsers",
 	    dataType: 'json',
 	    success: function (data) { 
 	    	if(data != null) {
@@ -70,7 +65,7 @@ function getConsoleUsers() {
 function getRoles() {
 	$.ajax({ 
 	    type: 'GET', 
-	    url: "/settings/getRoles",
+	    url: "/lider/settings/getRoles",
 	    dataType: 'json',
 	    success: function (data, textStatus, jqXHR) { 
 	    	if(data != null) {
@@ -84,28 +79,6 @@ function getRoles() {
 	    },
 		complete: function() {
 			setConsoleUsersTable();
-			getMenus();
-		}
-	});
-}
-
-function getMenus() {
-	$.ajax({ 
-	    type: 'GET', 
-	    url: "/settings/getMenus",
-	    dataType: 'json',
-	    success: function (data, textStatus, jqXHR) { 
-	    	if(data != null) {
-	    		menus = data;
-	    	} else {
-	    		$.notify("Menü listesi getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-	    	}
-	    },
-	    error: function (jqXHR, textStatus, errorThrown) {
-	    	$.notify("Menü listesi getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-	    },
-		complete: function() {
-			setRolesTable();
 		}
 	});
 }
@@ -135,7 +108,7 @@ function btnDeleteUserClicked() {
 			};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/settings/deleteConsoleUser",
+		    url: "/lider/settings/deleteConsoleUser",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data, textStatus, jqXHR) { 
@@ -186,12 +159,12 @@ function showUserDetail(index, dn) {
 				trElement += '<td class="text-center">';
 				trElement += '<div class="custom-control custom-switch">';
 				//if this role is assigned to selected user check this role
-				if(element.attributesMultiValues["liderPrivilege"].indexOf(role.name) > -1) {
-					trElement += '<input type="checkbox" class="custom-control-input cbUserRole" id="' + role.name + '" checked>';
+				if(element.attributesMultiValues["liderPrivilege"].indexOf(role.value) > -1) {
+					trElement += '<input type="checkbox" class="custom-control-input cbUserRole" id="' + role.value + '" checked>';
 				} else {
-					trElement += '<input type="checkbox" class="custom-control-input cbUserRole" id="' + role.name + '">';
+					trElement += '<input type="checkbox" class="custom-control-input cbUserRole" id="' + role.value + '">';
 				}
-				trElement += '<label class="custom-control-label" for="' + role.name + '"></label>';
+				trElement += '<label class="custom-control-label" for="' + role.value + '"></label>';
 				trElement += '</div>';
 	    		trElement += '</td>';
 	    		trElement += '</tr>';
@@ -391,7 +364,7 @@ function btnGiveConsoleAccessToSelectedUserClicked() {
 			};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/settings/editUserRoles",
+		    url: "/lider/settings/editUserRoles",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 
@@ -423,7 +396,7 @@ function btnEditUserRolesClicked() {
 		
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/settings/editUserRoles",
+		    url: "/lider/settings/editUserRoles",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data, textStatus, jqXHR) { 
@@ -457,7 +430,7 @@ function btnEditUserRolesClicked() {
 function getConfigurationParams() {
 	$.ajax({ 
 	    type: 'GET', 
-	    url: "/settings/configurations",
+	    url: "/lider/settings/configurations",
 	    dataType: 'json',
 	    success: function (data) { 
 	    	if(data != null) {
@@ -557,231 +530,6 @@ function setRolesTable() {
 	}
 }
 
-function showRoleDetail(index, roleName) {
-	roleTableSelectedRoleName = roleName;
-	if(roleName == "ROLE_ADMIN") {
-		$('#btnSaveMenuChangeForRole').prop('disabled', true);
-		$('#btnDeleteRole').prop('disabled', true);
-	} else if(roleName == "ROLE_USER") {
-		$('#btnSaveMenuChangeForRole').prop('disabled', false);
-		$('#btnDeleteRole').prop('disabled', true);
-	}
-	else {
-		$('#btnDeleteRole').prop('disabled', false);
-		$('#btnSaveMenuChangeForRole').prop('disabled', false);
-	}
-	if(roleTableSelectedTrIndex == "") {
-		$('#' + index).css("background-color", "#E0F3FF");
-		roleTableSelectedTrIndex = index;
-		
-	} else if(roleTableSelectedTrIndex != index) {
-		$('#' + roleTableSelectedTrIndex).css("background-color", "");
-		$('#' + index).css("background-color", "#E0F3FF");
-		roleTableSelectedTrIndex = index;
-	}
-
-	$('#headerForSelectedRoleMenus').html('Seçili Role Ait Sayfalar (Rol Adı: ' + roleName + ')');
-	var listElement = "";
-	$.each(menus, function(index, element) {
-		if(element.parentMenuPageName == "") {
-			listElement += '<li class="mt-2">';
-			listElement += '<div class="custom-checkbox custom-control">';
-			
-			//if role is allowed to see that menu check the item
-			var allowed = false;
-			$.each(roles, function(j, role) {
-				if(role.name == roleTableSelectedRoleName) {
-					if(role.menus != null && role.menus.length > 0) {
-						$.each(role.menus, function(k, m) {
-							if(m.menuPageName == element.menuPageName) {
-								allowed = true;
-							}
-						});
-					}
-				}
-			});
-			if(roleName == "ROLE_ADMIN") {
-				listElement += '<input type="checkbox" id="' + element.menuPageName + '" class="custom-control-input menu" checked disabled>';
-			} else {
-				if(allowed == true) {
-					listElement += '<input type="checkbox" id="' + element.menuPageName + '" class="custom-control-input menu" checked>';
-				} else {
-					listElement += '<input type="checkbox" id="' + element.menuPageName + '" class="custom-control-input menu">';
-				}
-			}
-			
-			listElement += '<label class="custom-control-label" for="' + element.menuPageName + '">';
-			listElement += '<b>' + element.menuName + '</b>';
-			listElement += '</label>';
-			listElement += '</div>';
-			
-			//if that menu has children add them as sub list
-			var subMenuExists = false;
-			$.each(menus, function(j, menu) {
-				if(menu.parentMenuPageName == element.menuPageName) {
-					if(subMenuExists == false) {
-						listElement += '<ul class="menuList">';
-						subMenuExists = true;
-					}
-					listElement += '<li class="mt-1">';
-					listElement += '<div class="custom-checkbox custom-control">';
-					
-					//if role is allowed to see that menu check the item
-					allowed = false;
-					$.each(roles, function(t, role) {
-						if(role.name == roleTableSelectedRoleName) {
-							if(role.menus != null && role.menus.length > 0) {
-								$.each(role.menus, function(k, m) {
-									if(m.menuPageName == menu.menuPageName) {
-										allowed = true;
-									}
-								});
-							}
-						}
-					});
-					if(roleName == "ROLE_ADMIN") {
-						listElement += '<input type="checkbox" id="' + menu.menuPageName + '" class="custom-control-input menu" checked disabled>';
-					} else {
-						if(allowed == true) {
-							listElement += '<input type="checkbox" id="' + menu.menuPageName + '" class="custom-control-input menu" checked>';
-						} else {
-							listElement += '<input type="checkbox" id="' + menu.menuPageName + '" class="custom-control-input menu">';
-						}
-					}
-					listElement += '<label class="custom-control-label" for="' + menu.menuPageName + '">';
-					listElement += menu.menuName;
-					listElement += '</label>';
-					listElement += '</div>';
-					listElement += '</li>';
-				}
-			});
-
-			if(subMenuExists == true) {
-				listElement += '</ul>';
-			}
-			listElement += '</li>';
-		}
-	});
-	$('#pageList').html(listElement);
-}
-
-function btnAddNewRoleClicked() {
-	getModalContent("modals/settings/create_new_role", function content(data){
-		$('#genericModalHeader').html("Yeni Rol Ekle");
-		$('#genericModalBodyRender').html(data);
-	});
-}
-
-function btnCreateNewRoleClicked() {
-	var params = {
-		    "roleName" : $('#newRoleName').val(),
-		};
-	$.ajax({ 
-	    type: 'POST', 
-	    url: "/settings/addNewRole",
-	    dataType: 'json',
-	    data: params,
-	    success: function (data) { 
-	    	if(data != null) {
-	    		$.notify("Yeni rol başarıyla eklendi.", "success");
-				roles = data;
-				$('#genericModal').trigger('click');
-				roleTableSelectedTrIndex = "";
-				roleTableSelectedRoleName = "";
-	    	} else {
-	    		$.notify("Yeni rol eklenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-	    	}
-	    },
-	    error: function (data, errorThrown) {
-	    	$.notify("Yeni rol eklenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-	    },
-		complete: function() {
-			setRolesTable();
-		}
-	});
-}
-
-function btnDeleteRoleClicked() {
-	if(roleTableSelectedRoleName == "ROLE_ADMIN") {
-		$.notify("ROLE_ADMIN rolü silinemez", "error");
-	} else if(roleTableSelectedRoleName == "ROLE_USER") {
-		$.notify("ROLE_USER rolü silinemez", "error");
-	} else {
-		var params = {
-			    "roleName" : roleTableSelectedRoleName,
-			};
-		$.ajax({ 
-		    type: 'POST', 
-		    url: "/settings/deleteRole",
-		    dataType: 'json',
-		    data: params,
-		    success: function (data) { 
-		    	if(data != null) {
-		    		$.notify("Rol başarıyla silindi.", "success");
-					roles=data;
-					roleTableSelectedTrIndex = "";
-					roleTableSelectedRoleName = "";
-		    	} else {
-		    		$.notify("Rol silinirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-		    	}
-		    },
-		    error: function (data, errorThrown) {
-		    	$.notify("Rol silinirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-		    },
-			complete: function() {
-				setRolesTable();
-			}
-		});
-	}
-}
-
-function btnSaveMenuChangeForRoleClicked() {
-	if(roleTableSelectedRoleName != "ROLE_ADMIN") {
-		var menuPageNames = [];
-		var selectedMenus = [];
-		var selectedRole;
-		$('input.menu:checkbox:checked').each(function () {
-			menuPageNames.push($(this).attr("id"));
-		});
-		$.each(roles, function(index, role) {
-			if(role.name == roleTableSelectedRoleName) {
-				selectedRole = role;
-			}
-		});
-		$.each(menus, function(index, menu) {
-			$.each(menuPageNames, function(j, name) {
-				if(menu.menuPageName == name) {
-					selectedMenus.push(menu);
-				}
-			});
-		});
-		selectedRole.menus = selectedMenus;
-		$.ajax({ 
-		    type: 'POST', 
-		    url: "/settings/saveMenusForRole",
-		    data: JSON.stringify(selectedRole),
-			dataType: "json",
-			contentType: "application/json",
-		    success: function (data) { 
-		    	if(data != null) {
-		    		$.notify("Role ait sayfalar başarıyla düzenlendi.", "success");
-					roles=data;
-		    	} else {
-		    		$.notify("Rol düzenlenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-		    	}
-		    },
-		    error: function (data, errorThrown) {
-		    	$.notify("Rol düzenlenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-		    },
-			complete: function() {
-				setRolesTable();
-			}
-		});
-	} else {
-		$.notify("Admin kullanıcısı düzenlenemez", "error");
-	}
-}
-
 function removeDisableClass(type) {
 	if(type == 'ldap') {
 		//remove disabled attribute from editableLDAP class
@@ -831,7 +579,7 @@ function saveChanges(type) {
 				};
 			$.ajax({ 
 			    type: 'POST', 
-			    url: "/settings/update/ldap",
+			    url: "/lider/settings/update/ldap",
 			    dataType: 'json',
 			    data: params,
 			    success: function (data) { 
@@ -867,7 +615,7 @@ function saveChanges(type) {
 			};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/settings/update/xmpp",
+		    url: "/lider/settings/update/xmpp",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 
@@ -891,7 +639,7 @@ function saveChanges(type) {
 			};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/settings/update/fileServer",
+		    url: "/lider/settings/update/fileServer",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 
@@ -911,7 +659,7 @@ function saveChanges(type) {
 			};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/settings/update/otherSettings",
+		    url: "/lider/settings/update/otherSettings",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 

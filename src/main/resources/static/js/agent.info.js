@@ -57,7 +57,7 @@ function agentDetailClicked(agentID) {
 		};
 	$.ajax({ 
 	    type: 'POST', 
-	    url: 'agents/detail',
+	    url: 'lider/agent_info/detail',
 	    data: params,
 	    dataType: 'json',
 	    success: function (data) {
@@ -299,7 +299,7 @@ function reloadTable(pNumber, pSize, field, text) {
 	}
 	$.ajax({ 
 	    type: 'POST',
-	    url: 'agents/',
+	    url: 'lider/agent_info/list/',
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) { 
@@ -378,7 +378,11 @@ function reloadTable(pNumber, pSize, field, text) {
 		        });
 	    	}
 	    },
-	    error: function (data, errorThrown) {
+	    error: function (jqXHR, textStatus, errorThrown) {
+	    	$.notify("Seçili istemciler getirilirken hata oluştu.",  "error");
+	    	if(jqXHR != null && jqXHR.status == 401) {
+	    		$.notify(jqXHR.responseJSON.message,  "error");
+	    	}
 	    	var trElement = '<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>';
 			$("#agentsTable").empty();
 			$("#pagingList").empty();
@@ -447,7 +451,7 @@ function generateAddToExistingGroupTreeGrid() {
 	
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/agentGroups',
+		url : 'lider/computer_groups/getGroups',
 		dataType : 'json',
 		success : function(data) {
 			var source =
@@ -526,7 +530,14 @@ function generateAddToExistingGroupTreeGrid() {
 					{ text: "İstemci Grup Ağacı", align: "center", dataField: "name", width: '100%'}
 					]
 			});
-		}
+		}, error: function (jqXHR, textStatus, errorThrown) {
+	    	if(jqXHR.status == 401) {
+	    		$.notify("Bu işlemi yapmaya yetkiniz bulunmamaktadır.", "error");
+	    	} else {
+	    		$.notify("Veri getirilirken hata oluştu.", "error");
+	    	}
+	    	$('#genericModal').trigger('click');
+	    }
 	});
 	
 	$('#existingTreeGrid').on('rowExpand', function (event) {
@@ -546,7 +557,7 @@ function generateAddToExistingGroupTreeGrid() {
 			}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : 'lider/computer_groups/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 				+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -562,7 +573,14 @@ function generateAddToExistingGroupTreeGrid() {
 						$("#existingTreeGrid").jqxTreeGrid('collapseRow', childRow.entryUUID);
 					} 
 					row.expandedUser="TRUE"
-				}
+				}, error: function (jqXHR, textStatus, errorThrown) {
+			    	if(jqXHR.status == 401) {
+			    		$.notify("Bu işlemi yapmaya yetkiniz bulunmamaktadır.", "error");
+			    	} else {
+			    		$.notify("Veri getirilirken hata oluştu.", "error");
+			    	}
+			    	$('#genericModal').trigger('click');
+			    }
 			});  
 		}
 	}); 
@@ -667,7 +685,14 @@ function generateAddToNewGroupTreeGrid() {
 					{ text: "İstemci Grup Ağacı", align: "center", dataField: "name", width: '100%'}
 					]
 			});
-		}
+		}, error: function (jqXHR, textStatus, errorThrown) {
+	    	if(jqXHR.status == 401) {
+	    		$.notify("Bu işlemi yapmaya yetkiniz bulunmamaktadır.", "error");
+	    	} else {
+	    		$.notify("Veri getirilirken hata oluştu.", "error");
+	    	}
+	    	$('#genericModal').trigger('click');
+	    }
 	});
 	
 	$('#newTreeGrid').on('rowExpand', function (event) {
@@ -705,7 +730,14 @@ function generateAddToNewGroupTreeGrid() {
 						}
 					} 
 					row.expandedUser="TRUE";
-				}
+				}, error: function (jqXHR, textStatus, errorThrown) {
+			    	if(jqXHR.status == 401) {
+			    		$.notify("Bu işlemi yapmaya yetkiniz bulunmamaktadır.", "error");
+			    	} else {
+			    		$.notify("Veri getirilirken hata oluştu.", "error");
+			    	}
+			    	$('#genericModal').trigger('click');
+			    }
 			});  
 		}
 	}); 
@@ -727,15 +759,19 @@ function btnAddToExistingGroupClicked() {
 			};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/lider/ldap/group/existing",
+		    url: "/lider/computer_groups/group/existing",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 
 		    	$.notify("Seçili istemciler gruba başarıyla eklendi", "success");
 		    	$('#genericModal').trigger('click');
-		    },
-		    error: function (data, errorThrown) {
-		    	$.notify("Seçili istemciler gruba eklenirken hata oluştu.", "error");
+		    }, error: function (jqXHR, textStatus, errorThrown) {
+		    	if(jqXHR.status == 401) {
+		    		$.notify("Bu işlemi yapmaya yetkiniz bulunmamaktadır.", "error");
+		    	} else {
+		    		$.notify("Seçili istemciler gruba eklenirken hata oluştu.", "error");
+		    	}
+		    	$('#genericModal').trigger('click');
 		    }
 		});
 	}
@@ -759,8 +795,13 @@ function btnAddToNewGroupClicked() {
 		    	$.notify("Yeni grup oluşturuldu ve istemciler gruba eklendi.", "success");
 		    	$('#genericModal').trigger('click');
 		    },
-		    error: function (data, errorThrown) {
-		    	$.notify("Yeni grup oluşturulurken hata oluştu." + $('input[name=newAgentGroupName]').val() + " oluşturulamadı.", "error");
+		    error: function (jqXHR, textStatus, errorThrown) {
+		    	if(jqXHR.status == 401) {
+		    		$.notify("Bu işlemi yapmaya yetkiniz bulunmamaktadır.", "error");
+		    	} else {
+		    		$.notify("Yeni grup oluşturulurken hata oluştu." + $('input[name=newAgentGroupName]').val() + " oluşturulamadı.", "error");
+		    	}
+		    	$('#genericModal').trigger('click');
 		    }
 		});
 	} else {

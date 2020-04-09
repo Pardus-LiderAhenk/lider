@@ -1,7 +1,7 @@
 package tr.org.lider.services;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -16,59 +16,33 @@ public class RoleService {
 
 	@Autowired
 	RoleRepository roleRepository;
-	
-	@Autowired
-	MenuService menuService;
-	
+
 	@PostConstruct
 	public void init() throws Exception {
-		menuService.init();
-		if(roleRepository.countByName("ROLE_ADMIN") == 0) {
-			roleRepository.save(new RoleImpl("ROLE_ADMIN", null));
-		}
-		
-		if(roleRepository.countByName("ROLE_USER") == 0) {
-			roleRepository.save(new RoleImpl("ROLE_USER", null));
-			
-		}
-		if(roleRepository.countByName("ROLE_HASAN") == 0) {
-			roleRepository.save(new RoleImpl("ROLE_HASAN", menuService.getMenuList()));
-			
-		} 
+		roleRepository.deleteAll();
+		List<RoleImpl> roleList = new ArrayList<>();
+		roleList.add(new RoleImpl("Konsol Yetkisi(Konsol Erişim Yetkisi)", "ROLE_USER", 0));
+		roleList.add(new RoleImpl("Kullanıcı Yönetimi", "ROLE_USERS", 10));
+		roleList.add(new RoleImpl("İstemci Yönetimi", "ROLE_COMPUTERS", 20));
+		roleList.add(new RoleImpl("Kullanıcı Grup Yönetimi", "ROLE_USER_GROUPS", 30));
+		roleList.add(new RoleImpl("İstemci Grup Yönetimi", "ROLE_COMPUTER_GROUPS", 40));
+		roleList.add(new RoleImpl("Kullanıcı Yetkilendirme(Sudo)", "ROLE_SUDO_GROUPS", 50));
+		roleList.add(new RoleImpl("Detaylı İstemci Raporu", "ROLE_AGENT_INFO", 60));
+		roleList.add(new RoleImpl("Betik Tanımları", "ROLE_SCRIPT_DEFINITION", 70));
+		roleList.add(new RoleImpl("ETA Mesaj Tanımları", "ROLE_NOTIFY_DEFINITION", 80));
+		roleList.add(new RoleImpl("Conky Tanımları", "ROLE_CONKY_DEFINITION", 90));
+		roleList.add(new RoleImpl("Kayıt Şablonları", "ROLE_REGISTRATION_TEMPLATE", 100));
+		roleList.add(new RoleImpl("Ayarlar", "ROLE_SETTINGS", 110));
+		roleList.add(new RoleImpl("Tüm Yetkiler(Admin)", "ROLE_ADMIN", 120));
+		roleRepository.saveAll(roleList);
 	}
-	
+
 	public RoleImpl saveRole(RoleImpl role) {
 		return roleRepository.save(role);
 	}
-	
-	public Boolean deleteRole(Long id) {
-		Optional<RoleImpl> entry = roleRepository.findById(id);
-		if(entry.isPresent()) {
-			RoleImpl role = entry.get();
-			if(!role.getName().equals("ROLE_ADMIN") && !role.getName().equals("ROLE_USER")) {
-				role.setMenus(null);
-				roleRepository.save(role);
-				roleRepository.deleteById(id);
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-	
-	public RoleImpl findRoleByName(String roleName) {
-		List<RoleImpl> listRole = roleRepository.findAllByName(roleName);
-		if(listRole != null && listRole.size() > 0) {
-			return listRole.get(0);
-		} else {
-			return null;
-		}
-	}
-	
+
 	public List<RoleImpl> getRoles() {
-		return roleRepository.findAll();
+		return roleRepository.findAllByOrderByOrderNumberAsc();
 	}
-	
+
 }

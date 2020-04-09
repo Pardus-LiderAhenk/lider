@@ -1,145 +1,123 @@
-<!-- Google fonts -->
-<!-- <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,900%7CRoboto+Slab:300,400%7CRoboto+Mono:400" />
-
-
-<link rel="stylesheet" id="css-font-awesome" href="css/agent.info.css" /> -->
-<!-- <script src="assets/js/core/bootstrap.min.js"></script>
-<script src="assets/js/core/jquery.slimscroll.min.js"></script>
-<script src="assets/js/core/jquery.scrollLock.min.js"></script>
-<script src="assets/js/core/jquery.placeholder.min.js"></script>
-<script src="assets/js/app.js"></script>
-<script src="assets/js/app-custom.js"></script> -->
-
-
-
-
 <script src="js/FileSaver.js"></script>
 <script src="js/xlsx.full.min.js"></script>
 <script src="js/agent.info.js"></script>
-<script src="assets/js/app.js"></script>
-<script src="assets/js/app-custom.js"></script>
 
-
-
-
-	<div class="main-card mb-3 card" style="margin: 18px;">
-			<div class="card-body">
-				
-			
-
-	<div class="table-wrapper">
-		<div class="table-title">
-			<div class="row">
-				<div class="col-sm-4">
-					<h2>Detaylı İstemci Listesi</h2>
-				</div>
-				<div class="col-sm-8">
-					<div class="d-block dropdown"  >
-	                    <button type="button" id="dropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-primary">
-	                        <i class="material-icons">add</i> <span>İstemci Grubu Oluştur</span>
-	                    </button>
-	                    <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
-						    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#genericModal"
-						    	onclick="dropdownButtonClicked('addToExistingGroup')">Mevcut Gruba Ekle</a>
-						    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#genericModal"
-						    	onclick="dropdownButtonClicked('addToNewGroup')">Yeni İstemci Grubu Oluştur</a>
-	                    </div>
-	                </div>
-					<a href="#" class="btn btn-primary" onclick="exportButtonClicked()">
-						<i class="material-icons">&#xE24D;</i><span>Dışa Aktar</span>
-					</a>
+<div class="main-card mb-3 card" style="margin: 18px;">
+	<div class="card-body">
+		<div class="table-wrapper">
+			<div class="table-title">
+				<div class="row">
+					<div class="col-sm-4">
+						<h2>Detaylı İstemci Listesi</h2>
+					</div>
+					<div class="col-sm-8">
+						<div class="d-block dropdown">
+							<button type="button" id="dropdownButton" data-toggle="dropdown"
+								aria-haspopup="true" aria-expanded="false"
+								class="btn-shadow dropdown-toggle btn btn-primary">
+								<i class="material-icons">add</i> <span>İstemci Grubu
+									Oluştur</span>
+							</button>
+							<div tabindex="-1" id="operationDropDown" role="menu"
+								aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+								<a class="dropdown-item" href="#" data-toggle="modal"
+									data-target="#genericModal"
+									onclick="dropdownButtonClicked('addToExistingGroup')">Mevcut
+									Gruba Ekle</a> <a class="dropdown-item" href="#"
+									data-toggle="modal" data-target="#genericModal"
+									onclick="dropdownButtonClicked('addToNewGroup')">Yeni
+									İstemci Grubu Oluştur</a>
+							</div>
+						</div>
+						<a href="#" class="btn btn-primary"
+							onclick="exportButtonClicked()"> <i class="material-icons">&#xE24D;</i><span>Dışa
+								Aktar</span>
+						</a>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="table-filter">
-			<div class="row">
-				<div class="col-sm-3">
-					<div class="show-entries">
-						<select id="pageSize" name="pageSize" class="form-control">
-							<option>10</option>
-							<option>20</option>
-							<option>25</option>
-							<option>50</option>
-							<option>100</option>
-							<option>200</option>
-							<option>500</option>
-							<option>1000</option>
-						</select> <span> Sonuç Göster</span>
+			<div class="table-filter">
+				<div class="row">
+					<div class="col-sm-3">
+						<div class="show-entries">
+							<select id="pageSize" name="pageSize" class="form-control">
+								<option>10</option>
+								<option>20</option>
+								<option>25</option>
+								<option>50</option>
+								<option>100</option>
+								<option>200</option>
+								<option>500</option>
+								<option>1000</option>
+							</select> <span> Sonuç Göster</span>
+						</div>
 					</div>
-				</div>
-				<div class="col-sm-9">
-					<button type="button" class="btn btn-primary" onclick="search()">
-						<i class="fa fa-search"></i>
-					</button>
-					<div class="filter-group">
-						<label>Ara</label> <input type="text" class="form-control"
-							id="searchText">
+					<div class="col-sm-9">
+						<button type="button" class="btn btn-primary" onclick="search()">
+							<i class="fa fa-search"></i>
+						</button>
+						<div class="filter-group">
+							<label>Ara</label> <input type="text" class="form-control"
+								id="searchText">
+						</div>
+						<div class="filter-group">
+							<label>Filtre Alanı</label> <select class="form-control"
+								id="searchByAgentProperty">
+								<option value="dn">DN</option>
+								<option value="jid">JID</option>
+								<option value="hostname">Bilgisayar Adı</option>
+								<option value="ipAddresses">IP Adresleri</option>
+								<option value="macAddresses">MAC Adresleri</option>
+								<option value="os.distributionName">İşletim Sistemi</option>
+								<option value="os.distributionVersion">İşletim Sistemi
+									Versiyonu</option>
+								<option value="hardware.baseboard.manufacturer">Marka</option>
+								<option value="hardware.systemDefinitions">Model</option>
+								<option value="hardware.memory.total">Bellek</option>
+								<option value="hardware.disk.total">Disk</option>
+								<option value="phase">Faz</option>
+							</select>
+						</div>
+						<div class="filter-group">
+							<label>Durumu</label> <select class="form-control"
+								id="searchByStatus">
+								<option value="all">Hepsi</option>
+								<option value="online">Açık</option>
+								<option value="offline">Kapalı</option>
+							</select>
+						</div>
+						<span class="filter-icon"><i class="fa fa-filter"></i></span>
 					</div>
-					<div class="filter-group">
-						<label>Filtre Alanı</label> <select class="form-control"
-							id="searchByAgentProperty">
-							<option value="dn">DN</option>
-							<option value="jid">JID</option>
-							<option value="hostname">Bilgisayar Adı</option>
-							<option value="ipAddresses">IP Adresleri</option>
-							<option value="macAddresses">MAC Adresleri</option>
-							<option value="os.distributionName">İşletim Sistemi</option>
-							<option value="os.distributionVersion">İşletim
-								Sistemi Versiyonu</option>
-							<option value="hardware.baseboard.manufacturer">Marka</option>
-							<option value="hardware.systemDefinitions">Model</option>
-							<option value="hardware.memory.total">Bellek</option>
-							<option value="hardware.disk.total">Disk</option>
-							<option value="phase">Faz</option>
-						</select>
-					</div>
-					<div class="filter-group">
-						<label>Durumu</label> <select class="form-control"
-							id="searchByStatus">
-							<option value="all">Hepsi</option>
-							<option value="online">Açık</option>
-							<option value="offline">Kapalı</option>
-						</select>
-					</div>
-					<span class="filter-icon"><i class="fa fa-filter"></i></span>
 				</div>
 			</div>
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr>
+						<th style="width: 3%"><span class="cb-agent-info"> <input
+								type="checkbox" id="selectAll"> <label for="selectAll"></label>
+						</span></th>
+						<th class="text-center" style="width: 5%">#</th>
+						<th style="width: 13%">Bilgisayar Adı</th>
+						<th style="width: 11%">MAC Adresi</th>
+						<th style="width: 11%">IP Adresi</th>
+						<th style="width: 8%">Durum</th>
+						<th style="width: 8%">Faz</th>
+						<th style="width: 10%">Marka</th>
+						<th style="width: 8%">İşletim Sistemi</th>
+						<th style="width: 8%">Versiyon</th>
+						<th style="width: 9%">Oluşturulma Tarihi</th>
+						<th class="text-center" style="width: 6%"></th>
+					</tr>
+				</thead>
+				<tbody id="agentsTable">
+				</tbody>
+			</table>
+			<div class="clearfix">
+				<!-- <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>  -->
+				<ul id="pagingList" class="pagination">
+				</ul>
+			</div>
 		</div>
-		<table class="table table-striped table-hover">
-			<thead>
-				<tr>
-					<th style="width: 3%">
-						<span class="cb-agent-info">
-							<input type="checkbox" id="selectAll">
-							<label for="selectAll"></label>
-						</span>
-					</th>
-					<th class="text-center" style="width: 5%">#</th>
-					<th style="width: 13%">Bilgisayar Adı</th>
-					<th style="width: 11%">MAC Adresi</th>
-					<th style="width: 11%">IP Adresi</th>
-					<th style="width: 8%">Durum</th>
-					<th style="width: 8%">Faz</th>
-					<th style="width: 10%">Marka</th>
-					<th style="width: 8%">İşletim Sistemi</th>
-					<th style="width: 8%">Versiyon</th>
-					<th style="width: 9%">Oluşturulma Tarihi</th>
-					<th class="text-center" style="width: 6%"></th>
-				</tr>
-			</thead>
-			<tbody id="agentsTable">
-			</tbody>
-		</table>
-		<div class="clearfix">
-			<!-- <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>  -->
-			<ul id="pagingList" class="pagination">
-			</ul>
-		</div>
+
 	</div>
-	
-	</div>
-			
-		</div>
-	
-<!-- .container-fluid -->
-<!-- End Page Content -->
+</div>

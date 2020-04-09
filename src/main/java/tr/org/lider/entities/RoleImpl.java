@@ -7,9 +7,11 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -37,9 +39,16 @@ public class RoleImpl implements Serializable{
 
 	@Column(name = "NAME", nullable = false, unique = true)
 	private String name;
+	
+	@Column(name = "value", nullable = false, unique = true)
+	private String value;
 
-    @ManyToMany
-    private List<MenuImpl> menus = new ArrayList<>();
+	@OrderBy
+	@Column(name = "ORDER_NUMBER")
+	private int orderNumber;
+	
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    private List<MenuImpl> menus = new ArrayList<>();
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "CREATE_DATE", nullable = false)
@@ -55,16 +64,16 @@ public class RoleImpl implements Serializable{
 	public RoleImpl() {
 	}
 
-	public RoleImpl(String name, List<MenuImpl> menus) {
+	public RoleImpl(String name, String value, int orderNumber) {
 		this.name = name;
-		this.menus = menus;
+		this.value = value;
+		this.orderNumber = orderNumber;
 	}
-
 	
-	public RoleImpl(Long id, String name, List<MenuImpl> menus) {
+	public RoleImpl(Long id, String name, String value) {
 		this.id = id;
 		this.name = name;
-		this.menus = menus;
+		this.value = value;
 	}
 
 	public Long getId() {
@@ -83,12 +92,12 @@ public class RoleImpl implements Serializable{
 		this.name = name;
 	}
 
-	public List<MenuImpl> getMenus() {
-		return menus;
+	public String getValue() {
+		return value;
 	}
 
-	public void setMenus(List<MenuImpl> menus) {
-		this.menus = menus;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	public Date getCreateDate() {
@@ -107,8 +116,13 @@ public class RoleImpl implements Serializable{
 		this.modifyDate = modifyDate;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public int getOrderNumber() {
+		return orderNumber;
 	}
+
+	public void setOrderNumber(int orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+
 
 }

@@ -31,15 +31,16 @@ public class LoginController {
 			LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) authentication.getPrincipal();
 			logger.info("User logged as " + userDetails.getAuthorities());
 			logger.info("User has authorities: " + userDetails.getAuthorities());
-			
 			model.addAttribute("user", userDetails);
 			model.addAttribute("password", userDetails.getPassword());
 			model.addAttribute("userNameJid", userDetails.getLiderUser().getName() + "@" + configurationService.getXmppServiceName());
 			model.addAttribute("xmppHost", configurationService.getXmppHost());
+			
+			model.addAttribute("roleNames", userDetails.getLiderUser().getRoles());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return LiderConstants.Pages.PAGES_MAIN_PAGE;
+		return LiderConstants.Pages.MAIN_PAGE;
 	}
 	
 	@RequestMapping(value = "/logout")

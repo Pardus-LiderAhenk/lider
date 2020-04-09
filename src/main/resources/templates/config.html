@@ -146,12 +146,14 @@ body {
 				"fileServerPassword": $('#fileServerUserPassword').val(),
 				"fileServerPort": $('#fileServerPort').val()
 			};
+		console.log(params)
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/config/save",
+		    url: "/lider/config/save",
 		    dataType: 'json',
 		    data: params,
-		    success: function (data) { 
+		    success: function (data) {
+		    	console.log(data);
 		    	if(data == true) {
 		    		$.notify("Sunucu bilgileri kaydedildi. Şimdi giriş ekranına yönlendirileceksiniz.", "success");
 		    		//redirect to login
@@ -161,11 +163,11 @@ body {
 	   					}, 1000);
 		    		
 		    	} else {
-		    		$.notify("Sunucu kayıt işlemi esnasında hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    		$.notify("Sunucu kayıt işlemi esnasında hata oluştu. Lütfen tekrar deneyiniz.1", "error");
 		    	}
 		    },
 		    error: function (data, errorThrown) {
-		    	$.notify("Sunucu kayıt işlemi esnasında hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    	$.notify("Sunucu kayıt işlemi esnasında hata oluştu. Lütfen tekrar deneyiniz.2", "error");
 		    }
 		});
 	}

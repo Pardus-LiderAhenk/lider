@@ -31,7 +31,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
@@ -172,10 +171,10 @@ public class XMPPClientImpl {
 	private XMPPTCPConnectionConfiguration config;
 
 	
-	
-	@PostConstruct
-	public void init() throws Exception {
-	}
+
+//	@PostConstruct
+//	public void init() throws Exception {
+//	}
 	
 	private Boolean isXMPPInitialized = false;
 	
@@ -203,7 +202,6 @@ public class XMPPClientImpl {
 			logger.info("XMPP service initialized");
 		}
 	}
-
 	/**
 	 * Sets XMPP client parameters.
 	 */
@@ -472,7 +470,8 @@ public class XMPPClientImpl {
 
 			try {
 				logger.debug("Tring again to connect..");
-				init();
+				isXMPPInitialized = false;
+				initXMPPClient();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -500,7 +499,8 @@ public class XMPPClientImpl {
 
 			try {
 				logger.debug("Tring again to connect..");
-				init();
+				isXMPPInitialized = false;
+				initXMPPClient();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

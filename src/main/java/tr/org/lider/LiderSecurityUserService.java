@@ -1,5 +1,6 @@
 package tr.org.lider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
@@ -44,10 +45,17 @@ public class LiderSecurityUserService implements UserDetailsService {
 			user.setPassword(ldapEntry.getUserPassword());
 			user.setSurname(ldapEntry.getSn());
 			user.setDn(ldapEntry.getDistinguishedName());
-			user.setRoles(ldapEntry.getPriviliges());
+			String[] priviliges = ldapEntry.getAttributesMultiValues().get("liderPrivilege");
+			List<String> roles = new ArrayList<String>();
+			for (int i = 0; i < priviliges.length; i++) {
+				if(priviliges[i].startsWith("ROLE_")) {
+					roles.add(priviliges[i]);
+				}
+			}
+			user.setRoles(roles);
 		}
 		else {
-			throw new UsernameNotFoundException("USer Not Found . User :"+ userName);
+			throw new UsernameNotFoundException("User Not Found . User :"+ userName);
 		}
 		
 		return new LiderSecurityUserDetails(user);

@@ -32,7 +32,7 @@ function dropdownButtonClicked(operation) {
 		checkedUsers = [];
 		checkedOUList = [];
 		$('#selectedUserCountCreateNewUserGroup').html(checkedUsers.length);
-		getModalContent("modals/groups/user/creategroup", function content(data){
+		getModalContent("modals/groups/user_groups/creategroup", function content(data){
 			$('#genericModalHeader').html("Kullanıcı Grubu Oluştur");
 			$('#genericModalBodyRender').html(data);
 			createUsersModalForCreatingGroup();
@@ -40,51 +40,51 @@ function dropdownButtonClicked(operation) {
 	} else if(operation == "deleteUserGroup") {
 		checkedUsers = [];
 		checkedOUList = [];
-		getModalContent("modals/groups/user/deletegroup", function content(data){
+		getModalContent("modals/groups/user_groups/deletegroup", function content(data){
 			$('#genericModalHeader').html("Kullanıcı Grubunu Sil");
 			$('#genericModalBodyRender').html(data);
 		});
 	} else if(operation == "deleteMembersFromGroup") {
 		groupMemberDNListForDelete = [];
 		groupMemberDNList = [];
-		getModalContent("modals/groups/user/deletemember", function content(data){
+		getModalContent("modals/groups/user_groups/deletemember", function content(data){
 			$('#genericModalLargeHeader').html("Üye Sil");
 			$('#genericModalLargeBodyRender').html(data);
 			deleteMembersOfGroup();
 		});
 	} else if(operation == "createNewOrganizationalUnit") {
-		getModalContent("modals/groups/user/createou", function content(data){
+		getModalContent("modals/groups/user_groups/createou", function content(data){
 			$('#genericModalHeader').html("Yeni Klasör Oluştur");
 			$('#genericModalBodyRender').html(data);
 		});
 	} else if(operation == "deleteOrganizationalUnit") {
-		getModalContent("modals/groups/user/deleteou", function content(data){
+		getModalContent("modals/groups/user_groups/deleteou", function content(data){
 			$('#genericModalHeader').html("Klasörü Sil");
 			$('#genericModalBodyRender').html(data);
 		});
 	} else if(operation == "addMembersToUserGroupModal") {
 		checkedUsers = [];
 		checkedOUList = [];
-		getModalContent("modals/groups/user/addmember", function content(data){
+		getModalContent("modals/groups/user_groups/addmember", function content(data){
 			$('#genericModalHeader').html("Kullanıcı Grubuna Üye Ekle");
 			$('#genericModalBodyRender').html(data);
 			$('#selectedUserCount').html(checkedUsers.length);
 			generateTreeToAddMembersToExistingGroup();
 		});
 	} else if(operation == "moveEntry") {
-		getModalContent("modals/groups/user/moveentry", function content(data){
+		getModalContent("modals/groups/user_groups/moveentry", function content(data){
 			$('#genericModalHeader').html("Kayıt Taşı");
 			$('#genericModalBodyRender').html(data);
 			generateTreeToMoveEntry();
 		});
 	} else if(operation == "editOrganizationalUnitName") {
-		getModalContent("modals/groups/user/editouname", function content(data){
+		getModalContent("modals/groups/user_groups/editouname", function content(data){
 			$('#genericModalHeader').html("Klasörü Adı Düzenle");
 			$('#genericModalBodyRender').html(data);
 			$('#ouName').val(selectedName);
 		});
 	} else if(operation == "editGroupName") {
-		getModalContent("modals/groups/user/editgroupname", function content(data){
+		getModalContent("modals/groups/user_groups/editgroupname", function content(data){
 			$('#genericModalHeader').html("Grup Adı Düzenle");
 			$('#genericModalBodyRender').html(data);
 			$('#groupName').val(selectedName);
@@ -104,8 +104,8 @@ function createMainTree() {
 		+ 'onclick="dropdownButtonClicked(\'createNewOrganizationalUnit\')">Yeni Klasör Oluştur</a>';
 	$('#operationDropDown').html(html);
 	$.ajax({
-		type : 'POST',
-		url : 'lider/ldap/userGroups',
+		type : 'GET',
+		url : 'lider/user_groups/getGroups',
 		dataType : 'json',
 		success : function(data) {
 			var source =
@@ -208,7 +208,7 @@ function createMainTree() {
 			}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : 'lider/user_groups/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 				+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -366,7 +366,7 @@ function btnCreateNewOUClicked() {
 		};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: '/lider/ldap/addOu',
+		    url: '/lider/user_groups/addOu',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -389,7 +389,7 @@ function btnDeleteOUClicked() {
 	};
 	$.ajax({ 
 	    type: 'POST', 
-	    url: '/lider/ldap/deleteEntry',
+	    url: '/lider/user_groups/deleteEntry',
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) {
@@ -413,7 +413,7 @@ function createUsersModalForCreatingGroup(){
 	//so new created groups can be under root user groups
 	$.ajax({
 		type : 'POST',
-		url : 'lider/user/getUsers',
+		url : 'lider/user_groups/getUsers',
 		dataType : 'json',
 		success : function(data) {
 			 var source =
@@ -528,7 +528,7 @@ function createUserTreeGridForCreatingGroup(source) {
 	    	}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : 'lider/user_groups/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 						+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -587,7 +587,7 @@ function rowCheckAndUncheckOperationForCreatingGroup(event) {
     		//get users under checkboxes from service and add them to user list also
     		if(checkedOUList.length > 0) {
     			$.ajax({
-    				url : 'lider/user/getUsersUnderOU',
+    				url : 'lider/user_groups/getUsersUnderOU',
     				type : 'POST',
     				data: JSON.stringify(checkedOUList),
     				dataType: "json",
@@ -650,7 +650,7 @@ function btnCreateUserGroupClicked() {
 	
 	$.ajax({ 
 	    type: 'POST', 
-	    url: "/lider/user/createNewGroup",
+	    url: "/lider/user_groups/createNewGroup",
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) { 
@@ -676,7 +676,7 @@ function btnDeleteGroupClicked() {
 	};
 	$.ajax({ 
 	    type: 'POST', 
-	    url: '/lider/ldap/deleteEntry',
+	    url: '/lider/user_groups/deleteEntry',
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) {
@@ -697,7 +697,7 @@ function btnDeleteGroupClicked() {
 function generateTreeToAddMembersToExistingGroup(){
 	$.ajax({
 		type : 'POST',
-		url : 'lider/user/getUsers',
+		url : 'lider/user_groups/getUsers',
 		dataType : 'json',
 		success : function(data) {
 			 var source =
@@ -813,7 +813,7 @@ function createTreeToAddMembersToExistingGroup(source) {
 	    	}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : 'lider/user_groups/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 						+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -872,7 +872,7 @@ function rowCheckAndUncheckOperationToAddMembersToExistingGroup(event) {
     		//get users under checkboxes from service and add them to user list also
     		if(checkedOUList.length > 0) {
     			$.ajax({
-    				url : 'lider/user/getUsersUnderOU',
+    				url : 'lider/user_groups/getUsersUnderOU',
     				type : 'POST',
     				data: JSON.stringify(checkedOUList),
     				dataType: "json",
@@ -929,7 +929,7 @@ function btnAddMemberClicked() {
 			};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/lider/ldap/group/existing",
+		    url: "/lider/user_groups/group/existing",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 
@@ -960,7 +960,7 @@ function deleteMembersOfGroup(){
 	};
 	$.ajax({
 		type : 'POST',
-		url  : 'lider/ldap/group/members',
+		url  : 'lider/user_groups/group/members',
 		data : params,
 		dataType : 'json',
 		success : function(data) {
@@ -1017,7 +1017,7 @@ function btnDeleteMembersClicked() {
 		};
 		$.ajax({
 			type : 'POST',
-			url  : 'lider/ldap/delete/group/members',
+			url  : 'lider/user_groups/delete/group/members',
 			data : params,
 			dataType : 'json',
 			success : function(data) {
@@ -1047,7 +1047,7 @@ function btnDeleteMembersClicked() {
 function generateTreeToMoveEntry(){
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/userGroups',
+		url : 'lider/user_groups/getGroups',
 		dataType : 'json',
 		success : function(data) {
 			 var source =
@@ -1156,7 +1156,7 @@ function createTreeToMoveEntry(source) {
 	    	}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : 'lider/user_groups/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 						+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -1202,7 +1202,7 @@ function btnMoveEntryClicked() {
 		};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: '/lider/ldap/move/entry',
+		    url: '/lider/user_groups/move/entry',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -1237,7 +1237,7 @@ function btnEditOUNameClicked() {
 		};
 		$.ajax({
 		    type: 'POST', 
-		    url: '/lider/ldap/rename/entry',
+		    url: '/lider/user_groups/rename/entry',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -1270,7 +1270,7 @@ function btnEditGroupNameClicked() {
 		};
 		$.ajax({
 		    type: 'POST', 
-		    url: '/lider/ldap/rename/entry',
+		    url: '/lider/user_groups/rename/entry',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -1300,7 +1300,7 @@ function deleteMemberFromTabList(dn) {
 		};
 		$.ajax({
 			type : 'POST',
-			url  : 'lider/ldap/delete/group/members',
+			url  : 'lider/user_groups/delete/group/members',
 			data : params,
 			dataType : 'json',
 			success : function(data) {

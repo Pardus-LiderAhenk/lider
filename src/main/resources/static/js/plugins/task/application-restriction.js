@@ -1,5 +1,5 @@
 /**
- * Task is package-management
+ * Task is application-restriction
  * This task get installed applications from agents. This task used to restricted selected applications from agent
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
@@ -21,7 +21,7 @@ var dnlist = [];
 var tableApp = null;
 var pluginTask_ApplicationRestriction = null;
 var ref_app_restriction=connection.addHandler(getApplicationListener, null, 'message', null, null,  null);
-
+$('#sendTaskRestAppBtn').hide();
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
 		dnlist.push(selectedEntries[i].distinguishedName);
@@ -40,7 +40,6 @@ function sendApplicationRestrictionTask(params){
 	if (scheduledParamAppRestriction != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamAppRestriction;
 	}
-
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -122,9 +121,7 @@ function getApplicationListener(msg) {
 													"username": "ogrenci",
 													"restriction": true
 											};
-
 											applicationList.push(applicationInfo);
-
 
 										}else {
 											restriction = "Hayır";
@@ -141,12 +138,12 @@ function getApplicationListener(msg) {
 										newRow.append(html);
 										$("#applicationsTable").append(newRow);
 									}
-
 									var parser_applications = [];
 									createApplicationTable();
 									$("#plugin-result-app-restriction").html("");
 									$.notify(responseMessage, "success");
-									$('#app-restriction-info').html('<small>Sınırlı Erişim Modunda çalışan uygulamalar seçili olarak listelenmektedir. Sınırlı Erişim Modunu iptal etmek için seçili olanları kaldırarak Çalıştır butonuna tıklayınız. Sınırlı Erişim Modunda çalıştırmak istediğiniz uygulama/ları seçerek Çalıştır butonuna tıklayınız.</small>');
+									$('#sendTaskRestAppBtn').show();
+									$('#app-restriction-info').html('Sınırlı Erişim Modunda çalışan uygulamalar seçili olarak listelenmektedir. Sınırlı Erişim Modunu iptal etmek için seçili olanları kaldırarak Çalıştır butonuna tıklayınız. Sınırlı Erişim Modunda çalıştırmak istediğiniz uygulama/ları seçerek Çalıştır butonuna tıklayınız.');
 								}
 							}else {
 								createApplicationTable();

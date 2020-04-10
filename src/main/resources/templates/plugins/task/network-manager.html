@@ -19,63 +19,67 @@
 			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
 			<div class="col-lg-6 text-left">AĞ YÖNETİMİ</div>
 			<div class="col-lg-6 text-right">
+				<button id="updateMachineHostnameBtn" type="button" class="btn-shadow btn btn-info" title="Bilgisayar Adını Güncelle"><i class="fas fa-sync"></i></button>
+				<button id="addDnsBtn" type="button" class="btn-shadow btn btn-info" title="DNS Ekle"><i class="fa fa-plus"></i></button>
+				<button id="deleteDnsBtn" type="button" class="btn-shadow btn btn-info" title="DNS Sil"><i class="fa fa-trash-alt"></i></button>
+				<button id="addHostBtn" type="button" class="btn-shadow btn btn-info" title="Sunucu Ekle"><i class="fa fa-plus"></i></button>
+				<button id="deleteHostBtn" type="button" class="btn-shadow btn btn-info" title="Sunucu Sil"><i class="fa fa-trash-alt"></i></button>
+				<button id="addNetworkSettingBtn" type="button" class="btn-shadow btn btn-info" title="Yeni Ağ Ayarı Ekle"><i class="fa fa-plus"></i></button>
+				<button id="deleteNetworkSettingBtn" type="button" class="btn-shadow btn btn-info" title="Ağ Ayarı Sil"><i class="fa fa-trash-alt"></i></button>
+				<button id="allowPortBtn" type="button" class="btn-shadow btn btn-info" title="İzin Ver"><i class="fa fa-check-square"></i></button>
+				<button id="blockPortBtn" type="button" class="btn-shadow btn btn-info" title="Engelle"><i class="fas fa-ban"></i></button>
 				<button id="sendTaskCronNetworkManager" type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
-				<button id="getNetworkSettingsBtn" type="button" title="Ayarları Listele" class="btn-shadow btn btn-info"><i class="fas fa-list-ul"></i></button>
+				<button id="getNetworkSettingsBtn" type="button" title="Ağ Ayarları Listele" class="btn-shadow btn btn-info"><i class="fas fa-list-ul"></i></button>
 			</div>
 		</div>
 		<div class="card-body">
 				<div class="login-form-1">
 					<div class="form-group">
 						<ul id="conkyTabsTask" class="nav nav-tabs">
-							<li class="nav-item"><a role="tab" class="nav-link active" data-toggle="tab" href="#currentConfigurationTabTask"><span><i class="fa fa-comments"></i> Mevcut Konfigürasyon</span></a></li>
-							<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#dnsSettingsTabTask"> <span><i class="fa fa-cog"></i> DNS Ayarları</span></a></li>
-							<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#hostsSettingsTabTask"> <span><i class="fa fa-cog"></i> Sunucular</span></a></li>
-							<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#networkSettingsTabTask"> <span><i class="fa fa-cog"></i> Ağ Ayarları</span></a></li>
-							<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#portSettingsTabTask"> <span><i class="fa fa-cog"></i> Portlar</span></a></li>
+							<li class="nav-item"><a role="tab" id="currentConfTabBtn" class="nav-link active" data-toggle="tab" href="#currentConfigurationTabTask"><span><i class="fa fa-file-code"></i> Mevcut Konfigürasyon</span></a></li>
+							<li class="nav-item"><a role="tab" id="dnsTabBtn" class="nav-link" data-toggle="tab" href="#dnsSettingsTabTask"> <span><i class="fa fa-globe"></i> DNS Ayarları</span></a></li>
+							<li class="nav-item"><a role="tab" id="hostsTabBtn" class="nav-link" data-toggle="tab" href="#hostsSettingsTabTask"> <span><i class="fa fa-server"></i> Sunucular</span></a></li>
+							<li class="nav-item"><a role="tab" id="networkTabBtn" class="nav-link" data-toggle="tab" href="#networkSettingsTabTask"> <span><i class="fa fa-network-wired"></i> Ağ Ayarları</span></a></li>
+							<li class="nav-item"><a role="tab" id="portTabBtn" class="nav-link" data-toggle="tab" href="#portSettingsTabTask"> <span><i class="fa fa-compress-arrows-alt"></i> Portlar</span></a></li>
 						</ul>
 						<div class="tab-content">
 							<div class="tab-pane fade" id="currentConfigurationTabTask">
-								<div class="form-group row">
-								    <label for="colFormLabel" class="col-sm-1 col-form-label"><i class="fa fa-laptop-code"></i> Bilgisayar Adı</label>
-								    <div class="col-sm-3">
-								      	<input type="text" class="form-control" id="machineHostname">
-								    </div>
-								    <div class="col-sm-2">
-								      	<button id="updateMachineHostnameBtn" type="button" class="btn-shadow btn btn-info" title="Bilgisayar Adını Güncelle"><i class="fas fa-sync"></i></button>
-								    </div>
+								<div class="row">
+									<div class="input-group mb-3 col-lg-6 text-left">
+									    <div class="input-group-prepend">
+									      	<span class="input-group-text"><i class="fa fa-laptop-code"></i></span>
+									    </div>
+									    <input type="text" class="form-control" id="machineHostname" placeholder="İstemci Adı..">
+									</div>
 								</div>
 								<div class="row">
 									<div class="col-lg-6">
-									<label for="fileContent">Ağ Arayüzleri</label>
-									<textarea class="form-control" disabled id="currentNetworkInterfaces" rows="8"></textarea>
+										<label for="fileContent">Ağ Arayüzleri</label>
+										<textarea class="form-control" disabled id="currentNetworkInterfaces" rows="8"></textarea>
 									</div>
 									<div class="col-lg-6">
-									<label for="fileContent">Sunucular</label>
-									<textarea class="form-control" disabled id="currentHosts" rows="8"></textarea>
+										<label for="fileContent">Sunucular</label>
+										<textarea class="form-control" disabled id="currentHosts" rows="8"></textarea>
 									</div>
 								</div>
-							
+								<small id="updateHostnameHelp" class="text-muted"></small>
 							</div>
 
 <!-- 				DNS settings -->
 							<div class="tab-pane fade" id="dnsSettingsTabTask">
 								<div class="form-group row">
-									<div class="input-group mb-3 col-sm-3">
+									<div class="input-group mb-3 col-sm-6">
 									    <div class="input-group-prepend">
-									      	<span class="input-group-text"><i class="fa fa-network-wired"></i></span>
+									      	<span class="input-group-text"><i class="fa fa-globe"></i></span>
 									    </div>
-									    <input type="text" class="form-control" id="definitionDnsForm" placeholder="İP Adresi Tanımla (192.168.*.*)">
+									    <input type="text" class="form-control" id="definitionDnsForm" placeholder="İP Adresi (192.168.*.*)">
 									</div>
-									<div class="col-sm-1">
+									<div class="col-sm-2">
 										<select class="form-control" id="addDnsTypeSelect">
 											<option value="nameserver" selected>İP</option>
 											<option value="search">Alan Adı</option>
 										</select>
 									</div>
-									<div class="col-sm-1">
-								      	<button id="addDnsBtn" type="button" class="btn-shadow btn btn-info" title="DNS Ekle"><i class="fa fa-plus"></i></button>
-								      	<button id="deleteDnsBtn" type="button" class="btn-shadow btn btn-info" title="DNS Sil"><i class="fa fa-trash-alt"></i></button>
-								    </div>
 								 </div>
 								<table class="table table-striped table-bordered display" id="dnsSettingsTable" border="1">
 									<thead>
@@ -87,27 +91,24 @@
 									</thead>
 									<tbody id="dnsSettingsBody"></tbody>
 								</table>
+								<small id="dnsSettingHelp" class="text-muted"></small>
 							</div>
 							
 <!-- 				HOSTS settings -->
 							<div class="tab-pane fade" id="hostsSettingsTabTask">
 								<div class="form-group row">
-									<div class="input-group mb-3 col-sm-3">
+									<div class="input-group mb-3 col-sm-5">
 									    <div class="input-group-prepend">
 									      	<span class="input-group-text"><i class="fa fa-network-wired"></i></span>
 									    </div>
-									    <input type="text" class="form-control" id="definitionHostIpForm" placeholder="İP Adresi Tanımla (192.168.*.*)">
+									    <input type="text" class="form-control" id="definitionHostIpForm" placeholder="İP Adresi (192.168.*.*)">
 									</div>
-									<div class="input-group mb-3 col-sm-3">
+									<div class="input-group mb-3 col-sm-5">
 									    <div class="input-group-prepend">
 									      	<span class="input-group-text"><i class="fas fa-server"></i></span>
 									    </div>
-									    <input type="text" class="form-control" id="definitionHostServerForm" placeholder="Sunucu Adı Tanımla (liderahenk.org)">
+									    <input type="text" class="form-control" id="definitionHostServerForm" placeholder="Sunucu Adı (liderahenk.org)">
 									</div>
-									<div class="col-sm-1">
-								      	<button id="addHostBtn" type="button" class="btn-shadow btn btn-info" title="Sunucu Ekle"><i class="fa fa-plus"></i></button>
-								      	<button id="deleteHostBtn" type="button" class="btn-shadow btn btn-info" title="Sunucu Sil"><i class="fa fa-trash-alt"></i></button>
-								    </div>
 								 </div>
 								<table class="table table-striped table-bordered display" id="hostsSettingsTable" border="1">
 									<thead>
@@ -119,6 +120,7 @@
 									</thead>
 									<tbody id="hostsSettingsBody"></tbody>
 								</table>
+								<small id="hostSettingHelp" class="text-muted"></small>
 							</div>
 							
 <!-- 				NETWORK settings -->
@@ -134,47 +136,49 @@
 									</thead>
 									<tbody id="networkSettingsBody"></tbody>
 								</table>
-								<div class="form-group row">
-									<label for="colFormLabel" class="col-sm-1 col-form-label"><i class="fa fa-user"></i> Tip</label>
-									<div class="col-sm-3">
-										<select class="form-control" id="networkType">
-											<option value="NA">...</option>
-											<option value="static">STATIC</option>
-											<option value="loopback">LOOPBACK</option>
-											<option value="dhcp">DHCP</option>
-										</select>
+								<div id="addNetworkForm">
+									<div class="form-group row">
+										<label for="colFormLabel" class="col-sm-2 col-form-label"><i class="fa fa-wifi"></i> Tip</label>
+										<div class="col-sm-3">
+											<select class="form-control" id="networkType">
+												<option value="STATIC">STATIC</option>
+												<option value="LOOPBACK">LOOPBACK</option>
+												<option value="DHCP">DHCP</option>
+											</select>
+										</div>
+<!-- 										<div class="col-sm-2"> -->
+<!-- 											<select class="form-control" id="networkType"> -->
+<!-- 												<option value="true" selected>Aktif</option> -->
+<!-- 												<option value="false">Pasif</option> -->
+<!-- 											</select> -->
+<!-- 										</div> -->
+								 	</div>
+									<div class="form-group row" id="networkNameGrp">
+									    <label for="colFormLabel" class="col-sm-2 col-form-label"><i class="fa fa-ethernet"></i> Ağ Adı</label>
+									    <div class="col-sm-10">
+									      	<input type="text" class="form-control" id="networkName" placeholder="enp0s3">
+									    </div>
 									</div>
-									<div class="col-sm-2">
-										<select class="form-control" id="networkType">
-											<option value="true" selected>Aktif</option>
-											<option value="false">Pasif</option>
-										</select>
+									<div class="form-group row" id="networkAddressGrp">
+									    <label for="colFormLabel" class="col-sm-2 col-form-label"><i class="fa fa-network-wired"></i> İP Adresi</label>
+									    <div class="col-sm-10">
+									    	<input type="text" class="form-control" id="networkAddress" placeholder="192.168.*.*">
+									    </div>
 									</div>
-							 	</div>
-								<div class="form-group row">
-								    <label for="colFormLabel" class="col-sm-1 col-form-label"><i class="fa fa-lock"></i> Ağ Adı</label>
-								    <div class="col-sm-5">
-								      	<input type="text" class="form-control" id="networkName">
-								    </div>
+									<div class="form-group row" id="networkNetmaskGrp">
+									    <label for="colFormLabel" class="col-sm-2 col-form-label"><i class="fa fa-theater-masks"></i> Netmask</label>
+									    <div class="col-sm-10">
+									      <input type="text" class="form-control" id="networkNetmask" placeholder="255.255.*.*">
+									    </div>
+									</div>
+									<div class="form-group row" id="networkGatewayGrp">
+									    <label for="colFormLabel" class="col-sm-2 col-form-label"><i class="fa fa-dungeon"></i> Gateway</label>
+									    <div class="col-sm-10">
+									      <input type="text" class="form-control" id="networkGateway" placeholder="192.168.*.*">
+									    </div>
+									</div>
 								</div>
-								<div class="form-group row">
-								    <label for="colFormLabel" class="col-sm-1 col-form-label"><i class="fa fa-lock"></i> Adres</label>
-								    <div class="col-sm-5">
-								    	<input type="text" class="form-control" id="networkAddress">
-								    </div>
-								</div>
-								<div class="form-group row">
-								    <label for="colFormLabel" class="col-sm-1 col-form-label"><i class="fa fa-home"></i> Netmask</label>
-								    <div class="col-sm-5">
-								      <input type="text" class="form-control" id="networkNetmask">
-								    </div>
-								</div>
-								<div class="form-group row">
-								    <label for="colFormLabel" class="col-sm-1 col-form-label"><i class="fa fa-home"></i> Gateway</label>
-								    <div class="col-sm-5">
-								      <input type="text" class="form-control" id="networkGateway">
-								    </div>
-								</div>
+								<small id="deleteNetworkSettingHelp" class="text-muted"></small>
 							</div>
 							
 <!-- 				PPRTS settings -->
@@ -191,8 +195,10 @@
 									</thead>
 									<tbody id="portSettingsBody"></tbody>
 								</table>
+								<small id="portsHelp" class="text-muted"></small>
 							</div>
 	             		</div>
+	             		<small id="networkManagerHelp" class="text-muted">Ağ Ayarları Listele butonuna tıklayarak istemcideki ayarları listeleyip, yönetebilirsiniz.</small>
 					<div id="plugin-result-network-manager"></div>
 				</div>
 			</div>

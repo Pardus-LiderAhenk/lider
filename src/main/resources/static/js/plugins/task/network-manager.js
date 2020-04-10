@@ -20,19 +20,35 @@ var newIsActive = true;
 var newDns = null;
 var newDomainName = null;
 var newDnsType = null;
+var newNetworkType = null;
+var newNetAddress = null;
+var newNetName = null;
+var newNetmask = null;
+var newGateway = null;
 var selectDnsRow = null;
 var selectHostRow = null;
+var selectNetSettingsRow = null;
+var selectPortRow = null;
 var newHostIp = null;
 var newServerName = null;
-
+var getSettingSuccess = false; 
 var ref_network_manager = connection.addHandler(networkManagerListener, null, 'message', null, null,  null);
 
 $('#currentConfigurationTabTask').tab('show');
-$('#deleteDnsBtn').hide();
-$('#deleteHostBtn').hide();
-$("#updateMachineHostnameBtn").prop('disabled', true);
-$("#addDnsBtn").prop('disabled', true);
-$("#addHostBtn").prop('disabled', true);
+networkSettingsHideBtn();
+
+function networkSettingsHideBtn() {
+	$("#updateMachineHostnameBtn").hide();
+	$("#addHostBtn").hide();
+	$('#deleteHostBtn').hide();
+	$('#deleteNetworkSettingBtn').hide();
+	$('#addNetworkSettingBtn').hide();
+	$("#addDnsBtn").hide();
+	$('#deleteDnsBtn').hide();
+	$('#allowPortBtn').hide();
+	$('#blockPortBtn').hide();
+	$('#addNetworkForm').hide();
+}
 
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
@@ -144,11 +160,15 @@ function networkManagerListener(msg) {
 
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-					$("#addDnsBtn").prop('disabled', false);
-					$("#addHostBtn").prop('disabled', false);
-					$("#updateMachineHostnameBtn").prop('disabled', false);
-					
+					$('#networkManagerHelp').html("");
+					$('#updateHostnameHelp').html("Bilgisayar adını değiştirmek için Bilgisayar Adını Güncelle butonuna tıklayınız.");
+					$('#dnsSettingHelp').html("Silmek istediğiniz DNS kaydını seçerek DNS Sil butonuna ya da yeni bir DNS kaydı eklemek için formu doldurarak DNS Ekle butonuna tıklayınız.");
+					$('#hostSettingHelp').html("Silmek istediğiniz Sunucu(Host) kaydını seçerek Sunucu Sil butonuna ya da yeni bir sunucu(host) eklemek için formu doldurarak Sunucu Ekle butonuna tıklayınız.");
+					$('#deleteNetworkSettingHelp').html("Silmek istediğiniz ağ ayarını seçerek Ağ Ayarı Sil butonuna ya da yeni ağ ayarı eklemek için formu doldurarak Yeni Ağ Ayarı Ekle butonuna tıklayınız.");
+					$('#portsHelp').html("İzin Vermek / Engellemek istediğiniz portu seçerek İzin Ver / Engelle butonuna tıklayınız.");
+
 					if (clsId == "GET_NETWORK_INFORMATION") {
+						networkSettingsHideBtn();
 						clearNetworkData();
 						$("#currentNetworkInterfaces").html(arrg.interfaces);
 						$("#currentHosts").html(arrg.hosts);
@@ -157,7 +177,9 @@ function networkManagerListener(msg) {
 						dnsManagement(arrg);
 						interfacesManagement(arrg);
 						portManagement(arrg);
-						
+						getSettingSuccess = true;
+						showTab();
+
 					} else if (clsId == "ADD_DNS" || clsId == "ADD_DOMAIN") {
 						if (newIsActive == true) {
 							newIsActive = "Evet";
@@ -193,8 +215,8 @@ function networkManagerListener(msg) {
 						html += '<td>' + newServerName + '</td>';
 						html += '<td>' + newIsActive + '</td>';
 						html += '</tr>';
-						$("#hostsSettingsBody").append(html);
 
+						$("#hostsSettingsBody").append(html);
 						$("#definitionHostServerForm").val("");
 						$("#definitionHostIpForm").val("");
 						newIsActive = true;
@@ -204,6 +226,50 @@ function networkManagerListener(msg) {
 					} else if (clsId == "DELETE_HOST") {
 						selectHostRow.remove();
 						selectHostRow = null;
+
+					} else if (clsId == "ADD_NETWORK") {
+						if (newIsActive == true) {
+							newIsActive = "Evet";
+						}else {
+							newIsActive = "Hayır";
+						}
+						var html = '<tr>';
+						html += '<td>' + newNetName + '</td>';
+						html += '<td>' + newNetAddress + '</td>';
+						html += '<td>' + newNetworkType + '</td>';
+						html += '<td>' + newIsActive + '</td>';
+						html += '</tr>';
+						$("#networkSettingsBody").append(html);
+						newNetworkType = null;
+						newNetAddress = null;
+						newNetName = null;
+						newIsActive = true;
+						$("#networkAddress").val("");
+						$("#networkName").val("");
+						$("#networkNetmask").val("");
+						$("#networkGateway").val("");
+
+					} else if (clsId == "DELETE_NETWORK") {
+						selectNetSettingsRow.remove();
+						selectNetSettingsRow = null;
+
+					} else if (clsId == "ALLOW_PORT") {
+						var rowIndex = selectPortRow.index();
+						$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(3)').text("Açık");
+						$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(4)').text("Açık");
+						selectPortRow.removeClass('networksettingsselect');
+						$('#portButtonGrp').hide();
+						selectPortRow = null;
+
+					} else if (clsId == "BLOCK_PORT") {
+						var input = selectPortRow.closest("tr")[0].children[3];
+						var output = selectPortRow.closest("tr")[0].children[4].textContent;
+						var rowIndex = selectPortRow.index();
+						$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(3)').text("Kapalı");
+						$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(4)').text("Kapalı");
+						selectPortRow.removeClass('networksettingsselect');
+						$('#portButtonGrp').hide();
+						selectPortRow = null;
 					}
 
 					$.notify(responseMessage, "success");
@@ -218,6 +284,30 @@ function networkManagerListener(msg) {
 	}
 //	we must return true to keep the handler alive. returning false would remove it after it finishes.
 	return true;
+}
+
+// show button by active tab
+function showTab() {
+	if ($('#currentConfigurationTabTask').hasClass('active')) {
+		networkSettingsHideBtn();
+		$("#updateMachineHostnameBtn").show();
+	} 
+	if ($('#dnsTabBtn').hasClass('active')) {
+		networkSettingsHideBtn();
+		$("#addDnsBtn").show();
+	}
+	if ($('#hostsTabBtn').hasClass('active')) {
+		networkSettingsHideBtn();
+		$("#addHostBtn").show();
+	}
+	if ($('#networkTabBtn').hasClass('active')) {
+		networkSettingsHideBtn();
+		$("#addNetworkSettingBtn").show();
+		$('#addNetworkForm').show();
+	}
+	if ($('#portTabBtn').hasClass('active')) {
+		networkSettingsHideBtn();
+	}
 }
 
 //if network data(forms and tables) not empty clear all data function
@@ -300,14 +390,14 @@ function interfacesManagement(arrg) {
 		if (interfacesList[i].includes("iface")) {
 			var parserInterface = interfacesList[i].split(/(\s+)/).filter( function(e) { return e.trim().length > 0; } );
 			var networkName = parserInterface[1];
-			var networkType = parserInterface[3];
+			var networkType = parserInterface[3].toUpperCase();
 			var networkStatus = parserInterface[0];
 			var networkActive = "Evet";
 			if (networkStatus.match(/#/g)) {
 				networkActive = "Hayır";
 			}
 			var networkAddress = null;
-			if (networkName != "lo" && networkType == "static") {
+			if (networkName != "lo" && networkType == "STATIC") {
 				var networkAddressLine = interfacesList[i+1];
 				var parserAdress = networkAddressLine.split(/(\s+)/).filter( function(e) { return e.trim().length > 0; } );
 				networkAddress = parserAdress[parserAdress.length - 1];
@@ -341,7 +431,6 @@ function portManagement(arrg) {
 		if (parserPort[4] == "Blocked" || parserPort[4] == "blocked") {
 			outputStatus = "Kapalı";
 		}
-
 		var html = '<tr>';
 		html += '<td>' + serviceName + '</td>';
 		html += '<td>' + protocol + '</td>';
@@ -352,8 +441,67 @@ function portManagement(arrg) {
 		$("#portSettingsBody").append(html);
 	}
 }
+//Tabs button actions
+$('#currentConfTabBtn').click(function() {
+	if (getSettingSuccess) {
+		clearTabsSettings();
+		networkSettingsHideBtn();
+		$("#updateMachineHostnameBtn").show();
+	}
+});
 
+$('#dnsTabBtn').click(function() {
+	if (getSettingSuccess) {
+		clearTabsSettings();
+		networkSettingsHideBtn();
+		$("#addDnsBtn").show();
+	}
+});
 
+$('#hostsTabBtn').click(function() {
+	if (getSettingSuccess) {
+		clearTabsSettings();
+		networkSettingsHideBtn();
+		$("#addHostBtn").show();
+	}
+});
+
+$('#networkTabBtn').click(function() {
+	if (getSettingSuccess) {
+		clearTabsSettings();
+		networkSettingsHideBtn();
+		$('#addNetworkSettingBtn').show();
+		$('#addNetworkForm').show();
+	}
+});
+
+$('#portTabBtn').click(function() {
+	if (getSettingSuccess) {
+		networkSettingsHideBtn();
+		clearTabsSettings();
+	}
+});
+
+function clearTabsSettings() {
+	if (selectDnsRow) {
+		selectDnsRow.removeClass('networksettingsselect');	
+	}
+	if (selectHostRow) {
+		selectHostRow.removeClass('networksettingsselect');
+	}
+	if (selectNetSettingsRow) {
+		selectNetSettingsRow.removeClass('networksettingsselect');
+	}
+	if (selectPortRow) {
+		selectPortRow.removeClass('networksettingsselect');
+	}
+	selectDnsRow = null;
+	selectHostRow = null;
+	selectNetSettingsRow = null;
+	selectPortRow = null;
+}
+
+//Selected tables actions
 $('#dnsSettingsTable').on('click', 'tbody tr', function(event) {
 	if($(this).hasClass('networksettingsselect')){
 		$(this).removeClass('networksettingsselect');
@@ -381,20 +529,25 @@ $('#hostsSettingsTable').on('click', 'tbody tr', function(event) {
 $('#networkSettingsTable').on('click', 'tbody tr', function(event) {
 	if($(this).hasClass('networksettingsselect')){
 		$(this).removeClass('networksettingsselect');
+		$('#deleteNetworkSettingBtn').hide();
+		selectNetSettingsRow = null;
 	} else {
 		$(this).addClass('networksettingsselect').siblings().removeClass('networksettingsselect');
-		var customerId = $(this).find("td:first").html();    
-//		alert(customerId)
+		$('#deleteNetworkSettingBtn').show();
+		selectNetSettingsRow = $(this);
 	}
 });
 
 $('#portSettingsTable').on('click', 'tbody tr', function(event) {
 	if($(this).hasClass('networksettingsselect')){
 		$(this).removeClass('networksettingsselect');
+		$('#allowPortBtn').hide();
+		$('#blockPortBtn').hide();
 	} else {
 		$(this).addClass('networksettingsselect').siblings().removeClass('networksettingsselect');
-		var customerId = $(this).find("td:first").html();    
-//		alert(customerId)
+		$('#allowPortBtn').show();
+		$('#blockPortBtn').show();
+		selectPortRow = $(this);
 	}
 });
 
@@ -403,6 +556,20 @@ $('#addDnsTypeSelect').change(function(){
 		$('#definitionDnsForm').attr("placeholder", "İP Adresi Tanımla (192.168.*.*)");
 	} else {
 		$('#definitionDnsForm').attr("placeholder", "Alan Adı Tanımla (liderahenk.org)");
+	}
+});
+
+$('#networkType').change(function(){
+	if ($(this).val() == "STATIC") {
+		$("#networkNameGrp").show();
+		$("#networkAddressGrp").show();
+		$("#networkNetmaskGrp").show();
+		$("#networkGatewayGrp").show();
+	} else {
+		$("#networkNameGrp").show();
+		$("#networkAddressGrp").hide();
+		$("#networkNetmaskGrp").hide();
+		$("#networkGatewayGrp").hide();
 	}
 });
 
@@ -508,7 +675,7 @@ $('#deleteHostBtn').click(function(e){
 	var selectHostIp = selectHostRow.closest("tr")[0].children[0].textContent;
 	var selectHostActive = selectHostRow.closest("tr")[0].children[2].textContent;
 	var selectHostname = selectHostRow.closest("tr")[0].children[1].textContent;
-	
+
 	var isActive = false;
 	if (selectHostActive == "Evet") {
 		isActive = true;
@@ -523,3 +690,104 @@ $('#deleteHostBtn').click(function(e){
 	$('#deleteHostBtn').hide();
 });
 //HOSTS Button actions --------->> STOP
+
+//NETWORK SETTING Button actions ------------->> START
+$('#addNetworkSettingBtn').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+	var commandId = "ADD_NETWORK";
+	newNetworkType = $("#networkType :selected").val();
+	if (newNetworkType == "STATIC") {
+		if ($("#networkName").val() != "" && $("#networkAddress").val() != "" && $("#networkNetmask").val() != "" && $("#networkGateway").val() != ""){
+			newNetAddress = $("#networkAddress").val();
+			newNetName = $("#networkName").val();
+			newNetmask = $("#networkNetmask").val();
+			newGateway = $("#networkGateway").val();
+
+			var parameterMap = {
+					"ip": newNetAddress,
+					"name": newNetName,
+					"is_active": newIsActive,
+					"netmask": newNetmask,
+					"gateway": newGateway,
+					"type": newNetworkType
+			};
+			sendNetworkManagerTask(commandId, parameterMap);
+
+		} else {
+			$.notify("Ağ Adı, İP Adresi, Netmask ve Gateway boş bırakılamaz.", "warn");
+		}
+	} else {
+		if ($("#networkName").val() != ""){
+			newNetName = $("#networkName").val();
+
+			var parameterMap = {
+					"ip": null,
+					"name": newNetName,
+					"is_active": newIsActive,
+					"netmask": null,
+					"gateway": null,
+					"type": newNetworkType
+			};
+			sendNetworkManagerTask(commandId, parameterMap);
+		} else {
+			$.notify("Ağ Adı boş bırakılamaz.", "warn");
+		}
+	}
+});
+
+$('#deleteNetworkSettingBtn').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+	var selectNetAddress = selectNetSettingsRow.closest("tr")[0].children[1].textContent;
+	var selectNetName = selectNetSettingsRow.closest("tr")[0].children[0].textContent;
+	var selectNetActive = selectNetSettingsRow.closest("tr")[0].children[3].textContent;
+	var selectNetType = selectNetSettingsRow.closest("tr")[0].children[2].textContent;
+
+	var isActive = false;
+	if (selectNetActive == "Evet") {
+		isActive = true;
+	}
+	var parameterMap = {
+			"ip": selectNetAddress,
+			"name": selectNetName,
+			"is_active": isActive,
+			"type": selectNetType.toLowerCase()
+	}
+	var commandId = "DELETE_NETWORK";
+	sendNetworkManagerTask(commandId, parameterMap);
+	$('#deleteNetworkSettingBtn').hide();
+});
+//NETWORK SETTING Button actions --------->> STOP
+
+//ALLOW PORT Button actions
+$('#allowPortBtn').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+	var port = selectPortRow.closest("tr")[0].children[2].textContent;
+	var parameterMap = {
+			"ports": port,
+	}
+	var commandId = "ALLOW_PORT";
+	sendNetworkManagerTask(commandId, parameterMap);
+});
+
+//BLOCK PORT Button actions
+$('#blockPortBtn').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
+	}
+	var port = selectPortRow.closest("tr")[0].children[2].textContent;
+	var parameterMap = {
+			"ports": port,
+	}
+	var commandId = "BLOCK_PORT";
+	sendNetworkManagerTask(commandId, parameterMap);
+});

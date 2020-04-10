@@ -32,6 +32,7 @@ var splChars = "+=.@*!";
 $("#sendTaskEditLocalUser").hide();
 $("#sendTaskDeleteLocalUser").hide();
 $("#sendTaskAddLocalUser").hide();
+$("#localUserForm").hide();
 
 createGroupsSelectBox();
 
@@ -87,6 +88,7 @@ function localUserListener(msg) {
 					$("#sendTaskAddLocalUser").show();
 					$.notify(responseMessage, "success");
 					$("#plugin-result-local-user").html("");
+					$("#localUserHelp").html("Listeden seçilen kullanıcıyı silmek için Kullanıcı Sil butonuna, düzenlemek için ise aşağıdaki formda seçilen kullanıcıyı düzenleyerek Kullanıcı Güncelle butonuna tıklayınız. Yeni kullanıcı eklemek için aşağıdaki formda kullanıcı bilgileri girilerek Yeni Kullanıcı Ekle butonuna tıklayınız.");
 				}
 				else {
 					$.notify(responseMessage, "error");

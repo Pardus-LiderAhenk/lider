@@ -36,7 +36,7 @@ getDirectoryParams();
 function getDirectoryParams() {
 	$.ajax({ 
 		type: 'GET', 
-		url: "lider/settings/configurations",
+		url: "ldap_login/configurations",
 		dataType: 'json',
 		success: function (data) { 
 			if(data != null) {

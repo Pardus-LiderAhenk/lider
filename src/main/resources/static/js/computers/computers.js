@@ -748,7 +748,7 @@ function showSelectedEntries() {
 	
 	$.ajax({ 
 		type: 'POST', 
-		url: 'lider/agent_info/agent',
+		url: 'select_agent_info/detail',
 		data: params,
 		dataType: 'json',
 		success: function (data) {

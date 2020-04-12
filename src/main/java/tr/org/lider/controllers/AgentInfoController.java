@@ -55,13 +55,4 @@ public class AgentInfoController {
 			return null;
 		}
 	}
-
-	//get agent detail by agentJid
-	@RequestMapping(method=RequestMethod.POST ,value = "/agent", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Optional<AgentImpl> findAgentByJIDRest(@RequestParam (value = "agentJid") String agentJid) {
-		List<AgentImpl> agent = agentService.findAgentByJid(agentJid);
-		Long agentId = agent.get(0).getId();
-		return agentService.findAgentByID(agentId);
-	}
-
 }

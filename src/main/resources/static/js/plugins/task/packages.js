@@ -1,6 +1,6 @@
 /**
  * Packages
- * This task used to install applications from the other package repository
+ * This task used to install and remove packages from the other package repository
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
  * 
@@ -17,8 +17,9 @@ var packages_data = [];
 var packageInfoList = [];
 var tablePackages;
 var pluginTask_Packages = null;
-
 var ref_packages=connection.addHandler(packagesListener, null, 'message', null, null,  null);
+$('#sendTaskPackages').hide();
+$('#sendTaskCronPackages').hide();
 
 var dnlist=[];
 for (var i = 0; i < selectedEntries.length; i++) {
@@ -110,6 +111,9 @@ function getPackagesList(params){
 					},
 				},
 			} );
+			$('#sendTaskPackages').show();
+			$('#sendTaskCronPackages').show();
+			$('#packagesHelp').html("Kurmak ya da Kaldırmak istediğiniz paket/leri seçerek Çalıştır butonuna tıklayınız. ")
 		},
 		error: function(data){
 			$.notify("Paketler listelenirken hata oluştu", "error");
@@ -289,7 +293,7 @@ function sendPackagesTask(params) {
 	});
 }
 
-$('#sendTaskCron-packages').click(function(e){
+$('#sendTaskCronPackages').click(function(e){
 	$('#scheduledTasksModal').modal('toggle');
 	scheduledParam = null;
 	scheduledModalPackagesOpened = true;
@@ -303,7 +307,7 @@ $("#scheduledTasksModal").on('hidden.bs.modal', function(){
 	defaultScheduleSelection();
 });
 
-$('#sendTask-packages').click(function(e){
+$('#sendTaskPackages').click(function(e){
 	if (selectedEntries.length == 0 ) {
 		$.notify("Lütfen istemci seçiniz.", "error");
 		return;

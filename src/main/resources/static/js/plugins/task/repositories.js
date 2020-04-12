@@ -19,6 +19,8 @@ var dnlist = [];
 var tableRepositories;
 var pluginTask_Repositories = null;
 var ref_repositories=connection.addHandler(repositoryListener, null, 'message', null, null,  null);
+$('#sendTaskRepositories').hide();
+$('#repoAddressDefinition').hide();
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -138,7 +140,10 @@ function repositoryListener(msg) {
 				createRepositorieTable();
 				$("#plugin-result-repositories").html("");
 				$.notify(responseMessage, "success");
-				$('#repository-info').html('<small>Depo eklemek için Depo Adresi tanımlayarak Ekle butonuna tıklayınız. Silmek istediğiniz depo adresini Sil butonuna tıklayarak listeden silebilirsiniz. Çalıştır butonuna tıklayarak Sil ve/veya Ekle görevini gönderiniz.</small>');
+				$('#repositoryHelp').html('Depo eklemek için Depo Adresi tanımlayarak Ekle butonuna tıklayınız. Silmek istediğiniz depo adresini Sil butonuna tıklayarak listeden silebilirsiniz. Çalıştır butonuna tıklayarak Sil ve/veya Ekle görevini gönderiniz.');
+				$('#sendTaskRepositories').show();
+				$('#repoAddressDefinition').show();
+
 
 			}else {
 				createRepositorieTable();

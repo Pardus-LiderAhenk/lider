@@ -18,6 +18,8 @@ var scheduledParamServiceList = null;
 var scheduledModalServiceListOpened = false;
 var pluginTask_ServiceList = null;
 var ref_service_list=connection.addHandler(getServiceListener, null, 'message', null, null,  null);
+$('#sendTaskServiceManagement').hide();
+$('#serviceListExportPdf').hide();
 
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
@@ -32,7 +34,7 @@ for (var n = 0; n < pluginTaskList.length; n++) {
 	}
 }
 
-// get services from agent
+//get services from agent
 $('#sendTaskGetServiceList').click(function(e){
 	if (selectedEntries.length == 0 ) {
 		$.notify("Lütfen istemci seçiniz.", "error");
@@ -187,7 +189,9 @@ function getServiceListener(msg) {
 										createServiceListTable();
 										$("#plugin-result-service-list").html("");
 										$.notify(responseMessage, "success");
-										$("#serviceList-info").html("<small>İşlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır butonuna tıklayınız.</small>");
+										$('#sendTaskServiceManagement').show();
+										$('#serviceListExportPdf').show();
+										$("#serviceListHelp").html("İşlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır butonuna tıklayınız. Servis listesini PDF olarak dışa aktarmak için PDF'e aktar butonuna tıklayınız.");
 									}
 								}else {
 									createServiceListTable();
@@ -282,7 +286,7 @@ $('#serviceListExportPdf').click(function(e){
 	if (tableServiceList) {
 		alert("export pdf");
 	}
-	
+
 });
 
 $('#sendTaskCronServiceManagement').click(function(e){
@@ -299,7 +303,7 @@ $("#scheduledTasksModal").on('hidden.bs.modal', function(){
 	defaultScheduleSelection();
 });
 
-// service management task
+//service management task
 $('#sendTaskServiceManagement').click(function(e){
 	if (selectedEntries.length == 0 ) {
 		$.notify("Lütfen istemci seçiniz.", "error");
@@ -338,7 +342,7 @@ $('#sendTaskServiceManagement').click(function(e){
 				serviceRequestParameters.push(ServiceListItem);
 			}
 		});
-		
+
 		if (pluginTask_ServiceList) {
 			pluginTask_ServiceList.commandId = "SERVICE_LIST";
 			pluginTask_ServiceList.entryList=selectedEntries;

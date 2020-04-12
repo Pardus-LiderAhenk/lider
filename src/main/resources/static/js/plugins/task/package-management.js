@@ -19,6 +19,7 @@ var packageInfoList = [];
 var dnlist = [];
 var tableInsPackages;
 var pluginTask_PackageManagement = null;
+$('#sendTaskDeletePackageBtn').hide();
 
 var ref_package_management=connection.addHandler(getPackagesListener, null, 'message', null, null,  null);
 
@@ -117,7 +118,8 @@ function getPackagesListener(msg) {
 									createInstalledPackagesTable();
 									$("#plugin-result-package-management").html("");
 									$.notify(responseMessage, "success");
-									$('#package-management-info').html('<small>Silmek istediğiniz paket/leri seçerek Sil butonuna tıklayınız.</small>');
+									$('#packageManagementHelp').html('Silmek istediğiniz paket/leri seçerek Sil butonuna tıklayınız.');
+									$('#sendTaskDeletePackageBtn').show();
 								}
 							}else {
 								createInstalledPackagesTable();

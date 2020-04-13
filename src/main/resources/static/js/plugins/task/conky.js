@@ -149,12 +149,16 @@ $('#removeConkyMessageBtn').click(function(e){
 		$("#conkySettingTemp").val("");
 		$('#conkySelectBox').val('NA');
 		removeConkyMessage = true;
+		$("#sendTaskConky").html('<i class="fas fa-times"></i>');
+		$('#sendTaskConky').prop('title', 'Mesaj Kaldır');
 	}
 	else{
 		$("#conkySelectBox").prop("disabled", false);
 		$("#conkyContentTemp").prop("disabled", false);
 		$("#conkySettingTemp").prop("disabled", false);
 		removeConkyMessage = false;
+		$("#sendTaskConky").html('<i class="fas fa-share-square"></i>');
+		$('#sendTaskConky').prop('title', 'Mesaj Gönder');
 	}
 });
 
@@ -212,6 +216,6 @@ $('#sendTaskConky').click(function(e){
 			}
 		});
 	}else {
-		$.notify("Lütfen Conky mesajı veya Conky mesajı kaldır seçerek Çalıştır butonuna tıklayınız.", "warn");
+		$.notify("Lütfen Conky mesajı seçerek Mesaj Gönder butonuna tıklayınız.", "warn");
 	}
 });

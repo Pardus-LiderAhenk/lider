@@ -267,6 +267,28 @@ function setSystemPluginPage() {
 						}
 					});
 				}
+				if(pluginTask.page == 'xmessage'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#xmessage').html(res1);
+						}
+					});
+				}
+				if(pluginTask.page == 'file-transfer'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#file-transfer').html(res1);
+						}
+					});
+				}
 			}
 		}
 	});
@@ -718,6 +740,7 @@ function showSelectedEntries() {
 	html += ' <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu" >'
 	var dnVal=""
 			for (var i = 0; i < selectedEntries.length; i++) {
+					var selDn = selectedEntries[0].distinguishedName
 					dnVal=selectedEntries[0].name;
 					var dn=selectedEntries[i].name;
 					html +='<button type="button" tabindex="0" class="dropdown-item"> ' +dn+' </button>'
@@ -725,6 +748,8 @@ function showSelectedEntries() {
 	html += ' </div> '	 
 	$('#selectedAgentList').html(html);
 	$("#selectedAgentInfo").html(dnVal);
+	$('#selectedAgentInfo').prop('title', selDn);
+
 	
 //	if(selectedEntries[0].type=='AHENK')
 //	{

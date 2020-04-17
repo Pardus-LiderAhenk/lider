@@ -16,7 +16,7 @@ var scheduledModalUsbManageOpened = false;
 var pluginTask_UsbManagement = null;
 var dnlist=[];
 var parameterMap = {};
-var ref_usb_management=connection.addHandler(ldapLoginListener, null, 'message', null, null,  null);
+var ref_usb_management=connection.addHandler(usbManagementListener, null, 'message', null, null,  null);
 
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
@@ -77,7 +77,7 @@ function sendUsbManagement(params) {
 	});
 }
 
-function ldapLoginListener(msg) {
+function usbManagementListener(msg) {
 	var to = msg.getAttribute('to');
 	var from = msg.getAttribute('from');
 	var type = msg.getAttribute('type');

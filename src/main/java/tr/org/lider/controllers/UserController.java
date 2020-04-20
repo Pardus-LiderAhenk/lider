@@ -331,23 +331,8 @@ public class UserController {
 			List<LdapEntry> usersEntrylist = ldapService.findSubEntries(globalUserOu, filter,new String[] { "*" }, SearchScope.SUBTREE);
 			lastUser= usersEntrylist.get(usersEntrylist.size()-1);
 			
-			List<UserSessionImpl> userSessionsDb=	userService.getUserSessions(lastUser.getUid());
-			List<UserSessionsModel> userSessions=new ArrayList<>();
-			for (UserSessionImpl userSessionImpl : userSessionsDb) {
-				UserSessionsModel model= new UserSessionsModel();
-				model.setAgent(userSessionImpl.getAgent());
-				model.setCreateDate(userSessionImpl.getCreateDate());
-				model.setSessionEvent(userSessionImpl.getSessionEvent());
-				model.setId(userSessionImpl.getId());
-				model.setUserIp(userSessionImpl.getUserIp());
-				model.setUsername(userSessionImpl.getUsername());
-				userSessions.add(model);
-			}
-			
-			lastUser.setSessionList(userSessions);
 			logger.info("last user : "+lastUser);
 		} catch (LdapException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return lastUser;
@@ -355,10 +340,10 @@ public class UserController {
 	
 	@RequestMapping(method=RequestMethod.POST, value = "/getUserSessions")
 	@ResponseBody
-	public List<UserSessionsModel> getUserSessions(LdapEntry user) {
+	public List<UserSessionsModel> getUserSessions(@RequestParam(value = "uid", required=true) String uid) {
 		List<UserSessionsModel> userSessions=null;
 		try {
-			List<UserSessionImpl> userSessionsDb=	userService.getUserSessions(user.getUid());
+			List<UserSessionImpl> userSessionsDb=	userService.getUserSessions(uid);
 			userSessions=new ArrayList<>();
 			for (UserSessionImpl userSessionImpl : userSessionsDb) {
 				UserSessionsModel model= new UserSessionsModel();

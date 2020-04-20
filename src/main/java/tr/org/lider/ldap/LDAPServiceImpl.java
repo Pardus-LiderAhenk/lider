@@ -377,6 +377,7 @@ public class LDAPServiceImpl implements ILDAPService {
 				throw new LdapException(ldapResult.getDiagnosticMessage());
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
 		} finally {

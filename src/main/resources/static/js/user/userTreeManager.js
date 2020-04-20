@@ -50,7 +50,7 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 			      id: "entryUUID"
 			  };
 			 
-			 rootDNUser = source.localData[0].entryUUID;
+			    rootDNUser = source.localData[0].entryUUID;
 //			 	$("#treeGridUser").jqxTreeGrid('destroy');
 			 	
 			 	$('#'+treeHolderDiv).append('<div id="'+treeGridId+'"></div> ')
@@ -80,8 +80,8 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 				     filterMode: "simple",
 				     selectionMode: "singleRow",
 				     localization: getLocalization(),
-				     pageSize: 50,
-				     pageSizeOptions: ['15', '25', '50'],
+				     pageSize: 100,
+				     pageSizeOptions: ['15', '25', '100'],
 				     icons: function (rowKey, dataRow) {
 				    	    var level = dataRow.level;
 				    	    if(dataRow.type == "USER"){

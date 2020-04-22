@@ -35,7 +35,6 @@ public class LoginController {
 			model.addAttribute("password", userDetails.getPassword());
 			model.addAttribute("userNameJid", userDetails.getLiderUser().getName() + "@" + configurationService.getXmppServiceName());
 			model.addAttribute("xmppHost", configurationService.getXmppHost());
-			
 			model.addAttribute("roleNames", userDetails.getLiderUser().getRoles());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -50,6 +49,50 @@ public class LoginController {
 	
 	@RequestMapping(value = "/login")
 	public String login(Model model, Authentication authentication) {
+		
+//		LdapConnectionConfig lconfig = new LdapConnectionConfig();
+//		lconfig.setLdapHost(configurationService.getLdapServer());
+//		lconfig.setLdapPort(Integer.parseInt(configurationService.getLdapPort()));
+//		lconfig.setName("cn=admin,cn=config");
+//		lconfig.setCredentials(configurationService.getLdapPassword());
+//		lconfig.setUseSsl(false);
+//
+//		 LdapConnectionPool pool;
+//		// Create connection pool
+//		PoolableLdapConnectionFactory factory = new PoolableLdapConnectionFactory(lconfig);
+//		pool = new LdapConnectionPool(factory);
+//		pool.setTestOnBorrow(true);
+//		pool.setMaxActive(-1);
+//		pool.setMaxWait(3000);
+//		pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+//		logger.debug(this.toString());
+//		
+//		
+//		try {
+//			LdapConnection connection = null;
+//			connection = pool.getConnection();
+//			Entry entry = null;
+//			try {
+//				entry = connection.lookup("olcDatabase={1}mdb,cn=config");
+//				if (entry != null) {
+//
+//					for (Attribute a : entry.getAttributes()) {
+//						if (a.contains(value)) {
+//							a.remove(value);
+//						}
+//					}
+//				}
+//				entry.add(, values);
+//				System.err.println("entry geldi");
+//			} catch (org.apache.directory.api.ldap.model.exception.LdapException e) {
+//				logger.error(e.getMessage(), e);
+//				throw new LdapException(e);
+//			}
+//			System.err.println("connected");
+//		} catch (Exception e) {
+//			System.err.println(" not connected");
+//			// TODO: handle exception
+//		}
 		if(configurationService.isConfigurationDone()) {
 			return "login";
 		} else {

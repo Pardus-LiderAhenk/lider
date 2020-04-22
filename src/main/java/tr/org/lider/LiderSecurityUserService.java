@@ -3,7 +3,6 @@ package tr.org.lider;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.models.LiderUser;
+import tr.org.lider.services.ConfigurationService;
 
 
 @Service
@@ -22,12 +22,16 @@ public class LiderSecurityUserService implements UserDetailsService {
 	@Autowired
 	LDAPServiceImpl ldapService;
 	
+	@Autowired
+	private ConfigurationService configurationService;
+	
 	@Override
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 		LiderUser user=null;
 		
 		LdapEntry ldapEntry=null;
 		try {
+			configurationService.destroyConfigParams();
 			String filter= "(&(objectClass=pardusAccount)(objectClass=pardusLider)(liderPrivilege=ROLE_USER)(uid=$1))".replace("$1", userName);
 			List<LdapEntry> ldapEntries  = ldapService.findSubEntries(filter,
 					new String[] { "*" }, SearchScope.SUBTREE);
@@ -35,7 +39,7 @@ public class LiderSecurityUserService implements UserDetailsService {
 			if(ldapEntries.size()>0) {
 				ldapEntry=ldapEntries.get(0);
 			}
-		} catch (LdapException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		

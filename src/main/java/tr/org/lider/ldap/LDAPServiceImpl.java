@@ -11,16 +11,19 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509KeyManager;
@@ -57,8 +60,13 @@ import org.apache.directory.ldap.client.api.PoolableLdapConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.services.ConfigurationService;
 
@@ -71,16 +79,16 @@ import tr.org.lider.services.ConfigurationService;
 public class LDAPServiceImpl implements ILDAPService {
 
 	private final static Logger logger = LoggerFactory.getLogger(LDAPServiceImpl.class);
-	
+
 	@Autowired
 	private ConfigurationService configurationService;
 	//private ICacheService cacheService;
-	
+
 	@Autowired
 	private XMPPClientImpl xmppClientImpl;
-	
-//	@Autowired
-//	private Environment env;
+
+	//	@Autowired
+	//	private Environment env;
 
 	private LdapConnectionPool pool;
 
@@ -96,17 +104,85 @@ public class LDAPServiceImpl implements ILDAPService {
 	 */
 	private static Pattern reportPriviligePattern = Pattern.compile("\\[REPORT:([a-zA-Z0-9-,]+)\\]");
 
-	@PostConstruct
-	public void init() throws Exception {
+	/**
+	 * 
+	 * @return new LDAP connection
+	 * @throws LdapException
+	 */
+	@Override
+	public LdapConnection getConnection() throws LdapException {
+		LdapConnection connection = null;
+		try {
+			setParams();
+			connection = pool.getConnection();
+		} catch (Exception e) {
+			throw new LdapException(e);
+		}
+		return connection;
+	}
+
+	/**
+	 * 
+	 * @return new LDAP connection with cn=config user
+	 * @throws LdapException
+	 */
+	public LdapConnection getConnectionForConfig() throws LdapException {
+		LdapConnection connection = null;
+		try {
+			setParamsForConfig();
+			connection = pool.getConnection();
+		} catch (Exception e) {
+			throw new LdapException(e);
+		}
+		return connection;
+	}
+
+	@PreDestroy
+	public void destroy() {
+		logger.info("Destroying LDAP service...");
+		try {
+			if(pool != null) {
+				pool.close();
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Try to release specified connection
+	 * 
+	 * @param ldapConnection
+	 */
+	@Override
+	public void releaseConnection(LdapConnection ldapConnection) {
+		try {
+			pool.releaseConnection(ldapConnection);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 
 	public void setParams() throws Exception {
 		LdapConnectionConfig lconfig = new LdapConnectionConfig();
 		lconfig.setLdapHost(configurationService.getLdapServer());
 		lconfig.setLdapPort(Integer.parseInt(configurationService.getLdapPort()));
-		lconfig.setName(configurationService.getLdapUsername());
-		lconfig.setCredentials(configurationService.getLdapPassword());
-		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			if ( principal instanceof UserDetails) {
+				LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) principal;
+				lconfig.setName(userDetails.getLiderUser().getDn());
+				lconfig.setCredentials(userDetails.getLiderUser().getPassword());
+			} else {
+				lconfig.setName(configurationService.getLdapUsername());
+				lconfig.setCredentials(configurationService.getLdapPassword());
+			}
+		}  else {
+			lconfig.setName(configurationService.getLdapUsername());
+			lconfig.setCredentials(configurationService.getLdapPassword());
+		}
+
 		if (configurationService.getLdapUseSsl()) {
 			lconfig.setUseSsl(true);
 			if (configurationService.getLdapAllowSelfSignedCert()) {
@@ -116,7 +192,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		} else {
 			lconfig.setUseSsl(false);
 		}
-		
+
 		// Create connection pool
 		PoolableLdapConnectionFactory factory = new PoolableLdapConnectionFactory(lconfig);
 		pool = new LdapConnectionPool(factory);
@@ -126,7 +202,34 @@ public class LDAPServiceImpl implements ILDAPService {
 		pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
 		logger.debug(this.toString());
 	}
-	
+
+	public void setParamsForConfig() throws Exception {
+		LdapConnectionConfig lconfig = new LdapConnectionConfig();
+		lconfig.setLdapHost(configurationService.getLdapServer());
+		lconfig.setLdapPort(Integer.parseInt(configurationService.getLdapPort()));
+		lconfig.setName("cn=admin,cn=config");
+		lconfig.setCredentials(configurationService.getLdapPassword());
+
+		if (configurationService.getLdapUseSsl()) {
+			lconfig.setUseSsl(true);
+			if (configurationService.getLdapAllowSelfSignedCert()) {
+				lconfig.setKeyManagers(createCustomKeyManagers());
+				lconfig.setTrustManagers(createCustomTrustManager());
+			}
+		} else {
+			lconfig.setUseSsl(false);
+		}
+
+		// Create connection pool
+		PoolableLdapConnectionFactory factory = new PoolableLdapConnectionFactory(lconfig);
+		pool = new LdapConnectionPool(factory);
+		pool.setTestOnBorrow(true);
+		pool.setMaxActive(-1);
+		pool.setMaxWait(3000);
+		pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+		logger.debug(this.toString());
+	}
+
 	private TrustManager createCustomTrustManager() {
 		return new X509TrustManager() {
 			public X509Certificate[] getAcceptedIssuers() {
@@ -177,171 +280,6 @@ public class LDAPServiceImpl implements ILDAPService {
 		} };
 		return bypassKeyManagers;
 	}
-	
-	@PreDestroy
-	public void destroy() {
-		logger.info("Destroying LDAP service...");
-		try {
-			if(pool != null) {
-				pool.close();
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * 
-	 * @return new LDAP connection
-	 * @throws LdapException
-	 */
-	@Override
-	public LdapConnection getConnection() throws LdapException {
-		LdapConnection connection = null;
-		try {
-			setParams();
-			connection = pool.getConnection();
-		} catch (Exception e) {
-			throw new LdapException(e);
-		}
-		return connection;
-	}
-
-	/**
-	 * Try to release specified connection
-	 * 
-	 * @param ldapConnection
-	 */
-	@Override
-	public void releaseConnection(LdapConnection ldapConnection) {
-		try {
-			pool.releaseConnection(ldapConnection);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
-	}
-
-	/**
-	 * Find user LDAP entry from given DN parameter. Use this method only if you
-	 * want to <b>read his/her (task and report) privileges</b>, otherwise use
-	 * getEntry() or search() methods since they are more efficient.
-	 * 
-	 * @param userDn
-	 * @return
-	 * @throws LdapException
-	 */
-//	@Override
-//	public LiderUser getUser(String userDn) throws LdapException {
-//
-//		LdapConnection connection = null;
-//		LiderUser user = null;
-//
-////		user = (LiderUser) cacheService.get("ldap:getuser:" + userDn);
-//
-////		if (user != null) {
-////			logger.debug("Cache hit. User DN: {}", userDn);
-////			return user;
-////		}
-////		logger.debug("Cache miss: user DN: {}, doing ldap search", userDn);
-//		try {
-//			connection = getConnection();
-//			Entry resultEntry = connection.lookup(userDn);
-//			if (null != resultEntry) {
-//				user = new LiderUser();
-//
-//				if (null != resultEntry.get(configurationService.getUserLdapUidAttribute())) {
-//					// Set user's UID/JID
-//					user.setUid(resultEntry.get(configurationService.getUserLdapUidAttribute()).getString());
-//				}
-//
-//				if (null != resultEntry.get(configurationService.getUserLdapPrivilegeAttribute())) {
-//					// Set task & report privileges
-////					user.setTaskPrivileges(new ArrayList<ITaskPrivilege>());
-////					user.setReportPrivileges(new ArrayList<IReportPrivilege>());
-//					
-////					Iterator<Value<?>> iter = resultEntry.get(configurationService.getUserLdapPrivilegeAttribute())
-////							.iterator();
-////					while (iter.hasNext()) {
-////						String privilege = iter.next().getValue().toString();
-////						addUserPrivilege(user, privilege);
-////					}
-//
-//					// Find group privileges if this user belongs to a group
-//					LdapConnection connection2 = null;
-//					EntryCursor cursor = null;
-//
-//					try {
-//						connection2 = getConnection();
-//
-//						String filter = "(&(objectClass=pardusLider)(member=$1))".replace("$1", userDn);
-//						cursor = connection2.search(configurationService.getLdapRootDn(), filter, SearchScope.SUBTREE);
-//						while (cursor.next()) {
-//							Entry entry = cursor.get();
-//							if (null != entry) {
-//								logger.debug("Found user group: {}", entry.getDn());
-//								if (null != entry.get("liderPrivilege")) {
-//									Iterator<Value<?>> iter2 = entry.get("liderPrivilege").iterator();
-//									while (iter2.hasNext()) {
-//										String privilege = iter2.next().getValue().toString();
-//										addUserPrivilege(user, privilege);
-//									}
-//								} else {
-//									logger.debug("No privilege found in group => {}", entry.getDn());
-//								}
-//							}
-//						}
-//						logger.debug("Finished processing group privileges for user {}", userDn);
-//					} catch (Exception e) {
-//						logger.error(e.getMessage(), e);
-//						throw new LdapException(e);
-//					} finally {
-//						if (cursor != null) {
-//							cursor.close();
-//						}
-//						releaseConnection(connection2);
-//					}
-//				}
-//
-////				logger.debug("Putting user to cache: user DN: {}", userDn);
-////				cacheService.put("ldap:getuser:" + userDn, user);
-//
-//				return user;
-//			}
-//
-//			return null;
-//		} catch (Exception e) {
-//			logger.error(e.getMessage(), e);
-//			throw new LdapException(e);
-//		} finally {
-//			releaseConnection(connection);
-//		}
-//
-//	}
-
-//	private void addUserPrivilege(UserImpl user, String privilege) {
-//		String[] privBlocks = privilege != null ? privilege.split("\\|") : null;
-//		logger.debug("Found privilege: {}", privilege);
-//		if (privBlocks != null) {
-//			for (String privBlock : privBlocks) {
-//				Matcher tMatcher = taskPriviligePattern.matcher(privBlock);
-//				Matcher rMatcher = reportPriviligePattern.matcher(privBlock);
-//				if (tMatcher.matches()) { // Task privilege
-//					String targetEntry = tMatcher.group(1);
-//					String[] taskCodes = tMatcher.group(2).split(",");
-//					for (String taskCode : taskCodes) {
-//						user.getTaskPrivileges().add(new TaskPrivilegeImpl(targetEntry, taskCode));
-//					}
-//				} else if (rMatcher.matches()) { // Report privilege
-//					String[] reportCodes = rMatcher.group(1).split(",");
-//					for (String reportCode : reportCodes) {
-//						user.getReportPrivileges().add(new ReportPrivilegeImpl(reportCode));
-//					}
-//				} else {
-//					logger.warn("Invalid pattern in privilege => {}", privBlock);
-//				}
-//			}
-//		}
-//	}
 
 	/**
 	 * Create new LDAP entry
@@ -377,6 +315,7 @@ public class LDAPServiceImpl implements ILDAPService {
 				throw new LdapException(ldapResult.getDiagnosticMessage());
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
 		} finally {
@@ -512,13 +451,13 @@ public class LDAPServiceImpl implements ILDAPService {
 					}
 				}
 
-				
-//				if (entry.get(attribute) != null) {
-//					Value<?> oldValue = entry.get(attribute).get();
-//					entry.remove(attribute, oldValue);
-//				}
-//				entry.add(attribute, value);
-				
+
+				//				if (entry.get(attribute) != null) {
+				//					Value<?> oldValue = entry.get(attribute).get();
+				//					entry.remove(attribute, oldValue);
+				//				}
+				//				entry.add(attribute, value);
+
 				connection.modify(entry, ModificationOperation.REPLACE_ATTRIBUTE);
 			}
 		} catch (Exception e) {
@@ -659,7 +598,7 @@ public class LDAPServiceImpl implements ILDAPService {
 			String searchFilterStr = "(&";
 			for (LdapSearchFilterAttribute filterAttr : filterAttributes) {
 				searchFilterStr = searchFilterStr + "(" + filterAttr.getAttributeName()
-						+ filterAttr.getOperator().getOperator() + filterAttr.getAttributeValue() + ")";
+				+ filterAttr.getOperator().getOperator() + filterAttr.getAttributeValue() + ")";
 			}
 			searchFilterStr = searchFilterStr + ")";
 			req.setFilter(searchFilterStr);
@@ -682,7 +621,7 @@ public class LDAPServiceImpl implements ILDAPService {
 					}
 					List<String> priviliges=null;
 					if (null != entry.get("liderPrivilege")) {
-						
+
 						priviliges=new ArrayList<>();
 						Iterator<Value<?>> iter2 = entry.get("liderPrivilege").iterator();
 						while (iter2.hasNext()) {
@@ -692,7 +631,7 @@ public class LDAPServiceImpl implements ILDAPService {
 					} else {
 						logger.debug("No privilege found in group => {}", entry.getDn());
 					}
-					
+
 					for (Iterator iterator = entry.getAttributes().iterator(); iterator.hasNext();) {
 						Attribute attr = (Attribute) iterator.next();
 						String attrName= attr.getUpId();
@@ -714,12 +653,12 @@ public class LDAPServiceImpl implements ILDAPService {
 					}
 
 					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, priviliges,convertObjectClass2DNType(entry.get("objectClass")));
-					
+
 					if(ldapEntry.getType()==DNType.AHENK) {
 						ldapEntry.setOnline(xmppClientImpl.isRecipientOnline(ldapEntry.getUid()));
 					}
 					result.add(ldapEntry);
-									}
+				}
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -749,16 +688,16 @@ public class LDAPServiceImpl implements ILDAPService {
 		filterAttributes.add(new LdapSearchFilterAttribute(attributeName, attributeValue, SearchFilterEnum.EQ));
 		return search(configurationService.getLdapRootDn(), filterAttributes, returningAttributes);
 	}
-	
+
 	/**
 	 * 
 	 */
 	@Override
 	public List<LdapEntry> findSubEntries(String filter, String[] returningAttributes,SearchScope scope) throws LdapException {
-		
+
 		return	findSubEntries(configurationService.getLdapRootDn(), filter, returningAttributes, scope);
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -776,45 +715,45 @@ public class LDAPServiceImpl implements ILDAPService {
 			request.setBase(new Dn(dn));
 			request.setScope(scope);
 			request.setFilter(filter);  //"(objectclass=*)"
-			
+
 			for (String attr : returningAttributes) {
 				request.addAttributes(attr);
 			}
-			
-		//	request.addAttributes("*");
+
+			//	request.addAttributes("*");
 			request.addAttributes("+");
 
 			SearchCursor searchCursor = connection.search(request);
-			
+
 			while (searchCursor.next()) {
 				Response response = searchCursor.get();
 				attrs = new HashMap<String, String>();
 				attributesMultiValues = new HashMap<String, String[]>();
 				if (response instanceof SearchResultEntry) {
-					
+
 					Entry entry = ((SearchResultEntry) response).getEntry();
-					
-//					if (returningAttributes != null) {
-//						for (String attr : returningAttributes) {
-//							attrs.put(attr, entry.get(attr) != null ? entry.get(attr).getString() : "");
-//						}
-//					}
+
+					//					if (returningAttributes != null) {
+					//						for (String attr : returningAttributes) {
+					//							attrs.put(attr, entry.get(attr) != null ? entry.get(attr).getString() : "");
+					//						}
+					//					}
 					List<String> priviliges=null;
-					
+
 					if (null != entry.get("liderPrivilege")) {
-						
+
 						priviliges=new ArrayList<>();
 						Iterator<Value<?>> iter2 = entry.get("liderPrivilege").iterator();
 						while (iter2.hasNext()) {
 							String privilege = iter2.next().getValue().toString();
 							priviliges.add(privilege);
 						}
-						
-						
+
+
 					} else {
 						logger.debug("No privilege found in group => {}", entry.getDn());
 					}
-					
+
 					for (Iterator iterator = entry.getAttributes().iterator(); iterator.hasNext();) {
 						Attribute attr = (Attribute) iterator.next();
 						String attrName= attr.getUpId();
@@ -834,9 +773,9 @@ public class LDAPServiceImpl implements ILDAPService {
 							attributesMultiValues.put(attrName, new String[] {value});
 						}
 					}
-					
+
 					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, priviliges,convertObjectClass2DNType(entry.get("objectClass")));
-					
+
 					String dateStr= ldapEntry.get("createTimestamp");
 					String year=dateStr.substring(0,4);
 					String month=dateStr.substring(4,6);
@@ -845,7 +784,7 @@ public class LDAPServiceImpl implements ILDAPService {
 					String min=dateStr.substring(10,12);
 					String sec=dateStr.substring(12,14);
 					String crtDate=day+"/"+ month+"/"+ year+" "+ hour +":"+min;
-					
+
 					ldapEntry.setCreateDateStr(crtDate);
 					if(ldapEntry.getType()==DNType.AHENK) {
 						ldapEntry.setOnline(xmppClientImpl.isRecipientOnline(ldapEntry.getUid()));
@@ -861,46 +800,46 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 		return result;
 	}
-	
-	
-	
+
+
+
 	public LdapEntry getLdapTree(LdapEntry ldapEntry)  {
-		
+
 		if(ldapEntry.getChildEntries()!=null){
 			return ldapEntry;
 		}
 		else{
-			
+
 			try {
 				List<LdapEntry> entries=findSubEntries(ldapEntry.getDistinguishedName(),"(objectclass=*)",
 						new String[]{"*"}, SearchScope.SUBTREE);
-				
+
 				ldapEntry.setChildEntries(entries);
-//				for (LdapEntry ldapEntry2 : entries) {
-//					ldapEntry2.setParent(ldapEntry.getEntryUUID());
-//					ldapEntry2.setParentName(ldapEntry.getName());
-//					getLdapTree(ldapEntry2);
-//				}
+				//				for (LdapEntry ldapEntry2 : entries) {
+				//					ldapEntry2.setParent(ldapEntry.getEntryUUID());
+				//					ldapEntry2.setParentName(ldapEntry.getName());
+				//					getLdapTree(ldapEntry2);
+				//				}
 			} 
-			
+
 			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		return ldapEntry;
 	}
-	
-	
-	
+
+
+
 	@Override
 	public LdapEntry getDomainEntry() throws LdapException {
-		
+
 		LdapEntry domainEntry= null;
 		List<LdapEntry> entries = findSubEntries(configurationService.getLdapRootDn(), "(objectclass=*)", new String[]{"*"}, SearchScope.OBJECT);
 		if(entries.size()>0) domainEntry=entries.get(0);
 		return domainEntry;
 	}
-	
+
 
 	@Override
 	public boolean isAhenk(LdapEntry entry) {
@@ -1014,7 +953,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		} else {
 			throw new IllegalArgumentException("DN type was invalid.");
 		}
-	
+
 	}
 
 	/**
@@ -1048,7 +987,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		if (isOrganizationalGroup) {
 			return DNType.ORGANIZATIONAL_UNIT;
 		}
-		
+
 		boolean isRoleGroup = objectClass.contains("sudoRole");
 		if (isRoleGroup) {
 			return DNType.ROLE;
@@ -1056,55 +995,42 @@ public class LDAPServiceImpl implements ILDAPService {
 		return null;
 	}
 
-	
+
 	public List<LdapEntry> getLdapMainTree() {
-			
-			LdapEntry domainBaseEntry;
-			List<LdapEntry> treeList=null;
-			
-			
-			try {
-				domainBaseEntry = getDomainEntry();
-			
-	
+		LdapEntry domainBaseEntry;
+		List<LdapEntry> treeList=null;
+
+		try {
+			domainBaseEntry = getDomainEntry();
 			getLdapTree(domainBaseEntry); // fill domain base entry 
-	
 			treeList = new ArrayList<>();
-			
-			 createTreeList(domainBaseEntry, treeList);
-			
-			} catch (LdapException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			return treeList;
+			createTreeList(domainBaseEntry, treeList);
+		} catch (LdapException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return treeList;
 	}
-	
-	
+
+
 	public List<LdapEntry> getLdapTree(String baseEntry) {
-		
 		LdapEntry domainBaseEntry;
 		List<LdapEntry> treeList=null;
 		try {
 			domainBaseEntry = getDomainEntry();
 			getLdapTree(domainBaseEntry); // fill domain base entry 
-			
 			treeList = new ArrayList<>();
-			
 			createTreeList(domainBaseEntry, treeList);
-			
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
-		
 		return treeList;
 	}
-	
+
 
 
 	public void createTreeList(LdapEntry entry, List<LdapEntry> treeList) {
-		
+
 		if(entry.getType()!=null && entry.getType().equals(DNType.USER)) {
 			entry.setIconPath("checked-user-32.png");
 		}
@@ -1117,20 +1043,18 @@ public class LDAPServiceImpl implements ILDAPService {
 		else {
 			entry.setIconPath("file.png");
 		}
-		
+
 		if (entry.getChildEntries()!=null && entry.getChildEntries().size() == 0) {
 			treeList.add(entry);
-	
+
 		} else if (entry!=null && entry.getChildEntries()!=null){
 			treeList.add(entry);
-	
 			for (LdapEntry ldapEntry : entry.getChildEntries()) {
-	
 				createTreeList(ldapEntry, treeList);
 			}
 		}
 	}
-	
+
 	public LdapEntry getLdapUserTree() {
 		String globalUserOu = configurationService.getUserLdapBaseDn(); //"ou=Kullanıcılar,dc=mys,dc=pardus,dc=org";
 		LdapEntry usersDn = null;
@@ -1142,17 +1066,16 @@ public class LDAPServiceImpl implements ILDAPService {
 				usersDn = usersEntrylist.get(0);
 				usersDn.setExpandedUser("FALSE");
 			}
-			
 
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
 		return usersDn;
-		
+
 	}
-	
+
 	public LdapEntry getLdapUsersGroupTree() {
-		String globalUserOu = configurationService.getUserGroupLdapBaseDn(); 
+		String globalUserOu = configurationService.getUserGroupLdapBaseDn();
 		LdapEntry usersGroupDn = null;
 		try {
 			List<LdapEntry> usersGroupEntrylist = findSubEntries(globalUserOu, "(objectclass=*)", new String[] { "*" }, SearchScope.OBJECT);
@@ -1165,7 +1088,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 		return usersGroupDn;
 	}
-	
+
 	public LdapEntry getLdapComputersTree() {
 		LdapEntry computersDn = null;
 		try {
@@ -1185,7 +1108,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 		return computersDn;
 	}
-	
+
 	/*
 	 * returns just organizational units under given node
 	 */
@@ -1208,7 +1131,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 		return computersDn;
 	}
-	
+
 	public LdapEntry getLdapAgentsGroupTree() {
 		LdapEntry computersGroupDn = null;
 		try {
@@ -1216,26 +1139,26 @@ public class LDAPServiceImpl implements ILDAPService {
 			logger.info("Getting computers group");
 			List<LdapEntry> retList = findSubEntries(globalUserOu, "(objectclass=*)",
 					new String[] { "*" }, SearchScope.OBJECT);
-			
+
 			logger.info("Ldap Computers Group Node listed.");
 			if (retList.size() > 0) {
 				computersGroupDn = retList.get(0);
 				computersGroupDn.setExpandedUser("FALSE");
 			}
-			
+
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
 		return computersGroupDn;
 	}
-	
+
 	public LdapEntry getEntryDetail(String dn) {
 		LdapEntry ouEntry = null;
 		try {
 			logger.info("Getting ou detail");
 			List<LdapEntry> retList = findSubEntries(dn, "(objectclass=*)",
 					new String[] { "*" }, SearchScope.OBJECT);
-			
+
 			logger.info("Ldap Computers Group Node listed.");
 			if (retList.size() > 0) {
 				ouEntry = retList.get(0);
@@ -1243,22 +1166,21 @@ public class LDAPServiceImpl implements ILDAPService {
 			}
 			List<LdapEntry> entries=findSubEntries(dn, "(objectclass=*)",
 					new String[]{"*"}, SearchScope.SUBTREE);
-			
+
 			ouEntry.setChildEntries(entries);
-			
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
 		return ouEntry;
 	}
-	
+
 	public LdapEntry getOuAndOuSubTreeDetail(String dn) {
 		LdapEntry ouEntry = null;
 		try {
 			logger.info("Getting ou detail");
 			List<LdapEntry> retList = findSubEntries(dn, "(objectclass=*)",
 					new String[] { "*" }, SearchScope.OBJECT);
-			
+
 			logger.info("Ldap Computers Group Node listed.");
 			if (retList.size() > 0) {
 				ouEntry = retList.get(0);
@@ -1270,36 +1192,36 @@ public class LDAPServiceImpl implements ILDAPService {
 			if(entries.size() >= 1) {
 				entries.remove(0);
 			}
-			
+
 			ouEntry.setChildEntries(entries);
-			
+
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
 		return ouEntry;
 	}
-	
+
 	public LdapEntry getLdapGroupsTree() {
-		
+
 		List<LdapEntry> allGorups = null;
-		
+
 		LdapEntry groupDn= new LdapEntry("Gruplar",null,null,null,DNType.ORGANIZATIONAL_UNIT);
-	
+
 		try {
 			String globalUserOu =  configurationService.getLdapRootDn(); 
-			
+
 			allGorups = findSubEntries(globalUserOu, "(objectclass=groupOfNames)",new String[] { "*" }, SearchScope.SUBTREE);
-			
+
 			groupDn.setChildEntries(allGorups);
-			
+
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
-		
+
 		return groupDn;
 	}
-	
-	
+
+
 	public LdapEntry getLdapSudoGroupsTree() {
 		LdapEntry rolesDn = null;
 		List<LdapEntry> roleList=null;
@@ -1307,7 +1229,7 @@ public class LDAPServiceImpl implements ILDAPService {
 			String roles =  configurationService.getUserLdapRolesDn();
 			logger.info("Getting computers");
 			List<LdapEntry> retList = findSubEntries(roles, "(objectclass=*)",new String[] { "*" }, SearchScope.OBJECT);
-			
+
 			logger.info("Ldap Computers Node listed.");
 			if (retList.size() > 0) {
 				rolesDn = retList.get(0);
@@ -1320,58 +1242,58 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 		return rolesDn;
 	}
-	
-//	//gets tree of groups of names which just has agent members
-//	public LdapEntry getLdapAgentGroupsTree() {
-//		List<LdapEntry> allGorups = null;
-//		LdapEntry groupDn= new LdapEntry("İstemci Grupları",null,DNType.ORGANIZATIONAL_UNIT);
-//		try {
-//			String globalUserOu =  configurationService.getAhenkGroupLdapBaseDn(); 
-//			allGorups = findSubEntries(globalUserOu, "(|(objectClass=organizationalUnit)(&(objectClass=groupOfNames)(liderGroupType=AHENK)))",new String[] { "*" }, SearchScope.ONELEVEL);
-//			groupDn.setChildEntries(allGorups);
-//		} catch (LdapException e) {
-//			e.printStackTrace();
-//		}
-//		return groupDn;
-//	}
-//	
-//	//gets tree of groups of names which just has user members
-//	public LdapEntry getLdapUserGroupsTree() {
-//		List<LdapEntry> allGorups = null;
-//		LdapEntry groupDn= new LdapEntry("Kullanıcı Grupları",null,DNType.ORGANIZATIONAL_UNIT);
-//		try {
-//			String globalUserOu =  configurationService.getUserGroupLdapBaseDn(); 
-//			allGorups = findSubEntries(globalUserOu, "(|(objectClass=organizationalUnit)(&(objectClass=groupOfNames)(liderGroupType=USER)))",new String[] { "*" }, SearchScope.ONELEVEL);
-//			groupDn.setChildEntries(allGorups);
-//		} catch (LdapException e) {
-//			e.printStackTrace();
-//		}
-//		return groupDn;
-//	}
+
+	//	//gets tree of groups of names which just has agent members
+	//	public LdapEntry getLdapAgentGroupsTree() {
+	//		List<LdapEntry> allGorups = null;
+	//		LdapEntry groupDn= new LdapEntry("İstemci Grupları",null,DNType.ORGANIZATIONAL_UNIT);
+	//		try {
+	//			String globalUserOu =  configurationService.getAhenkGroupLdapBaseDn(); 
+	//			allGorups = findSubEntries(globalUserOu, "(|(objectClass=organizationalUnit)(&(objectClass=groupOfNames)(liderGroupType=AHENK)))",new String[] { "*" }, SearchScope.ONELEVEL);
+	//			groupDn.setChildEntries(allGorups);
+	//		} catch (LdapException e) {
+	//			e.printStackTrace();
+	//		}
+	//		return groupDn;
+	//	}
+	//	
+	//	//gets tree of groups of names which just has user members
+	//	public LdapEntry getLdapUserGroupsTree() {
+	//		List<LdapEntry> allGorups = null;
+	//		LdapEntry groupDn= new LdapEntry("Kullanıcı Grupları",null,DNType.ORGANIZATIONAL_UNIT);
+	//		try {
+	//			String globalUserOu =  configurationService.getUserGroupLdapBaseDn(); 
+	//			allGorups = findSubEntries(globalUserOu, "(|(objectClass=organizationalUnit)(&(objectClass=groupOfNames)(liderGroupType=USER)))",new String[] { "*" }, SearchScope.ONELEVEL);
+	//			groupDn.setChildEntries(allGorups);
+	//		} catch (LdapException e) {
+	//			e.printStackTrace();
+	//		}
+	//		return groupDn;
+	//	}
 
 	private static final int SALT_LENGTH = 4;
 
 	public static String generateSSHA(byte[] password)
-	        throws NoSuchAlgorithmException {
-	    SecureRandom secureRandom = new SecureRandom();
-	    byte[] salt = new byte[SALT_LENGTH];
-	    secureRandom.nextBytes(salt);
+			throws NoSuchAlgorithmException {
+		SecureRandom secureRandom = new SecureRandom();
+		byte[] salt = new byte[SALT_LENGTH];
+		secureRandom.nextBytes(salt);
 
-	    MessageDigest crypt = MessageDigest.getInstance("SHA-1");
-	    crypt.reset();
-	    crypt.update(password);
-	    crypt.update(salt);
-	    byte[] hash = crypt.digest();
+		MessageDigest crypt = MessageDigest.getInstance("SHA-1");
+		crypt.reset();
+		crypt.update(password);
+		crypt.update(salt);
+		byte[] hash = crypt.digest();
 
-	    byte[] hashPlusSalt = new byte[hash.length + salt.length];
-	    System.arraycopy(hash, 0, hashPlusSalt, 0, hash.length);
-	    System.arraycopy(salt, 0, hashPlusSalt, hash.length, salt.length);
+		byte[] hashPlusSalt = new byte[hash.length + salt.length];
+		System.arraycopy(hash, 0, hashPlusSalt, 0, hash.length);
+		System.arraycopy(salt, 0, hashPlusSalt, hash.length, salt.length);
 
-	    return new StringBuilder().append("{SSHA}")
-	            .append(Base64.getEncoder().encodeToString(hashPlusSalt))
-	            .toString();
+		return new StringBuilder().append("{SSHA}")
+				.append(Base64.getEncoder().encodeToString(hashPlusSalt))
+				.toString();
 	}
-	
+
 	public void moveEntry(String sourceDN, String destinationDN) throws LdapException {
 		logger.info("Moving entryDn :" + sourceDN + "  newSuperiorDn " + destinationDN);
 		LdapConnection connection = null;
@@ -1385,7 +1307,7 @@ public class LDAPServiceImpl implements ILDAPService {
 			releaseConnection(connection);
 		}
 	}
-	
+
 	public Boolean deleteNodes(LdapEntry entry) {
 		if(entry.getHasSubordinates().equals("FALSE")) {
 			try {
@@ -1406,7 +1328,7 @@ public class LDAPServiceImpl implements ILDAPService {
 						return false;
 					}
 				}
-		    }
+			}
 			entry = getOuAndOuSubTreeDetail(entry.getDistinguishedName());
 			if(entry.getChildEntries() == null || entry.getChildEntries().size() == 0) {
 				try {
@@ -1418,7 +1340,7 @@ public class LDAPServiceImpl implements ILDAPService {
 			}
 		}
 	}
-	
+
 	@Override
 	public Boolean renameEntry(String oldDN, String newName) throws LdapException {
 		logger.info("Rename DN  Old Name :" + oldDN + " New Name " + newName);
@@ -1437,4 +1359,255 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 		return true;
 	}
+
+	public List<OLCAccessRule> getAllOLCAccessRules(String groupDN) throws LdapException {
+		String olcRegex = "\\{([0-9]*)\\}to (dn.base|dn.subtree)=\"(.*)\" by (dn|dn.one|group.exact)=\"(" + groupDN + ")\" (read|write|none) by \\* break";
+		String dn = "olcDatabase={1}mdb,cn=config";
+		LdapConnection connection = null;
+		String attribute = "olcAccess";
+		List<OLCAccessRule> ruleList = new ArrayList<OLCAccessRule>();
+		OLCAccessRule rule = null;
+
+		try {
+			connection = getConnectionForConfig();
+			Entry entry = null;
+			try {
+				entry = connection.lookup(dn);
+				if (entry != null) {
+					for (Attribute a : entry.getAttributes()) {
+						if (a.getId().contains(attribute) || a.getUpId().contains(attribute) || ( a.getAttributeType()!=null && a.getAttributeType().getName().equalsIgnoreCase(attribute))) {
+							Iterator<Value<?>> iter = entry.get(a.getId()).iterator();
+							while (iter.hasNext()) {
+								String value = iter.next().getValue().toString();
+								//System.err.println(value);
+								if(Pattern.matches(olcRegex, value)) {
+									//get values by pattern
+									Pattern pattern = Pattern.compile(olcRegex);
+									Matcher matcher = pattern.matcher(value);
+
+									//if matcher is true and group count is 6 then get group values
+									if (matcher.find()) {
+										if(matcher.groupCount() == 6) {	
+											//System.out.println(value + " : MATCHES");
+											rule = new OLCAccessRule();
+											rule.setOrder(Integer.parseInt(matcher.group(1)));
+											rule.setAccessDNType(matcher.group(2));
+											rule.setAccessDN(matcher.group(3));
+											rule.setAssignedDNType(matcher.group(4));
+											rule.setAssignedDN(matcher.group(5));
+											rule.setAccessType(matcher.group(6));
+											ruleList.add(rule);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} catch (org.apache.directory.api.ldap.model.exception.LdapException e) {
+				logger.error(e.getMessage(), e);
+				return ruleList;
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ruleList;
+		}
+		return ruleList;
+	}
+
+	public List<OLCAccessRule> getSubTreeOLCAccessRules(String groupDN) throws LdapException {
+		String olcRegex = "\\{([0-9]*)\\}to (dn.subtree)=\"(.*)\" by (dn|dn.one|group.exact)=\"(" + groupDN + ")\" (read|write|none) by \\* break";
+		String dn = "olcDatabase={1}mdb,cn=config";
+		LdapConnection connection = null;
+		String attribute = "olcAccess";
+		List<OLCAccessRule> ruleList = new ArrayList<OLCAccessRule>();
+		OLCAccessRule rule = null;
+
+		try {
+			connection = getConnectionForConfig();
+			Entry entry = null;
+			try {
+				entry = connection.lookup(dn);
+				if (entry != null) {
+					for (Attribute a : entry.getAttributes()) {
+						if (a.getId().contains(attribute) || a.getUpId().contains(attribute) || ( a.getAttributeType()!=null && a.getAttributeType().getName().equalsIgnoreCase(attribute))) {
+							Iterator<Value<?>> iter = entry.get(a.getId()).iterator();
+							while (iter.hasNext()) {
+								String value = iter.next().getValue().toString();
+								//System.err.println(value);
+								if(Pattern.matches(olcRegex, value)) {
+									//get values by pattern
+									Pattern pattern = Pattern.compile(olcRegex);
+									Matcher matcher = pattern.matcher(value);
+
+									//if matcher is true and group count is 6 then get group values
+									if (matcher.find()) {
+										if(matcher.groupCount() == 6) {	
+											//System.out.println(value + " : MATCHES");
+											rule = new OLCAccessRule();
+											rule.setOrder(Integer.parseInt(matcher.group(1)));
+											rule.setAccessDNType(matcher.group(2));
+											rule.setAccessDN(matcher.group(3));
+											rule.setAssignedDNType(matcher.group(4));
+											rule.setAssignedDN(matcher.group(5));
+											rule.setAccessType(matcher.group(6));
+											ruleList.add(rule);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} catch (org.apache.directory.api.ldap.model.exception.LdapException e) {
+				logger.error(e.getMessage(), e);
+				return ruleList;
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ruleList;
+		}
+		return ruleList;
+	}
+
+	/*
+	 * add new olcAccess rules to config
+	 * olcAccessRuleType is type of the tree: computers, users ...
+	 */
+	public Boolean addOLCAccessRule(OLCAccessRule rule, String olcAccessRuleType) {
+		try {
+			//parse access dn to find all father DNs
+			LdapName dn = new LdapName(rule.getAccessDN());
+			List<String> listOfDNToAddRule = new ArrayList<>();
+			List<OLCAccessRule> existingRules = getAllOLCAccessRules(rule.getAssignedDN());
+			String parentGroupDN = "";
+
+			if(olcAccessRuleType.equals("computers")) {
+				parentGroupDN = configurationService.getAgentLdapBaseDn();
+			}
+			if(!parentGroupDN.equals(rule.getAccessDN())) {
+				//find all parent DNs
+				for (int i = 1; i <= dn.size(); i++) {
+					String parentDN = "";
+					for (int j = dn.size()-i; j >= 0; j--) {
+						parentDN += dn.get(j) + ',';
+					}
+					parentDN = parentDN.substring(0,parentDN.length()-1);
+					if(parentDN.equals(parentGroupDN)) {
+						break;
+					}
+					listOfDNToAddRule.add(parentDN);
+				}
+			} else {
+				listOfDNToAddRule.add(parentGroupDN);
+			}
+			//check if any rule is added for that group
+			if(existingRules.size() > 0) {
+				//if existing rules are completely different than new ones add new ones
+				for (int i = 0; i < existingRules.size(); i++) {
+					if(existingRules.get(i).getAccessDNType().equals("dn.subtree") && existingRules.get(i).getAccessDN().equals(rule.getAccessDN())) {
+						logger.error("Same olcAccess rule exists in config node. Rule will not be added.");
+						return false;
+					}
+				}
+				StringBuilder value;
+				for (int i = 0; i < listOfDNToAddRule.size(); i++) {
+					value = new StringBuilder("{2}to ");
+					if(i == 0) {
+						value.append("dn.subtree=");
+
+					} else {
+						value.append("dn.base=");
+					}
+					value.append("\"" + listOfDNToAddRule.get(i) +"\" ");
+					value.append("by ");
+					value.append("group.exact=");
+					value.append("\"" + rule.getAssignedDN() + "\" ");
+					if(i == listOfDNToAddRule.size()-1) {
+						value.append(rule.getAccessType() + " ");
+					} else {
+						value.append("read ");
+					}
+					value.append("by * break");
+					saveOLCRulesToConfig(value.toString());
+				}
+				return true;
+			} else {
+				//no rule is added for group
+				//find all parents till group head
+				StringBuilder value;
+				for (int i = 0; i < listOfDNToAddRule.size(); i++) {
+					value = new StringBuilder("{2}to ");
+					if(i == 0) {
+						value.append("dn.subtree=");
+
+					} else {
+						value.append("dn.base=");
+					}
+					value.append("\"" + listOfDNToAddRule.get(i) +"\" ");
+					value.append("by ");
+					value.append("group.exact=");
+					value.append("\"" + rule.getAssignedDN() + "\" ");
+					if(i == listOfDNToAddRule.size()-1) {
+						value.append(rule.getAccessType() + " ");
+					} else {
+						value.append("read ");
+					}
+					value.append("by * break");
+					saveOLCRulesToConfig(value.toString());
+				}
+				return true;
+			}
+		} catch (InvalidNameException | LdapException e) {
+			logger.info("Error occured while adding olcAccesRule error: " + e.getMessage());
+			return false;
+		}
+	}
+
+	private void saveOLCRulesToConfig(String value) {
+		LdapConnection connection;
+		String configDN = "olcDatabase={1}mdb,cn=config";
+		Entry entry = null;
+		ModifyRequest mr = new ModifyRequestImpl();
+		try {
+			connection = getConnectionForConfig();
+			entry = connection.lookup(configDN);
+			if (entry != null) {
+				entry.put("olcAccess", value.toString());
+				mr.setName(new Dn(configDN));
+				mr.add("olcAccess", value.toString());
+				connection.modify(mr);
+				logger.info("Adding to config node attribute: olcAccess: value:" + value);
+			}
+		} catch (LdapException e) {
+			logger.info("Error occured while adding olcAccesRule value: " + value);
+			logger.info("Error occured while adding olcAccesRule error: " + e.getMessage());
+		}
+	}
+
 }
+
+
+//		logger.info("Adding to config node attribute: olcAccess value: " + value);
+//		String entryDn = "olcDatabase={1}mdb,cn=config";
+//		LdapConnection connection = null;
+//
+//		connection = getConnection();
+//		Entry entry = null;
+//		try {
+//			entry = connection.lookup(entryDn);
+//			if (entry != null) {
+//				entry.put("olcAccess", value);
+//
+//				ModifyRequest mr = new ModifyRequestImpl();
+//				mr.setName(new Dn(entryDn));
+//				mr.add("olcAccess", value);
+//
+//				connection.modify(mr);
+//			}
+//		} catch (Exception e) {
+//			logger.error(e.getMessage(), e);
+//			throw new LdapException(e);
+//		} finally {
+//			releaseConnection(connection);
+//		}

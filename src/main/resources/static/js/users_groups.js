@@ -274,8 +274,22 @@ function createMainTree() {
 		$('#ldapAttrInfoHolder').html(html);
 		
 		if(row.type != "ORGANIZATIONAL_UNIT") {
+			//set dropdown button content
+			html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
+				+ 'onclick="dropdownButtonClicked(\'addMembersToUserGroupModal\')">Kullanıcı Ekle</a>';
+			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
+				+ 'onclick="dropdownButtonClicked(\'editGroupName\')">Grup Adını Düzenle</a>';
+			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
+				+ 'onclick="dropdownButtonClicked(\'moveEntry\')">Kaydı Taşı</a>';
+			html += '<div class="dropdown-divider"></div>';
+			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModalLarge"' 
+				+ 'onclick="dropdownButtonClicked(\'deleteMembersFromGroup\')">Kullanıcı Sil</a>';
+			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
+				+ 'onclick="dropdownButtonClicked(\'deleteUserGroup\')">Kullanıcı Grubunu Sil</a>';
+			$('#operationDropDown').html(html);
+			
 			//enable members tab button
-			$('#member-info').removeClass('disabled');
+			$('#member-info').show();
 			var members = "";
 			//to print members at different tab
 			for (var key in row.attributesMultiValues) {
@@ -307,17 +321,7 @@ function createMainTree() {
 			}
 			$('#bodyMembers').html(members);
 		} else {
-			//select entry info tab
-			$('#member-info').removeClass('active');
-			$('#tab-entry-info').tab('show');
-			$('#entry-info').addClass('active');
-			$('#member-info').addClass('disabled');
-		}
-		
-		var selectedRows = $("#treeGridUserGroups").jqxTreeGrid('getSelection');
-		var selectedRowData=selectedRows[0];
-
-		if(selectedRowData.type == "ORGANIZATIONAL_UNIT"){
+			//set dropdown button content
 			html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 				+ 'onclick="dropdownButtonClicked(\'createNewUserGroup\')">Yeni Kullanıcı Grubu Oluştur</a>';
 			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
@@ -333,22 +337,17 @@ function createMainTree() {
 					+ 'onclick="dropdownButtonClicked(\'deleteOrganizationalUnit\')">Klasörü Sil</a>';
 			}
 			$('#operationDropDown').html(html);
-		} else if(selectedRowData.type == "GROUP"){
-			html = '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
-				+ 'onclick="dropdownButtonClicked(\'addMembersToUserGroupModal\')">Kullanıcı Ekle</a>';
-			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
-				+ 'onclick="dropdownButtonClicked(\'editGroupName\')">Grup Adını Düzenle</a>';
-			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
-				+ 'onclick="dropdownButtonClicked(\'moveEntry\')">Kaydı Taşı</a>';
-			html += '<div class="dropdown-divider"></div>';
-			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModalLarge"' 
-				+ 'onclick="dropdownButtonClicked(\'deleteMembersFromGroup\')">Kullanıcı Sil</a>';
-			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
-				+ 'onclick="dropdownButtonClicked(\'deleteUserGroup\')">Kullanıcı Grubunu Sil</a>';
-			$('#operationDropDown').html(html);
+			
+			$('#entry-info').addClass('active');
+			$('#tab-entry-info').tab('show');
+			
+			$('#member-info').removeClass('active');
+			$('#tab-member-info').removeClass('active');
+			$('#member-info').hide();
 		}
 	});
 }
+
 /*
  * create, delete operations for Organizational Unit
  */

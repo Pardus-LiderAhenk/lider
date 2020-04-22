@@ -22,36 +22,44 @@ import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.entities.RoleImpl;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
+import tr.org.lider.ldap.OLCAccessRule;
 import tr.org.lider.messaging.enums.Protocol;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.models.ConfigParams;
 import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.services.RoleService;
 
+/**
+ * This controller is used for showing and updating all settings for lider
+ * 
+ * @author <a href="mailto:hasan.kara@pardus.org.tr">Hasan Kara</a>
+ * 
+ */
+
 @Secured({"ROLE_ADMIN", "ROLE_SETTINGS" })
 @RestController
 @RequestMapping("lider/settings")
 public class SettingsController {
-	
+
 	Logger logger = LoggerFactory.getLogger(SettingsController.class);
-	
+
 	@Autowired
 	ConfigurationService configurationService;
-	
+
 	@Autowired
 	XMPPClientImpl xmppClient;
-	
+
 	@Autowired
 	private LDAPServiceImpl ldapService;
-	
+
 	@Autowired
 	private RoleService roleService;
-	
+
 	@RequestMapping(method=RequestMethod.GET, value = "/configurations", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConfigParams getConfigParams() {
 		return configurationService.getConfigParams();
 	}
-	
+
 	@RequestMapping(method=RequestMethod.GET ,value = "/getConsoleUsers", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<LdapEntry> getLiderConsoleUsers() {
 		List<LdapEntry> ldapEntries = null;
@@ -65,7 +73,7 @@ public class SettingsController {
 		}
 		return ldapEntries;
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST, value = "/update/ldap", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConfigParams updateLdapSettings(@RequestParam (value = "ldapServer", required = true) String ldapServer,
 			@RequestParam (value = "ldapPort", required = true) String ldapPort,
@@ -91,7 +99,7 @@ public class SettingsController {
 		configParams.setAdHostName(adHostName);
 		return configurationService.updateConfigParams(configParams);
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST, value = "/update/xmpp", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConfigParams updateXMPPSettings(@RequestParam (value = "xmppHost", required = true) String xmppHost,
 			@RequestParam (value = "xmppPort", required = true) int xmppPort,
@@ -140,14 +148,14 @@ public class SettingsController {
 		configParams.setFileServerPassword(fileServerPassword);
 		return configurationService.updateConfigParams(configParams);
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST, value = "/update/otherSettings", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConfigParams updateOtherSettings(@RequestParam (value = "disableLocalUser", required = true) Boolean disableLocalUser) {
 		ConfigParams configParams = configurationService.getConfigParams();
 		configParams.setDisableLocalUser(disableLocalUser);
 		return configurationService.updateConfigParams(configParams);
 	}
-	
+
 	//add roles to user. 
 	@RequestMapping(method=RequestMethod.POST, value = "/editUserRoles", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LdapEntry>> editUserRoles(@RequestParam (value = "dn", required = true) String dn,
@@ -189,7 +197,7 @@ public class SettingsController {
 			return null;
 		}
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST, value = "/deleteConsoleUser", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LdapEntry>> deleteConsoleUser(@RequestParam (value = "dn", required = true) String dn,
 			Authentication authentication) {
@@ -217,50 +225,18 @@ public class SettingsController {
 						new String[] { "*" }, SearchScope.SUBTREE);
 				return new ResponseEntity<>(ldapEntries, HttpStatus.OK);
 			}
-				
+
 		} catch (LdapException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
+
 	@RequestMapping(method=RequestMethod.GET ,value = "/getRoles", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<RoleImpl> getRoles() {
 		return roleService.getRoles();
 	}
-	
-//	@RequestMapping(method=RequestMethod.GET ,value = "/getMenus", produces = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseBody
-//	public List<MenuImpl> getMenus() {
-//		return menuService.getMenuList();
-//	}
-	
-//	@RequestMapping(method=RequestMethod.POST ,value = "/addNewRole", produces = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseBody
-//	public List<RoleImpl> addRole(@RequestParam (value = "roleName", required = true) String roleName) {
-//		RoleImpl role = new RoleImpl();
-//		role.setName("ROLE_" + roleName);
-//		role.setMenus(null);
-//		roleService.saveRole(role);
-//		return roleService.getRoles();
-//	}
-	
-//	@RequestMapping(method=RequestMethod.POST ,value = "/deleteRole", produces = MediaType.APPLICATION_JSON_VALUE)
-//	@ResponseBody
-//	public List<RoleImpl> deleteRole(@RequestParam (value = "roleName", required = true) String roleName) {
-//		if(!roleName.toUpperCase().equals("ADMIN") && !roleName.toUpperCase().equals("USER")) {
-//			RoleImpl role = roleService.findRoleByName(roleName);
-//			if(role != null) {
-//				roleService.deleteRole(role.getId());
-//				return roleService.getRoles();
-//			} else {
-//				return null;
-//			}
-//		} else {
-//			return null;
-//		}
-//	}
-	
+
 	@RequestMapping(method=RequestMethod.POST ,value = "/saveMenusForRole", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<RoleImpl> saveMenusForRole(@RequestBody RoleImpl role) {
 		if(!role.getName().equals("ROLE_ADMIN")) {
@@ -269,6 +245,37 @@ public class SettingsController {
 		} else {
 			return null;
 		}
-
 	}
+
+	@RequestMapping(method=RequestMethod.POST ,value = "/getOLCAccessRules", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<OLCAccessRule> getUsersOLCAccessRules(@RequestParam (value = "dn", required = true) String dn) {
+		if(!dn.equals("")) {
+			try {
+				List<OLCAccessRule> ruleList = ldapService.getSubTreeOLCAccessRules(dn);
+				return ruleList;
+			} catch (LdapException e) {
+				logger.error(e.getMessage());
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	@RequestMapping(method=RequestMethod.POST ,value = "/addOLCAccessRule", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Boolean addOLCAccessRule(@RequestParam (value = "type", required = true) String type,
+			@RequestParam (value = "groupDN", required = true) String groupDN,
+			@RequestParam (value = "olcAccessDN", required = true) String olcAccessDN,
+			@RequestParam (value = "accessType", required = true) String accessType) {
+		if(!groupDN.equals("")) {
+			OLCAccessRule rule = new OLCAccessRule();
+			rule.setAccessDN(olcAccessDN);
+			rule.setAssignedDN(groupDN);
+			rule.setAccessType(accessType);
+			return ldapService.addOLCAccessRule(rule, type);
+		} else {
+			return false;
+		}
+	}
+
 }

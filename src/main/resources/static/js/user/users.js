@@ -792,11 +792,13 @@ function fillUserInfo(ldapResult) {
 //	$('#userPasswordPolicy').html();
 	
 	var policy=""
-		for (var k = 0; k < passwordPoliciesGen.length; k++) {
-	    	  var row = passwordPoliciesGen[k];
-	    	  if(row.distinguishedName==ldapResult.attributes.pwdPolicySubentry){
-	    		  policy=row
-	    	  }
+		if(passwordPoliciesGen){
+			for (var k = 0; k < passwordPoliciesGen.length; k++) {
+		    	  var row = passwordPoliciesGen[k];
+		    	  if(row.distinguishedName==ldapResult.attributes.pwdPolicySubentry){
+		    		  policy=row
+		    	  }
+			}
 		}
 	var html='<table class="table">';
 	

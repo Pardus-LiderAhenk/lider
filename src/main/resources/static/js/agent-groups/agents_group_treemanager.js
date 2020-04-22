@@ -21,7 +21,6 @@ function createAgentsGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckB
 		url : searchPath,
 		dataType : 'json',
 		success : function(data) {
-			console.log(data)
 			rootComputer = null;
 			 var source =
 			  {
@@ -38,6 +37,7 @@ function createAgentsGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckB
 							{ name: "hasSubordinates", type: "string" },
 							{ name: "expandedUser", type: "string" },
 							{ name: "attributes", type: "array" },
+					        { name: "attributesMultiValues", type: "array" },
 							{ name: "entryUUID", type: "string" },
 							{ name: "childEntries", type: "array" }
 							],
@@ -101,6 +101,7 @@ function createAgentsGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckB
 				    		 }
 				    	 }
 				    	 $('#'+treeGridId).jqxTreeGrid('collapseAll');
+				    	 $('#'+treeGridId).jqxTreeGrid('selectRow', rootComputer);
 				     },
 				     rendered: function () {
 				   	 },

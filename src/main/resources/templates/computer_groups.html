@@ -1,17 +1,56 @@
 
 <script type="text/javascript" src="js/agent-groups/agents_group_treemanager.js"></script>
 <script type="text/javascript" src="js/agent-groups/agents_groups.js"></script>
-
-
 	<div class="col-lg-2">
 				<div class="d-block dropdown" style="margin: 5px;">
+				<div id="ouOperations">
                     <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
                         <span class="btn-icon-wrapper pr-2">
                             <i class="fa fa-bars fa-w-20"></i>
                         </span>
                         Klasör İşlemleri
                     </button>
+                    
+                    <a href="#" class="btn btn-info" id="btnCreateNewAgentGroup" title="İstemci Grubu Ekle" data-target="#genericModal" data-toggle="modal">
+                                                        <i class="fa fa-users"> &nbsp;</i>
+                                                    </a>
                     <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+                    	 
+                    	 	<ul class="nav flex-column">
+ 									<li class="nav-item">
+                                         <a href="#" class="nav-link" id="btnCreateNewOrganizationalUnit" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+                                                        <i class="fa fa-folder-open"> &nbsp;</i>
+                                                        <span>
+                                                            Klasör Ekle
+                                                        </span>
+                                         </a>
+                                     </li>
+                                     <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnEditOrganizationalUnitName" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+                                                        <i class="fa fa-folder-open"> &nbsp;</i>
+                                                        <span>
+                                                            Klasör Adı Değiştir
+                                                        </span>
+                                                    </a>
+                                      </li>
+                                      <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnMoveOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+                                                        <i class="fa fa-random"> &nbsp;</i>
+                                                        <span>
+                                                            Klasör Taşı
+                                                        </span>
+                                                    </a>
+                                      </li>     
+                                      <li class="nav-item">
+                                                    <a href="#" class="nav-link" id="btnDeleteOrganizationalUnit" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+                                                        <i class="fa fa-minus"> &nbsp;</i>
+                                                        <span>
+                                                            Klasör Sil
+                                                        </span>
+                                                    </a>
+                                      </li>                                          
+                         	</ul>
+                    	 </div>
                     </div>
                 </div>
 			    <div id="treeGridAgentGroupsDiv">
@@ -37,15 +76,16 @@
 				</div>
 					<hr>
 					<div>
-						<div id="systemPage">
+						
 							<div class="row">
-								<div class="col-lg-5">
-									<div  >
+								<div class="col-lg-4">
+									<div >
 										<div class="main-card mb-3 card"  >
 											<div class="card-header">
 												<div class="col-lg-8"> İSTEMCİ GRUBU ÜYELERİ </div>
 												<div class="col-lg-4 pull-right">
-													<div class="pull-right">	
+													<div class="pull-right" id="agentGroupButtonActions">	
+														<button type="button" class="btn btn-info btn-sm" id="addMemberAgentGroupBtn" title="Üye Ekle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-plus"></i> </button>
 														<button type="button" class="btn btn-info btn-sm " id="editAgentGroupBtn" title="İstemci Grubunu Düzenle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-edit"></i> </button>
 														<button type="button" class="btn btn-info btn-sm " id="moveAgentGroupBtn" title="İstemci Grubunu Taşı" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-car"></i> </button>
 														<button type="button" class="btn btn-info btn-sm " id="deleteAgentGroup" title="İstemci Grubunu Sil" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-minus"></i> </button>
@@ -60,7 +100,7 @@
 															<tr>
 																<th style="width: 10%" class="text-center">#</th>
 																<th style="width: 80%">Üye DN</th>
-																<th style="width: 10%"> <button type="button" class="btn btn-info btn-sm" id="addMemberAgentGroupBtn" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-plus"></i> </button> </th>
+																<th style="width: 10%">  </th>
 															</tr>
 														</thead>
 														<tbody id="bodyMembers">
@@ -71,23 +111,25 @@
 											</div>
 										</div>
 									</div>
-									<div id="manage-root"></div>
-									<div id="local-user"></div>
-									<div id="ldap-login"></div>
-									<div id="file-transfer"></div>
-									<div id="xmessage"></div>		
 								</div>
-								<div class="col-lg-7">
-									<div id="resource-usage"></div>
-									<div id="file-management"></div>
-									<div id="conky"></div>
-									<div id="eta-notify"></div>
+								<div class="col-lg-8">
+									<div id="systemPage">
+										<div id="manage-root"></div>
+										<div id="local-user"></div>
+										<div id="ldap-login"></div>
+										<div id="file-transfer"></div>
+										<div id="xmessage"></div>		
+										<div id="resource-usage"></div>
+										<div id="file-management"></div>
+										<div id="conky"></div>
+										<div id="eta-notify"></div>
+									
+									</div>
+									<div id="scriptManagementPage">
+										<div id="execute-script"></div>
+								  	</div>
 								</div>
-							</div>
 					   </div>
-					   <div id="scriptManagementPage">
-							<div id="execute-script"></div>
-					  	</div>
 					
 					</div>
 			</div>

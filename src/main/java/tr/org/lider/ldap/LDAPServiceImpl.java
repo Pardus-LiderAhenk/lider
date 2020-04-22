@@ -1587,27 +1587,3 @@ public class LDAPServiceImpl implements ILDAPService {
 
 }
 
-
-//		logger.info("Adding to config node attribute: olcAccess value: " + value);
-//		String entryDn = "olcDatabase={1}mdb,cn=config";
-//		LdapConnection connection = null;
-//
-//		connection = getConnection();
-//		Entry entry = null;
-//		try {
-//			entry = connection.lookup(entryDn);
-//			if (entry != null) {
-//				entry.put("olcAccess", value);
-//
-//				ModifyRequest mr = new ModifyRequestImpl();
-//				mr.setName(new Dn(entryDn));
-//				mr.add("olcAccess", value);
-//
-//				connection.modify(mr);
-//			}
-//		} catch (Exception e) {
-//			logger.error(e.getMessage(), e);
-//			throw new LdapException(e);
-//		} finally {
-//			releaseConnection(connection);
-//		}

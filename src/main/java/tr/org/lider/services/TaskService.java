@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import tr.org.lider.entities.CommandImpl;
 import tr.org.lider.entities.PluginImpl;
 import tr.org.lider.entities.PluginTask;
 import tr.org.lider.entities.TaskImpl;
+import tr.org.lider.ldap.DNType;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.messaging.messages.ExecuteTaskMessageImpl;
@@ -68,7 +71,13 @@ public class TaskService {
 	public IRestResponse execute(PluginTask request) {
 
 		// Getting target entries 
-		List<LdapEntry> targetEntries = request.getEntryList();
+		/**
+		 * Getting target entries.. selected entries can be group ahhenk or organizational unit.
+		 * targetEntries must be only Ahenk. 
+		 * getTargetList method finds all suitable ahenks from selected group or organizational unit
+		 * 
+		 */
+		List<LdapEntry> targetEntries = getTargetList(request);
 
 		// Create & persist task
 		TaskImpl task= new TaskImpl(null, request.getPlugin(), request.getCommandId(), request.getParameterMap(), false,
@@ -164,6 +173,40 @@ public class TaskService {
 		return responseFactoryService.createResponse(RestResponseStatus.OK,"Task Basarı ile Gonderildi.");
 	}
 	
+	private List<LdapEntry> getTargetList(PluginTask request) {
+		List<LdapEntry> targetEntries= new ArrayList<>();
+		List<LdapEntry> selectedtEntries= request.getEntryList();
+		for (LdapEntry ldapEntry : selectedtEntries) {
+			if(ldapEntry.getType().equals(DNType.AHENK)) {
+				targetEntries.add(ldapEntry);
+			}
+			if(ldapEntry.getType().equals(DNType.GROUP)) {
+				String[] members= ldapEntry.getAttributesMultiValues().get("member");
+				for (int i = 0; i < members.length; i++) {
+					String dn = members[i];
+					try {
+						List<LdapEntry> member= ldapService.findSubEntries(dn, "(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.OBJECT);
+						if(member!=null && member.size()>0) {
+							targetEntries.add(member.get(0));
+						}
+						
+						
+					} catch (LdapException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+			if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
+				
+			}
+		}
+		
+		
+		return targetEntries;
+	}
+
 	public String buildKey(String pluginName, String pluginVersion, String commandId) {
 		StringBuilder key = new StringBuilder();
 		key.append(pluginName).append(":").append(pluginVersion).append(":").append(commandId);

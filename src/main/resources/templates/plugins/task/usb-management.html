@@ -1,0 +1,74 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/usb-management.js"></script>
+</head>
+<body>
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">USB YÖNETİMİ</div>
+			<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page} -->
+			<div class="col-lg-6 text-right">
+				<button id="sendTaskCronUsbManagement" type="button"	class="btn-shadow btn btn-info"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+				<button id="sendTaskUsbManagement" type="button" title="Çalıştır" class="btn-shadow btn btn-info"><i class="fa fa-play"></i></button>
+			</div>
+		</div>
+		<div class="card-body">
+			<div class="login-form-1">
+				<div class="login-group">
+					  <ul class="list-group">
+					    <li class="list-group-item">
+					      <div class="custom-control custom-checkbox col-lg-3">
+					        <input type="checkbox" class="custom-control-input" id="usbManageCb">
+					        <label class="custom-control-label" for="usbManageCb">USB</label>
+					      </div>
+					      <select class="custom-select custom-select-sm col-lg-3" id="usbSelectBox" disabled>
+							<option value="1" selected>İzin Ver</option>
+							<option value="0">İzin Verme</option>
+						 </select>
+					    </li>
+					    
+					    <li class="list-group-item">
+					      <div class="custom-control custom-checkbox col-lg-3">
+					        <input type="checkbox" class="custom-control-input" id="printerManageCb">
+					        <label class="custom-control-label" for="printerManageCb">YAZICI</label>
+					      </div>
+					      <select class="custom-select custom-select-sm col-lg-3" id="printerSelectBox" disabled>
+							<option value="1" selected>İzin Ver</option>
+							<option value="0">İzin Verme</option>
+						 </select>
+					    </li>
+					    
+					    <li class="list-group-item">
+					      <div class="custom-control custom-checkbox col-lg-3">
+					        <input type="checkbox" class="custom-control-input" id="webCamManageCb">
+					        <label class="custom-control-label" for="webCamManageCb">WEB KAMERASI</label>
+					      </div>
+					      <select class="custom-select custom-select-sm col-lg-3" id="webCamSelectBox" disabled>
+							<option value="1" selected>İzin Ver</option>
+							<option value="0">İzin Verme</option>
+						 </select>
+					    </li>
+					    
+					    <li class="list-group-item">
+					      <div class="custom-control custom-checkbox col-lg-3">
+					        <input type="checkbox" class="custom-control-input" id="mouseKeyboardManageCb">
+					        <label class="custom-control-label" for="mouseKeyboardManageCb">FARE-KLAVYE</label>
+					      </div>
+					      <select class="custom-select custom-select-sm col-lg-3" id="mouseKeyboardSelectBox" disabled>
+							<option value="1" selected>İzin Ver</option>
+							<option value="0">İzin Verme</option>
+						 </select>
+					    </li>
+					  </ul>
+					  <small id="usbManageHelp" class="text-muted">İzinlerini düzenlemek istediğiniz aygıtı seçerek Çalıştır butonuna tıklayınız.</small>
+					<div id="plugin-result-usb-management"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

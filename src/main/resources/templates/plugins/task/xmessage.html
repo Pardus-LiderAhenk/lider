@@ -1,0 +1,33 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/xmessage.js"></script>
+<link rel="stylesheet" href="css/plugin.task.css" />
+</head>
+<body>
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">ANLIK MESAJ</div>
+			<div class="col-lg-6 text-right">
+				<button id="sendTaskCronXmessage" type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+				<button id="sendTaskXmessage" type="button" title="Mesaj Gönder" class="btn-shadow btn btn-info"><i class="fas fa-share-square"></i></button>
+			</div>
+		</div>
+		<div class="card-body">
+			<div class="login-form-1">
+				<div class="login-group">
+					<div class="form-group">
+						<label for="notifyContent">Mesaj İçeriği</label>
+						<textarea class="form-control" id="xmessageContent" rows="10"></textarea>
+					</div>
+					<small class="text-muted">Göndermek istediğiniz mesaj içeriğini girerek Mesaj Gönder butonuna tıklayınız.</small>
+					<div id="plugin-result-xmessage"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

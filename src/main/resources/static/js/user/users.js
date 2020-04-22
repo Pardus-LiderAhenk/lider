@@ -26,21 +26,12 @@ $(document).ready(function(){
 				setUserActionButtons(row,rootDnUser);
 				if(row.type=='USER'){
 					selectedRowGen=row;
-					if(selectedUserTab=="showAttributes")
-					{
-						showAttributes(row);
-					}
-					else if(selectedUserTab=="showGroups")
-					{
-						showGroups(row);
-					}
-					else if(selectedUserTab=="showRoles")
-					{
-						showRoles(row);
-					}
+					showAttributes(row);
+					showGroups(row);
+					showRoles(row);
+					fillUserInfo(row);
+					fillUserSessions(row);
 					
-					fillUserInfo(selectedRowGen)
-					fillUserSessions(selectedRowGen)
 				}
 				if(row.type=='ORGANIZATIONAL_UNIT'){
 					selectedFolder=row;
@@ -55,30 +46,6 @@ $(document).ready(function(){
 				
 			}
 	);
-	/**
-	 * tab click
-	 */
-	$('#tab-btn-userInfo').on('click',function() {
-		selectedUserTab="showAttributes"
-	});
-	$('#tab-btn-userGroups').on('click',function() {
-		selectedUserTab="showGroups"
-			if(selectedRowGen==null){
-				$.notify("Lütfen Kullanıcı Seçiniz", "warn");
-			}
-			else{
-				showGroups(selectedRowGen);
-			}
-	});
-	$('#tab-btn-userRoles').on('click',function() {
-		selectedUserTab="showRoles"
-		if(selectedRowGen==null){
-			$.notify("Lütfen Kullanıcı Seçiniz", "warn");
-		}
-		else{
-			showRoles(selectedRowGen);
-		}
-	});
 	
 	$('#btnAddOuModal').on('click',function(event) {
 		if(selectedFolder==null){
@@ -130,10 +97,8 @@ $(document).ready(function(){
 	});
 	
 	$('#btnAddUserModal').on('click',function(event) {
-		
 		if(selectedFolder==null){
 			$.notify("Lütfen Klasör Seçiniz","warn"  );
-			
 		}
 		else{
 			getModalContent("modals/user/addUserModal", function content(data){
@@ -559,14 +524,15 @@ function moveUserFolder(selectedEntry, ou) {
 function hideUserButtons(){
 //	$("#btnEditUserModal").hide();
 //	$("#btnDeleteUserModal").hide();
-	$("#btnChangePasswordUserModal").hide();
-	$("#btnSetPasswordPolicyModal").hide();
+//	$("#btnChangePasswordUserModal").hide();
+//	$("#btnSetPasswordPolicyModal").hide();
 	$("#btnAddOuModal").hide();
 //	$("#btnAddUserModal").hide();
 	$("#btnDeleteOuModal").hide();
 //	$("#btnMoveUserModal").hide();
 	$("#btnMoveOuModal").hide();
 //	$("#btnDisableUserModal").hide();
+	$("#btnAddUserModal").hide();
 }
 
 function setUserActionButtons(row,rootDNUser){
@@ -582,6 +548,7 @@ function setUserActionButtons(row,rootDNUser){
 		$("#btnAddOuModal").hide();
 		$("#btnAddUserModal").hide();
 		$("#btnMoveOuModal").hide();
+		$("#btnFolderActions").hide();
 	  }
 	  else if(row.type == "ORGANIZATIONAL_UNIT"){
 		  
@@ -601,6 +568,7 @@ function setUserActionButtons(row,rootDNUser){
 		  }
 		  $("#btnAddUserModal").show();
 		  $("#btnAddOuModal").show();
+		  $("#btnFolderActions").show();
 	  }
 	  else{
 		$("#btnDeleteOuModal").hide();
@@ -611,6 +579,7 @@ function setUserActionButtons(row,rootDNUser){
 		$("#btnChangePasswordUserModal").hide();
 		$("#btnSetPasswordPolicyModal").hide();
 		$("#btnDeleteUserModal").hide();
+		$("#btnAddUserModal").hide();
 //		$("#btnMoveUserModal").hide();
 	  }
 }
@@ -651,7 +620,7 @@ function showAttributes(row){
         }
     } 
     html += '</table>';
-    $('#selectedDnInfo').html("Seçili Kayıt: "+row.name);
+//    $('#selectedDnInfo').html("Seçili Kayıt: "+row.name);
     $('#ldapAttrInfoHolder').html(html);
     
     $('.nav-link').each(function(){               
@@ -673,13 +642,13 @@ function showGroups(row){
 					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
 						memberHtml += '<tr>';
 						memberHtml += '<td>' + row.attributesMultiValues[key][i] + '</td>'; 
-						memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' > Gruptan Çıkar </button></td>'; 
+						memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' >  <i class="fas fa-minus"></i>  </button></td>'; 
 						memberHtml += '</tr>';
 					}
 				} else {
 					memberHtml += '<tr>';
 					memberHtml += '<td>' + row.attributesMultiValues[key] + '</td>';
-					memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' > Gruptan Çıkar </button></td>'; 
+					memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' > <i class="fas fa-minus"></i>  </button></td>'; 
 					memberHtml += '</tr>';
 				}
 			}
@@ -794,6 +763,9 @@ function getLastUser() {
 			selectedRowGen=ldapResult;
 			fillUserInfo(ldapResult)
 			fillUserSessions(ldapResult)
+//			showAttributes(ldapResult);
+			showGroups(ldapResult);
+			showRoles(ldapResult);
 			
 		},
 	    error: function (data, errorThrown) {
@@ -887,33 +859,56 @@ function fillUserInfo(ldapResult) {
     console.log(policy)
 	
 }
+
+function getFormattedDate(date) {
+	
+	var h= date.split('T');
+	console.log(h[1])
+	var hours=h[1].split(':')
+	var d = date.slice(0, 10).split('-');  
+	return d[1] +'/'+ d[2] +'/'+ d[0] + ' '+(hours[0])+":"+hours[1]; // 10/30/2010
+}
+
 function fillUserSessions(ldapResult) {
 	
-	var html = '<ul class="messages">'
-		
-		if(ldapResult.sessionList){
-				for (var m = 0; m < ldapResult.sessionList.length; m++) {
-					var row = ldapResult.sessionList[m];
-				html += '<li> '
-				html += ' <img src="img/linux.png" class="avatar" alt="Avatar"> '
-				html +=' <div class="message_date"> ' 
-				html +='  <h3 class="date text-info">24</h3> ' 
-				html +='  <p class="month">May</p> '
-				html +='  </div> '
-				html +=' <div class="message_wrapper"> '
-				html +='    <h4 class="heading">'+row.agent.hostname+'</h4> '
-				html +=' <blockquote class="message">' + row.agent.ipAddresses+ '</blockquote>'
-				html +=' <blockquote class="message">' + row.agent.dn+ '</blockquote>'
-				html +=' <br /> '
-				html +='   <p class="url"> '
-				html +='  <span class="fs1 text-info" aria-hidden="true" data-icon=""></span> '
-				html +=' </p> '
-				html +=' </div> '
-				html +='  </li> '
+	$.ajax({
+		type : 'POST',
+		url : 'lider/user/getUserSessions',
+		data: 'uid='+ldapResult.attributes.uid,
+		dataType: "json",
+		success : function(sessionList) {
+			var html='<table class="table">';
+			
+			html += '<thead>';
+			html += '<th style="width: 10%" ></th>';
+			html += '<th style="width: 30%" >HOSTNAME</th>';
+			html += '<th style="width: 30%" >IP</th>';
+			html += '<th style="width: 30%" >DURUM</th>';
+			html += '<th style="width: 30%" >TARİH</th>';
+			html += '</thead>';
+			
+			if(sessionList){
+				
+				console.log(sessionList)
+				for (var m = 0; m < sessionList.length; m++) {
+					var row = sessionList[m];
+					
+					html += '<tr>';
+					html += '<td > <img src="img/linux.png" class="avatar" alt="Avatar"> </td>';
+			        html += '<td >' + row.agent.hostname + '</td>';
+			        html += '<td >' + row.agent.ipAddresses + '</td>';
+			        html += '<td >' + row.sessionEvent + '</td>';
+			        html += '<td >' + getFormattedDate(row.createDate) + '</td>';
+					html += '</tr>';
+					
 				}
+			}
+			html += '</table>';
+			$("#sessionListDiv").html(html);
+		},
+	    error: function (data, errorThrown) {
 		}
-	html += '</ul">'
-	$("#sessionListDiv").html(html);
+	 }); 
 }
 function getPasswordPolicies() {
 	$.ajax({
@@ -922,57 +917,6 @@ function getPasswordPolicies() {
 		dataType : 'json',
 		success : function(data) {
 			passwordPoliciesGen=data;
-			
-//			if(data){
-//				var policyHtml=' <ul class="messages">'
-//
-//				for (var i = 0; i < data.length; i++) {
-//			    	  var row = data[i];
-//			    	policyHtml +='<li>'
-//			    	policyHtml +='<img src="images/img.jpg" class="avatar" alt="Avatar">'
-//			    	policyHtml +='<div class="message_wrapper">'
-//			    	policyHtml +='<h4 class="heading"> '+ row.cn+'</h4>'
-//			    	policyHtml +='<blockquote class="message">'
-//			    					var html='<table class="table">';
-//										html += '<thead>';
-//										html += '<tr>';
-//										html += '<th style="width: 40%"></th>';
-//										html += '<th style="width: 60%"></th>';
-//										html += '</tr>';
-//										html += '</thead>';
-//								        
-//								        for (key in row.attributes) {
-//								            if (row.attributes.hasOwnProperty(key)) {
-//								                
-//								                if( (key =="pwdExpireWarning") 
-//								                		|| (key =="cn") 
-//								                		|| (key =="pwdFailureCountInterval") 
-//								                		|| (key =="pwdGraceAuthNLimit") 
-//								                		|| (key =="pwdInHistory") 
-//								                		|| (key =="pwdLockout") 
-//								                		|| (key =="pwdLockoutDuration") 
-//								                		|| (key =="pwdMaxAge") 
-//								                		|| (key =="pwdMinAge") 
-//								                		|| (key =="pwdMaxFailure") 
-//								                		|| (key =="pwdMinLength") 
-//								                		|| (key =="pwdMustChange") 
-//								                		|| (key =="pwdSafeModify") 
-//								                		|| (key =="pwdCheckQuality") 
-//								                		){
-//								                	html += '<tr>';
-//										            html += '<td>' + key + '</td>';
-//										            html += '<td>' + row.attributes[key] + '</td>';
-//										            html += '</tr>';
-//								                }
-//								            }
-//								        } 
-//							        html += '</table>';
-//			    	  policyHtml += html;
-//			    	  policyHtml += '</blockquote>';
-//				}
-//				policyHtml += '</ul>'
-//				$("#passwordPolicyList").append(policyHtml)
-//			}
 		}
 	});
 }

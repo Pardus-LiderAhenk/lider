@@ -35,7 +35,6 @@ import tr.org.lider.services.ConfigurationService;
  * @author <a href="mailto:hasan.kara@pardus.org.tr">Hasan Kara</a>
  * 
  */
-@Secured({"ROLE_ADMIN", "ROLE_COMPUTER_GROUPS" })
 @RestController
 @RequestMapping("/lider/computer_groups")
 public class ComputerGroupsController {

@@ -1,4 +1,7 @@
-<script type="text/javascript" src="js/computer_groups.js"></script>
+
+<script type="text/javascript" src="js/agent-groups/agents_group_treemanager.js"></script>
+<script type="text/javascript" src="js/agent-groups/agents_groups.js"></script>
+
 
 	<div class="col-lg-2">
 				<div class="d-block dropdown" style="margin: 5px;">
@@ -6,59 +9,86 @@
                         <span class="btn-icon-wrapper pr-2">
                             <i class="fa fa-bars fa-w-20"></i>
                         </span>
-                        İşlem Seç
+                        Klasör İşlemleri
                     </button>
                     <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
                     </div>
                 </div>
 			    <div id="treeGridAgentGroupsDiv">
-				    <div id="treeGridAgentGroups"></div>
 			    </div>
 	</div>
 
-	<div class="col-lg-10 white" style="height: 1200px;">
-		<div class="main-card mb-3 card">
-			<div class="card-header card-header-tab-animation">
-				<ul class="nav nav-justified" id="tab-items">
-					<li class="nav-item">
-						<a role="tab" class="nav-link active"
-							id="entry-info" data-toggle="tab" href="#tab-entry-info"> 
-							<span>Kayıt Bilgisi</span>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a role="tab" class="nav-link"
-							id="member-info" data-toggle="tab" href="#tab-member-info"> 
-							<span>Grup Üyeleri</span>
-						</a>
-					</li>
-				</ul>
-
-			</div>
-			<div class="card-body">
-				<div class="tab-content">
-					<div class="tab-pane active" id="tab-entry-info" role="tabpanel">
-						<p id="entrInfoTabSelectedDnInfo"class="mb-0"></p>
-						<div id="ldapAttrInfoHolder"></div>
-					</div>
-					<div class="tab-pane" id="tab-member-info" role="tabpanel">
-						<p id="memberTabSelectedDNInfo"class="mb-0"></p>
+	<div class="col-lg-10 green">
+			<div>
+				<div class="row" style="margin-top: 15px">
+					<div class="col-lg-10">
 						<div>
-							<table class="mb-0 table table-bordered">
-								<thead>
-									<tr>
-										<th style="width: 10%" class="text-center">#</th>
-										<th style="width: 80%">Üye DN</th>
-										<th style="width: 10%"></th>
-									</tr>
-								</thead>
-								<tbody id="bodyMembers">
-									<tr><td colspan="100%" class="text-center">Üye bulunamadı</td></tr>
-								</tbody>
-							</table>
+							<img id="agent_image" alt="" src="img/linux.png">
+							<button  class="btn btn-link agent-offline " id=selectedAgentGroupInfo>  Lütfen İstemci Grubu Seçiniz.</button>
+							<button  class="btn"> </button>
+							
+							<button role="tab" class="btn btn-info" id="btn-system" data-toggle="tab"><i class="fa fa-sliders-h"></i> Sistem Yönetimi </button>
+							<button role="tab" class="btn btn-info" id="btn-script" data-toggle="tab"><i class="fa fa-terminal"></i> Betik</button>
 						</div>
 					</div>
+					<div class="col-lg-2" >
+						<a class="nav-link  pull-right"> <i class="nav-link-icon fas fa-info-circle"> </i> &nbsp; <span > </span> </a>
+					</div>
 				</div>
+					<hr>
+					<div>
+						<div id="systemPage">
+							<div class="row">
+								<div class="col-lg-5">
+									<div  >
+										<div class="main-card mb-3 card"  >
+											<div class="card-header">
+												<div class="col-lg-8"> İSTEMCİ GRUBU ÜYELERİ </div>
+												<div class="col-lg-4 pull-right">
+													<div class="pull-right">	
+														<button type="button" class="btn btn-info btn-sm " id="editAgentGroupBtn" title="İstemci Grubunu Düzenle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-edit"></i> </button>
+														<button type="button" class="btn btn-info btn-sm " id="moveAgentGroupBtn" title="İstemci Grubunu Taşı" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-car"></i> </button>
+														<button type="button" class="btn btn-info btn-sm " id="deleteAgentGroup" title="İstemci Grubunu Sil" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-minus"></i> </button>
+													</div>
+
+												</div>
+											</div>
+											<div class="card-body">
+												<div> 
+													<table class="mb-0 table table-bordered" >
+														<thead>
+															<tr>
+																<th style="width: 10%" class="text-center">#</th>
+																<th style="width: 80%">Üye DN</th>
+																<th style="width: 10%"> <button type="button" class="btn btn-info btn-sm" id="addMemberAgentGroupBtn" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-plus"></i> </button> </th>
+															</tr>
+														</thead>
+														<tbody id="bodyMembers">
+															<tr><td colspan="100%" class="text-center">Üye bulunamadı</td></tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div id="manage-root"></div>
+									<div id="local-user"></div>
+									<div id="ldap-login"></div>
+									<div id="file-transfer"></div>
+									<div id="xmessage"></div>		
+								</div>
+								<div class="col-lg-7">
+									<div id="resource-usage"></div>
+									<div id="file-management"></div>
+									<div id="conky"></div>
+									<div id="eta-notify"></div>
+								</div>
+							</div>
+					   </div>
+					   <div id="scriptManagementPage">
+							<div id="execute-script"></div>
+					  	</div>
+					
+					</div>
 			</div>
 		</div>
-	</div>

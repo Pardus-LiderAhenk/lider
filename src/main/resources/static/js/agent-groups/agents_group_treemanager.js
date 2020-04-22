@@ -1,57 +1,54 @@
 /**
- * userTree component 
- * this component can be use for user tree
+ * tree component 
+ * this component can be use for tree
  * edip.yildiz
  * @param page
  * @param callback
  * @returns
  */
-
-function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
-	var rootDNUser = null;
+function createAgentsGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
+	var rootComputer = null;
 	var treeGridId=treeHolderDiv+"Grid";
 	/**
 	 * create search area
 	 */
-	createUserSearch(treeHolderDiv,treeGridId,showOnlyFolder);
+	createSearch(treeHolderDiv,treeGridId,showOnlyFolder);
 	/**
 	 * get root dn for user and set treegrid tree
 	 */
 	$.ajax({
 		type : 'POST',
-		url : 'lider/user/getUsers',
+		url : searchPath,
 		dataType : 'json',
 		success : function(data) {
-			rootDNUser = null;
+			console.log(data)
+			rootComputer = null;
 			 var source =
 			  {
-			      dataType: "json",
-			      dataFields: [
-			           { name: "name", type: "string" },
-			           { name: "online", type: "string" },
-			           { name: "uid", type: "string" },
-			           { name: "type", type: "string" },
-			           { name: "cn", type: "string" },
-			           { name: "ou", type: "string" },
-			           { name: "parent", type: "string" },
-			           { name: "distinguishedName", type: "string" },
-			           { name: "hasSubordinates", type: "string" },
-			           { name: "expandedUser", type: "string" },
-			           { name: "entryUUID", type: "string" },
-			           { name: "attributes", type: "array" },
-			           { name: "attributesMultiValues", type: "array" },
-			           { name: "childEntries", type: "array" }
-			      ],
-			      hierarchy:
-			          {
-			              root: "childEntries"
-			          },
-			      localData: data,
-			      id: "entryUUID"
+					 dataType: "json",
+						dataFields: [
+							{ name: "name", type: "string" },
+							{ name: "online", type: "string" },
+							{ name: "uid", type: "string" },
+							{ name: "type", type: "string" },
+							{ name: "cn", type: "string" },
+							{ name: "ou", type: "string" },
+							{ name: "parent", type: "string" },
+							{ name: "distinguishedName", type: "string" },
+							{ name: "hasSubordinates", type: "string" },
+							{ name: "expandedUser", type: "string" },
+							{ name: "attributes", type: "array" },
+							{ name: "entryUUID", type: "string" },
+							{ name: "childEntries", type: "array" }
+							],
+							hierarchy:
+							{
+								root: "childEntries"
+							},
+							localData: data,
+							id: "entryUUID"
 			  };
-			 
-			    rootDNUser = source.localData[0].entryUUID;
-//			 	$("#treeGridUser").jqxTreeGrid('destroy');
+			 	rootComputer = source.localData[0].entryUUID;
 			 	
 			 	$('#'+treeHolderDiv).append('<div id="'+treeGridId+'"></div> ')
 				
@@ -63,13 +60,16 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 				 var getLocalization = function () {
 			           var localizationobj = {};
 			           localizationobj.filterSearchString = "Ara :";
+			           localizationobj.pagerShowRowsString= "Sayfa:";
+			           localizationobj.pagerGoToPageString = "";
 			           return localizationobj;
 				}
 				 // create jqxTreeGrid.
 				 $('#'+treeGridId).jqxTreeGrid({
 					 width: '100%',
 					 source: dataAdapter,
-				     altRows: true,
+//					 theme : 'fresh',
+//				     altRows: true,
 				     sortable: true,
 				     columnsResize: true,
 			         filterable: false,
@@ -80,23 +80,24 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 				     filterMode: "simple",
 				     selectionMode: "singleRow",
 				     localization: getLocalization(),
-				     pageSize: 100,
-				     pageSizeOptions: ['15', '25', '100'],
+				     pageSize: 500,
+				     pagerMode: "default",
+				     pageSizeOptions: ['15', '50', '500'],
 				     icons: function (rowKey, dataRow) {
 				    	    var level = dataRow.level;
-				    	    if(dataRow.type == "USER"){
-				    	        return "img/person.png";
+				    	    if(dataRow.type == "AHENK"){
+				    	    	return "img/linux.png";
 				    	    }
-				    	    else return "img/folder.png";
+				    	    else if(dataRow.type =="ORGANIZATIONAL_UNIT")
+				    	    	{return "img/folder.png";}
+				    	    else {return "img/entry_group.gif"; }
 				    	},
 				     ready: function () {
 				    	 var allrows =$('#'+treeGridId).jqxTreeGrid('getRows');
-				    	 var main=null
 				    	 if(allrows.length==1){
 				    		 var row=allrows[0];
 				    		 if(row.childEntries==null ){
 				    			 $('#'+treeGridId).jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
-				    			 main=row.entryUUID
 				    		 }
 				    	 }
 				    	 $('#'+treeGridId).jqxTreeGrid('collapseAll');
@@ -104,15 +105,14 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 				     rendered: function () {
 				   	 },
 				     columns: [
-				       { text: "Kullanıcılar", align: "center", dataField: "name", width: '100%' }
-				     ]
+				    	 { text: "Bilgisayarlar", align: "center", dataField: "name", width: '100%'}
+				    ]
 				 });
 				 
 				 $('#'+treeGridId).on('rowSelect', function (event) {
 				        var args = event.args;
 					    var row = args.row;
-					    var name= row.name;
-					    rowSelectAction(row,rootDNUser);
+					    rowSelectAction(row,rootComputer,treeGridId);
 
 				    });
 				 
@@ -139,15 +139,14 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 						      var nameList=[];
 						      
 						      for (var m = 0; m < row.records.length; m++) {
-						    	  var childRow = row.records[m];
+									var childRow = row.records[m];
 									nameList.push(childRow.uid);      
-							  }
-						      
-						      for (var k = 0; k < nameList.length; k++) {
-									          // get a row.
-								  var childRowname = nameList[k];
-								  $('#'+treeGridId).jqxTreeGrid('deleteRow', childRowname); 
-							  } 
+								}
+								for (var k = 0; k < nameList.length; k++) {
+									// get a row.
+									var childRowname = nameList[k];
+									$('#'+treeGridId).jqxTreeGrid('deleteRow', childRowname); 
+								}  
 						      
 						      var urlPath=""
 						      if(showOnlyFolder){
@@ -173,7 +172,7 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 										          }
 										           $('#'+treeGridId).jqxTreeGrid('collapseRow', childRow.name);
 									      } 
-										 row.expandedUser="TRUE"
+										 row.expandedUser="TRUE"	
 									}
 								});  
 					      }
@@ -182,20 +181,20 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 	});
 }
 
-function createUserSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
+
+
+function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 	
 	var srcInputId= treeHolderDiv+"srcInput";
 	var srcBtnId= treeHolderDiv+"srcBtn";
 	var srcSelectId= treeHolderDiv+"srcSelect";
-	var searchHtml=	
-			' <div class="input-group"> '+
+	var searchHtml=	 '<div class="input-group"> '+
 			'    <div class="input-group-prepend">  '+
 			'       <select class="form-control " style="font-family: cursive; font-size: 12px;" id="'+srcSelectId+'" > ';
 	       
 		   if(showOnlyFolder==false){
-				searchHtml +='<option selected value="uid"> ID </option> '+
-						'<option value="cn"> Ad </option> '+ 
-						'<option value="sn"> Soyad </option>'+
+				searchHtml +='<option  value="uid"> ID </option> '+
+						'<option selected value="cn"> Ad </option> '+ 
 						'<option value="ou"> Klasör </option>';
 			}
 			else if(showOnlyFolder==true){
@@ -240,15 +239,16 @@ function createUserSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 						$.notify("Sonuç Bulunamadı", "warn");
 						return;
 					}
-					$('#'+treeGridId).jqxTreeGrid('deleteRow', "userSearch")
-					$('#'+treeGridId).jqxTreeGrid('addRow', "userSearch", { name: "Arama Sonuçları" }, 'last')
+					
+					$('#'+treeGridId).jqxTreeGrid('deleteRow', "Results")
+					$('#'+treeGridId).jqxTreeGrid('addRow', "Results", { name: "Arama Sonuçları" }, 'last')
 					
 					for (var i = 0; i < ldapResult.length; i++) {
 				    	 var entry = ldapResult[i];
-				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.entryUUID , entry , 'last' ,'userSearch');
+				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.name , entry , 'last' ,'Results');
 					}
 					$('#'+treeGridId).jqxTreeGrid('collapseAll');
-					$('#'+treeGridId).jqxTreeGrid('expandRow', "userSearch");
+					$('#'+treeGridId).jqxTreeGrid('expandRow', "Results");
 					
 				},
 			    error: function (data, errorThrown) {
@@ -259,9 +259,5 @@ function createUserSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 		else{
 			$.notify("Lütfen Arama Dizini Seçiniz", "warn");
 		}
-		
-		
-		
 	});
-	
 }

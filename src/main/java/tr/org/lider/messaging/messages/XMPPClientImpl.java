@@ -91,19 +91,19 @@ import tr.org.lider.messaging.listeners.PacketListener;
 //import tr.org.liderahenk.lider.messaging.listeners.UserSessionListener;
 import tr.org.lider.messaging.listeners.RegistrationListener;
 import tr.org.lider.messaging.listeners.TaskStatusListener;
+import tr.org.lider.messaging.listeners.UserSessionListener;
 import tr.org.lider.messaging.listeners.XMPPConnectionListener;
 import tr.org.lider.messaging.subscribers.IPresenceSubscriber;
 import tr.org.lider.messaging.subscribers.IRegistrationSubscriber;
 import tr.org.lider.messaging.subscribers.ITaskStatusSubscriber;
+import tr.org.lider.messaging.subscribers.IUserSessionSubscriber;
 import tr.org.lider.services.ConfigurationService;
-
 
 /**
  * This class works as an XMPP client which listens to incoming packets and
  * provides XMPP utility methods such as sending messages and reading roster.
  * 
  */
-
 @Service
 public class XMPPClientImpl {
 
@@ -132,7 +132,7 @@ public class XMPPClientImpl {
 
 	//	private PolicyStatusListener policyStatusListener;
 	private RegistrationListener registrationListener;
-	//	private UserSessionListener userSessionListener;
+	private UserSessionListener userSessionListener;
 	//	private MissingPluginListener missingPluginListener;
 	//	private PolicyListener policyListener;
 	//	private RequestAgreementListener reqAggrementListener;
@@ -150,7 +150,9 @@ public class XMPPClientImpl {
 	private List<IPresenceSubscriber> presenceSubscribers;
 
 	//	private List<IPolicyStatusSubscriber> policyStatusSubscribers;
-	//	private IUserSessionSubscriber userSessionSubscriber;
+	
+	@Autowired
+	private IUserSessionSubscriber userSessionSubscriber;
 	//	private IMissingPluginSubscriber missingPluginSubscriber;
 	//	private IPolicySubscriber policySubscriber;
 	//	private IRequestAgreementSubscriber reqAggrementSubscriber;
@@ -364,10 +366,10 @@ public class XMPPClientImpl {
 		//registrationListener.setDefaultSubcriber(defaultRegistrationSubscriber);
 		connection.addAsyncStanzaListener(registrationListener, registrationListener);
 		//		
-		//		// Hook listener for user session messages
-		//		userSessionListener = new UserSessionListener();
-		//		userSessionListener.setSubscriber(userSessionSubscriber);
-		//		connection.addAsyncStanzaListener(userSessionListener, userSessionListener);
+				// Hook listener for user session messages
+		userSessionListener = new UserSessionListener(this);
+		userSessionListener.setSubscriber(userSessionSubscriber);
+		connection.addAsyncStanzaListener(userSessionListener, userSessionListener);
 		//		
 		//		// Hook listener for missing plugin messages
 		//		missingPluginListener = new MissingPluginListener(this);

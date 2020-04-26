@@ -14,9 +14,10 @@ if (ref_end_sessions) {
 
 var scheduledParamEndSessions = null;
 var scheduledModalEndSessionsOpened = false;
-var ref_end_sessions=connection.addHandler(endSessionsListener, null, 'message', null, null,  null);
+var ref_end_sessions = connection.addHandler(endSessionsListener, null, 'message', null, null,  null);
+var dnlist=[];
+var pluginTask_EndSessions = null;
 
-var dnlist=[]
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
 		dnlist.push(selectedEntries[i].distinguishedName);
@@ -25,7 +26,7 @@ if(selectedEntries){
 for (var n = 0; n < pluginTaskList.length; n++) {
 	var pluginTask=pluginTaskList[n];
 	if (pluginTask.page == 'end-sessions') {
-		pluginTask_EndSessions=pluginTask;
+		pluginTask_EndSessions = pluginTask;
 	}
 }
 

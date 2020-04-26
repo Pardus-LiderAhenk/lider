@@ -191,14 +191,19 @@ $('#sendTaskLdapLogin').click(function(e){
 		$.notify("Lütfen istemci seçiniz.", "error");
 		return;
 	}
-
+	
 	if ($('#ldapLoginSb :selected').val() != "NA" || $('#ldapLoginCancelCb').is(':checked')){
 		if ($('#ldapLoginSb :selected').val() == "OpenLDAP"){
+			var adminPwd = null;
+			if (selectedEntries[0]["attributes"].userPassword) {
+				adminPwd = selectedEntries[0]["attributes"].userPassword;
+			}
+			
 			pluginTask_LdapLogin.parameterMap={
 					"server-address": directoryData.ldapServer,
 					"dn": directoryData.ldapRootDn,
 					"admin-dn": selectedEntries[0]["attributes"].entryDN,
-					"admin-password": selectedEntries[0]["attributes"].userPassword,
+					"admin-password": adminPwd,
 					"disableLocalUser": directoryData.disableLocalUser
 
 			};
@@ -231,6 +236,7 @@ $('#sendTaskLdapLogin').click(function(e){
 			pluginTask_LdapLogin.cronExpression = scheduledParamLdapLogin;
 			var params = JSON.stringify(pluginTask_LdapLogin);
 		}
+		console.log(pluginTask_LdapLogin.parameterMap)
 		sendLdapLogin(params);
 	}else {
 		$.notify("Lütfen kaynak dizin(OpenLDAP / Active Directory) seçiniz veya Oturum açma ayarlarını iptal seçeneğine tıklayınız.", "warn");

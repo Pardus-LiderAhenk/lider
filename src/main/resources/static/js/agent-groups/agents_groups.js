@@ -708,22 +708,24 @@ function createMembersList(row) {
 	selectedDN = row.distinguishedName;
 	selectedEntryUUID = row.entryUUID;
 	selectedName = row.name;
-	data={}
-	data.type=row.type;
-	data.entryUUID=row.entryUUID;
-	data.name=row.name;
-	data.online=row.online;
-	data.uid=row.uid;
-	data.distinguishedName=row.distinguishedName;
-	data.cn=row.cn;
-	data.attributesMultiValues=row.attributesMultiValues;
-	/**
-	 * selected entries should be one element 
-	 */
-	selectedEntries=[]
-	selectedEntries.push(data);
 	
 	if(row.type == "GROUP") {
+		
+		data={}
+		data.type=row.type;
+		data.entryUUID=row.entryUUID;
+		data.name=row.name;
+		data.online=row.online;
+		data.uid=row.uid;
+		data.distinguishedName=row.distinguishedName;
+		data.cn=row.cn;
+		data.attributesMultiValues=row.attributesMultiValues;
+		/**
+		 * selected entries should be one element 
+		 */
+		selectedEntries=[]
+		selectedEntries.push(data);
+		
 		if(row.parent != null) {
 			selectedEntryParentDN = row.parent.distinguishedName;
 		}
@@ -760,6 +762,7 @@ function createMembersList(row) {
 			$('#ouOperations').hide();
 			showAgentButtons()
 	} else {
+		selectedEntries=[]
 		clearAndHide();
 		$('#ouOperations').show();
 	}

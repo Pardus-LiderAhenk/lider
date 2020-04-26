@@ -432,7 +432,6 @@ function rowCheckAndUncheckOperationToAddMembersToExistingGroup(checkedRows) {
 }
 
 function btnAddMemberClicked() {
-	alert("aadd")
 	if(checkedAgents.length == 0) {
 		$.notify("Lütfen en az bir istemci seçiniz.", "error");
 		return;
@@ -449,7 +448,7 @@ function btnAddMemberClicked() {
 		
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/lider/ldap/group/existing",
+		    url: "/lider/computer_groups/group/existing",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 

@@ -21,7 +21,7 @@ var selectedEntryParentDN = "";
 var selectedEntryUUIDForTreeMove = "";
 
 $(document).ready(function(){
-	createMainTree();
+	//createMainTree();
 });
 
 /*

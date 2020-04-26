@@ -258,11 +258,9 @@ function rowCheckAndUncheckOperationForCreatingGroup(checkedRows,row) {
     	checkedOUList = [];
         checkedAgents = [];
 //    	var checkedRows = $("#createNewAgentGroupTreeGridAgent").jqxTreeGrid('getCheckedRows');
-        console.log(checkedRows)
     	if(checkedRows.length > 0){
     		for (var k = 0; k < checkedRows.length; k++) {
     			var rowCheck = checkedRows[k]
-    			console.log(rowCheck)
     			if(rowCheck.type == "AHENK") {
     				checkedAgents.push({
     					distinguishedName: rowCheck.distinguishedName, 
@@ -367,22 +365,25 @@ function rowCheckAndUncheckOperationToAddMembersToExistingGroup(checkedRows) {
     checkedOUList = [];
     checkedAgents = [];
 	if(checkedRows.length > 0){
-		for(var row in checkedRows) {
-			if(checkedRows[row].type == "AHENK") {
+		for (var k = 0; k < checkedRows.length; k++) {
+			var rowCheck = checkedRows[k]
+			if(rowCheck.type == "AHENK") {
 				checkedAgents.push({
-					distinguishedName: checkedRows[row].distinguishedName, 
-					entryUUID: checkedRows[row].entryUUID, 
-					name: checkedRows[row].name,
-					type: checkedRows[row].type,
-					uid: checkedRows[row].uid
+					distinguishedName: rowCheck.distinguishedName, 
+					entryUUID: rowCheck.entryUUID, 
+					name: rowCheck.name,
+					type: rowCheck.type,
+					uid: rowCheck.uid
 				});
-			} else if(checkedRows[row].type == "ORGANIZATIONAL_UNIT" && checkedRows[row].expanded == false) {
+			} 
+			
+			if(rowCheck.type == "ORGANIZATIONAL_UNIT" && rowCheck.expandedUser == "FALSE") {
 				checkedOUList.push({
-					distinguishedName: checkedRows[row].distinguishedName, 
-					entryUUID: checkedRows[row].entryUUID, 
-					name: checkedRows[row].name,
-					type: checkedRows[row].type,
-					uid: checkedRows[row].uid
+					distinguishedName: rowCheck.distinguishedName, 
+					entryUUID: rowCheck.entryUUID, 
+					name: rowCheck.name,
+					type: rowCheck.type,
+					uid: rowCheck.uid
 				});
 			}
 		}
@@ -757,16 +758,11 @@ function createMembersList(row) {
 				}
 			}
 			$('#bodyMembers').html(members);
+			$('#ouOperations').hide();
+			showAgentButtons()
 	} else {
 		clearAndHide();
-	}
-	
-	if(selectedRow.type == "ORGANIZATIONAL_UNIT"){
 		$('#ouOperations').show();
-		
-	} else if(selectedRow.type == "GROUP"){
-		$('#ouOperations').hide();
-		showAgentButtons()
 	}
 }
 function setPluginPages() {

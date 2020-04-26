@@ -169,6 +169,9 @@ $(document).ready(function(){
 	$('#btn-script').click(function() {
 		setScriptPluginPage();
 	});
+	$('#btn-packages').click(function() {
+		setPackagesPluginPage();
+	});
 	// Page buttons actions END
 });
 
@@ -768,8 +771,9 @@ function createMembersList(row) {
 	}
 }
 function setPluginPages() {
-	$("#systemPage").show();
-	$("#scriptManagementPage").hide();
+	$("#agentGroupsSystemPage").show();
+	$("#agentGroupsScriptPage").hide();
+	$("#agentGroupsPackageManagePage").hide();
 	$.ajax({
 		type : 'POST',
 		url : 'getPluginTaskList',
@@ -846,13 +850,36 @@ function setPluginPages() {
 						}
 					});
 				}
+				if(pluginTask.page == 'usb-management'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#usb-management').html(res1);
+						}
+					});
+				}
+				if(pluginTask.page == 'file-transfer'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#file-transfer').html(res1);
+						}
+					});
+				}
 			}
 		}
 	});
 }
 function setScriptPluginPage() {
-	$("#systemPage").hide();
-	$("#scriptManagementPage").show();
+	$("#agentGroupsSystemPage").hide();
+	$("#agentGroupsScriptPage").show();
+	$("#agentGroupsPackageManagePage").hide();
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
 		if(pluginTask.page == 'execute-script'){
@@ -868,6 +895,28 @@ function setScriptPluginPage() {
 		}
 	}
 }
+
+function setPackagesPluginPage() {
+	$("#agentGroupsSystemPage").hide();
+	$("#agentGroupsScriptPage").hide();
+	$("#agentGroupsPackageManagePage").show();
+	
+	for (var i = 0; i < pluginTaskList.length; i++) {
+		var pluginTask = pluginTaskList[i];
+		if(pluginTask.page == 'packages'){
+			$.ajax({
+				type : 'POST',
+				url : 'getPluginTaskHtmlPage',
+				data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+				dataType : 'text',
+				success : function(res2) {
+					$('#packages').html(res2);
+				}
+			});
+		}
+	}
+}
+
 function cretaeAgentGroupTree() {
 	$('#treeGridAgentGroupsDiv').html("");
 	var treeGridHolderDiv= "treeGridAgentGroupsDiv";

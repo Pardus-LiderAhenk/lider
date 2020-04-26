@@ -64,9 +64,9 @@
 							<img id="agent_image" alt="" src="img/linux.png">
 							<button  class="btn btn-link agent-offline " id=selectedAgentGroupInfo>  Lütfen İstemci Grubu Seçiniz.</button>
 							<button  class="btn"> </button>
-							
 							<button role="tab" class="btn btn-info" id="btn-system" data-toggle="tab"><i class="fa fa-sliders-h"></i> Sistem Yönetimi </button>
 							<button role="tab" class="btn btn-info" id="btn-script" data-toggle="tab"><i class="fa fa-terminal"></i> Betik</button>
+							<button role="tab" class="btn btn-info" id="btn-packages" data-toggle="tab"><i class="fa fas fa-cubes"></i> Paket Yönetimi</button>
 						</div>
 					</div>
 					<div class="col-lg-2" >
@@ -76,7 +76,7 @@
 					<hr>
 						<hr>
 					<div>
-						<div id="systemPage">
+						<div id="agentGroupsSystemPage">
 							<div class="row">
 								<div class="col-lg-5">
 									<div  >
@@ -111,23 +111,26 @@
 											</div>
 										</div>
 									</div>
+									<div id="end-sessions"></div>
 									<div id="manage-root"></div>
 									<div id="local-user"></div>
 									<div id="ldap-login"></div>
-									<div id="file-transfer"></div>
-									<div id="xmessage"></div>		
+									<div id="usb-management"></div>
 								</div>
 								<div class="col-lg-7">
-									<div id="resource-usage"></div>
-									<div id="file-management"></div>
+									<div id="file-transfer"></div>
 									<div id="conky"></div>
 									<div id="eta-notify"></div>
+									<div id="xmessage"></div>
 								</div>
 							</div>
 					   </div>
-					   <div id="scriptManagementPage">
+					   <div id="agentGroupsScriptPage">
 							<div id="execute-script"></div>
-					  	</div>
-			</div>
+					  </div>
+					  <div id="agentGroupsPackageManagePage">
+							<div id="packages"></div>
+					  </div>
+				</div>
 			</div>
 		</div>

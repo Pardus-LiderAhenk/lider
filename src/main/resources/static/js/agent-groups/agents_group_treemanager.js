@@ -101,7 +101,7 @@ function createAgentsGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckB
 				    		 }
 				    	 }
 				    	 $('#'+treeGridId).jqxTreeGrid('collapseAll');
-				    	 $('#'+treeGridId).jqxTreeGrid('selectRow', rootComputer);
+//				    	 $('#'+treeGridId).jqxTreeGrid('selectRow', rootComputer);
 				     },
 				     rendered: function () {
 				   	 },

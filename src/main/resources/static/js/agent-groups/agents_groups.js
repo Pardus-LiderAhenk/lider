@@ -768,6 +768,17 @@ function createMembersList(row) {
 		selectedEntries=[]
 		clearAndHide();
 		$('#ouOperations').show();
+		if(row.entryUUID == baseRootDnComputer){
+			  $("#btnEditOrganizationalUnitName").hide();
+			  $("#btnMoveOuModal").hide();
+			  $("#btnDeleteOrganizationalUnit").hide();
+			  $("#btnCreateNewOrganizationalUnit").show();
+		  }else{
+			  $("#btnEditOrganizationalUnitName").show();
+			  $("#btnMoveOuModal").show();
+			  $("#btnDeleteOrganizationalUnit").show();
+			  $("#btnCreateNewOrganizationalUnit").show();
+		  }
 	}
 }
 function setPluginPages() {
@@ -942,6 +953,11 @@ function clearAndHide() {
 	$('#selectedAgentGroupInfo').html("Lütfen İstemci Grubu Seçiniz");
 	$('#bodyMembers').html('<tr><td colspan="100%" class="text-center">Lütfen İstemci Grubu Seçiniz.</td></tr>');
 	$('#agentGroupButtonActions').hide()
+	$("#btnEditOrganizationalUnitName").hide();
+	$("#btnMoveOuModal").hide();
+	$("#btnDeleteOrganizationalUnit").hide();
+	$("#btnCreateNewOrganizationalUnit").hide();
+	
 }
 function showAgentButtons() {
 	$('#agentGroupButtonActions').show()

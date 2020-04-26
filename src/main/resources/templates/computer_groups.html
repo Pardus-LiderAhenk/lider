@@ -1,5 +1,13 @@
 <script type="text/javascript" src="js/agent-groups/agents_group_treemanager.js"></script>
 <script type="text/javascript" src="js/agent-groups/agents_groups.js"></script>
+<style type="text/css">
+
+.allow-scroll {
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+</style>
 	<div class="col-lg-2">
 				<div class="d-block dropdown" style="margin: 5px;">
 				<div id="ouOperations">
@@ -74,13 +82,12 @@
 					</div>
 				</div>
 					<hr>
-						<hr>
 					<div>
 						<div id="agentGroupsSystemPage">
 							<div class="row">
 								<div class="col-lg-5">
-									<div  >
-										<div class="main-card mb-3 card"  >
+									<div style="height:420px;" >
+										<div class="main-card mb-3 card" style="height:400px; "  >
 											<div class="card-header">
 												<div class="col-lg-8"> İSTEMCİ GRUBU ÜYELERİ </div>
 												<div class="col-lg-4 pull-right">
@@ -94,19 +101,21 @@
 												</div>
 											</div>
 											<div class="card-body">
-												<div> 
-													<table class="mb-0 table table-bordered" >
-														<thead>
-															<tr>
-																<th style="width: 10%" class="text-center">#</th>
-																<th style="width: 80%">Üye DN</th>
-																<th style="width: 10%">  </th>
-															</tr>
-														</thead>
-														<tbody id="bodyMembers">
-															<tr><td colspan="100%" class="text-center">Üye bulunamadı</td></tr>
-														</tbody>
-													</table>
+												<div class="allow-scroll">
+													<div> 
+														<table class="mb-0 table table-bordered">
+															<thead>
+																<tr>
+																	<th style="width: 9%" class="text-center">#</th>
+																	<th style="width: 75%">Üye DN</th>
+																	<th style="width: 16%">  </th>
+																</tr>
+															</thead>
+															<tbody id="bodyMembers">
+																<tr><td colspan="100%" class="text-center">Üye bulunamadı</td></tr>
+															</tbody>
+														</table>
+													</div>
 												</div>
 											</div>
 										</div>

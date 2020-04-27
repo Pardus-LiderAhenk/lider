@@ -357,7 +357,7 @@ function setConsoleUsersTable() {
 	if(users != null && users.length > 0) {
 		var trElement = "";
 		$.each(users, function(index, element) {
-			trElement += '<tr id="user_' + index + '" onclick=showUserDetail("user_' + index + '","' + element.distinguishedName + '")><td>' + (index+1) + '</td>';
+			trElement += '<tr id="user_' + index + '" onclick="showUserDetail(\'user_' + index + '\',\'' + element.distinguishedName + '\')"><td>' + (index+1) + '</td>';
 			trElement += "<td>" + element.uid + "</td>";
 			trElement += "<td>" + element.distinguishedName + "</td>";
 			trElement += '</tr>';

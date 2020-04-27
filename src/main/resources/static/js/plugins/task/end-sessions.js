@@ -1,6 +1,6 @@
 /**
  * end-sessions
- * this task terminates open user sessions on clients
+ * this task terminates open user sessions on clients and shutdown and restart clients
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
  * 
@@ -30,32 +30,59 @@ for (var n = 0; n < pluginTaskList.length; n++) {
 	}
 }
 
-function sendTaskEndSession(params) {
-	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
-	if (scheduledParamEndSessions != null) {
-		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamEndSessions;
+function sendTaskEndSession(commandId) {
+	if(pluginTask_EndSessions){
+		pluginTask_EndSessions.dnList=dnlist;
+		pluginTask_EndSessions.entryList=selectedEntries;
+		pluginTask_EndSessions.dnType="AHENK";
+		pluginTask_EndSessions.cronExpression = scheduledParamEndSessions;
+		pluginTask_EndSessions.parameterMap={};
+		pluginTask_EndSessions.commandId = commandId;
+		var params = JSON.stringify(pluginTask_EndSessions);
 	}
-	$.ajax({
-		type: "POST",
-		url: "/lider/task/execute",
-		headers: {
-			'Content-Type':'application/json',
-		}, 
-		data: params,
-		contentType: "application/json",
-		dataType: "json",
-		converters: {
-			'text json': true
-		}, 
-		success: function(result) {
-			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){
-				$("#plugin-result-end-sessions").html(message.bold());
-			}   	
-			/* $('#closePage').click(); */
-		},
-		error: function(result) {
-			$.notify(result, "error");
+
+	var content = "Görev Gönderilecek, emin misiniz?";
+	if (scheduledParamEndSessions != null) {
+		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+	}
+	$.confirm({
+		title: 'Uyarı!',
+		content: content,
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+
+				var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
+				if (scheduledParamEndSessions != null) {
+					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamEndSessions;
+				}
+				$.ajax({
+					type: "POST",
+					url: "/lider/task/execute",
+					headers: {
+						'Content-Type':'application/json',
+					}, 
+					data: params,
+					contentType: "application/json",
+					dataType: "json",
+					converters: {
+						'text json': true
+					}, 
+					success: function(result) {
+						var res = jQuery.parseJSON(result);
+						if(res.status=="OK"){
+							$("#plugin-result-end-sessions").html(message.bold());
+						}   	
+						/* $('#closePage').click(); */
+					},
+					error: function(result) {
+						$.notify(result, "error");
+					}
+				});
+				scheduledParamEndSessions = null;
+			},
+			Hayır: function () {
+			}
 		}
 	});
 }
@@ -70,7 +97,7 @@ function endSessionsListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
-		if(xmppResponse.commandClsId == "MANAGE" || xmppResponse.commandClsId == "MACHINE_SHUTDOWN") {
+		if(xmppResponse.commandClsId == "MANAGE" || xmppResponse.commandClsId == "MACHINE_SHUTDOWN" || xmppResponse.commandClsId == "MACHINE_RESTART") {
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					$("#plugin-result-end-sessions").html("");
@@ -86,7 +113,7 @@ function endSessionsListener(msg) {
 	return true;
 }
 
-$('#sendTaskCron-end-sessions').click(function(e){
+$('#sendTaskCronEndSessions').click(function(e){
 	$('#scheduledTasksModal').modal('toggle');
 	scheduledParam = null;
 	scheduledModalEndSessionsOpened = true;
@@ -100,74 +127,29 @@ $("#scheduledTasksModal").on('hidden.bs.modal', function(){
 	defaultScheduleSelection();
 });
 
-
-$('#sendTask-end-sessions').click(function(e){
+//logout user on agent
+$('#sendTaskEndSessions').click(function(e){
 	if (selectedEntries.length == 0 ) {
 		$.notify("Lütfen istemci seçiniz.", "error");
 		return;
 	}
-	
-	if(pluginTask_EndSessions){
-		pluginTask_EndSessions.dnList=dnlist;
-		pluginTask_EndSessions.entryList=selectedEntries;
-		pluginTask_EndSessions.dnType="AHENK";
-		pluginTask_EndSessions.cronExpression = scheduledParamEndSessions;
-		pluginTask_EndSessions.parameterMap={};
-		pluginTask_EndSessions.commandId = "MANAGE";
-		var params = JSON.stringify(pluginTask_EndSessions);
-	}
-	
-	var content = "Görev Gönderilecek, emin misiniz?";
-	if (scheduledParamEndSessions != null) {
-		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
-	}
-	$.confirm({
-		title: 'Uyarı!',
-		content: content,
-		theme: 'light',
-		buttons: {
-			Evet: function () {
-				sendTaskEndSession(params);
-				scheduledParamEndSessions = null;
-			},
-			Hayır: function () {
-			}
-		}
-	});
+	sendTaskEndSession("MANAGE");
 });
 
-
-$('#sendTask-shutdown').click(function(e){
+//Shutdown agent
+$('#sendTaskShutdown').click(function(e){
 	if (selectedEntries.length == 0 ) {
 		$.notify("Lütfen istemci seçiniz.", "error");
 		return;
 	}
-	
-	if(pluginTask_EndSessions){
-		pluginTask_EndSessions.dnList=dnlist;
-		pluginTask_EndSessions.entryList=selectedEntries;
-		pluginTask_EndSessions.dnType="AHENK";
-		pluginTask_EndSessions.cronExpression = scheduledParamEndSessions;
-		pluginTask_EndSessions.parameterMap={};
-		pluginTask_EndSessions.commandId = "MACHINE_SHUTDOWN";
-		var params = JSON.stringify(pluginTask_EndSessions);
+	sendTaskEndSession("MACHINE_SHUTDOWN");
+});
+
+//restart agent
+$('#sendTaskRestart').click(function(e){
+	if (selectedEntries.length == 0 ) {
+		$.notify("Lütfen istemci seçiniz.", "error");
+		return;
 	}
-	
-	var content = "Görev Gönderilecek, emin misiniz?";
-	if (scheduledParamEndSessions != null) {
-		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
-	}
-	$.confirm({
-		title: 'Uyarı!',
-		content: content,
-		theme: 'light',
-		buttons: {
-			Evet: function () {
-				sendTaskEndSession(params);
-				scheduledParamEndSessions = null;
-			},
-			Hayır: function () {
-			}
-		}
-	});
+	sendTaskEndSession("MACHINE_RESTART");
 });

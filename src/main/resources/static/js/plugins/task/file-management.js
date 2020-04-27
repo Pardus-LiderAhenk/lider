@@ -163,22 +163,28 @@ $('#sendTaskFileManagement').click(function(e){
 		return;
 	}
 	var filePath = $("#filePath").val();
+	var fileContent = $("#fileContent").val();
+	var fileContentSize = (fileContent.length / 1024).toFixed(2);
 
 	if (filePath != "") {
+		if (fileContentSize <= 5) {
 
-		if (pluginTask_FileManagement) {
-			pluginTask_FileManagement.dnList=dnlist;
-			pluginTask_FileManagement.entryList=selectedEntries;
-			pluginTask_FileManagement.dnType="AHENK";
-			pluginTask_FileManagement.parameterMap={
-					"file-path": filePath,
-					"file-content":$("#fileContent").val()
-			};
-			pluginTask_FileManagement.cronExpression = scheduledParamFileMan;
-			pluginTask_FileManagement.commandId = "WRITE_TO_FILE";  		
-			var params = JSON.stringify(pluginTask_FileManagement);
+			if (pluginTask_FileManagement) {
+				pluginTask_FileManagement.dnList=dnlist;
+				pluginTask_FileManagement.entryList=selectedEntries;
+				pluginTask_FileManagement.dnType="AHENK";
+				pluginTask_FileManagement.parameterMap={
+						"file-path": filePath,
+						"file-content":$("#fileContent").val()
+				};
+				pluginTask_FileManagement.cronExpression = scheduledParamFileMan;
+				pluginTask_FileManagement.commandId = "WRITE_TO_FILE";  		
+				var params = JSON.stringify(pluginTask_FileManagement);
+			}
+			sendFileManagementTask(params);
+		} else {
+			$.notify("Dosya boyutu çok fazla. Dosya boyutu 5K 'dan fazla olamaz. ", "warn");
 		}
-		sendFileManagementTask(params);
 	}else {
 		$.notify("Lütfen dosya yolunu giriniz, daha sonra Kaydet butonuna tıklayınız.", "warn");
 	}

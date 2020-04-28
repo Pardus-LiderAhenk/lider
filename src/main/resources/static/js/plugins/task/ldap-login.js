@@ -62,7 +62,7 @@ function setDirectoryParams() {
 	$('#adDomainNameInfo').val(directoryData.adDomainName);
 	$('#adHostnameInfo').val(directoryData.adHostName);
 	$('#adUsernameInfo').val(directoryData.adAdminUserName);
-	$('#adUserPasswordInfo').val(directoryData.adAdminPassword);
+//	$('#adUserPasswordInfo').val(directoryData.adAdminPassword);
 	$('#adPortInfo').val(directoryData.adPort);
 }
 
@@ -158,17 +158,11 @@ $('#ldapLoginSb').change(function(){
 	}else if (directoryType == "OpenLDAP") {
 		$("#openLdapInfo").show();
 		$("#activeDirectoryInfo").hide();
-		if (selectedEntries.length == 1 ) {
-			setDirectoryParams();
-			$('#openLdapAgentDnInfo').val(selectedEntries[0]["attributes"].entryDN);
-			$('#openLdapAgentPasswordInfo').val(selectedEntries[0]["attributes"].userPassword);
-		}
+		setDirectoryParams();
 	}else {
 		$("#openLdapInfo").hide();
 		$("#activeDirectoryInfo").show();
-		if (selectedEntries.length == 1 ) {
-			setDirectoryParams();
-		}
+		setDirectoryParams();
 	}
 });
 
@@ -191,18 +185,25 @@ $('#sendTaskLdapLogin').click(function(e){
 		$.notify("Lütfen istemci seçiniz.", "error");
 		return;
 	}
-	
+
 	if ($('#ldapLoginSb :selected').val() != "NA" || $('#ldapLoginCancelCb').is(':checked')){
 		if ($('#ldapLoginSb :selected').val() == "OpenLDAP"){
+			console.log(selectedEntries[0].type)
 			var adminPwd = null;
-			if (selectedEntries[0]["attributes"].userPassword) {
-				adminPwd = selectedEntries[0]["attributes"].userPassword;
-			}
+			var adminDn = null;
 			
+//			if selected entries type is AHENK
+			if (selectedEntries[0].type == "AHENK") {
+				adminDn = selectedEntries[0]["attributes"].entryDN;
+				if (selectedEntries[0]["attributes"].userPassword) {
+					adminPwd = selectedEntries[0]["attributes"].userPassword;
+				}
+			}
+
 			pluginTask_LdapLogin.parameterMap={
 					"server-address": directoryData.ldapServer,
 					"dn": directoryData.ldapRootDn,
-					"admin-dn": selectedEntries[0]["attributes"].entryDN,
+					"admin-dn": adminDn,
 					"admin-password": adminPwd,
 					"disableLocalUser": directoryData.disableLocalUser
 
@@ -236,7 +237,6 @@ $('#sendTaskLdapLogin').click(function(e){
 			pluginTask_LdapLogin.cronExpression = scheduledParamLdapLogin;
 			var params = JSON.stringify(pluginTask_LdapLogin);
 		}
-		console.log(pluginTask_LdapLogin.parameterMap)
 		sendLdapLogin(params);
 	}else {
 		$.notify("Lütfen kaynak dizin(OpenLDAP / Active Directory) seçiniz veya Oturum açma ayarlarını iptal seçeneğine tıklayınız.", "warn");

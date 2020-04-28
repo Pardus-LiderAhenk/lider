@@ -739,6 +739,9 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		selectedEntries.push(data);
 		showSelectedEntries();
 	}
+	else{
+		selectedEntries=[]
+	}
 }
 
 function showSelectedEntries() {

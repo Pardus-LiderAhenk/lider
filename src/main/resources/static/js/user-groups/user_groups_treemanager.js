@@ -101,12 +101,12 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 				    		 }
 				    	 }
 				    	 $('#'+treeGridId).jqxTreeGrid('collapseAll');
-				    	 $('#'+treeGridId).jqxTreeGrid('selectRow', rootComputer);
+//				    	 $('#'+treeGridId).jqxTreeGrid('selectRow', rootComputer);
 				     },
 				     rendered: function () {
 				   	 },
 				     columns: [
-				    	 { text: "Bilgisayarlar", align: "center", dataField: "name", width: '100%'}
+				    	 { text: "Kullanıcı Grupları", align: "center", dataField: "name", width: '100%'}
 				    ]
 				 });
 				 
@@ -149,13 +149,7 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 									$('#'+treeGridId).jqxTreeGrid('deleteRow', childRowname); 
 								}  
 						      
-						      var urlPath=""
-						      if(showOnlyFolder){
-						    	  urlPath= 'lider/user_groups/getOuDetails'; 
-						      }
-						      else{
-						    	  urlPath= 'lider/ldap/getOuDetails';
-						      }
+						      var urlPath='lider/user_groups/getOuDetails'; 
 						      $.ajax({
 									type : 'POST',
 									url : urlPath,
@@ -164,15 +158,34 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 									dataType : 'text',
 									success : function(ldapResult) {
 										var childs = jQuery.parseJSON(ldapResult);
-										 for (var m = 0; m < childs.length; m++) {
-											 	// get a row.
-									          	var childRow = childs[m];
-										          $('#'+treeGridId).jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
-										          if(childRow.hasSubordinates=="TRUE"){
-										           $('#'+treeGridId).jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
-										          }
-										           $('#'+treeGridId).jqxTreeGrid('collapseRow', childRow.name);
-									      } 
+										if(showOnlyFolder){
+											for (var m = 0; m < childs.length; m++) {
+												// get a row.
+												var childRow = childs[m];
+												
+												if(childRow.type == "ORGANIZATIONAL_UNIT") {
+													$('#'+treeGridId).jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
+													//$("#createNewAgentGroupTreeGridAgent").jqxTreeGrid('checkRow', row.name);
+													if(childRow.hasSubordinates=="TRUE"){
+														$('#'+treeGridId).jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
+													}
+													$('#'+treeGridId).jqxTreeGrid('collapseRow', childRow.entryUUID);
+												}
+	
+											}
+										}
+										else{
+											 for (var m = 0; m < childs.length; m++) {
+												 	// get a row.
+										          	var childRow = childs[m];
+											          $('#'+treeGridId).jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
+											          if(childRow.hasSubordinates=="TRUE"){
+											           $('#'+treeGridId).jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
+											          }
+											           $('#'+treeGridId).jqxTreeGrid('collapseRow', childRow.name);
+										      } 
+											
+										}
 										 row.expandedUser="TRUE"	
 									}
 								});  

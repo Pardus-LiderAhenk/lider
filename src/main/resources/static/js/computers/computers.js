@@ -289,6 +289,17 @@ function setSystemPluginPage() {
 						}
 					});
 				}
+				if(pluginTask.page == 'remote-access'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#remote-access').html(res1);
+						}
+					});
+				}
 			}
 		}
 	});

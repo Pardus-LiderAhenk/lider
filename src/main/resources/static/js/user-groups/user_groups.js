@@ -1423,7 +1423,8 @@ function createMemberList(row) {
 		html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 			+ 'onclick="dropdownButtonClicked(\'createNewOrganizationalUnit\')">Yeni Klasör Oluştur</a>';
 		//if root dn is selected dont allow user to delete it
-		if(rootDNForUsersGroup != row.distinguishedName){
+		
+		if(baseRootDnComputer != row.entryUUID){
 			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 				+ 'onclick="dropdownButtonClicked(\'editOrganizationalUnitName\')">Klasör Adı Düzenle</a>';
 			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
@@ -1432,9 +1433,11 @@ function createMemberList(row) {
 			html += '<a class="dropdown-item" href="#" data-toggle="modal" data-target="#genericModal"' 
 				+ 'onclick="dropdownButtonClicked(\'deleteOrganizationalUnit\')">Klasörü Sil</a>';
 		}
+		
 		$('#operationDropDown').html(html);
 		
 		clearAndHide()
+		
 	}
 }
 

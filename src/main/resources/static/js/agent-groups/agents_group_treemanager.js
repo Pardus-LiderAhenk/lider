@@ -106,7 +106,7 @@ function createAgentsGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckB
 				     rendered: function () {
 				   	 },
 				     columns: [
-				    	 { text: "Bilgisayarlar", align: "center", dataField: "name", width: '100%'}
+				    	 { text: "İstemci Grupları", align: "center", dataField: "name", width: '100%'}
 				    ]
 				 });
 				 

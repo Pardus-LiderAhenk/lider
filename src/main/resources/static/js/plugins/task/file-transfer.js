@@ -158,7 +158,7 @@ $("#scheduledTasksModal").on('hidden.bs.modal', function(){
 
 $("#selectedFileTransfer").on('change', function() {
 	var fileSize = ($(this)[0].files[0].size / 1048576).toFixed(2);
-	if (fileSize <= 15) {
+	if (fileSize <= 20) {
 		fileName = $(this).val().split("\\").pop();
 		$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
 
@@ -170,7 +170,7 @@ $("#selectedFileTransfer").on('change', function() {
 		}
 		reader.readAsDataURL(selectedFile);
 	} else {
-		$.notify("Dosya boyutu 15 MB'tan fazla olamaz.", "warn");
+		$.notify("Dosya boyutu 20 MB'tan fazla olamaz.", "warn");
 	}
 });
 

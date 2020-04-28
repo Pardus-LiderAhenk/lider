@@ -188,7 +188,6 @@ $('#sendTaskLdapLogin').click(function(e){
 
 	if ($('#ldapLoginSb :selected').val() != "NA" || $('#ldapLoginCancelCb').is(':checked')){
 		if ($('#ldapLoginSb :selected').val() == "OpenLDAP"){
-			console.log(selectedEntries[0].type)
 			var adminPwd = null;
 			var adminDn = null;
 			

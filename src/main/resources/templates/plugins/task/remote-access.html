@@ -1,0 +1,41 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/remote-access.js"></script>
+</head>
+<body>
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+				<div class="col-lg-6 text-left">UZAK MASAÜSTÜ</div>
+				<div class="col-lg-6 text-right">
+				<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+					<button id="sendTaskCronRemoteAccess" type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+					<button id="sendTaskRemoteAccess" type="button" class="btn-shadow btn btn-info" title="Uzaktan Erişim Sağla"><i class="fa fa-desktop"></i></button>
+				</div>
+			</div>
+		<div class="card-body">
+		   	<div class="login-form-1">
+		   		<label for="remoteAccessSelect">Uzak erişim seçenekleri</label>
+					<select	class="form-control" id="remoteAccessSelect">
+						<option value="yes" selected>Kullanıcı izni ve bildirim aktif et</option>
+						<option value="no">Sadece bildirim aktif et</option>
+						<option value="without_notify">Kullanıcı izni ve bildirim yok </option>
+					</select>
+					
+				
+<!-- 		     	<div class="row "> -->
+<!-- 				    <div class="input-group-prepend col-lg-1"> -->
+<!-- 				      	<span class="input-group-text"><i class="fas fa-laptop"></i></span> -->
+<!-- 				    </div> -->
+<!-- 				    <div class="col-lg-11"><span>İstemcide açık olan kullanıcı oturumlarını sonlandırır ve istemciyi uzaktan kapatır.</span></div> -->
+<!-- 				</div> -->
+				<br>
+				<div id="plugin-result-remote-access"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

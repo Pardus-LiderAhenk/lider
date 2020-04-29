@@ -6,16 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,40 +19,44 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
+import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.services.ConfigurationService;
 
+
 /**
- * Controller for computer groups operations
- * 
- * @author <a href="mailto:hasan.kara@pardus.org.tr">Hasan Kara</a>
- * 
+ * Controller for computer url requests 
  */
-@RestController
-@RequestMapping("/lider/computer_groups")
-public class ComputerGroupsController {
-
-	Logger logger = LoggerFactory.getLogger(ComputerGroupsController.class);
-
+@RestController()
+@RequestMapping("/lider/computer")
+public class ComputerController {
+	
+	Logger logger = LoggerFactory.getLogger(UserController.class);
+	
 	@Autowired
 	private LDAPServiceImpl ldapService;
 	
 	@Autowired
 	private ConfigurationService configurationService;
 	
-	//gets tree of groups of names which just has agent members
-	@RequestMapping(value = "/getGroups")
-	public List<LdapEntry> getAgentGroups() {
-		List<LdapEntry> result = new ArrayList<LdapEntry>();
-		result.add(ldapService.getLdapAgentsGroupTree());
-		return result;
+	@Autowired
+	private XMPPClientImpl messagingService;
+	
+	@RequestMapping(value = "/getComputers")
+	public List<LdapEntry> getComputers() {
+		List<LdapEntry> retList = new ArrayList<LdapEntry>();
+		retList.add(ldapService.getLdapComputersTree());
+		return retList;
 	}
 	
 	@RequestMapping(value = "/getOuDetails")
-	public List<LdapEntry> getOuDetails(LdapEntry selectedEntry) {
+	public List<LdapEntry> task(LdapEntry selectedEntry) {
 		List<LdapEntry> subEntries = null;
 		try {
 			subEntries = ldapService.findSubEntries(selectedEntry.getUid(), "(objectclass=*)",
@@ -69,53 +69,47 @@ public class ComputerGroupsController {
 		return subEntries;
 	}
 	
-	@RequestMapping(method=RequestMethod.POST, value = "/addOu",produces = MediaType.APPLICATION_JSON_VALUE)
-	public LdapEntry addOu(LdapEntry selectedEntry) {
+	@RequestMapping(value = "/getOu")
+	public List<LdapEntry> getOu(LdapEntry selectedEntry) {
+		List<LdapEntry> subEntries = null;
 		try {
-			Map<String, String[]> attributes = new HashMap<String,String[]>();
-			attributes.put("objectClass", new String[] {"organizationalUnit", "top", "pardusLider"} );
-			attributes.put("ou", new String[] { selectedEntry.getOu() });
-
-			String dn="ou="+selectedEntry.getOu()+","+selectedEntry.getParentName();
-			
-			ldapService.addEntry(dn, attributes);
-			logger.info("OU created successfully RDN ="+dn);
-			
-			//get full of ou details after creation
-			selectedEntry = ldapService.getEntryDetail(dn);
-			
-			return selectedEntry;
+			subEntries = ldapService.findSubEntries(selectedEntry.getUid(), "(&(objectclass=organizationalUnit)(objectclass=pardusLider))",
+					new String[] { "*" }, SearchScope.ONELEVEL);
 		} catch (LdapException e) {
 			e.printStackTrace();
-			return null;
 		}
+		selectedEntry.setChildEntries(subEntries);
+		return subEntries;
 	}
 	
-	@RequestMapping(method=RequestMethod.POST, value = "/deleteEntry")
-	public Boolean deleteEntry(@RequestParam(value = "dn") String dn) {
+	/**
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST ,value = "/searchEntry", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<LdapEntry> searchEntry(
+			@RequestParam(value="searchDn", required=true) String searchDn,
+			@RequestParam(value="key", required=true) String key, 
+			@RequestParam(value="value", required=true) String value) {
+		
+		List<LdapEntry> results=null;
 		try {
-			if(dn != configurationService.getAgentLdapBaseDn()) {
-				ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(dn));
-				return true;
-			} else {
-				return false;
+			if(searchDn.equals("")) {
+				searchDn=configurationService.getLdapRootDn();
 			}
-			
-		} catch (Exception e) {
+			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+			filterAttributes.add(new LdapSearchFilterAttribute(key, value, SearchFilterEnum.EQ));
+			results = ldapService.search(searchDn,filterAttributes, new String[] {"*"});
+		} catch (LdapException e) {
 			e.printStackTrace();
-			return false;
 		}
+		return results ;
 	}
 	
-	@RequestMapping(value = "/getComputers")
-	public List<LdapEntry> getComputers() {
-		List<LdapEntry> retList = new ArrayList<LdapEntry>();
-		retList.add(ldapService.getLdapComputersTree());
-		return retList;
-	}
-	
-	@RequestMapping(value = "/getAhenks", method = { RequestMethod.POST })
-	public List<LdapEntry> getAhenks(HttpServletRequest request,Model model, @RequestBody LdapEntry[] selectedEntryArr) {
+	@RequestMapping(value = "/getOnlineAhenks", method = { RequestMethod.POST })
+	public String getOnlyOnlineAhenks(@RequestBody LdapEntry[] selectedEntryArr) {
 		List<LdapEntry> ahenkList=new ArrayList<>();
 		for (LdapEntry ldapEntry : selectedEntryArr) {
 			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
@@ -131,7 +125,7 @@ public class ComputerGroupsController {
 							break;
 						}
 					}
-					if(!isExist) {
+					if(!isExist && messagingService.isRecipientOnline(ldapEntry2.getUid())) {
 						ahenkList.add(ldapEntry2);
 					}
 				}
@@ -139,7 +133,14 @@ public class ComputerGroupsController {
 				e.printStackTrace();
 			}
 		}
-		return ahenkList;
+		ObjectMapper mapper = new ObjectMapper();
+		String ret = null;
+		try {
+			ret = mapper.writeValueAsString(ahenkList);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return ret;
 	}
 	
 	//add new group and add selected agents
@@ -216,79 +217,5 @@ public class ComputerGroupsController {
 		}
 		return entry;
 	}
-	
-	//get members of group
-	@RequestMapping(method=RequestMethod.POST ,value = "/group/members", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<LdapEntry> getMembersOfGroup(@RequestParam(value="dn", required=true) String dn) {
-		LdapEntry entry = ldapService.getEntryDetail(dn);
-		List<LdapEntry> listOfMembers = new ArrayList<>();
 
-		for(String memberDN: entry.getAttributesMultiValues().get("member")) {
-			listOfMembers.add(ldapService.getEntryDetail(memberDN));
-		}
-		return listOfMembers;
-	}
-	
-	//delete member from group
-	@RequestMapping(method=RequestMethod.POST ,value = "/delete/group/members", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public LdapEntry deleteMembersOfGroup(@RequestParam(value="dn", required=true) String dn, 
-			@RequestParam(value="dnList[]", required=true) List<String> dnList) {
-		//when single dn comes spring boot takes it as multiple arrays
-		//so dn must be joined with comma
-		//if member dn that will be added to group is cn=agent1,ou=Groups,dn=liderahenk,dc=org
-		//spring boot gets this param as array which has size 4
-		Boolean checkedArraySizeIsOne = true;
-		for (int i = 0; i < dnList.size(); i++) {
-			if(dnList.get(i).contains(",")) {
-				checkedArraySizeIsOne = false;
-				break;
-			}
-		}
-		if(checkedArraySizeIsOne) {
-			try {
-				ldapService.updateEntryRemoveAttributeWithValue(dn, "member", String.join(",", dnList));
-			} catch (LdapException e) {
-				e.printStackTrace();
-				return null;
-			}
-		} else {
-			for (int i = 0; i < dnList.size(); i++) {
-				try {
-					ldapService.updateEntryRemoveAttributeWithValue(dn, "member", dnList.get(i));
-				} catch (LdapException e) {
-					e.printStackTrace();
-					return null;
-				}
-			}
-		}
-		return ldapService.getEntryDetail(dn);
-	}
-	
-	@RequestMapping(method=RequestMethod.POST ,value = "/move/entry", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Boolean moveEntry(@RequestParam(value="sourceDN", required=true) String sourceDN,
-			@RequestParam(value="destinationDN", required=true) String destinationDN) {
-		try {
-			ldapService.moveEntry(sourceDN, destinationDN);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-	
-	
-	@RequestMapping(method=RequestMethod.POST ,value = "/rename/entry", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Boolean renameEntry(@RequestParam(value="oldDN", required=true) String oldDN,
-			@RequestParam(value="newName", required=true) String newName) {
-		try {
-			return ldapService.renameEntry(oldDN, newName);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	
 }

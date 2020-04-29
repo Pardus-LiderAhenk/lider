@@ -66,7 +66,7 @@ $(document).ready(function(){
 							var ouName= $('#ouName').val();
 							$.ajax({
 								type : 'POST',
-								url : 'lider/ldap/addOu',
+								url : 'lider/user/addOu',
 								data: 'parentName='+parentDn +'&ou='+ouName,
 								dataType : 'json',
 								success : function(data) {
@@ -480,7 +480,7 @@ function moveUser(selectedEntry, ou) {
 		};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: '/lider/ldap/move/entry',
+		    url: '/lider/user/move/entry',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -504,7 +504,7 @@ function moveUserFolder(selectedEntry, ou) {
 	};
 	$.ajax({ 
 		type: 'POST', 
-		url: '/lider/ldap/move/entry',
+		url: '/lider/user/move/entry',
 		dataType: 'json',
 		data: params,
 		success: function (data) {
@@ -677,7 +677,7 @@ function showGroups(row){
 		
 		$.ajax({
 			type : 'POST',
-			url : 'lider/ldap/removeAttributeWithValue',
+			url : 'lider/user/removeAttributeWithValue',
 			data : params,
 			dataType: "json",
 			success : function(ldapResult) {

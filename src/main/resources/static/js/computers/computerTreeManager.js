@@ -169,10 +169,10 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 						      
 						      var urlPath=""
 						      if(showOnlyFolder){
-						    	  urlPath= 'lider/ldap/getOu'; 
+						    	  urlPath= '/lider/computer/getOu'; 
 						      }
 						      else{
-						    	  urlPath= 'lider/ldap/getOuDetails';
+						    	  urlPath= '/lider/computer/getOuDetails';
 						      }
 						      $.ajax({
 									type : 'POST',

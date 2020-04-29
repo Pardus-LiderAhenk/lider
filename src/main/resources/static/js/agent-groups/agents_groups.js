@@ -41,7 +41,7 @@ $(document).ready(function(){
 			$('#genericModalBodyRender').html(data);
 			
 			$('#agentGroupsNewAgentGroupName').val('');
-			createAgentsGroupTree('lider/ldap/getComputers','createNewAgentGroupTreeDiv', false, true,
+			createAgentsGroupTree('lider/computer_groups/getComputers','createNewAgentGroupTreeDiv', false, true,
 					// row select
 					function(row, rootDnComputer,treeGridIdName){
 				
@@ -70,7 +70,7 @@ $(document).ready(function(){
 			$('#genericModalHeader').html("Kayıt Taşı");
 			$('#genericModalBodyRender').html(data);
 			
-			createAgentsGroupTree('lider/ldap/agentGroups','moveEntryTreeDiv', true, false,
+			createAgentsGroupTree('lider/computer_groups/agentGroups','moveEntryTreeDiv', true, false,
 					// row select
 					function(row, rootDnComputer,treeGridIdName){
 //						selectedEntryUUIDForTreeMove=selectedRow.distinguishedName;
@@ -102,7 +102,7 @@ $(document).ready(function(){
 			$('#genericModalBodyRender').html(data);
 			$('#selectedAgentCount').html(checkedAgents.length);
 			
-			createAgentsGroupTree('lider/ldap/getComputers','addMembersToExistingAgentGroupTreeDiv', false, true,
+			createAgentsGroupTree('lider/computer_groups/getComputers','addMembersToExistingAgentGroupTreeDiv', false, true,
 					// row select
 					function(row, rootDnComputer,treeGridIdName){
 						treeGridId = treeGridIdName;
@@ -140,7 +140,7 @@ $(document).ready(function(){
 			$('#genericModalHeader').html("Kayıt Taşı");
 			$('#genericModalBodyRender').html(data);
 			
-			createAgentsGroupTree('lider/ldap/agentGroups','moveEntryTreeDiv', true, false,
+			createAgentsGroupTree('lider/computer_groups/agentGroups','moveEntryTreeDiv', true, false,
 					// row select
 					function(row, rootDnComputer,treeGridIdName){
 						destinationDNToMoveRecord = row.distinguishedName;
@@ -192,7 +192,7 @@ function btnCreateNewOUClicked() {
 		};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: '/lider/ldap/addOu',
+		    url: '/lider/computer_groups/addOu',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -215,7 +215,7 @@ function btnDeleteOUClicked() {
 	};
 	$.ajax({ 
 	    type: 'POST', 
-	    url: '/lider/ldap/deleteEntry',
+	    url: '/lider/computer_groups/deleteEntry',
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) {
@@ -239,7 +239,7 @@ function btnDeleteGroupClicked() {
 	};
 	$.ajax({ 
 	    type: 'POST', 
-	    url: '/lider/ldap/deleteEntry',
+	    url: '/lider/computer_groups/deleteEntry',
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) {
@@ -287,7 +287,7 @@ function rowCheckAndUncheckOperationForCreatingGroup(checkedRows,row) {
     		//get agents under checkboxes from service and add them to agent list also
     		if(checkedOUList.length > 0) {
     			$.ajax({
-    				url : 'lider/ldap/getAhenks',
+    				url : 'lider/computer_groups/getAhenks',
     				type : 'POST',
     				data: JSON.stringify(checkedOUList),
     				dataType: "json",
@@ -349,7 +349,7 @@ function btnCreateAgentGroupClicked() {
 	
 	$.ajax({ 
 	    type: 'POST', 
-	    url: "/lider/ldap/createNewAgentGroup",
+	    url: "/lider/computer_groups/createNewAgentGroup",
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) { 
@@ -393,7 +393,7 @@ function rowCheckAndUncheckOperationToAddMembersToExistingGroup(checkedRows) {
 		//get agents under checkboxes from service and add them to agent list also
 		if(checkedOUList.length > 0) {
 			$.ajax({
-				url : 'lider/ldap/getAhenks',
+				url : 'lider/computer_groups/getAhenks',
 				type : 'POST',
 				data: JSON.stringify(checkedOUList),
 				dataType: "json",
@@ -459,6 +459,7 @@ function btnAddMemberClicked() {
 				//get selected data and update it with new data result from service call
 				console.log(data)
 				var selectedData=selectedRow;
+				console.log(selectedData)
 				selectedData.attributesMultiValues = data.attributesMultiValues;
 				$('#'+treeGridId).jqxTreeGrid('updateRow', selectedData.entryUUID, data);
 				$('#'+treeGridId).jqxTreeGrid('getRow', data.entryUUID);
@@ -484,7 +485,7 @@ function deleteMembersOfGroup(){
 	};
 	$.ajax({
 		type : 'POST',
-		url  : 'lider/ldap/group/members',
+		url  : 'lider/computer_groups/group/members',
 		data : params,
 		dataType : 'json',
 		success : function(data) {
@@ -541,7 +542,7 @@ function btnDeleteMembersClicked() {
 		};
 		$.ajax({
 			type : 'POST',
-			url  : 'lider/ldap/delete/group/members',
+			url  : 'lider/computer_groups/delete/group/members',
 			data : params,
 			dataType : 'json',
 			success : function(data) {
@@ -578,7 +579,7 @@ function btnMoveEntryClicked() {
 		};
 		$.ajax({ 
 		    type: 'POST', 
-		    url: '/lider/ldap/move/entry',
+		    url: '/lider/computer_groups/move/entry',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -619,7 +620,7 @@ function btnEditOUNameClicked() {
 		};
 		$.ajax({
 		    type: 'POST', 
-		    url: '/lider/ldap/rename/entry',
+		    url: '/lider/computer_groups/rename/entry',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -653,7 +654,7 @@ function btnEditGroupNameClicked() {
 		};
 		$.ajax({
 		    type: 'POST', 
-		    url: '/lider/ldap/rename/entry',
+		    url: '/lider/computer_groups/rename/entry',
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -684,7 +685,7 @@ function deleteMemberFromTabList(dn) {
 		};
 		$.ajax({
 			type : 'POST',
-			url  : 'lider/ldap/delete/group/members',
+			url  : 'lider/computer_groups/delete/group/members',
 			data : params,
 			dataType : 'json',
 			success : function(data) {

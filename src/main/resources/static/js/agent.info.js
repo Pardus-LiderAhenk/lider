@@ -607,7 +607,7 @@ function generateAddToNewGroupTreeGrid() {
 	
 	$.ajax({
 		type : 'POST',
-		url : 'lider/ldap/agentGroups',
+		url : 'lider/computer_groups/agentGroups',
 		dataType : 'json',
 		success : function(data) {
 			var source =
@@ -712,7 +712,7 @@ function generateAddToNewGroupTreeGrid() {
 			}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : 'lider/computer/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 				+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',
@@ -788,7 +788,7 @@ function btnAddToNewGroupClicked() {
 		
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/lider/ldap/createNewAgentGroup",
+		    url: "/lider/computer/createNewAgentGroup",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) { 

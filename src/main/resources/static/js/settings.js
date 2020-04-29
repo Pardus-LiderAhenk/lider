@@ -568,7 +568,7 @@ function createTreeToAssignConsoleAccessToUser(source) {
 	    	}  
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ldap/getOuDetails',
+				url : 'lider/user/getOuDetails',
 				data : 'uid=' + row.distinguishedName + '&type=' + row.type
 						+ '&name=' + row.name + '&parent=' + row.parent,
 				dataType : 'text',

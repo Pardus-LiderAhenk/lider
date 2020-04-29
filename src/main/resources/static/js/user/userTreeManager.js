@@ -151,10 +151,10 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 						      
 						      var urlPath=""
 						      if(showOnlyFolder){
-						    	  urlPath= 'lider/ldap/getOu'; 
+						    	  urlPath= 'lider/user/getOu'; 
 						      }
 						      else{
-						    	  urlPath= 'lider/ldap/getOuDetails';
+						    	  urlPath= 'lider/user/getOuDetails';
 						      }
 						      $.ajax({
 									type : 'POST',

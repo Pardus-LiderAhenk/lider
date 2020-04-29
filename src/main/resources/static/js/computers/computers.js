@@ -5,6 +5,8 @@
  * M. Edip YILDIZ
  * 
  */
+
+// generic variables
 var selectedRow= null;
 var baseRootDnComputer=null;
 var selectedEntries = []; 
@@ -13,27 +15,43 @@ var selectedOUDN = "";
 var treeGridHolderDiv= "computerTreeDiv";
 var computerTreeCreated=false;
 var pluginTaskList=null;
-/**
- * when page loading getting system page info
- * package and service management page hide
- */
+
+// when page loading getting system page info package and service management page hide
 setSystemPluginPage();
 $("#systemPage").show();
 $("#packageManagementPage").hide();
 $("#serviceManagementPage").hide();
 $("#scriptManagementPage").hide();
 $("#securityAndNetworkManagementPage").hide();
-
-connection.addHandler(onPresence2, null, "presence");
-//selected row function action behave different when selected tab change.. for this use selectedTab name
-var selectedTab="sendTask";
-
 $("#dropdownButton").hide();
 $("#agentOnlineStatus").hide()
 $("#selectedAgentList").hide();
 
+/*
+ * create user tree select, check and uncheck action functions can be implemented if required
+ * params div, onlyFolder, use Checkbox, select action , check action, uncheck action
+ */
+createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false,
+		// row select
+		function(row, rootDnComputer){
+			selectedRow=row;
+			baseRootDnComputer=rootDnComputer;
+			addSelectedEntryToTable(selectedRow)
+		},
+		//check action
+		function(checkedRows, row){
+		
+		},
+		//uncheck action
+		function(unCheckedRows, row){
+		
+		}
+);
+
 computerTreeCreated=true;
 
+//to see compputer state listen connection
+connection.addHandler(onPresence2, null, "presence");
 function onPresence2(presence)
 {
 	var ptype = $(presence).attr('type');
@@ -62,28 +80,9 @@ function onPresence2(presence)
 	}
 	return true;
 }
+
 taskHistory();
 
-/*
- * create user tree select, check and uncheck action functions can be implemented if required
- * params div, onlyFolder, use Checkbox, select action , check action, uncheck action
- */
-createComputerTree('lider/ldap/getComputers',treeGridHolderDiv, false, false,
-		// row select
-		function(row, rootDnComputer){
-			selectedRow=row;
-			baseRootDnComputer=rootDnComputer;
-			addSelectedEntryToTable(selectedRow)
-		},
-		//check action
-		function(checkedRows, row){
-		
-		},
-		//uncheck action
-		function(unCheckedRows, row){
-		
-		}
-);
 
 $('#btn-system').click(function() {
 	setSystemPluginPage();
@@ -108,58 +107,58 @@ $('#btnAddAgents').click(function() {
 	addSelectedEntryToTable(selectedRow)
 });
 
-$('#addOnlyOnlineAgents').click(function() {
-	var selection =$('#computerTreeDivGrid').jqxTreeGrid('getSelection');
-	if(selection && selection.length>0){
-		var checkedEntryArray=[]
-
-		for (var i = 0; i < selection.length; i++) {
-			// get a row.
-			var rowData = selection[i];
-
-			checkedEntryArray.push(
-					{
-						distinguishedName :rowData.distinguishedName, 
-						entryUUID: rowData.entryUUID, 
-						name: rowData.name,
-						type: rowData.type,
-						uid: rowData.uid
-					});
-		}
-		$.ajax({
-			url : 'lider/ldap/getOnlineAhenks',
-			type : 'POST',
-			data: JSON.stringify(checkedEntryArray),
-			dataType: "json",
-			contentType: "application/json",
-			success : function(data) {
-				var ahenks = data;
-				selectedEntries=[]
-				if(ahenks.length==0)
-					$.notify("Online istemci bulunmamaktadır.", "warn");
-				else
-					$.notify(ahenks.length+ " adet online istemci eklendi.", "success");
-				for (var i = 0; i < ahenks.length; i++) {
-					// get a row.
-					var rowData = ahenks[i];
-					if(rowData.type=="AHENK"){
-						var indexx=$.grep(selectedEntries, function(item){
-							return item.entryUUID == rowData.entryUUID;
-						}).length
-
-						if(indexx ==0 ){
-							selectedEntries.push(rowData);
-						}
-					}
-				}
-				showSelectedEntries();
-			}
-		});
-	}
-	else{
-		$.notify("Lütfen Arama Dizini Seçiniz", "warn");
-	}
-});
+//$('#addOnlyOnlineAgents').click(function() {
+//	var selection =$('#computerTreeDivGrid').jqxTreeGrid('getSelection');
+//	if(selection && selection.length>0){
+//		var checkedEntryArray=[]
+//
+//		for (var i = 0; i < selection.length; i++) {
+//			// get a row.
+//			var rowData = selection[i];
+//
+//			checkedEntryArray.push(
+//					{
+//						distinguishedName :rowData.distinguishedName, 
+//						entryUUID: rowData.entryUUID, 
+//						name: rowData.name,
+//						type: rowData.type,
+//						uid: rowData.uid
+//					});
+//		}
+//		$.ajax({
+//			url : 'lider/ldap/getOnlineAhenks',
+//			type : 'POST',
+//			data: JSON.stringify(checkedEntryArray),
+//			dataType: "json",
+//			contentType: "application/json",
+//			success : function(data) {
+//				var ahenks = data;
+//				selectedEntries=[]
+//				if(ahenks.length==0)
+//					$.notify("Online istemci bulunmamaktadır.", "warn");
+//				else
+//					$.notify(ahenks.length+ " adet online istemci eklendi.", "success");
+//				for (var i = 0; i < ahenks.length; i++) {
+//					// get a row.
+//					var rowData = ahenks[i];
+//					if(rowData.type=="AHENK"){
+//						var indexx=$.grep(selectedEntries, function(item){
+//							return item.entryUUID == rowData.entryUUID;
+//						}).length
+//
+//						if(indexx ==0 ){
+//							selectedEntries.push(rowData);
+//						}
+//					}
+//				}
+//				showSelectedEntries();
+//			}
+//		});
+//	}
+//	else{
+//		$.notify("Lütfen Arama Dizini Seçiniz", "warn");
+//	}
+//});
 
 function setSystemPluginPage() {
 
@@ -519,7 +518,7 @@ function dropdownButtonClicked(operation) {
 }
 
 function generateAddToExistingGroupTreeGrid() {
-	createComputerTree('lider/ldap/agentGroups','existingTreeGrid', false, false,
+	createComputerTree('lider/computer_groups/agentGroups','existingTreeGrid', false, false,
 			// row select
 			function(row, rootDnComputer){
 		if(row.type == "GROUP"){
@@ -541,7 +540,7 @@ function generateAddToExistingGroupTreeGrid() {
 
 function generateAddToNewGroupTreeGrid() {
 
-	createComputerTree('lider/ldap/agentGroups','newTreeGridDiv', false, false,
+	createComputerTree('lider/computer_groups/agentGroups','newTreeGridDiv', false, false,
 			// row select
 			function(row, rootDnComputer){
 		selectedOUDN = row.distinguishedName;
@@ -570,7 +569,7 @@ function btnAddToExistingGroupClicked() {
 		};
 		$.ajax({ 
 			type: 'POST', 
-			url: "/lider/ldap/group/existing",
+			url: "/lider/computer/group/existing",
 			dataType: 'json',
 			data: params,
 			success: function (data) { 
@@ -599,7 +598,7 @@ function btnAddToNewGroupClicked() {
 
 		$.ajax({ 
 			type: 'POST', 
-			url: "/lider/ldap/createNewAgentGroup",
+			url: "/lider/computer/createNewAgentGroup",
 			dataType: 'json',
 			data: params,
 			success: function (data) { 
@@ -633,7 +632,7 @@ function createAgentGroupClicked () {
 	if(selectedEntries.length > 0) {
 		$.ajax({ 
 			type: 'GET', 
-			url: '/lider/ldap/agentGroups',
+			url: '/lider/computer_groups/agentGroups',
 			dataType: 'json',
 			success: function (data) { 
 				//choose existing radio button when modal is reopened
@@ -681,7 +680,7 @@ function addAgentsToExistingGroup() {
 		};
 		$.ajax({ 
 			type: 'POST', 
-			url: "/lider/ldap/group/existing",
+			url: "/lider/computer/group/existing",
 			dataType: 'json',
 			data: params,
 			success: function (data) { 
@@ -705,7 +704,7 @@ function addNewGroup() {
 	};
 	$.ajax({ 
 		type: 'POST', 
-		url: "/lider/ldap/createNewAgentGroup",
+		url: "/lider/computer/createNewAgentGroup",
 		dataType: 'json',
 		data: params,
 		success: function (data) { 

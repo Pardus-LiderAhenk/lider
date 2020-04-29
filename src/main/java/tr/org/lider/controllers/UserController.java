@@ -1,6 +1,7 @@
 package tr.org.lider.controllers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,32 @@ public class UserController {
 	@Autowired
 	private ConfigurationService configurationService;
 	
+	@RequestMapping(value = "/getOuDetails")
+	public List<LdapEntry> task(LdapEntry selectedEntry) {
+		List<LdapEntry> subEntries = null;
+		try {
+			subEntries = ldapService.findSubEntries(selectedEntry.getUid(), "(objectclass=*)",
+					new String[] { "*" }, SearchScope.ONELEVEL);
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		Collections.sort(subEntries);
+		selectedEntry.setChildEntries(subEntries);
+		return subEntries;
+	}
+	
+	@RequestMapping(value = "/getOu")
+	public List<LdapEntry> getOu(LdapEntry selectedEntry) {
+		List<LdapEntry> subEntries = null;
+		try {
+			subEntries = ldapService.findSubEntries(selectedEntry.getUid(), "(&(objectclass=organizationalUnit)(objectclass=pardusLider))",
+					new String[] { "*" }, SearchScope.ONELEVEL);
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		selectedEntry.setChildEntries(subEntries);
+		return subEntries;
+	}
 	
 	@RequestMapping(value = "/getUsers")
 	public List<LdapEntry> getUsers() {
@@ -54,6 +81,27 @@ public class UserController {
 		return retList;
 	}
 	
+	@RequestMapping(method=RequestMethod.POST, value = "/addOu",produces = MediaType.APPLICATION_JSON_VALUE)
+	public LdapEntry addOu(LdapEntry selectedEntry) {
+		try {
+			Map<String, String[]> attributes = new HashMap<String,String[]>();
+			attributes.put("objectClass", new String[] {"organizationalUnit", "top", "pardusLider"} );
+			attributes.put("ou", new String[] { selectedEntry.getOu() });
+
+			String dn="ou="+selectedEntry.getOu()+","+selectedEntry.getParentName();
+			
+			ldapService.addEntry(dn, attributes);
+			logger.info("OU created successfully RDN ="+dn);
+			
+			//get full of ou details after creation
+			selectedEntry = ldapService.getEntryDetail(dn);
+			
+			return selectedEntry;
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	@RequestMapping(method=RequestMethod.POST, value = "/addUser",produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
@@ -360,4 +408,42 @@ public class UserController {
 		}
 		return userSessions;
 	}
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/move/entry", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Boolean moveEntry(@RequestParam(value="sourceDN", required=true) String sourceDN,
+			@RequestParam(value="destinationDN", required=true) String destinationDN) {
+		try {
+			ldapService.moveEntry(sourceDN, destinationDN);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @param searchDn
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST ,value = "/removeAttributeWithValue", produces = MediaType.APPLICATION_JSON_VALUE)
+	public LdapEntry removeAttributeWithValue(
+			@RequestParam(value="dn", required=true) String dn,
+			@RequestParam(value="attribute", required=true) String attribute, 
+			@RequestParam(value="value", required=true) String value) {
+		
+		LdapEntry entry=null;
+		try {
+			ldapService.updateEntryRemoveAttributeWithValue(dn, attribute, value);
+			entry = ldapService.findSubEntries(dn, "(objectclass=*)", new String[] {"*"}, SearchScope.OBJECT).get(0);
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return entry ;
+	}
+	
 }

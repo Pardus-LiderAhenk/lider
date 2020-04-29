@@ -18,15 +18,16 @@
 					<div class="col-lg-10">
 						<div>
 							<img id="agent_image" alt="" src="img/linux.png">
-							<button  class="btn btn-link agent-offline " id="selectedAgentInfo">  Lütfen İstemci Seçiniz.</button>
-							<button  class="btn btn-danger" id="agentOnlineStatus" >  </button>
-							<button  class="btn"> </button>
+							<button  class="btn btn-link agent-offline btn-sm " id="selectedAgentInfo">  Lütfen İstemci Seçiniz.</button>
+							<button  class="btn btn-danger btn-sm" id="agentOnlineStatus" >  </button>
+							<button  class="btn btn-sm"> </button>
 							
-							<button role="tab" class="btn btn-info" id="btn-system" data-toggle="tab"><i class="fa fa-sliders-h"></i> Sistem Yönetimi </button>
-							<button role="tab" class="btn btn-info" id="btn-package" data-toggle="tab"><i class="nav-link-icon fas fa-cubes"> </i> Paket ve Depo Yönetimi </button>
-							<button role="tab" class="btn btn-info" id="btn-service" data-toggle="tab"><i class="nav-link-icon fas fa-tv"> </i> Servisler </button>
-							<button role="tab" class="btn btn-info" id="btn-script" data-toggle="tab"><i class="fa fa-terminal"></i> Betik</button>
-							<button role="tab" class="btn btn-info" id="btn-securityAndNetwork" data-toggle="tab"><i class="fa fa-network-wired"></i> Güvenlik ve Ağ Yönetimi</button>
+							<button role="tab" class="btn btn-info btn-sm" id="btn-system" data-toggle="tab"><i class="fa fa-sliders-h"></i> Sistem Yönetimi </button>
+							<button role="tab" class="btn btn-info btn-sm" id="btn-package" data-toggle="tab"><i class="nav-link-icon fas fa-cubes"> </i> Paket ve Depo Yönetimi </button>
+							<button role="tab" class="btn btn-info btn-sm" id="btn-service" data-toggle="tab"><i class="nav-link-icon fas fa-tv"> </i> Servisler </button>
+							<button role="tab" class="btn btn-info btn-sm" id="btn-script" data-toggle="tab"><i class="fa fa-terminal"></i> Betik</button>
+							<button role="tab" class="btn btn-info btn-sm" id="btn-securityAndNetwork" data-toggle="tab"><i class="fa fa-network-wired"></i> Güvenlik ve Ağ Yönetimi</button>
+							<button role="tab" class="btn btn-info btn-sm" id="btn-taskHistory" data-toggle="tab"><i class="fa fa-history"></i> Geçmiş Görevler</button>
 						</div>
 					</div>
 					<div class="col-lg-2" >
@@ -127,6 +128,36 @@
 							</div>
 					  	</div>
 					  </div>
+					  
+					  <div id="taskHistoryPage">
+						<div id="selectedAgentInfoSection"> <b id="selectedAgentDN"></b></div>
+						<hr>
+						<div><button class="btn btn-info" id="getTaskHistoryBtn" data-toggle="tab"><i class="fa fa-history"></i> Geçmiş Görevleri Getir</button></div>
+						
+						<br>
+						
+						<div  style="background-color: white; padding: 10px; "> 
+						<table class="table table-striped table-hover table-bordered">
+						<caption style="caption-side:top; text-align: center;"> Geçmiş Görev Listesi</caption>
+							<thead>
+								<tr>
+									<th style="width: 20%">Görev Adı</th>
+									<th style="width: 18%">Sonuç</th>
+									<th style="width: 20%">Gönderen</th>
+									<th style="width: 16%">Oluşturulma Tarihi</th>
+									<th style="width: 16%">Çalıştırılma Tarihi</th>
+									<th class="text-center" style="width: 6%"></th>
+								</tr>
+							</thead>
+							<tbody id="taskHistoryTable">
+								<tr>
+									<td colspan="100%" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td>
+								</tr>
+							</tbody>
+						</table></div>
+						
+					  </div>
+					  
 					</div>
 			</div>
 		</div>

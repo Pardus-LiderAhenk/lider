@@ -37,6 +37,7 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 			selectedRow=row;
 			baseRootDnComputer=rootDnComputer;
 			addSelectedEntryToTable(selectedRow)
+			$("#selectedAgentDN").text(selectedRow.distinguishedName);
 		},
 		//check action
 		function(checkedRows, row){
@@ -81,8 +82,6 @@ function onPresence2(presence)
 	return true;
 }
 
-taskHistory();
-
 
 $('#btn-system').click(function() {
 	setSystemPluginPage();
@@ -103,9 +102,17 @@ $('#btn-securityAndNetwork').click(function() {
 	setSecurityAndNetworkPluginPage();
 });
 
-$('#btnAddAgents').click(function() {
-	addSelectedEntryToTable(selectedRow)
+$('#btn-taskHistory').click(function() {
+	setTaskHistoryPage()
+	
 });
+$('#getTaskHistoryBtn').click(function() {
+	taskHistory()
+});
+
+//$('#btnAddAgents').click(function() {
+//	addSelectedEntryToTable(selectedRow)
+//});
 
 //$('#addOnlyOnlineAgents').click(function() {
 //	var selection =$('#computerTreeDivGrid').jqxTreeGrid('getSelection');
@@ -161,12 +168,8 @@ $('#btnAddAgents').click(function() {
 //});
 
 function setSystemPluginPage() {
-
-	$("#systemPage").show();
-	$("#packageManagementPage").hide();
-	$("#serviceManagementPage").hide();
-	$("#scriptManagementPage").hide();
-	$("#securityAndNetworkManagementPage").hide();
+	showPageAndHideOthers('systemPage')
+	
 	$.ajax({
 		type : 'POST',
 		url : 'getPluginTaskList',
@@ -305,11 +308,8 @@ function setSystemPluginPage() {
 }
 
 function setPackagePluginPage() {
-	$("#systemPage").hide();
-	$("#serviceManagementPage").hide();
-	$("#scriptManagementPage").hide();
-	$("#packageManagementPage").show();
-	$("#securityAndNetworkManagementPage").hide();
+	showPageAndHideOthers('packageManagementPage')
+
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
 		if(pluginTask.page == 'package-management'){
@@ -362,12 +362,8 @@ function setPackagePluginPage() {
 }
 
 function setServicePluginPage() {
-	$("#systemPage").hide();
-	$("#packageManagementPage").hide();
-	$("#scriptManagementPage").hide();
-	$("#serviceManagementPage").show();
-	$("#securityAndNetworkManagementPage").hide();
-
+	showPageAndHideOthers('serviceManagementPage')
+	
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
 		if(pluginTask.page == 'service-list'){
@@ -385,11 +381,7 @@ function setServicePluginPage() {
 }
 
 function setScriptPluginPage() {
-	$("#systemPage").hide();
-	$("#serviceManagementPage").hide();
-	$("#packageManagementPage").hide()
-	$("#scriptManagementPage").show();
-	$("#securityAndNetworkManagementPage").hide();
+	showPageAndHideOthers('scriptManagementPage')
 	
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
@@ -409,12 +401,8 @@ function setScriptPluginPage() {
 }
 
 function setSecurityAndNetworkPluginPage() {
-	$("#systemPage").hide();
-	$("#serviceManagementPage").hide();
-	$("#packageManagementPage").hide()
-	$("#scriptManagementPage").hide();
-	$("#securityAndNetworkManagementPage").show();
-	
+	showPageAndHideOthers('securityAndNetworkManagementPage')
+
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
 		if(pluginTask.page == 'network-manager'){
@@ -441,6 +429,11 @@ function setSecurityAndNetworkPluginPage() {
 		}
 	}
 }
+function setTaskHistoryPage() {
+	showPageAndHideOthers('taskHistoryPage')
+}
+
+
 
 
 function executedTaskDetailClicked(executionDate, pluginName, commandExecutionResultID) {
@@ -931,3 +924,15 @@ function taskHistory() {
 	}
 }
 
+
+function showPageAndHideOthers(showPageId){
+	
+	$("#systemPage").hide();
+	$("#packageManagementPage").hide();
+	$("#serviceManagementPage").hide();
+	$("#scriptManagementPage").hide();
+	$("#securityAndNetworkManagementPage").hide();
+	$("#taskHistoryPage").hide();
+	
+	$('#' +showPageId).show();
+}

@@ -939,7 +939,7 @@ function cretaeAgentGroupTree() {
 				selectedRow=row;
 				baseRootDnComputer=rootDnComputer;
 				$('#agentGroupName').html(row.name);
-				$('#selectedAgentGroupInfo').html(row.distinguishedName);
+				$('#selectedAgentGroupInfo').html(row.name);
 				createMembersList(selectedRow)
 			},
 			//check action

@@ -45,33 +45,32 @@ $(document).ready(function(){
 	$('#btnCreateNewUserGroup').on('click', function (event) {
 		checkedUsers = [];
 		checkedOUList = [];
-		$('#selectedUserCountCreateNewUserGroup').html(checkedUsers.length);
-		getModalContent("modals/groups/user_groups/creategroup", function content(data){
-			$('#genericModalHeader').html("Kullanıcı Grubu Oluştur");
-			$('#genericModalBodyRender').html(data);
-			
-			$('#userGroupsNewUserGroupName').val('');
-			createUserTree('createNewUserGroupTreeDiv', false, true,
-					// row select
-					function(row, rootDnComputer,treeGridIdName){
-						treeGridId = treeGridIdName;
-						selectedRow=row;
-						baseRootDnComputer=rootDnComputer;
-						createMemberList(row)
-					},
-					//check action
-					function(checkedRows, row){
-						rowCheckAndUncheckOperationForCreatingGroup(checkedRows, row);
-					},
-					//uncheck action
-					function(unCheckedRows, row){
-						rowCheckAndUncheckOperationForCreatingGroup(unCheckedRows, row);
-					}
-			);
-			
-			
-			//createUsersModalForCreatingGroup();
-		});
+		if(selectedDN == ""){
+			$.notify("Lütfen klasör seçiniz", "error");
+		}
+		else
+		{
+			$('#selectedUserCountCreateNewUserGroup').html(checkedUsers.length);
+			getModalContent("modals/groups/user_groups/creategroup", function content(data){
+				$('#genericModalHeader').html("Kullanıcı Grubu Oluştur");
+				$('#genericModalBodyRender').html(data);
+				
+				$('#userGroupsNewUserGroupName').val('');
+				createUserTree('createNewUserGroupTreeDiv', false, true,
+						// row select
+						function(row, rootDnComputer,treeGridIdName){
+						},
+						//check action
+						function(checkedRows, row){
+							rowCheckAndUncheckOperationForCreatingGroup(checkedRows, row);
+						},
+						//uncheck action
+						function(unCheckedRows, row){
+							rowCheckAndUncheckOperationForCreatingGroup(unCheckedRows, row);
+						}
+				);
+			});
+		}
 	});
 	
 	$('#addMemberUserGroupBtn').on('click', function (event) {
@@ -924,8 +923,8 @@ function btnAddMemberClicked() {
 	if(checkedUsers.length == 0) {
 		$.notify("Lütfen en az bir kullanıcı seçiniz.", "error");
 		return;
-	} else {
-		var selectedRows = $("#addMembersToExistingUserGroupTreeGrid").jqxTreeGrid('getSelection');
+	} 
+	else {
 		var selectedDNList = [];
 		for (var i = 0; i < checkedUsers.length; i++) {
 			selectedDNList.push(checkedUsers[i].distinguishedName);

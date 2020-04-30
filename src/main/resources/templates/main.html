@@ -130,6 +130,14 @@
                                 İstemci Yönetimi
                             </a>
                         </li>
+                        
+                        <li class="nav-item" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTERS')}">
+                            <a class="nav-link dizin" href="#" data-page="policy" >
+                                <i class="nav-link-icon fas fa-network-wired"> </i>
+                                Politika Yönetimi
+                            </a>
+                        </li>
+                        
                         <li class="nav-item" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}">
                             <a class="nav-link dizin" href="#" data-page="users" >
                                 <i class="nav-link-icon fa fa-users"></i>

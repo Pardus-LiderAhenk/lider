@@ -72,6 +72,24 @@ public class PluginTask implements Serializable {
 	
 	@Transient
 	private Date activationDate;
+	
+	public PluginTask() {
+		
+	}
+
+	public PluginTask(String name, String page, String description, String command_id, Boolean is_multi, PluginImpl plugin,
+			Integer state) {
+		// TODO Auto-generated constructor stub
+		this.name = name;
+		this.page = page;
+		this.description = description;
+		this.commandId = command_id;
+		this.isMulti = is_multi;
+		this.plugin = plugin;
+		this.state = state;
+		
+		
+	}
 
 	public Long getId() {
 		return id;

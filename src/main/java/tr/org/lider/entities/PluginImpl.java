@@ -37,9 +37,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -106,21 +108,37 @@ public class PluginImpl implements Serializable {
 //	private List<MailAddressImpl> mailAddresses = new ArrayList<MailAddressImpl>(); // bidirectional
 
 	
+//	@Temporal(TemporalType.TIMESTAMP)
+//	@Column(name = "CREATE_DATE", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "CREATE_DATE", nullable = false)
+	@CreationTimestamp
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private Date createDate;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "MODIFY_DATE")
+//	@Temporal(TemporalType.TIMESTAMP)
+//	@Column(name = "MODIFY_DATE")
+	
 	private Date modifyDate;
 	
-	
-
 	public PluginImpl() {
 	}
+	
+	public PluginImpl(String name, String version, String description, boolean active, boolean deleted, boolean machineOriented, boolean userOriented,
+			boolean policyPlugin, boolean taskPlugin, boolean usesFileTransfer, boolean xBased) {
+		// TODO Auto-generated constructor stub
+		this.name = name;
+		this.version = version;
+		this.description = description;
+		this.active = active;
+		this.machineOriented = machineOriented;
+		this.userOriented = userOriented;
+		this.policyPlugin = policyPlugin;
+		this.taskPlugin = taskPlugin;
+		this.usesFileTransfer = usesFileTransfer;
+		this.xBased = xBased;
+	}
 
-	
-	
 	public Long getId() {
 		return id;
 	}

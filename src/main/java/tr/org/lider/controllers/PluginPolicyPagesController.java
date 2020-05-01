@@ -14,13 +14,13 @@ import org.springframework.web.servlet.ModelAndView;
 import tr.org.lider.entities.PluginProfile;
 import tr.org.lider.services.PluginService;
 
-
 /**
+ * Plugin profile pages rendered
  * 
- * Plugin pages rendered with tasks and policies..
- * @author M. Edip YILDIZ
- *
- **/
+ * @author <a href="mailto:tuncay.colak@tubitak.gov.tr">Tuncay ÇOLAK</a>
+ * 
+ */
+
 @RestController()
 public class PluginPolicyPagesController {
 	

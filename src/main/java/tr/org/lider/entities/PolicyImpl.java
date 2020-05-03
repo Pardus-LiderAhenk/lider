@@ -52,7 +52,7 @@ public class PolicyImpl  {
 	@Column(name = "POLICY_ID", unique = true, nullable = false)
 	private Long id;
 
-	@Column(name = "LABEL", nullable = false)
+	@Column(name = "LABEL", unique = true, nullable = false)
 	private String label;
 
 	@Column(name = "DESCRIPTION")

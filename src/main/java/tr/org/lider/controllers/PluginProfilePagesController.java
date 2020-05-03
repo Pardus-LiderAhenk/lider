@@ -22,9 +22,9 @@ import tr.org.lider.services.PluginService;
  */
 
 @RestController()
-public class PluginPolicyPagesController {
+public class PluginProfilePagesController {
 	
-	Logger logger = LoggerFactory.getLogger(PluginPolicyPagesController.class);
+	Logger logger = LoggerFactory.getLogger(PluginProfilePagesController.class);
 	
 	@Autowired
 	public PluginService pluginService;
@@ -46,7 +46,7 @@ public class PluginPolicyPagesController {
 	public List<PluginProfile> getPluginTaskList(Model model, PluginProfile pluginProfile) {
 		
 		logger.info("Getting plugink list ");
-		List<PluginProfile>  list=pluginService.findAllPluginProfile();
+		List<PluginProfile>  list = pluginService.findAllPluginProfile();
 		return list;
 	}
 

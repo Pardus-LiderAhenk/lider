@@ -36,12 +36,17 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import tr.org.lider.ldap.DNType;
 
 
 /**
@@ -64,14 +69,14 @@ public class ProfileImpl  {
 	@JoinColumn(name = "PLUGIN_ID", nullable = false)
 	private PluginImpl plugin; // bidirectional
 
-	@Column(name = "LABEL", unique = true, nullable = false)
+	@Column(name = "LABEL", nullable = false)
 	private String label;
 
 	@Column(name = "DESCRIPTION")
 	private String description;
 
 	@Column(name = "OVERRIDABLE")
-	private boolean overridable;
+	private boolean overridable = true;
 
 	@Column(name = "ACTIVE")
 	private boolean active = true;
@@ -85,13 +90,19 @@ public class ProfileImpl  {
 
 	@Transient
 	private Map<String, Object> profileData;
+	
+	@Transient
+	private String pluginName;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "CREATE_DATE", nullable = false)
+	@Column(name = "CREATE_DATE", nullable = false, updatable = false)
+	@CreationTimestamp
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private Date createDate;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "MODIFY_DATE")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private Date modifyDate;
 
 	public ProfileImpl() {
@@ -110,9 +121,22 @@ public class ProfileImpl  {
 		this.createDate = createDate;
 		this.modifyDate = modifyDate;
 	}
+	
+	public ProfileImpl(ProfileImpl profile) {
+		this.id = profile.getId();
+		this.label = profile.getLabel();
+		this.description = profile.getDescription();
+		this.overridable = profile.isOverridable();
+		this.active = profile.isActive();
+		this.deleted = profile.isDeleted();
+		setProfileData(profile.getProfileData());
+		this.createDate = profile.getCreateDate();
+		this.modifyDate = profile.getModifyDate();
+		if (profile.getPlugin() instanceof PluginImpl) {
+			this.plugin = (PluginImpl) profile.getPlugin();
+		}
+	}
 
-	
-	
 	public String getLabel() {
 		return label;
 	}
@@ -174,7 +198,7 @@ public class ProfileImpl  {
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}
-
+	
 	
 	public byte[] getProfileDataBlob() {
 		if (profileDataBlob == null && profileData != null) {
@@ -204,7 +228,6 @@ public class ProfileImpl  {
 			e.printStackTrace();
 		}
 	}
-
 	
 	public Map<String, Object> getProfileData() {
 		if (profileData == null && profileDataBlob != null) {
@@ -236,6 +259,13 @@ public class ProfileImpl  {
 		}
 	}
 
+	public String getPluginName() {
+		return pluginName;
+	}
+
+	public void setPluginName(String pluginName) {
+		this.pluginName = pluginName;
+	}
 	
 	public Date getCreateDate() {
 		return createDate;

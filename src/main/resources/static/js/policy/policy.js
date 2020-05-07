@@ -1,5 +1,5 @@
 /**
- * Policy management. This page create, list, delete, update policy and detail selected policy
+ * Policy management. This page created, list, deleted, updated policy and detail selected policy
  * 
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
@@ -13,19 +13,18 @@ var selectedEntries = [];
 var pluginProfileList = null;
 var policyList = null;
 var policyTable = null;
-var profileTable = null;
-var profileList = null;
+var policyProfileTable = null;
+var policyProfileList = [];
+var selectedProfileId = null;
+var selectedPolicyId = null;
 
 getPolicyList();
-getProfileList();
 getProfilPages();
 createPolicyChart(null);
-createProfileTable(null);
+createProfileTableOfPolicy(null);
 hideAndShowPolicyButton(false);
 
 function getPolicyList() {
-	showPageAndHideOthers('policyPage');
-
 	$.ajax({
 		type : 'POST',
 		url : '/policy/list',
@@ -33,6 +32,7 @@ function getPolicyList() {
 		success : function(data) {
 			if(data != null && data.length > 0) {
 				policyList = data;
+				console.log(data)
 				for (var i = 0; i < policyList.length; i++) {
 					var policyId = policyList[i].id;
 					var policyName = policyList[i].label;
@@ -70,65 +70,75 @@ function getPolicyList() {
 }
 
 $('#policyListTable tbody').on( 'click', 'tr', function () {
-	if (profileTable) {
-		profileTable.clear();
-		profileTable.destroy();
-		profileTable = null;
+	if (policyProfileTable) {
+		policyProfileTable.clear();
+		policyProfileTable.destroy();
+		policyProfileTable = null;
+		policyProfileList = [];
 	}
-
 	if ( $(this).hasClass('selected') ) {
 		$(this).removeClass('selected');
 		$("#policyNameForm").val("");
 		$("#policyDescriptionForm").val("");
 		createPolicyChart(null);
-		createProfileTable(null);
+		createProfileTableOfPolicy(null);
 		hideAndShowPolicyButton(false);
+		selectedPolicyId = null;
 	} else {
-
 		policyTable.$('tr.selected').removeClass('selected');
 		$(this).addClass('selected');
-		var selectedPolicyId = policyTable.rows('.selected').data()[0].DT_RowId;
-		getSelectedPolicyData(selectedPolicyId);
+		selectedPolicyId = $(this).attr('id');
+		getSelectedPolicyData();
 		hideAndShowPolicyButton(true);
-
 	}
 });
 
-function getSelectedPolicyData(policyId) {
+function getSelectedPolicyData() {
 	for (var i = 0; i < policyList.length; i++) {
-		if (policyList[i].id == policyId) {
+		if (policyList[i].id == selectedPolicyId) {
 			$("#policyNameForm").val(policyList[i].label);
 			$("#policyDescriptionForm").val(policyList[i].description);
-			var  profilesOfSelectedPolicy = policyList[i].profiles;
-			createProfileTable(profilesOfSelectedPolicy);
-
+			var  profiles = policyList[i].profiles;
+			if (profiles != null && profiles.length > 0) {
+				for (var i = 0; i < profiles.length; i++) {
+					policyProfileList.push(profiles[i]);
+				}
+			}
+			console.log(policyProfileList)
+//			createProfileTableOfPolicy();
 		}
 	}
-
 }
 
-function createProfileTable(profilesOfSelectedPolicy) {
+function createProfileTableOfPolicy() {
+	if (policyProfileTable) {
+		policyProfileTable.clear();
+		policyProfileTable.destroy();
+		policyProfileTable = null;
+	}
 	var chartLabelList = [];
-	if(profilesOfSelectedPolicy != null && profilesOfSelectedPolicy.length > 0) {
-		for (var i = 0; i < profilesOfSelectedPolicy.length; i++) {
-			var profileId = profilesOfSelectedPolicy[i].id;
-			var profileName = profilesOfSelectedPolicy[i].label;
-			var profileDescription =  profilesOfSelectedPolicy[i].description;
-			var pluginOfProfile = profilesOfSelectedPolicy[i].plugin.name;
+
+	if(policyProfileList != null && policyProfileList.length > 0) {
+		for (var i = 0; i < policyProfileList.length; i++) {
+			var profileId = policyProfileList[i].id;
+			var profileName = policyProfileList[i].label;
+			var profileDescription =  policyProfileList[i].description;
+			var pluginOfProfile = policyProfileList[i].plugin.name;
 
 			var newRow = $("<tr id="+ profileId +">");
 			var html = '<td>'+ profileName +'</td>';
+
 			html += '<td>'+ profileDescription +'</td>';
 			html += '<td>'+ pluginOfProfile +'</td>';
 			newRow.append(html);
-			$("#profileListTable").append(newRow);
+			$("#policyProfileTable").append(newRow);
 			chartLabelList.push(pluginOfProfile);
 
 		}
-		createPolicyChart(chartLabelList);
 	}
+	createPolicyChart(chartLabelList);
 
-	profileTable = $('#profileListTable').DataTable( {
+	policyProfileTable = $('#policyProfileTable').DataTable( {
 		"scrollY": "200px",
 		"scrollX": false,
 		"searching": false,
@@ -144,55 +154,113 @@ function createProfileTable(profilesOfSelectedPolicy) {
 	} );
 }
 
-function getProfileList() {
-
-	$.ajax({
-		type : 'POST',
-		url : '/profile/list',
-		dataType : 'json',
-		success : function(data) {
-			if(data != null && data.length > 0) {
-				profileList = data;
-//				for (var i = 0; i < policyList.length; i++) {
-//				var policyId = policyList[i].id;
-//				var policyName = policyList[i].label;
-//				var policyDescription = policyList[i].description;
-//				var policyStatus = "Aktif";
-//				if (policyList[i].active == false) {
-//				policyStatus = "Pasif";
-//				}
-//				if (policyList[i].deleted == false) {
-//				var newRow = $("<tr id="+ policyId +">");
-//				var html = '<td>'+ policyName +'</td>';
-//				html += '<td>'+ policyDescription +'</td>';
-//				html += '<td>'+ policyStatus +'</td>';
-//				newRow.append(html);
-//				$("#policyListTable").append(newRow);
-//				}
-//				}
-			}
-
-//			profileTable = $('#policyListTable').DataTable( {
-//			"scrollY": "200px",
-//			"scrollX": false,
-//			"paging": false,
-//			"scrollCollapse": true,
-//			"oLanguage": {
-//			"sSearch": "Politika Ara:",
-//			"sInfo": "Toplam politika sayısı: _TOTAL_",
-//			"sInfoEmpty": "Gösterilen politika sayısı: 0",
-//			"sZeroRecords" : "Politika bulunamadı",
-//			"sInfoFiltered": " - _MAX_ kayıt arasından",
-//			},
-//			} );
+//added profile of plugins to selected policy or new created policy
+function addProfileToPolicy(profile) {
+	if (policyProfileList.length > 0) {
+		if (checkedPluginOfProfile(profile) == false) {
+			policyProfileList.push(profile);
+			createProfileTableOfPolicy();
+			$.notify("Profil başarıyla eklendi.", "success");
+		} else {
+			$.notify("Bir politikada aynı eklentiye ait birden fazla profil olamaz.", "warn");
 		}
-	});
-
-
+	} else {
+		policyProfileList.push(profile);
+		createProfileTableOfPolicy();
+		$.notify("Profil başarıyla eklendi.", "success");
+	}
 }
 
+function checkedPluginOfProfile(profile) {
+	var isExist = false;
+	for (var i = 0; i < policyProfileList.length; i++) {
+		if (profile.plugin.id == policyProfileList[i].plugin.id) {
+			isExist = true;
+		}
+	}
+	return isExist;
+}
+
+$('#policyProfileTable tbody').on( 'click', 'tr', function () {
+	if ( $(this).hasClass('selected') ) {
+		$(this).removeClass('selected');
+		$('#removeProfileBtn').hide();
+		selectedProfileId = null;
+	} else {
+		policyProfileTable.$('tr.selected').removeClass('selected');
+		$(this).addClass('selected');
+		selectedProfileId = $(this).attr('id');
+		$('#removeProfileBtn').show();
+	}
+});
+
+function findIndexInPolicyProfileList() {
+	var index = -1;
+	for (var i = 0; i < policyProfileList.length; i++) { 
+		if (policyProfileList[i]["id"] == selectedProfileId) {
+			index = i;
+		}
+	}
+	return index;
+}
+
+//remove selected profile from  policyProfileList
+$("#removeProfileBtn").click(function(e){
+	var index = findIndexInPolicyProfileList();
+	if (index > -1) {
+		policyProfileList.splice(index, 1);
+//		$("#"+ selectedProfileId +"").closest("tr").remove();
+		createProfileTableOfPolicy();
+		selectedProfileId = null;
+	}
+});
+
+//save policy to database
+$("#addPolicyBtn").click(function(e){
+	
+	var label = $('#policyNameForm').val();
+	var description = $('#policyDescriptionForm').val();
+//	var profilesListId = [];
+//	for (var i = 0; i < policyProfileList.length; i++) {
+//		profilesListId.push(policyProfileList[i].id);
+//		
+//	}
+	var params = {
+			"label": label,
+			"description": description,
+			"profiles": policyProfileList
+	};
+	console.log(params)
+	
+	$.ajax({
+		type : 'POST',
+		url : '/policy/add',
+		data: JSON.stringify(params),
+		contentType: "application/json",
+		dataType : 'json',
+		success : function(data) {
+			console.log(data)
+			if(data != null) {
+				$.notify("Politika başarıyla kaydedildi.", "success");
+//				profileList.push(data);
+//				scriptProfileTable.clear().draw();
+//				scriptProfileTable.destroy();
+//				createScriptProfileTable();
+//				$('#scriptProfileNameForm').val("");
+//				$('#scriptProfileDescriptionForm').val("");
+			} 
+		},
+		error: function (data, errorThrown) {
+			$.notify("Politika kaydedilirken hata oluştu. ", "error");
+			console.log(errorThrown)
+		},
+	});
+	
+});
+
+
+// load profile pages when on clicked profile management 
 function getProfilPages() {
-//	showPageAndHideOthers('profilePage');
 	$.ajax({
 		type : 'POST',
 		url : 'getPluginProfileList',
@@ -202,7 +270,7 @@ function getProfilPages() {
 
 			for (var i = 0; i < pluginProfileList.length; i++) {
 				var pluginProfile = pluginProfileList[i];
-				if(pluginProfile.page == 'conky-policy'){
+				if(pluginProfile.page == 'conky-profile'){
 					$.ajax({
 						type : 'POST',
 						url : 'getPluginProfileHtmlPage',
@@ -224,6 +292,90 @@ function getProfilPages() {
 						dataType : 'text',
 						success : function(result) {
 							$('#execute-script-profile').html(result);
+						}
+					});
+				}
+			}
+			for (var i = 0; i < pluginProfileList.length; i++) {
+				var pluginProfile = pluginProfileList[i];
+				if(pluginProfile.page == 'browser-profile'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginProfileHtmlPage',
+						data : 'id=' + pluginProfile.id + '&name=' + pluginProfile.name	+ '&page=' + pluginProfile.page + '&description=' + pluginProfile.description,
+						dataType : 'text',
+						success : function(result) {
+							$('#browser-profile').html(result);
+						}
+					});
+				}
+			}
+			for (var i = 0; i < pluginProfileList.length; i++) {
+				var pluginProfile = pluginProfileList[i];
+				if(pluginProfile.page == 'disk-quota-profile'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginProfileHtmlPage',
+						data : 'id=' + pluginProfile.id + '&name=' + pluginProfile.name	+ '&page=' + pluginProfile.page + '&description=' + pluginProfile.description,
+						dataType : 'text',
+						success : function(result) {
+							$('#disk-quota-profile').html(result);
+						}
+					});
+				}
+			}
+			for (var i = 0; i < pluginProfileList.length; i++) {
+				var pluginProfile = pluginProfileList[i];
+				if(pluginProfile.page == 'login-manager-profile'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginProfileHtmlPage',
+						data : 'id=' + pluginProfile.id + '&name=' + pluginProfile.name	+ '&page=' + pluginProfile.page + '&description=' + pluginProfile.description,
+						dataType : 'text',
+						success : function(result) {
+							$('#login-manager-profile').html(result);
+						}
+					});
+				}
+			}
+			for (var i = 0; i < pluginProfileList.length; i++) {
+				var pluginProfile = pluginProfileList[i];
+				if(pluginProfile.page == 'rsyslog-profile'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginProfileHtmlPage',
+						data : 'id=' + pluginProfile.id + '&name=' + pluginProfile.name	+ '&page=' + pluginProfile.page + '&description=' + pluginProfile.description,
+						dataType : 'text',
+						success : function(result) {
+							$('#rsyslog-profile').html(result);
+						}
+					});
+				}
+			}
+			for (var i = 0; i < pluginProfileList.length; i++) {
+				var pluginProfile = pluginProfileList[i];
+				if(pluginProfile.page == 'usb-profile'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginProfileHtmlPage',
+						data : 'id=' + pluginProfile.id + '&name=' + pluginProfile.name	+ '&page=' + pluginProfile.page + '&description=' + pluginProfile.description,
+						dataType : 'text',
+						success : function(result) {
+							$('#usb-profile').html(result);
+						}
+					});
+				}
+			}
+			for (var i = 0; i < pluginProfileList.length; i++) {
+				var pluginProfile = pluginProfileList[i];
+				if(pluginProfile.page == 'user-privilege-profile'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginProfileHtmlPage',
+						data : 'id=' + pluginProfile.id + '&name=' + pluginProfile.name	+ '&page=' + pluginProfile.page + '&description=' + pluginProfile.description,
+						dataType : 'text',
+						success : function(result) {
+							$('#user-privileg-profile').html(result);
 						}
 					});
 				}
@@ -276,15 +428,16 @@ function hideAndShowPolicyButton(select) {
 		$('#policyDisableBtn').show();
 		$('#policyEnableBtn').show();
 		$('#policyDelBtn').show();
+		$('#policyUpdateBtn').show();
+		$('#addPolicyBtn').hide();
 	} else {
 		$('#policyDisableBtn').hide();
 		$('#policyEnableBtn').hide();
 		$('#policyDelBtn').hide();
+		$('#policyUpdateBtn').hide();
+		$('#addPolicyBtn').show();
+		$('#removeProfileBtn').hide();
 	}
-	
-	
-	
-	
 }
 
 

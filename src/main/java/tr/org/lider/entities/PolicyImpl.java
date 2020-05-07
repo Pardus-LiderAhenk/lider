@@ -21,6 +21,7 @@ package tr.org.lider.entities;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -37,6 +38,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * Entity class for IPolicy objects.
  * 
@@ -52,7 +57,7 @@ public class PolicyImpl  {
 	@Column(name = "POLICY_ID", unique = true, nullable = false)
 	private Long id;
 
-	@Column(name = "LABEL", unique = true, nullable = false)
+	@Column(name = "LABEL", nullable = false)
 	private String label;
 
 	@Column(name = "DESCRIPTION")
@@ -71,11 +76,14 @@ public class PolicyImpl  {
 	private Set<ProfileImpl> profiles = new HashSet<ProfileImpl>(); // unidirectional
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "CREATE_DATE", nullable = false)
+	@Column(name = "CREATE_DATE", nullable = false, updatable = false)
+	@CreationTimestamp
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private Date createDate;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "MODIFY_DATE")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
 	private Date modifyDate;
 
 	@Column(name = "POLICY_VERSION")
@@ -100,25 +108,24 @@ public class PolicyImpl  {
 		this.policyVersion = policyVersion;
 	}
 
-//	public PolicyImpl(IPolicy policy) {
-//		this.id = policy.getId();
-//		this.label = policy.getLabel();
-//		this.description = policy.getDescription();
-//		this.active = policy.isActive();
-//		this.deleted = policy.isDeleted();
-//		this.createDate = policy.getCreateDate();
-//		this.modifyDate = policy.getModifyDate();
-//		this.policyVersion = policy.getPolicyVersion();
-//
-//		// Convert IProfile to ProfileImpl
-//		Set<? extends IProfile> tmpProfiles = policy.getProfiles();
-//		if (tmpProfiles != null) {
-//			for (IProfile tmpProfile : tmpProfiles) {
-//				addProfile(tmpProfile);
-//			}
-//		}
-//
-//	}
+	public PolicyImpl(PolicyImpl policy) {
+		this.id = policy.getId();
+		this.label = policy.getLabel();
+		this.description = policy.getDescription();
+		this.active = policy.isActive();
+		this.deleted = policy.isDeleted();
+		this.createDate = policy.getCreateDate();
+		this.modifyDate = policy.getModifyDate();
+		this.policyVersion = policy.getPolicyVersion();
+
+		// Convert IProfile to ProfileImpl
+		Set<? extends ProfileImpl> tmpProfiles = policy.getProfiles();
+		if (tmpProfiles != null) {
+			for (ProfileImpl tmpProfile : tmpProfiles) {
+				addProfile(tmpProfile);
+			}
+		}
+	}
 
 	
 	public Long getId() {
@@ -201,18 +208,18 @@ public class PolicyImpl  {
 	}
 
 	
-//	public void addProfile(IProfile profile) {
-//		if (profiles == null) {
-//			profiles = new HashSet<ProfileImpl>();
-//		}
-//		ProfileImpl profileImpl = null;
-//		if (profile instanceof ProfileImpl) {
-//			profileImpl = (ProfileImpl) profile;
-//		} else {
-//			profileImpl = new ProfileImpl(profile);
-//		}
-//		profiles.add(profileImpl);
-//	}
+	public void addProfile(ProfileImpl profile) {
+		if (profiles == null) {
+			profiles = new HashSet<ProfileImpl>();
+		}
+		ProfileImpl profileImpl = null;
+		if (profile instanceof ProfileImpl) {
+			profileImpl = (ProfileImpl) profile;
+		} else {
+			profileImpl = new ProfileImpl(profile);
+		}
+		profiles.add(profileImpl);
+	}
 
 	
 	public String getPolicyVersion() {
@@ -224,8 +231,6 @@ public class PolicyImpl  {
 		this.policyVersion = policyVersion;
 	}
 
-	
-	
 	public String toString() {
 		return "PolicyImpl [id=" + id + ", label=" + label + ", description=" + description + ", active=" + active
 				+ ", deleted=" + deleted + ", profiles=" + profiles + ", createDate=" + createDate + ", modifyDate="
@@ -233,9 +238,9 @@ public class PolicyImpl  {
 	}
 
 	
-	public void setcommandOwnerUid(String commandOwnerUid) {
-		this.commandOwnerUid = commandOwnerUid;
-		
-	}
+//	public void setcommandOwnerUid(String commandOwnerUid) {
+//		this.commandOwnerUid = commandOwnerUid;
+//		
+//	}
 
 }

@@ -113,7 +113,7 @@
 
 </head>
 <body>
-	<div class="app-container app-theme-white body-tabs-shadow  fixed-header">
+	<div class="app-container app-theme-white body-tabs-shadow  fixed-header" id="mainHtmlContent">
 		<div class="app-header header-shadow" >
 			<div class="app-header__content">
 				<div class="app-header-left">
@@ -253,15 +253,22 @@
  			
  			
  		<div class="ui-theme-settings">
-		  <button type="button" id="TooltipDemo" class="btn-open-options btn btn-warning">
-                <i class="fa fa-cog fa-w-16 fa-spin fa-2x"></i> 
+		  <button type="button" id="TooltipDemo" class="btn-open-options btn btn-info">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
             </button>          
              <div class="theme-settings__inner">
             	 <div class="scrollbar-container">
             	 	
             	 <div class="theme-settings__options-wrapper">
-            	 		<h3 class="themeoptions-heading">Sistem Güncesi
-                        </h3>			
+            	 		<h3 class="themeoptions-heading">
+            	 		
+            	 		 	<div>
+                               Sistem Güncesi
+                            </div>
+                            <button type="button" class="btn-info btn-wide ml-auto btn btn-focus btn-sm switch-header-cs-class" id="clearLogBtn">
+                                Temizle
+                            </button>
+                        </h3>		
             			<div class="p-3">
             				 <div id="logger" >
             				 </div>

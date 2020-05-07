@@ -1,18 +1,20 @@
 $(document).ready(function() {
 	connection = new Strophe.Connection(BOSH_SERVICE);
-	connection.connect(username, password, onConnect);
 
-	$('#rosterListModal').on('show.bs.modal',function(event) {
-		showRosterList();
-	});
-
-	$('#onlineEntryListModal').on('show.bs.modal',	function(event) {
-		showOnlineEntryList();
-	});
-
-	$('#logout').on('click', function() {
-		connection.disconnect();
-	});
+		connection.connect(username, password, onConnect,2, 2);
+		
+			$('#rosterListModal').on('show.bs.modal',function(event) {
+				showRosterList();
+			});
+		
+			$('#onlineEntryListModal').on('show.bs.modal',	function(event) {
+				showOnlineEntryList();
+			});
+		
+			$('#logout').on('click', function() {
+				connection.disconnect();
+			});
+	
 });
 
 function objToString (obj) {
@@ -40,55 +42,32 @@ function showRosterList(){
 	$('#rosterListHolder').html(html);
 }
 
-//function showOnlineEntryList(){
-
-//var html = '<table class="table table-striped table-bordered " id="onlineEntryListTable">';
-
-//html += '<thead>';
-
-//html += '<tr>';
-//html += '<th>JID</th>';
-//html += '<th>Kaynak</th>';
-//html += '</tr>';
-//html += '</thead>';
-
-//for (var i = 0; i < onlineEntryList.length ; i++) {
-
-//var entry=onlineEntryList[i];
-
-//html += '<tr>';
-//html += '<td>' + entry.jid + '</td>';
-//html += '<td>' + entry.source + '</td>';
-///*    html += '<td>' + roster.id + '</td>';
-//html += '<td>' + roster.jid + '</td>'; */
-
-
-//html += '</tr>';
-//}
-//html += '</table>';
-
-//$('#onlineEntryListHolder').html(html);
-//}
-
 function onConnect(status)
 {
 	if (status == Strophe.Status.CONNECTING) {
 		/* log('Strophe is connecting.'); */
+		log('Mesajlaşma Servisine bağlanıyor...',"INFO");
+		$.notify("Mesajlaşma Servisine bağlanıyor..",{className: 'success',position:"right top"}  );
 	} 
 	else if (status == Strophe.Status.CONNFAIL) {
 		log('Mesajlaşma Servisine bağlanırken hata oluştu.',"ERROR");
-		$('#connect').get(0).value = 'connect';
-
+		$.notify("Mesajlaşma Sunucusuna Bağlanırken Hata Oluştu. Lütfen XMPP Bağlantı bilgilerini kontrol ediniz.","error");
+		//$('#connect').get(0).value = 'connect';
+		logout()
 	} 
 	else if (status == Strophe.Status.DISCONNECTING) {
 		log('Mesajlaşma Servisi bağlantısı koparılmaktadır.',"INFO");
+		$.notify("Mesajlaşma Servisi bağlantısı koparılmaktadır.","warn");
 	} 
 	else if (status == Strophe.Status.DISCONNECTED) {
 		log('Mesajlaşma Servisi bağlantısı koparıldı.',"INFO");
-		$('#connect').get(0).value = 'connect';
+		//$('#connect').get(0).value = 'connect';
+		$.notify("Mesajlaşma Sunucusuna Bağlanırken Hata Oluştu. Lütfen XMPP Sunucusunu kontrol ediniz.","error");
+		logout()
 	} 
 	else if (status == Strophe.Status.CONNECTED) {
 		log('Mesajlaşma Servisi ile bağlantı kuruldu.',"SUCCESS");
+		$.notify("Mesajlaşma Servisine bağlanıldı....","success");
 //		log('Mesaj göndermek için kullanıcı adım: ' + connection.jid );
 		connection.addHandler(onMessage, null, 'message', null, null,  null); 
 		var iq = $iq({type: 'get'}).c('query', {xmlns: 'jabber:iq:roster'});
@@ -99,7 +78,32 @@ function onConnect(status)
 	}
 	else{
 		log('Sunucuya ulaşılamıyor.');
+		$.notify("Mesajlaşma Sunucusuna Ulaşılmıyor Lütfen XMPP Bağlantı bilgilerini kontrol ediniz.","error");
 	}
+	
+//	if(connection.connected == false){
+//		$.notify("Mesajlaşma Sunucusuna Bağlanırken Hata Oluştu. Lütfen XMPP Sunucusunu kontrol ediniz.","error");
+//		
+	
+//	
+//	}
+	
+}
+
+function logout() {
+	$.notify("Mesajlaşma Sunucusuna Bağlanırken Hata Oluştu. Lütfen XMPP Sunucusunu kontrol ediniz.","error");
+	$.ajax({
+		type : 'POST',
+		url : 'logout',
+		dataType : 'text',
+		success : function(data) {
+			$('#mainHtmlContent').html(data);
+		},
+		error : function(data, errorThrown) {
+			console.log(data);
+		}
+	});
+	
 }
 
 function onRoster(iq)
@@ -183,8 +187,8 @@ function onPresence(presence)
 		//OFFLine state
 		if (ptype === 'unavailable') {
 
-			$.notify(name+" offline..",{className: 'error',position:"left bottom"}  );
-			log(name+" çevrimdışı oldu.","INFO");
+//			$.notify(name+" offline..",{className: 'error',position:"left bottom"}  );
+			log(name+" çevrimdışı oldu.","ERROR");
 			for (var i =0; i < onlineEntryList.length; i++){
 
 				if (onlineEntryList[i].from === from && onlineEntryList[i].source === source) {
@@ -193,8 +197,8 @@ function onPresence(presence)
 				}
 			}
 		} else {
-			$.notify(name+" online..", {className: 'success',position:"left bottom"}  );
-			log(name+" çevrimiçi oldu.","INFO");
+//			$.notify(name+" online..", {className: 'success',position:"left bottom"}  );
+			log(name+" çevrimiçi oldu.","SUCCESS");
 			var isExist=false;
 			for (i = 0; i < onlineEntryList.length; i++) {
 				var online=onlineEntryList[i];

@@ -81,7 +81,7 @@ $(document).ready(function(){
 			$('#genericModalBodyRender').html(data);
 			$('#selectedUserCount').html(checkedUsers.length);
 			
-			createUserGroupTree('lider/user_groups/getUsers','addMembersToExistingUserGroupTreeDiv', false, true,
+			createUserTree('addMembersToExistingUserGroupTreeDiv', false, true,
 					// row select
 					function(row, rootDnComputer,treeGridIdName){
 					},
@@ -173,10 +173,10 @@ function dropdownButtonClicked(operation) {
 			$('#genericModalBodyRender').html(data);
 		});
 	} else if(operation == "deleteOrganizationalUnit") {
-//		getModalContent("modals/groups/user_groups/deleteou", function content(data){
-//			$('#genericModalHeader').html("Klasörü Sil");
-//			$('#genericModalBodyRender').html(data);
-//		});
+		getModalContent("modals/groups/user_groups/deleteou", function content(data){
+			$('#genericModalHeader').html("Klasörü Sil");
+			$('#genericModalBodyRender').html(data);
+		});
 	} else if(operation == "addMembersToUserGroupModal") {
 //		checkedUsers = [];
 //		checkedOUList = [];
@@ -400,7 +400,7 @@ function btnDeleteOUClicked() {
 	    data: params,
 	    success: function (data) {
 	    	$('#'+treeGridId).jqxTreeGrid('deleteRow', selectedEntryUUID);
-	    	$('#'+treeGridId).jqxTreeGrid('selectRow', rootEntryUUID);
+	    	$('#'+treeGridId).jqxTreeGrid('selectRow', baseRootDnComputer);
 	    	$('#genericModal').trigger('click');
             $.notify("Klasör başarıyla silindi.", "success");
 	    },
@@ -1333,7 +1333,7 @@ function deleteMemberFromTabList(dn) {
 	}
 }
 
-
+var treeCreated=false;
 function createUserGroupsTree() {
 	$('#treeGridUserGroupsDiv').html("");
 	var treeGridHolderDiv= "treeGridUserGroupsDiv";
@@ -1350,6 +1350,10 @@ function createUserGroupsTree() {
 			},
 			//uncheck action
 			function(unCheckedRows, row){
+			},
+			// post tree created
+			function(rootComputer , treeGridId){
+				$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
 			}
 	);
 }

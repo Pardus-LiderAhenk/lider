@@ -54,10 +54,40 @@
 												<div class="col-lg-4"> GRUP ÜYELERİ </div>
 												<div class="col-lg-8 pull-right">
 													<div class="pull-right" id="userGroupButtonActions">	
-														<button type="button" class="btn btn-info btn-sm" id="addMemberUserGroupBtn" title="Üye Ekle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-plus"></i> </button>
-														<button type="button" class="btn btn-info btn-sm " id="editUserGroupBtn" title="İstemci Grubunu Düzenle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-edit"></i> </button>
-														<button type="button" class="btn btn-info btn-sm " id="moveUserGroupBtn" title="İstemci Grubunu Taşı" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-car"></i> </button>
-														<button type="button" class="btn btn-info btn-sm " id="deleteUserGroupBtn" title="İstemci Grubunu Sil" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-minus"></i> </button>
+														
+														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+											                        <span class="btn-icon-wrapper pr-2">
+											                            <i class="fa fa-cogs fa-w-20"></i>
+											                        </span>
+											                        Grup Yönetimi
+											                </button>
+															<div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+													                    	 	<ul class="nav flex-column">
+													 									<li class="nav-item">
+													 									<a href="#"  class="nav-link" id="addMemberUserGroupBtn" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-plus"></i> <span>
+													                                                            Gruba Kullanıcı Ekle
+													                                                        </span></a>
+													                                        
+													                                     </li>
+													                                     <li class="nav-item">
+													                                     <a href="#" class="nav-link"  id="editUserGroupBtn" title="İstemci Grubunu Düzenle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-edit"></i> <span>
+													                                                            Grup Adını Düzenle
+													                                                        </span></a> 
+													                                      </li>
+													                                      <li class="nav-item">
+													                                      <a href="#" class="nav-link" id="moveUserGroupBtn" title="İstemci Grubunu Taşı" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-car"></i><span>
+													                                                           Grubu Taşı
+													                                                        </span> </a>
+													                                      </li>     
+													                                      <li class="nav-item">
+													                                      <a href="#" class="nav-link" id="deleteUserGroupBtn" title="İstemci Grubunu Sil" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-minus"></i>  <span>
+													                                                            Grubu Sil
+													                                                        </span></a> 
+													                                      </li>                                          
+													                         	</ul>
+													           </div>
+														
+														
 													</div>
 
 												</div>

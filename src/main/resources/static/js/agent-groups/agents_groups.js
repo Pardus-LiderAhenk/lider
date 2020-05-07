@@ -70,7 +70,7 @@ $(document).ready(function(){
 			$('#genericModalHeader').html("Kayıt Taşı");
 			$('#genericModalBodyRender').html(data);
 			
-			createAgentsGroupTree('lider/computer_groups/agentGroups','moveEntryTreeDiv', true, false,
+			createAgentsGroupTree('lider/computer_groups/getGroups','moveEntryTreeDiv', true, false,
 					// row select
 					function(row, rootDnComputer,treeGridIdName){
 //						selectedEntryUUIDForTreeMove=selectedRow.distinguishedName;
@@ -140,7 +140,7 @@ $(document).ready(function(){
 			$('#genericModalHeader').html("Kayıt Taşı");
 			$('#genericModalBodyRender').html(data);
 			
-			createAgentsGroupTree('lider/computer_groups/agentGroups','moveEntryTreeDiv', true, false,
+			createAgentsGroupTree('lider/computer_groups/getGroups','moveEntryTreeDiv', true, false,
 					// row select
 					function(row, rootDnComputer,treeGridIdName){
 						destinationDNToMoveRecord = row.distinguishedName;
@@ -947,6 +947,10 @@ function cretaeAgentGroupTree() {
 			},
 			//uncheck action
 			function(unCheckedRows, row){
+			},
+			// post tree created
+			function(rootDn , treeGridId){
+				$('#'+ treeGridId).jqxTreeGrid('selectRow', rootDn);
 			}
 	);
 }

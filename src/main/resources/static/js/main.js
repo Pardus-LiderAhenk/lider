@@ -11,12 +11,21 @@ $(document).ready(function(){
 			data : 'innerPage=' + page,
 			dataType : 'text',
 			success : function(data) {
-				$('#mainArea').html(data);
+				if(page=="logout"){
+					$('#mainHtmlContent').html(data);
+				}
+				else{
+					$('#mainArea').html(data);
+				}
 			},
 			error : function(data, errorThrown) {
 				console.log(data);
 			}
 		});
 	
+	});
+	$('#clearLogBtn').on('click', function(e) {	
+		
+		$('#logger').html("")
 	});
 });

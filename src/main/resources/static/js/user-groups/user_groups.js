@@ -81,7 +81,7 @@ $(document).ready(function(){
 			$('#genericModalBodyRender').html(data);
 			$('#selectedUserCount').html(checkedUsers.length);
 			
-			createUserGroupTree('lider/user_groups/getUsers','addMembersToExistingUserGroupTreeDiv', false, true,
+			createUserTree('addMembersToExistingUserGroupTreeDiv', false, true,
 					// row select
 					function(row, rootDnComputer,treeGridIdName){
 					},

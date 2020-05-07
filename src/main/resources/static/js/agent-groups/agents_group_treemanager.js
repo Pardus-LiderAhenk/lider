@@ -6,7 +6,7 @@
  * @param callback
  * @returns
  */
-function createAgentsGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
+function createAgentsGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction,postTreeCreatedAction) {
 	var rootComputer = null;
 	var treeGridId=treeHolderDiv+"Grid";
 	/**
@@ -190,6 +190,9 @@ function createAgentsGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckB
 								});  
 					      }
 					 }); 
+					
+					
+					 postTreeCreatedAction(rootComputer , treeGridId)
 		}
 	});
 }

@@ -947,6 +947,10 @@ function cretaeAgentGroupTree() {
 			},
 			//uncheck action
 			function(unCheckedRows, row){
+			},
+			// post tree created
+			function(rootDn , treeGridId){
+				$('#'+ treeGridId).jqxTreeGrid('selectRow', rootDn);
 			}
 	);
 }

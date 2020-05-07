@@ -104,6 +104,27 @@ public class PluginService {
 			}
 		}
 		pluginTaskRepository.saveAll(pluginTaskList2);
+		
+//		insert plugin_profile to c_plugin_profile table
+		List<PluginProfile> pluginProfileList = new ArrayList<>();
+		List<PluginProfile> pluginProfileList2 = new ArrayList<>();
+		
+//		String name(1), String page(2), String description(3), String command_id(4), PluginImpl plugin_id(5), Integer state(6)
+		pluginProfileList.add(new PluginProfile("Conky Mesaj Profili", "conky-profile", "Conky politika profili", "EXECUTE_CONKY", findPluginIdByName("conky"), 1));
+		pluginProfileList.add(new PluginProfile("Betik Profili", "execute-script-profile", "Betik politika profili", "EXECUTE_SCRIPT", findPluginIdByName("script"), 1));
+		pluginProfileList.add(new PluginProfile("Ağ Tarayıcı Profili", "browser-profile", "Ağ tarayıcı politika profili", "BROWSER", findPluginIdByName("browser"), 1));
+		pluginProfileList.add(new PluginProfile("Disk Kota Profili", "disk-quota-profile", "Disk kota politika profili", "GET_QUOTA", findPluginIdByName("disk-quota"), 1));
+		pluginProfileList.add(new PluginProfile("Oturum Yönetimi Profili", "login-manager-profile", "Oturum yönetimi politika profili", "MANAGE", findPluginIdByName("login-manager"), 1));
+		pluginProfileList.add(new PluginProfile("Rsyslog Profili", "rsyslog-profile", "Rsyslog politika profili", "CONFIGURE_RSYSLOG", findPluginIdByName("rsyslog"), 1));
+		pluginProfileList.add(new PluginProfile("USB Profili", "usb-profile", "USB politika profili", "MANAGE-USB", findPluginIdByName("usb"), 1));
+		pluginProfileList.add(new PluginProfile("Kullanıcı Ayrıcalıkları Profili", "user-privilege-profile", "Disk kota politika profili", "USER-PRIVILEGE", findPluginIdByName("user-privilege"), 1));
+		
+		for (int i = 0; i < pluginProfileList.size(); i++) {
+			if (findPluginProfileByPage(pluginProfileList.get(i).getPage()).isEmpty()) {
+				pluginProfileList2.add(pluginProfileList.get(i));
+			}
+		}
+		pluginProfileRepository.saveAll(pluginProfileList2);
 	}
 	
 	public PluginImpl findPluginIdByName(String name) {
@@ -151,5 +172,9 @@ public class PluginService {
 	
 	public List<PluginTask> findPluginTaskByPage(String page) {
 		return pluginTaskRepository.findByPage(page);
+	}
+	
+	public List<PluginProfile> findPluginProfileByPage(String page) {
+		return pluginProfileRepository.findByPage(page);
 	}
 }

@@ -68,6 +68,20 @@ public class PluginProfile implements Serializable {
 	@Transient
 	private Date activationDate;
 
+	public PluginProfile() {
+	}
+	
+	public PluginProfile(String name, String page, String description, String command_id, PluginImpl plugin,
+			Integer state) {
+		// TODO Auto-generated constructor stub
+		this.name = name;
+		this.page = page;
+		this.description = description;
+		this.commandId = command_id;
+		this.plugin = plugin;
+		this.state = state;
+	}
+
 	public Long getId() {
 		return id;
 	}

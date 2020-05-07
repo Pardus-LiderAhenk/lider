@@ -6,7 +6,7 @@
  * @param callback
  * @returns
  */
-function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
+function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction, postTreeCreatedAction) {
 	var rootComputer = null;
 	var treeGridId=treeHolderDiv+"Grid";
 	/**
@@ -191,6 +191,8 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 								});  
 					      }
 					 }); 
+					
+			 postTreeCreatedAction(rootComputer , treeGridId)
 		}
 	});
 }
@@ -274,4 +276,7 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 			$.notify("Lütfen Arama Dizini Seçiniz", "warn");
 		}
 	});
+	
+	
+	
 }

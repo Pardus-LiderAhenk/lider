@@ -81,7 +81,7 @@ $('#policyListTable tbody').on( 'click', 'tr', function () {
 		$("#policyNameForm").val("");
 		$("#policyDescriptionForm").val("");
 		createPolicyChart(null);
-		createProfileTableOfPolicy(null);
+		createProfileTableOfPolicy();
 		hideAndShowPolicyButton(false);
 		selectedPolicyId = null;
 	} else {
@@ -89,6 +89,7 @@ $('#policyListTable tbody').on( 'click', 'tr', function () {
 		$(this).addClass('selected');
 		selectedPolicyId = $(this).attr('id');
 		getSelectedPolicyData();
+		createProfileTableOfPolicy();
 		hideAndShowPolicyButton(true);
 	}
 });

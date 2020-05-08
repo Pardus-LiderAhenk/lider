@@ -21,7 +21,6 @@ var selectedPolicyId = null;
 getPolicyList();
 getProfilPages();
 createPolicyChart(null);
-createProfileTableOfPolicy(null);
 hideAndShowPolicyButton(false);
 
 function getPolicyList() {
@@ -30,44 +29,61 @@ function getPolicyList() {
 		url : '/policy/list',
 		dataType : 'json',
 		success : function(data) {
-			if(data != null && data.length > 0) {
-				policyList = data;
-				console.log(data)
-				for (var i = 0; i < policyList.length; i++) {
-					var policyId = policyList[i].id;
-					var policyName = policyList[i].label;
-					var policyDescription = policyList[i].description;
-					var policyStatus = "Aktif";
-					if (policyList[i].active == false) {
-						policyStatus = "Pasif";
-					}
-					if (policyList[i].deleted == false) {
-						var newRow = $("<tr id="+ policyId +">");
-						var html = '<td>'+ policyName +'</td>';
-						html += '<td>'+ policyDescription +'</td>';
-						html += '<td>'+ policyStatus +'</td>';
-						newRow.append(html);
-						$("#policyListTable").append(newRow);
-					}
-				}
-			}
-
-			policyTable = $('#policyListTable').DataTable( {
-				"scrollY": "200px",
-				"scrollX": false,
-				"paging": false,
-				"scrollCollapse": true,
-				"oLanguage": {
-					"sSearch": "Politika Ara:",
-					"sInfo": "Toplam politika sayısı: _TOTAL_",
-					"sInfoEmpty": "Gösterilen politika sayısı: 0",
-					"sZeroRecords" : "Politika bulunamadı",
-					"sInfoFiltered": " - _MAX_ kayıt arasından",
-				},
-			} );
+			policyList = data;
+			console.log(data)
+			createPolicyTable();
 		}
 	});
 }
+
+function createPolicyTable() {
+	
+	if ($("#policyListEmptyInfo").length > 0) {
+		$("#policyListEmptyInfo").remove();
+	}
+	
+	if (policyTable) {
+		policyTable.clear();
+		policyTable.destroy();
+		policyTable = null;
+	}
+	
+	if(policyList != null && policyList.length > 0) {
+		for (var i = 0; i < policyList.length; i++) {
+			var policyId = policyList[i].id;
+			var policyName = policyList[i].label;
+			var policyDescription = policyList[i].description;
+			var policyStatus = "Aktif";
+			if (policyList[i].active == false) {
+				policyStatus = "Pasif";
+			}
+			if (policyList[i].deleted == false) {
+				var newRow = $("<tr id="+ policyId +">");
+				var html = '<td>'+ policyName +'</td>';
+				html += '<td>'+ policyDescription +'</td>';
+				html += '<td>'+ policyStatus +'</td>';
+				newRow.append(html);
+				$("#policyListTable").append(newRow);
+			}
+		}
+		policyTable = $('#policyListTable').DataTable( {
+			"scrollY": "200px",
+			"scrollX": false,
+			"paging": false,
+			"scrollCollapse": true,
+			"oLanguage": {
+				"sSearch": "Politika Ara:",
+				"sInfo": "Toplam politika sayısı: _TOTAL_",
+				"sInfoEmpty": "Gösterilen politika sayısı: 0",
+				"sZeroRecords" : "Politika bulunamadı",
+				"sInfoFiltered": " - _MAX_ kayıt arasından",
+			},
+		} );
+	} else {
+		$('#policyListBody').html('<tr id="policyListEmptyInfo"><td colspan="3" class="text-center">Politika bulunamadı.</td></tr>');
+	}
+}
+
 
 $('#policyListTable tbody').on( 'click', 'tr', function () {
 	if (policyProfileTable) {
@@ -81,15 +97,16 @@ $('#policyListTable tbody').on( 'click', 'tr', function () {
 		$("#policyNameForm").val("");
 		$("#policyDescriptionForm").val("");
 		createPolicyChart(null);
-		createProfileTableOfPolicy();
+//		createProfileTableOfPolicy();
 		hideAndShowPolicyButton(false);
 		selectedPolicyId = null;
 	} else {
 		policyTable.$('tr.selected').removeClass('selected');
 		$(this).addClass('selected');
 		selectedPolicyId = $(this).attr('id');
-		getSelectedPolicyData();
 		hideAndShowPolicyButton(true);
+		getSelectedPolicyData();
+
 	}
 });
 
@@ -104,13 +121,15 @@ function getSelectedPolicyData() {
 					policyProfileList.push(profiles[i]);
 				}
 			}
-			console.log(policyProfileList)
 			createProfileTableOfPolicy();
 		}
 	}
 }
 
 function createProfileTableOfPolicy() {
+	if ($("#profileListEmptyInfo").length > 0) {
+		$("#profileListEmptyInfo").remove();
+	}
 	if (policyProfileTable) {
 		policyProfileTable.clear();
 		policyProfileTable.destroy();
@@ -131,27 +150,27 @@ function createProfileTableOfPolicy() {
 			html += '<td>'+ profileDescription +'</td>';
 			html += '<td>'+ pluginOfProfile +'</td>';
 			newRow.append(html);
-			$("#policyProfileTable").append(newRow);
+			$("#profileListBody").append(newRow);
 			chartLabelList.push(pluginOfProfile);
-
 		}
+		policyProfileTable = $('#policyProfileTable').DataTable( {
+			"scrollY": "200px",
+			"scrollX": false,
+			"searching": false,
+			"paging": false,
+			"scrollCollapse": true,
+			"oLanguage": {
+				"sSearch": "Profil Ara:",
+				"sInfo": "Toplam profil sayısı: _TOTAL_",
+				"sInfoEmpty": "Gösterilen profil sayısı: 0",
+				"sZeroRecords" : "Profil bulunamadı",
+				"sInfoFiltered": " - _MAX_ kayıt arasından",
+			},
+		} );
+	} else {
+		$('#profileListBody').html('<tr id="profileListEmptyInfo"><td colspan="3" class="text-center">Lütfen profil ekleyiniz.</td></tr>');
 	}
 	createPolicyChart(chartLabelList);
-
-	policyProfileTable = $('#policyProfileTable').DataTable( {
-		"scrollY": "200px",
-		"scrollX": false,
-		"searching": false,
-		"paging": false,
-		"scrollCollapse": true,
-		"oLanguage": {
-			"sSearch": "Profil Ara:",
-			"sInfo": "Toplam profil sayısı: _TOTAL_",
-			"sInfoEmpty": "Gösterilen profil sayısı: 0",
-			"sZeroRecords" : "Profil bulunamadı",
-			"sInfoFiltered": " - _MAX_ kayıt arasından",
-		},
-	} );
 }
 
 //added profile of plugins to selected policy or new created policy
@@ -194,10 +213,10 @@ $('#policyProfileTable tbody').on( 'click', 'tr', function () {
 	}
 });
 
-function findIndexInPolicyProfileList() {
+function findIndexInPolicyAndProfileList(listName, id) {
 	var index = -1;
-	for (var i = 0; i < policyProfileList.length; i++) { 
-		if (policyProfileList[i]["id"] == selectedProfileId) {
+	for (var i = 0; i < listName.length; i++) { 
+		if (listName[i]["id"] == id) {
 			index = i;
 		}
 	}
@@ -206,10 +225,11 @@ function findIndexInPolicyProfileList() {
 
 //remove selected profile from  policyProfileList
 $("#removeProfileBtn").click(function(e){
-	var index = findIndexInPolicyProfileList();
+	var index = findIndexInPolicyAndProfileList(policyProfileList, selectedProfileId);
 	if (index > -1) {
 		policyProfileList.splice(index, 1);
 //		$("#"+ selectedProfileId +"").closest("tr").remove();
+		$('#removeProfileBtn').hide();
 		createProfileTableOfPolicy();
 		selectedProfileId = null;
 	}
@@ -217,49 +237,173 @@ $("#removeProfileBtn").click(function(e){
 
 //save policy to database
 $("#addPolicyBtn").click(function(e){
-	
+
 	var label = $('#policyNameForm').val();
 	var description = $('#policyDescriptionForm').val();
 //	var profilesListId = [];
 //	for (var i = 0; i < policyProfileList.length; i++) {
-//		profilesListId.push(policyProfileList[i].id);
-//		
+//	profilesListId.push(policyProfileList[i].id);
+
 //	}
+	if (policyProfileList.length > 0) {
+		if (label != "") {
+			var params = {
+					"label": label,
+					"description": description,
+					"profiles": policyProfileList
+			};
+			console.log(params)
+
+			$.ajax({
+				type : 'POST',
+				url : '/policy/add',
+				data: JSON.stringify(params),
+				contentType: "application/json",
+				dataType : 'json',
+				success : function(data) {
+					console.log(data)
+					if(data != null) {
+						$.notify("Politika başarıyla kaydedildi.", "success");
+//						profileList.push(data);
+//						scriptProfileTable.clear().draw();
+//						scriptProfileTable.destroy();
+//						createScriptProfileTable();
+//						$('#scriptProfileNameForm').val("");
+//						$('#scriptProfileDescriptionForm').val("");
+					} 
+				},
+				error: function (data, errorThrown) {
+					$.notify("Politika kaydedilirken hata oluştu. ", "error");
+				},
+			});
+		} else {
+			$.notify("Lütfen politika adı giriniz. ", "warn");
+		}
+
+	} else {
+		$.notify("Politika oluşturmak için en az bir adet profil seçilmelidir. ", "warn");
+	}
+});
+
+// deleted selected policy from database
+$("#policyDelBtn").click(function(e){
 	var params = {
-			"label": label,
-			"description": description,
-			"profiles": policyProfileList
+			"id": selectedPolicyId,
 	};
-	console.log(params)
 	
 	$.ajax({
 		type : 'POST',
-		url : '/policy/add',
+		url : '/policy/del',
 		data: JSON.stringify(params),
 		contentType: "application/json",
 		dataType : 'json',
 		success : function(data) {
-			console.log(data)
 			if(data != null) {
-				$.notify("Politika başarıyla kaydedildi.", "success");
-//				profileList.push(data);
-//				scriptProfileTable.clear().draw();
-//				scriptProfileTable.destroy();
-//				createScriptProfileTable();
-//				$('#scriptProfileNameForm').val("");
-//				$('#scriptProfileDescriptionForm').val("");
+				$.notify("Politika başarıyla silindi.", "success");
+				var index = findIndexInPolicyAndProfileList(policyList, selectedPolicyId);
+				if (index > -1) {
+					policyList.splice(index, 1);
+					createPolicyTable();
+					hideAndShowPolicyButton(false);
+					selectedPolicyId = null;
+				}
+				$('#policyNameForm').val("");
+				$('#policyDescriptionForm').val("");
 			} 
 		},
 		error: function (data, errorThrown) {
-			$.notify("Politika kaydedilirken hata oluştu. ", "error");
-			console.log(errorThrown)
+			$.notify("Politika silinirken hata oluştu. ", "error");
 		},
 	});
+});
+
+//enabled selected policy from database
+$("#policyEnableBtn").click(function(e){
+	var params = {
+			"id": selectedPolicyId,
+			"active": true
+	};
 	
+	var index = findIndexInPolicyAndProfileList(policyList, selectedPolicyId);
+	var isActive = policyList[index].active;
+	if (isActive == false) {
+		$.ajax({
+			type : 'POST',
+			url : '/policy/active',
+			data: JSON.stringify(params),
+			contentType: "application/json",
+			dataType : 'json',
+			success : function(data) {
+				if(data != null) {
+					$.notify("Politika başarıyla aktif edildi.", "success");
+					if (index > -1) {
+						policyList.splice(index, 1);
+						hideAndShowPolicyButton(false);
+						policyList.push(data);
+						createPolicyTable();
+						selectedPolicyId = null;
+					}
+					$('#policyNameForm').val("");
+					$('#policyDescriptionForm').val("");
+				} 
+			},
+			error: function (data, errorThrown) {
+				$.notify("Politika aktif edilirken hata oluştu. ", "error");
+			},
+		});
+	} else {
+		$.notify("Politika zaten aktif ", "warn");
+	}
+});
+
+//disabled selected policy from database
+$("#policyDisableBtn").click(function(e){
+	var params = {
+			"id": selectedPolicyId,
+			"active": false
+	};
+	
+	var index = findIndexInPolicyAndProfileList(policyList, selectedPolicyId);
+	var isActive = policyList[index].active;
+	if (isActive == true) {
+		$.ajax({
+			type : 'POST',
+			url : '/policy/active',
+			data: JSON.stringify(params),
+			contentType: "application/json",
+			dataType : 'json',
+			success : function(data) {
+				if(data != null) {
+					$.notify("Politika başarıyla pasif edildi.", "success");
+					if (index > -1) {
+						policyList.splice(index, 1);
+						hideAndShowPolicyButton(false);
+						policyList.push(data);
+						createPolicyTable();
+						selectedPolicyId = null;
+					}
+					$('#policyNameForm').val("");
+					$('#policyDescriptionForm').val("");
+				} 
+			},
+			error: function (data, errorThrown) {
+				$.notify("Politika pasif edilirken hata oluştu. ", "error");
+			},
+		});
+	} else {
+		$.notify("Politika zaten pasif ", "warn");
+	}
 });
 
 
-// load profile pages when on clicked profile management 
+//updated selected policy from database
+$("#policyUpdateBtn").click(function(e){
+	alert("updated selected policy")
+});
+
+
+
+//load profile pages when on clicked profile management 
 function getProfilPages() {
 	$.ajax({
 		type : 'POST',
@@ -430,7 +574,9 @@ function hideAndShowPolicyButton(select) {
 		$('#policyDelBtn').show();
 		$('#policyUpdateBtn').show();
 		$('#addPolicyBtn').hide();
+		$("#profileListBody").empty();
 	} else {
+		$('#profileListBody').html('<tr id="profileListEmptyInfo"><td colspan="3" class="text-center">Lütfen Politika seçiniz veya Profil ekleyiniz.</td></tr>');
 		$('#policyDisableBtn').hide();
 		$('#policyEnableBtn').hide();
 		$('#policyDelBtn').hide();

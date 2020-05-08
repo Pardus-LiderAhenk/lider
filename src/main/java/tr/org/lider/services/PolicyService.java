@@ -16,25 +16,33 @@ public class PolicyService {
 	private PolicyRepository policyRepository;
 
 	public List<PolicyImpl> list( ){
-		return policyRepository.findAll();
-//		Boolean deleted = false;
-//		List<PolicyImpl> policies = policyRepository.findByPolicyByDeleted(deleted);
-//		return policies;
+		Boolean deleted = false;
+		List<PolicyImpl> policies = policyRepository.findAllByDeleted(deleted);
+		return policies;
 	}
 	
 	public PolicyImpl add(PolicyImpl policy) {
-		policy.setPolicyVersion(policy.getId()+"-"+1);
 		policyRepository.save(policy);
 		return policy;
 	}
 
 	public PolicyImpl del(PolicyImpl policy) {
-		policyRepository.deleteById(policy.getId());
+//		policyRepository.deleteById(policy.getId());
+		policyRepository.save(policy);
 		return policy;
 	}
 	
 	public PolicyImpl update(PolicyImpl policy) {
 		policy.setModifyDate(new Date());
 		return policyRepository.save(policy);
+	}
+	
+	public PolicyImpl active(PolicyImpl policy) {
+		policyRepository.save(policy);
+		return policy;
+	}
+	
+	public PolicyImpl findPolicyByID(Long id) {
+		return policyRepository.findOne(id);
 	}
 }

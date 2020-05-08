@@ -38,8 +38,10 @@ public class PolicyService {
 	}
 	
 	public PolicyImpl active(PolicyImpl policy) {
-		policyRepository.save(policy);
-		return policy;
+		PolicyImpl existPolicy = policyRepository.findOne(policy.getId());
+		existPolicy.setActive(policy.isActive());
+		PolicyImpl ret= policyRepository.save(existPolicy);
+		return ret;
 	}
 	
 	public PolicyImpl findPolicyByID(Long id) {

@@ -79,22 +79,9 @@ public class PolicyController {
 	@RequestMapping(method=RequestMethod.POST ,value = "/active", produces = MediaType.APPLICATION_JSON_VALUE)
 	public PolicyImpl policyEnabled(@RequestBody PolicyImpl params) {
 		try {
-			Boolean isActive = false;
-			if (params.isActive() == true) {
-				isActive = true;
-			}
-			PolicyImpl existPolicy = policyService.findPolicyByID(params.getId());
-			params.setActive(isActive);
-			params.setDeleted(existPolicy.isDeleted());
-			params.setProfiles(existPolicy.getProfiles());
-			params.setLabel(existPolicy.getLabel());
-			params.setDescription(existPolicy.getDescription());
-			params.setModifyDate(new Date());
-			params.setPolicyVersion(existPolicy.getPolicyVersion());
-			params.setCommandOwnerUid(existPolicy.getCommandOwnerUid());
-
 			return policyService.active(params);
 		} catch (DataAccessException e) {
+			e.printStackTrace();
 			logger.error("Error active or passive policy: " + e.getCause().getMessage());
 			return null;
 		}

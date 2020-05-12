@@ -236,11 +236,4 @@ public class PolicyImpl  {
 				+ ", deleted=" + deleted + ", profiles=" + profiles + ", createDate=" + createDate + ", modifyDate="
 				+ modifyDate + ", policyVersion=" + policyVersion + "]";
 	}
-
-	
-//	public void setcommandOwnerUid(String commandOwnerUid) {
-//		this.commandOwnerUid = commandOwnerUid;
-//		
-//	}
-
 }

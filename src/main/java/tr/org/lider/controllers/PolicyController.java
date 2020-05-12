@@ -1,6 +1,5 @@
 package tr.org.lider.controllers;
 
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -28,7 +27,7 @@ import tr.org.lider.services.PolicyService;
 @RequestMapping("/policy")
 public class PolicyController {
 
-	Logger logger = LoggerFactory.getLogger(ProfileController.class);
+	Logger logger = LoggerFactory.getLogger(PolicyController.class);
 
 	@Autowired
 	private PolicyService policyService;
@@ -44,11 +43,10 @@ public class PolicyController {
 		}
 	}
 
+	//	return saved policy
 	@RequestMapping(method=RequestMethod.POST ,value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
 	public PolicyImpl policyAdd(@RequestBody PolicyImpl params) {
 		try {
-			params.setCommandOwnerUid(null);
-			params.setPolicyVersion(params.getId()+"-"+1);
 			return policyService.add(params);
 		} catch (DataAccessException e) {
 			logger.error("Error saving policy: " + e.getCause().getMessage());
@@ -56,19 +54,10 @@ public class PolicyController {
 		}
 	}
 
+	//	return deleted policy. Never truly delete, just mark as deleted!
 	@RequestMapping(method=RequestMethod.POST ,value = "/del", produces = MediaType.APPLICATION_JSON_VALUE)
 	public PolicyImpl policyDel(@RequestBody PolicyImpl params) {
 		try {
-			PolicyImpl existPolicy = policyService.findPolicyByID(params.getId());
-			params.setDeleted(true);
-			params.setLabel(existPolicy.getLabel());
-			params.setProfiles(existPolicy.getProfiles());
-			params.setDescription(existPolicy.getDescription());
-			params.setActive(existPolicy.isActive());
-			params.setModifyDate(new Date());
-			params.setPolicyVersion(existPolicy.getPolicyVersion());
-			params.setCommandOwnerUid(existPolicy.getCommandOwnerUid());
-
 			return policyService.del(params);
 		} catch (DataAccessException e) {
 			logger.error("Error delete policy: " + e.getCause().getMessage());
@@ -76,6 +65,7 @@ public class PolicyController {
 		}
 	}
 
+	//	return active policy
 	@RequestMapping(method=RequestMethod.POST ,value = "/active", produces = MediaType.APPLICATION_JSON_VALUE)
 	public PolicyImpl policyEnabled(@RequestBody PolicyImpl params) {
 		try {
@@ -83,6 +73,30 @@ public class PolicyController {
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 			logger.error("Error active or passive policy: " + e.getCause().getMessage());
+			return null;
+		}
+	}
+
+	//	return passive policy
+	@RequestMapping(method=RequestMethod.POST ,value = "/passive", produces = MediaType.APPLICATION_JSON_VALUE)
+	public PolicyImpl policyDisabled(@RequestBody PolicyImpl params) {
+		try {
+			return policyService.passive(params);
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			logger.error("Error passive policy: " + e.getCause().getMessage());
+			return null;
+		}
+	}
+
+	//	return updated policy
+	@RequestMapping(method=RequestMethod.POST ,value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+	public PolicyImpl policyUpdated(@RequestBody PolicyImpl params) {
+		try {
+			return policyService.update(params);
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			logger.error("Error updated policy: " + e.getCause().getMessage());
 			return null;
 		}
 	}

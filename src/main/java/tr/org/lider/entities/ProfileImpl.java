@@ -46,8 +46,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import tr.org.lider.ldap.DNType;
-
 
 /**
  * Entity class for IProfile objects.

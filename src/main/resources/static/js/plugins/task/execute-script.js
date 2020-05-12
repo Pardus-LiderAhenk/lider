@@ -51,9 +51,9 @@ function getScriptTemp() {
 		success: function(data) {
 			if(data != null && data.length > 0) {
 				scriptTempList = data;
-				createScriptscriptTable();
+				createScriptsTable();
 			}else {
-				createScriptscriptTable();
+				createScriptsTable();
 			}
 		},
 		error: function(result) {
@@ -62,7 +62,7 @@ function getScriptTemp() {
 	});
 }
 
-function createScriptscriptTable() {
+function createScriptsTable() {
 	for (var i = 0; i < scriptTempList.length; i++) {
 		var scriptName = scriptTempList[i]['label'];
 		var scriptType = scriptTempList[i]['scriptType'];
@@ -207,7 +207,7 @@ $('#scriptSaveBtn').click(function(e){
 							// the scriptTable is refreshed after the script is updated
 							scriptTable.clear().draw();
 							scriptTable.destroy();
-							createScriptscriptTable();
+							createScriptsTable();
 //							$("#scriptSaveBtn").html("Kaydet");
 							$("#scriptSaveBtn").attr("title","Kaydet");
 						}else {
@@ -245,7 +245,7 @@ $('#scriptSaveBtn').click(function(e){
 							// the scriptTable is refreshed after the script is saved
 							scriptTable.clear().draw();
 							scriptTable.destroy();
-							createScriptscriptTable();
+							createScriptsTable();
 							$("#scriptNameTemp").val("");
 							$('#scriptType').val("bash").change();
 //							$("#scriptSaveBtn").html("Kaydet");
@@ -316,7 +316,7 @@ $('#scriptDelBtn').click(function(e){
 					scriptTable.destroy();
 					$("#scriptNameTemp").val("");
 					$('#scriptType').val("bash").change();
-					createScriptscriptTable();
+					createScriptsTable();
 					$("#scriptNameTemp").val("");
 					$('#scriptType').val("bash").change();
 //					$("#scriptSaveBtn").html("Kaydet");

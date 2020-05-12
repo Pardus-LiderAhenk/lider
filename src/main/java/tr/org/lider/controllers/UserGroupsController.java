@@ -238,8 +238,7 @@ public class UserGroupsController {
 	public Boolean deleteEntry(@RequestParam(value = "dn") String dn) {
 		try {
 			if(dn != configurationService.getAgentLdapBaseDn()) {
-				//ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(dn));
-				ldapService.updateOLCAccessRulesAfterEntryDelete(dn);
+				ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(dn));
 				return true;
 			} else {
 				return false;

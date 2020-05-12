@@ -335,8 +335,9 @@ public class LDAPServiceImpl implements ILDAPService {
 	public void deleteEntry(String dn) throws LdapException {
 		LdapConnection connection = getConnection();
 		try {
+			logger.info("Deleteting entry with DN: " + dn);
+			updateOLCAccessRulesAfterEntryDelete(dn);
 			connection.delete(new Dn(dn));
-			//updateOLCAccessRulesAfterEntryDelete(dn);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
@@ -414,7 +415,6 @@ public class LDAPServiceImpl implements ILDAPService {
 						Iterator<Value<?>> iter = entry.get(a.getId()).iterator();
 						while (iter.hasNext()) {
 							String value = iter.next().getValue().toString();
-							System.err.println(value);
 							modificationListForRemove.add(new DefaultModification( ModificationOperation.REMOVE_ATTRIBUTE, a.getId(), value ));
 						}
 					}
@@ -1191,7 +1191,7 @@ public class LDAPServiceImpl implements ILDAPService {
 			}
 			List<LdapEntry> entries=findSubEntries(dn, "(objectclass=*)",
 					new String[]{"*"}, SearchScope.SUBTREE);
-			//first entrie is itself
+			//first entry is itself
 			if(entries.size() >= 1) {
 				//entries.remove(0);
 				for (int i = 0; i < entries.size(); i++) {
@@ -1645,20 +1645,16 @@ public class LDAPServiceImpl implements ILDAPService {
 							for (int j = 0; j < existingRules.size(); j++) {
 								OLCAccessRule o = existingRules.get(j);
 								if(existingRules.get(j).getAccessDN().equals(listOfDNToAddRule.get(i))) {
-									System.err.println("delete : " + existingRules.get(j).getAccessDN());
 									deleteOLCAccessRule(existingRules.get(j));
 									existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
 									break;
 								}
 								else if(existingRules.get(j).getAccessDN().contains(listOfDNToAddRule.get(i))) {
 									if(existingRules.get(j).getAccessDNType().equals("dn.base")) {
-										System.err.println("delete : " + existingRules.get(j).getAccessDN());
 										deleteOLCAccessRule(existingRules.get(j));
 										existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
 										break;
 									} else if(existingRules.get(j).getAccessDNType().equals("dn.subtree")) {
-										//finish deleting till parent dn.subtree element
-										System.err.println("end : " + existingRules.get(j).getAccessDN());
 									}
 								}
 							}
@@ -1680,7 +1676,7 @@ public class LDAPServiceImpl implements ILDAPService {
 						if(existingRules.get(i).getAccessDN().contains(rule.getAccessDN())) {
 							//if new rules access type is write delete all child rules because write type will cover all child rules
 							if(rule.getAccessType().equals("write")) {
-								System.err.println("child exists delete: " + existingRules.get(i).getOLCRuleString());
+								logger.error("child exists delete: " + existingRules.get(i).getOLCRuleString());
 								deletedItemCount++;
 								deleteOLCAccessRule(existingRules.get(i));
 								break;
@@ -1689,14 +1685,14 @@ public class LDAPServiceImpl implements ILDAPService {
 							//delete all child rules with write access
 							else {
 								if(existingRules.get(i).getAccessType().equals("read")) {
-									System.err.println("child exist delete: " + existingRules.get(i).getOLCRuleString());
+									logger.error("child exist delete: " + existingRules.get(i).getOLCRuleString());
 									deletedItemCount++;
 									deleteOLCAccessRule(existingRules.get(i));
 									break;
 								} else {
 									//this code is added to delete same rule from write to read
 									if(existingRules.get(i).getAccessDN().equals(rule.getAccessDN())) {
-										System.err.println("Same rule exists but access type will be updated to: " + existingRules.get(i).getOLCRuleString());
+										logger.error("Same rule exists but access type will be updated to: " + existingRules.get(i).getOLCRuleString());
 										deletedItemCount++;
 										deleteOLCAccessRule(existingRules.get(i));
 										break;
@@ -1800,7 +1796,6 @@ public class LDAPServiceImpl implements ILDAPService {
 							Iterator<Value<?>> iter = entry.get(a.getId()).iterator();
 							while (iter.hasNext()) {
 								String value = iter.next().getValue().toString();
-								//System.err.println(value);
 								if(Pattern.matches(olcRegex, value) && Pattern.matches(olcRegex, rule.getOLCRuleString())) {
 									//get values by pattern
 									Pattern pattern = Pattern.compile(olcRegex);
@@ -1810,7 +1805,6 @@ public class LDAPServiceImpl implements ILDAPService {
 									if (matcher.find() && matcherNewValue.find()) {
 										if(matcher.groupCount() == 2 && matcherNewValue.groupCount() == 2) {	
 											if(matcher.group(2).equals(matcherNewValue.group(2))) {
-												System.err.println("exists not added value: " + rule.getOLCRuleString());
 												return true;
 											}
 										}
@@ -1958,7 +1952,6 @@ public class LDAPServiceImpl implements ILDAPService {
 				//delete all entries which does not have child rules
 
 				for (int i = 0; i < listOfParentDN.size(); i++) {
-					System.err.println(listOfParentDN.get(i));
 					existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
 					for (int j = 0; j < existingRules.size(); j++) {
 						if(existingRules.get(j).getAccessDN().equals(listOfParentDN.get(i))) {
@@ -1974,8 +1967,6 @@ public class LDAPServiceImpl implements ILDAPService {
 									}
 								}
 								if(hasChildNode == false) {
-									System.err.println("******");
-									System.err.println(existingRules.get(j).getOLCRuleString());
 									deleteOLCAccessRule(existingRules.get(j));
 									break;
 								}
@@ -2008,20 +1999,17 @@ public class LDAPServiceImpl implements ILDAPService {
 					newEntryDN += ",";
 				}
 			}
-			System.err.println("new dn: " + newEntryDN);
 			List<OLCAccessRule> existingRules = getAllOLCAccessRules();
 			for (int i = 0; i < existingRules.size(); i++) {
-				System.err.println(existingRules.get(i).getOLCRuleString());
 				if(existingRules.get(i).getAccessDN().contains(oldEntryDN) || existingRules.get(i).getAssignedDN().contains(oldEntryDN)) {
 					deleteOLCAccessRule(existingRules.get(i));
 					existingRules.get(i).setAccessDN(existingRules.get(i).getAccessDN().replace(oldEntryDN, newEntryDN));
 					existingRules.get(i).setAssignedDN(existingRules.get(i).getAssignedDN().replace(oldEntryDN, newEntryDN));
-
 					saveOLCRulesToConfig(existingRules.get(i));
 				}
 			}
 		} catch (Exception e) {
-			System.err.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -2067,11 +2055,9 @@ public class LDAPServiceImpl implements ILDAPService {
 							break;
 						}
 						existingRules = getAllOLCAccessRules();
-
 					}
 
 					//clean access dn part
-					System.err.println("dsadas");
 
 					//delete all child rules of dn 
 					while(true) {

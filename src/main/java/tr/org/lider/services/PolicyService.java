@@ -15,21 +15,36 @@ public class PolicyService {
 	@Autowired
 	private PolicyRepository policyRepository;
 
-	public List<PolicyImpl> list(){
-		return policyRepository.findAll();
+	public List<PolicyImpl> list( ){
+		Boolean deleted = false;
+		List<PolicyImpl> policies = policyRepository.findAllByDeleted(deleted);
+		return policies;
 	}
 	
-	public PolicyImpl add(PolicyImpl file) {
-		return policyRepository.save(file);
+	public PolicyImpl add(PolicyImpl policy) {
+		policyRepository.save(policy);
+		return policy;
 	}
 
-	public PolicyImpl del(PolicyImpl file) {
-		policyRepository.deleteById(file.getId());
-		return file;
+	public PolicyImpl del(PolicyImpl policy) {
+//		policyRepository.deleteById(policy.getId());
+		policyRepository.save(policy);
+		return policy;
 	}
 	
-	public PolicyImpl update(PolicyImpl file) {
-		file.setModifyDate(new Date());
-		return policyRepository.save(file);
+	public PolicyImpl update(PolicyImpl policy) {
+		policy.setModifyDate(new Date());
+		return policyRepository.save(policy);
+	}
+	
+	public PolicyImpl active(PolicyImpl policy) {
+		PolicyImpl existPolicy = policyRepository.findOne(policy.getId());
+		existPolicy.setActive(policy.isActive());
+		PolicyImpl ret= policyRepository.save(existPolicy);
+		return ret;
+	}
+	
+	public PolicyImpl findPolicyByID(Long id) {
+		return policyRepository.findOne(id);
 	}
 }

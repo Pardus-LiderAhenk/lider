@@ -13,12 +13,17 @@ import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.entities.CommandExecutionImpl;
 import tr.org.lider.entities.CommandImpl;
 import tr.org.lider.entities.PluginImpl;
@@ -98,7 +103,7 @@ public class TaskService {
 		CommandImpl command=null;
 		
 		try {
-			command= new CommandImpl(null, null, task, request.getDnList(), request.getDnType(), uidList,"lider_console", 
+			command= new CommandImpl(null, null, task, request.getDnList(), request.getDnType(), uidList,findCommandOwnerJid(), 
 					((PluginTask) request).getActivationDate(), 
 					null, new Date(), null, false);
 		} catch (JsonGenerationException e) {
@@ -220,6 +225,24 @@ public class TaskService {
 		}
 		return jidFinal;
 	}
+	
+	
+	private String findCommandOwnerJid() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			if ( principal instanceof UserDetails) {
+				LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) principal;
+				logger.info(" task owner jid : "+userDetails.getLiderUser().getName());
+				return userDetails.getLiderUser().getName();
+			} 
+			
+		}
+		return null;
+	}
+	
+	
 	
 	
 }

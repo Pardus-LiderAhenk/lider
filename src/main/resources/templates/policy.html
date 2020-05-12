@@ -11,7 +11,7 @@ $(document).ready(function(){
 	<div style=" margin-top : 10px; margin-left: 10px; margin-right: 10px;">
 		<div class="main-card mb-3 card">
 			<div class="card-body row">
-				<div class="col-lg-4">
+				<div class="col-lg-5">
 					<div class="main-card mb-3 card" style="min-height: 400px;">
 						<div class="card-header">
 							<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
@@ -19,11 +19,11 @@ $(document).ready(function(){
 							<div class="col-lg-6 text-right">
 								<button id="policyDisableBtn" type="button" class="btn-shadow btn btn-info" title="Pasif Et"><i class="fas fa-times-circle"></i></button>
 								<button id="policyEnableBtn" type="button" class="btn-shadow btn btn-info" title="Aktif Et"><i class="fa fa-check-square"></i></button>
-								<button id="policyDelBtn" type="button" class="btn-shadow btn btn-info" title="Politika Sil"><i class="fa fa-trash-alt"></i></button>
+								<button id="policyDelBtn" type="button" class="btn-shadow btn btn-info" title="Sil"><i class="fa fa-trash-alt"></i></button>
 							</div>
 						</div>
 						<div class="card-body">
-							<table class="table table-striped table-bordered display table-hover" id="policyListTable" border="1">
+							<table class="table table-striped table-bordered" id="policyListTable">
 								<thead>
 									<tr>
 										<th style="width: 35%">Profil Adı</th>
@@ -31,34 +31,39 @@ $(document).ready(function(){
 										<th style="width: 15%">Durum</th>
 									</tr>
 								</thead>
-								<tbody></tbody>
+								<tbody id="policyListBody"></tbody>
 							</table>
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-5">
+				<div class="col-lg-4">
 					<div class="main-card mb-3 card" style="min-height: 400px;">
 						<div class="card-header">
 							<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
 							<div class="col-lg-6 text-left">PROFİL LİSTESİ</div>
 							<div class="col-lg-6 text-right">
-								<button id="scriptCleanBtn" type="button" class="btn-shadow btn btn-info" title="Yeni Betik Ekle"><i class="fa fa-folder-plus"></i></button>
-								<button id="scriptDelBtn" type="button" class="btn-shadow btn btn-info" title="Betik Sil"><i class="fa fa-trash-alt"></i></button>
+								<button id="addPolicyBtn" type="button" class="btn-shadow btn btn-info" title="Politika Oluştur"><i class="fa fa-plus"></i></button>
+								<button id="policyUpdateBtn" type="button" class="btn-shadow btn btn-info" title="Politika Güncelle"><i class="fa fa-redo-alt"></i></button>
+								<button id="removeProfileBtn" type="button" class="btn-shadow btn btn-info" title="Profil Sil"><i class="fa fa-trash-alt"></i></button>
 							</div>
 						</div>
 						<div class="card-body">
-							<form>
-							  <div class="form-row">
-							    <div class="col col-md-4">
-							      <input type="text" class="form-control" id="policyNameForm" placeholder="Politika Adı">
-							    </div>
-							    <div class="col col-md-8">
-							      <input type="text" class="form-control" id="policyDescriptionForm" placeholder="Açıklama">
-							    </div>
-							  </div>
-							</form>
-							<br>
-							<table class="table table-striped table-bordered display table-hover" id="profileListTable" border="1">
+							<div class="form-row">
+								<div class="col-md-5">
+									<div class="position-relative form-group">
+										<label for="policyNameForm" class="control-label">Politika Adı</label>
+										<input type="text" class="form-control form-control-sm" id="policyNameForm" placeholder="Politika adı giriniz...">
+									</div>
+								</div>
+								<div class="col-md-7">
+									<div class="position-relative form-group">
+										<label for="policyDescriptionForm" class="control-label">Politika Açıklaması</label>
+										<input type="text" class="form-control form-control-sm" id="policyDescriptionForm" placeholder="Açıklama giriniz...">
+									</div>
+								</div>
+							</div>
+							<div>
+							<table class="table table-striped table-bordered" id="policyProfileTable">
 								<thead>
 									<tr>
 										<th style="width: 25%">Profil Adı</th>
@@ -66,8 +71,10 @@ $(document).ready(function(){
 										<th style="width: 25%">Eklenti</th>
 									</tr>
 								</thead>
-								<tbody></tbody>
+								<tbody id="profileListBody"></tbody>
 							</table>
+							</div>
+							<small class="text-muted">Yeni bir politika oluşturabilir ya da var olan bir politikayı güncelleyebilirsiniz. Politika güncellemek için POLİKA LİSTESİ'den bir politika seçiniz. Yeni bir politika oluşturmak için profil/leri seçerek PROFİL LİSTESİ'ne ekleyiniz.</small>
 						</div>
 					</div>
 				</div>
@@ -87,52 +94,83 @@ $(document).ready(function(){
 		
 	</div>
 	<div style="margin-left: 10px; margin-right: 10px;">
+		<div class="x_panel">
+			<div class="x_title">
+		    	<h2 class="nav navbar-right panel_toolbox collapse-link btn btn-info btn-sm"><i class="fa fa-chevron-up"></i> Betik Profili</h2>
+		    	<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+			 	<div id="execute-script-profile"></div>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-lg-6">
 				<div class="x_panel">
 					 <div class="x_title">
-					    <h2>Betik </h2>
-					    <ul class="nav navbar-right panel_toolbox">
-					      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-					      </li>
-					      <li class="dropdown">
-					        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-					        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-					            <a class="dropdown-item" href="#">Settings 1</a>
-					            <a class="dropdown-item" href="#">Settings 2</a>
-					          </div>
-					      </li>
-					      <li><a class="close-link"><i class="fa fa-close"></i></a>
-					      </li>
-					    </ul>
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-info btn-sm"><i class="fa fa-chevron-up"></i> Conky Mesaj Profili</h2>
 					    <div class="clearfix"></div>
 					 </div>
 					 <div class="x_content">
-					   <div id="execute-script-profile"></div>
+					   <p>PROFİL İÇERİĞİ</p>
 					 </div>
 				</div>
 			</div>
 			<div class="col-lg-6">
 		        <div class="x_panel">
 					 <div class="x_title">
-					    <h2>Conky </h2>
-					    <ul class="nav navbar-right panel_toolbox">
-					      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-					      </li>
-					      <li class="dropdown">
-					        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-					        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-					            <a class="dropdown-item" href="#">Settings 1</a>
-					            <a class="dropdown-item" href="#">Settings 2</a>
-					          </div>
-					      </li>
-					      <li><a class="close-link"><i class="fa fa-close"></i></a>
-					      </li>
-					    </ul>
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-info btn-sm"><i class="fa fa-chevron-up"></i> USB Profili</h2>
 					    <div class="clearfix"></div>
 					 </div>
 					 <div class="x_content">
-					   <p>Simple table with project listing with progress and editing options</p>
+					   <p>PROFİL İÇERİĞİ</p>
+					 </div>
+		        </div>
+	        </div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="x_panel">
+					 <div class="x_title">
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-info btn-sm"><i class="fa fa-chevron-up"></i> Oturum Yönetimi Profili</h2>
+					    <div class="clearfix"></div>
+					 </div>
+					 <div class="x_content">
+					   <p>PROFİL İÇERİĞİ</p>
+					 </div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+		        <div class="x_panel">
+					 <div class="x_title">
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-info btn-sm"><i class="fa fa-chevron-up"></i> Disk Kota Profili</h2>
+					    <div class="clearfix"></div>
+					 </div>
+					 <div class="x_content">
+					   <p>PROFİL İÇERİĞİ</p>
+					 </div>
+		        </div>
+	        </div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="x_panel">
+					 <div class="x_title">
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-info btn-sm"><i class="fa fa-chevron-up"></i> Kullanıcı Ayrıcalıkları Profili</h2>
+					    <div class="clearfix"></div>
+					 </div>
+					 <div class="x_content">
+					   <p>PROFİL İÇERİĞİ</p>
+					 </div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+		        <div class="x_panel">
+					 <div class="x_title">
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-info btn-sm"><i class="fa fa-chevron-up"></i> Rsyslog Profili</h2>
+					    <div class="clearfix"></div>
+					 </div>
+					 <div class="x_content">
+					   <p>PROFİL İÇERİĞİ</p>
 					 </div>
 		        </div>
 	        </div>
@@ -140,32 +178,14 @@ $(document).ready(function(){
 		<div>
 			<div class="x_panel">
 				 <div class="x_title">
-				    <h2>Ağ Tarayıcısı </h2>
-				    <ul class="nav navbar-right panel_toolbox">
-				      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-				      </li>
-				      <li class="dropdown">
-				        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-				        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-				            <a class="dropdown-item" href="#">Settings 1</a>
-				            <a class="dropdown-item" href="#">Settings 2</a>
-				          </div>
-				      </li>
-				      <li><a class="close-link"><i class="fa fa-close"></i></a>
-				      </li>
-				    </ul>
+				    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-info btn-sm"><i class="fa fa-chevron-up"></i> Ağ Tarayıcısı Profili</h2>
 				    <div class="clearfix"></div>
 				 </div>
 				 <div class="x_content">
-				   <p>Simple table with project listing with progress and editing options</p>
+				   <p>PROFİL İÇERİĞİ</p>
 				 </div>
 			</div>
 		</div>	
 	</div>
 </div>
 
-
-<div id="profilePage">
-	<div class="row" style=" margin-top : 15px; margin-left: 5px; margin-right: 5px;">
-	</div>
-</div>

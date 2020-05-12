@@ -68,5 +68,15 @@ public class OLCAccessRule {
 	public void setAccessType(String accessType) {
 		this.accessType = accessType;
 	}
+	
+	public String getOLCRuleString() {
+		StringBuilder value = new StringBuilder("{" + this.getOrder()+ "}to ");
+		value.append(this.getAccessDNType() + "=\"" + this.accessDN + "\" ");
+		value.append("by ");
+		value.append("group.exact=");
+		value.append("\"" + this.getAssignedDN() + "\" ");
+		value.append(this.getAccessType() + " by * break");
+		return value.toString();
+	}
 
 }

@@ -1,8 +1,10 @@
 var users;
 var roles;
+var rules;
 var userTableSelectedTrIndex = "";
 var roleTableSelectedTrIndex = "";
 var roleTableSelectedRoleName = "";
+
 var selectedDN = "";
 var selectedEntryUUID = "";
 var selectedName = "";
@@ -34,6 +36,8 @@ $(document).ready(function () {
         }
     });
 	tabConsoleSettingsClicked();
+	
+
 });
 
 function tabConsoleSettingsClicked() {
@@ -65,40 +69,39 @@ function dropdownButtonClicked(operation) {
 			$('#genericModalHeader').html("Erişim Yetkisi Ekleme");
 			$('#genericModalBodyRender').html(data);
 			$('#olcAccessInfoAlert').html('<b>"' + selectedDNOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
-			generateComputersTreeForOLC('lider/computer_groups/getComputers');
-			$("#btnSaveOLCRule").click(function(){
-				var params = {
-						"type" : 'computers',
-					    "groupDN" : selectedDNOfUserGroupsTree,
-					    "olcAccessDN": selectedAccessDN,
-					    "accessType": $("input[name='accessType']:checked").val()
-				};
-				console.log(params);
-				$.ajax({ 
-				    type: 'POST', 
-				    url: '/lider/settings/addOLCAccessRule',
-				    dataType: 'json',
-				    data: params,
-				    success: function (data) {
-				    	if(data != null && data == true) {
-				    		console.log(data);
-				    		getLDAPAccessRules();
-				    		$.notify("Erişim yetkisi başarıyla eklendi.", "success");
-				    	} else {
-				            // add new empty row.
-				    		$.notify("Erişim yetkisi eklenirken hata oluştu.", "error");
-				    	}
-				    	$('#genericModal').trigger('click');
-				    },
-				    error: function (data, errorThrown) {
-				    	$.notify("Erişim yetkisi eklenirken hata oluştu.", "error");
-				    	$('#olcRulesTable').html('<td colspan="100%" class="text-center p-3">Sonuç Bulunamadı</td>');
-				    }
-				});
-			});
+			generateTreeForSelectingOUToAddOLCRule('lider/computer/getComputers', 'lider/computer/getOuDetails', 'Bilgisayarlar');
+		});
+	} else if(operation == "addOLCRulesToUsersTree") {
+		getModalContent("modals/settings/select_entry_from_tree_for_olc", function content(data){
+			$('#genericModalHeader').html("Erişim Yetkisi Ekleme");
+			$('#genericModalBodyRender').html(data);
+			$('#olcAccessInfoAlert').html('<b>"' + selectedDNOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
+			generateTreeForSelectingOUToAddOLCRule('lider/user/getUsers', 'lider/user/getOuDetails', 'Kullanıcılar');
+		});
+	} else if(operation == "addOLCRulesToComputerGroupsTree") {
+		getModalContent("modals/settings/select_entry_from_tree_for_olc", function content(data){
+			$('#genericModalHeader').html("Erişim Yetkisi Ekleme");
+			$('#genericModalBodyRender').html(data);
+			$('#olcAccessInfoAlert').html('<b>"' + selectedDNOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
+			generateTreeForSelectingOUToAddOLCRule('lider/computer_groups/getGroups', 'lider/computer_groups/getOuDetails', 'İstemci Grupları');
+		});
+	} else if(operation == "addOLCRulesToUserGroupsTree") {
+		getModalContent("modals/settings/select_entry_from_tree_for_olc", function content(data){
+			$('#genericModalHeader').html("Erişim Yetkisi Ekleme");
+			$('#genericModalBodyRender').html(data);
+			$('#olcAccessInfoAlert').html('<b>"' + selectedDNOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
+			generateTreeForSelectingOUToAddOLCRule('lider/user_groups/getGroups', 'lider/user_groups/getOuDetails', 'Kullanıcı Grupları');
+		});
+	} else if(operation == "addOLCRulesToRoleGroupsTree") {
+		getModalContent("modals/settings/select_entry_from_tree_for_olc", function content(data){
+			$('#genericModalHeader').html("Erişim Yetkisi Ekleme");
+			$('#genericModalBodyRender').html(data);
+			$('#olcAccessInfoAlert').html('<b>"' + selectedDNOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
+			generateTreeForSelectingOUToAddOLCRule('lider/sudo_groups/getGroups', 'lider/sudo_groups/getOuDetails', 'Rol Grupları');
 		});
 	}
 }
+
 
 /*
  * create user groups tree to assign LDAP OLC access rules.
@@ -273,7 +276,7 @@ function getLDAPAccessRules() {
 		    success: function (data) { 
 		    	if(data != null) {
 		    		if(data.length > 0) {
-			    		console.log(data);
+		    			rules = data;
 			    		var trElement = "";
 			    		$.each(data, function(index, element) {
 			    			trElement += '<tr><td>' + (index + 1) + '</td>';
@@ -285,21 +288,24 @@ function getLDAPAccessRules() {
 			    				trElement += '<td class="text-center">' + 'Okuma ve Yazma' + '</td>';
 			    			}
 			    			trElement += '<td class="text-center">';
-			    			trElement += '<button onclick="deleteOLCAccessRule(\'' + element.accessDN + '\')" ' +
+			    			trElement += '<button onclick="deleteOLCAccessRule(\'' + index + '\')" ' +
 			    					'class="btn-icon btn-icon-only btn btn-outline-danger"><i class="pe-7s-trash btn-icon-wrapper"> </i></button>';
 			    			trElement += '</td></tr>';
 			    		});
 			    		$('#olcRulesTable').html(trElement);
 		    		} else {
 		    			$('#olcRulesTable').html('<td colspan="100%" class="text-center p-3">Sonuç Bulunamadı</td>');
+		    			rules = null;
 		    		}
 		    	} else {
 		    		$('#olcRulesTable').html('<td colspan="100%" class="text-center p-3">Sonuç Bulunamadı</td>');
+		    		rules = null;
 		    	}
 		    },
 		    error: function (data, errorThrown) {
 		    	$('#olcRulesTable').html('<td colspan="100%" class="text-center p-3">Sonuç Bulunamadı</td>');
 		    	$.notify("Grup LDAP Erişim yetkileri getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    	rules = null;
 		    },
 			complete: function() {
 			}
@@ -307,8 +313,59 @@ function getLDAPAccessRules() {
 	}
 }
 
-function deleteOLCAccessRule(accessDN) {
-	alert(accessDN);
+function deleteOLCAccessRule(index) {
+	if(index != null && index != "") {
+
+		$.ajax({ 
+		    type: 'POST', 
+		    url: "/lider/settings/deleteOLCAccessRule",
+		    data: JSON.stringify(rules[index]),
+			dataType: "json",
+			contentType: "application/json",
+		    success: function (data, textStatus, jqXHR) { 
+		    	if(data != null) {
+		    		$.notify("Kullanıcı grubunun erişim yetkisi başarıyla silindi.", "success");
+		    		getLDAPAccessRules();
+		    	} else {
+		    		$.notify("Kullanıcı grubunun erişim yetkisi silinirken hata oluştu. ", "error");
+		    	}
+		    },
+		    error: function (jqXHR, textStatus, errorThrown) {
+		    	$.notify("Kullanıcı grubunun erişim yetkisi silinirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    },
+			complete: function() {
+			}
+		});
+	}
+}
+
+function btnSaveOLCRuleClicked() {
+	var params = {
+			"type" : 'computers',
+		    "groupDN" : selectedDNOfUserGroupsTree,
+		    "olcAccessDN": selectedAccessDN,
+		    "accessType": $("input[name='accessType']:checked").val()
+	};
+	$.ajax({ 
+	    type: 'POST', 
+	    url: '/lider/settings/addOLCAccessRule',
+	    dataType: 'json',
+	    data: params,
+	    success: function (data) {
+	    	if(data != null && data == true) {
+	    		getLDAPAccessRules();
+	    		$.notify("Erişim yetkisi başarıyla eklendi.", "success");
+	    	} else {
+	    		$.notify("Erişim yetkisi eklenirken hata oluştu.\n" +
+	    				"Eklediğiniz kural daha önce eklenen bir kural tarafından kapsanıyor olabilir.", "error");
+	    	}
+	    	$('#genericModal').trigger('click');
+	    },
+	    error: function (data, errorThrown) {
+	    	$.notify("Erişim yetkisi eklenirken hata oluştu.", "error");
+	    	$('#olcRulesTable').html('<td colspan="100%" class="text-center p-3">Sonuç Bulunamadı</td>');
+	    }
+	});
 }
 
 function getConsoleUsers() {
@@ -450,14 +507,14 @@ function btnAddNewConsoleUserClicked() {
 	getModalContent("modals/settings/select_console_user", function content(data){
 		$('#genericModalHeader').html("Konsol Kullanıcısı Ekle");
 		$('#genericModalBodyRender').html(data);
-		generateTreeFroAssigningLiderConsoleUser();
+		generateTreeForAssigningLiderConsoleUser();
 	});
 }
 
 /*
  * selecting members for assinging lider console access
  */
-function generateTreeFroAssigningLiderConsoleUser(){
+function generateTreeForAssigningLiderConsoleUser(){
 	$.ajax({
 		type : 'POST',
 		url : 'lider/user/getUsers',
@@ -947,14 +1004,15 @@ function saveChanges(type) {
 		});
 	}
 }
+
 /*
- * create computer tree for selecting entry to add OLC Access Rule for selected entry
+ * create computer tree for selecting ou to add s new OLC Access Rule for selected entry
  */
-function generateComputersTreeForOLC(getTreeHeadURL) {
+function generateTreeForSelectingOUToAddOLCRule(treeHeadURL, treeExpandURL, treeHeaderName) {
 	var rootEntryUUID;
 	$.ajax({
 		type : 'POST',
-		url : getTreeHeadURL,
+		url : treeHeadURL,
 		dataType : 'json',
 		success : function(data) {
 			 var source =
@@ -1037,7 +1095,7 @@ function generateComputersTreeForOLC(getTreeHeadURL) {
 			    }, 
 			    rendered: function () {
 			   	},
-			   	columns: [{ text: "Bilgisayarlar", align: "center", dataField: "name", width: '100%' }]  	
+			   	columns: [{ text: treeHeaderName, align: "center", dataField: "name", width: '100%' }]  	
 			});
 			
 			$('#olcTreeGrid').on('rowSelect', function (event) {
@@ -1064,7 +1122,7 @@ function generateComputersTreeForOLC(getTreeHeadURL) {
 					}  
 					$.ajax({
 						type : 'POST',
-						url : 'lider/computer_groups/getOuDetails',
+						url : treeExpandURL,
 						data : 'uid=' + row.distinguishedName + '&type=' + row.type
 						+ '&name=' + row.name + '&parent=' + row.parent,
 						dataType : 'text',
@@ -1073,11 +1131,14 @@ function generateComputersTreeForOLC(getTreeHeadURL) {
 							for (var m = 0; m < childs.length; m++) {
 								// get a row.
 								var childRow = childs[m];
-								$("#olcTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
-								if(childRow.hasSubordinates=="TRUE"){
-									$("#olcTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
+								if(childRow.type == "ORGANIZATIONAL_UNIT") {
+									$("#olcTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
+									if(childRow.hasSubordinates=="TRUE"){
+										$("#olcTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
+									}
+									$("#olcTreeGrid").jqxTreeGrid('collapseRow', childRow.entryUUID);
 								}
-								$("#olcTreeGrid").jqxTreeGrid('collapseRow', childRow.entryUUID);
+
 							} 
 							row.expandedUser = "TRUE";
 						},
@@ -1089,7 +1150,7 @@ function generateComputersTreeForOLC(getTreeHeadURL) {
 			});
 		},
 		error: function (data, errorThrown) {
-			$.notify("İstemci bilgileri getirilirken hata oluştu.", "error");
+			$.notify("Bilgiler getirilirken hata oluştu.", "error");
 		}
 	});
 }

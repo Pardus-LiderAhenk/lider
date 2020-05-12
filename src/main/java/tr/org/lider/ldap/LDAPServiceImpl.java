@@ -60,6 +60,7 @@ import org.apache.directory.ldap.client.api.PoolableLdapConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,10 +77,11 @@ import tr.org.lider.services.ConfigurationService;
  */
 
 @Service
+@Primary
 public class LDAPServiceImpl implements ILDAPService {
 
 	private final static Logger logger = LoggerFactory.getLogger(LDAPServiceImpl.class);
-
+	private final static String configOLCDN = "olcDatabase={1}mdb,cn=config";
 	@Autowired
 	private ConfigurationService configurationService;
 	//private ICacheService cacheService;
@@ -334,6 +336,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		LdapConnection connection = getConnection();
 		try {
 			connection.delete(new Dn(dn));
+			//updateOLCAccessRulesAfterEntryDelete(dn);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
@@ -1190,7 +1193,13 @@ public class LDAPServiceImpl implements ILDAPService {
 					new String[]{"*"}, SearchScope.SUBTREE);
 			//first entrie is itself
 			if(entries.size() >= 1) {
-				entries.remove(0);
+				//entries.remove(0);
+				for (int i = 0; i < entries.size(); i++) {
+					if(entries.get(i).getDistinguishedName().equals(dn)) {
+						entries.remove(i);
+						break;
+					}
+				}
 			}
 
 			ouEntry.setChildEntries(entries);
@@ -1351,6 +1360,7 @@ public class LDAPServiceImpl implements ILDAPService {
 			entry = connection.lookup(oldDN);
 			org.apache.directory.api.ldap.model.name.Rdn rdn= new org.apache.directory.api.ldap.model.name.Rdn(newName);
 			connection.rename(entry.getDn(), rdn, true);
+			updateOLCAccessRulesAfterEntryRename(newName, oldDN);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
@@ -1359,10 +1369,8 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 		return true;
 	}
-
-	public List<OLCAccessRule> getAllOLCAccessRules(String groupDN) throws LdapException {
-		String olcRegex = "\\{([0-9]*)\\}to (dn.base|dn.subtree)=\"(.*)\" by (dn|dn.one|group.exact)=\"(" + groupDN + ")\" (read|write|none) by \\* break";
-		String dn = "olcDatabase={1}mdb,cn=config";
+	private List<OLCAccessRule> getAllOLCAccessRules() throws LdapException {
+		String olcRegex = "\\{([0-9]*)\\}to (dn.base|dn.subtree)=\"(.*)\" by (dn|dn.one|group.exact)=\"(.*)\" (read|write|none) by \\* break";
 		LdapConnection connection = null;
 		String attribute = "olcAccess";
 		List<OLCAccessRule> ruleList = new ArrayList<OLCAccessRule>();
@@ -1372,14 +1380,13 @@ public class LDAPServiceImpl implements ILDAPService {
 			connection = getConnectionForConfig();
 			Entry entry = null;
 			try {
-				entry = connection.lookup(dn);
+				entry = connection.lookup(configOLCDN);
 				if (entry != null) {
 					for (Attribute a : entry.getAttributes()) {
 						if (a.getId().contains(attribute) || a.getUpId().contains(attribute) || ( a.getAttributeType()!=null && a.getAttributeType().getName().equalsIgnoreCase(attribute))) {
 							Iterator<Value<?>> iter = entry.get(a.getId()).iterator();
 							while (iter.hasNext()) {
 								String value = iter.next().getValue().toString();
-								//System.err.println(value);
 								if(Pattern.matches(olcRegex, value)) {
 									//get values by pattern
 									Pattern pattern = Pattern.compile(olcRegex);
@@ -1388,7 +1395,57 @@ public class LDAPServiceImpl implements ILDAPService {
 									//if matcher is true and group count is 6 then get group values
 									if (matcher.find()) {
 										if(matcher.groupCount() == 6) {	
-											//System.out.println(value + " : MATCHES");
+											rule = new OLCAccessRule();
+											rule.setOrder(Integer.parseInt(matcher.group(1)));
+											rule.setAccessDNType(matcher.group(2));
+											rule.setAccessDN(matcher.group(3));
+											rule.setAssignedDNType(matcher.group(4));
+											rule.setAssignedDN(matcher.group(5));
+											rule.setAccessType(matcher.group(6));
+											ruleList.add(rule);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} catch (org.apache.directory.api.ldap.model.exception.LdapException e) {
+				logger.error(e.getMessage(), e);
+				return ruleList;
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ruleList;
+		}
+		return ruleList;
+	}
+	private List<OLCAccessRule> getAllOLCAccessRulesByDN(String groupDN) throws LdapException {
+		String olcRegex = "\\{([0-9]*)\\}to (dn.base|dn.subtree)=\"(.*)\" by (dn|dn.one|group.exact)=\"(" + groupDN + ")\" (read|write|none) by \\* break";
+		LdapConnection connection = null;
+		String attribute = "olcAccess";
+		List<OLCAccessRule> ruleList = new ArrayList<OLCAccessRule>();
+		OLCAccessRule rule = null;
+
+		try {
+			connection = getConnectionForConfig();
+			Entry entry = null;
+			try {
+				entry = connection.lookup(configOLCDN);
+				if (entry != null) {
+					for (Attribute a : entry.getAttributes()) {
+						if (a.getId().contains(attribute) || a.getUpId().contains(attribute) || ( a.getAttributeType()!=null && a.getAttributeType().getName().equalsIgnoreCase(attribute))) {
+							Iterator<Value<?>> iter = entry.get(a.getId()).iterator();
+							while (iter.hasNext()) {
+								String value = iter.next().getValue().toString();
+								if(Pattern.matches(olcRegex, value)) {
+									//get values by pattern
+									Pattern pattern = Pattern.compile(olcRegex);
+									Matcher matcher = pattern.matcher(value);
+
+									//if matcher is true and group count is 6 then get group values
+									if (matcher.find()) {
+										if(matcher.groupCount() == 6) {	
 											rule = new OLCAccessRule();
 											rule.setOrder(Integer.parseInt(matcher.group(1)));
 											rule.setAccessDNType(matcher.group(2));
@@ -1417,7 +1474,6 @@ public class LDAPServiceImpl implements ILDAPService {
 
 	public List<OLCAccessRule> getSubTreeOLCAccessRules(String groupDN) throws LdapException {
 		String olcRegex = "\\{([0-9]*)\\}to (dn.subtree)=\"(.*)\" by (dn|dn.one|group.exact)=\"(" + groupDN + ")\" (read|write|none) by \\* break";
-		String dn = "olcDatabase={1}mdb,cn=config";
 		LdapConnection connection = null;
 		String attribute = "olcAccess";
 		List<OLCAccessRule> ruleList = new ArrayList<OLCAccessRule>();
@@ -1427,14 +1483,13 @@ public class LDAPServiceImpl implements ILDAPService {
 			connection = getConnectionForConfig();
 			Entry entry = null;
 			try {
-				entry = connection.lookup(dn);
+				entry = connection.lookup(configOLCDN);
 				if (entry != null) {
 					for (Attribute a : entry.getAttributes()) {
 						if (a.getId().contains(attribute) || a.getUpId().contains(attribute) || ( a.getAttributeType()!=null && a.getAttributeType().getName().equalsIgnoreCase(attribute))) {
 							Iterator<Value<?>> iter = entry.get(a.getId()).iterator();
 							while (iter.hasNext()) {
 								String value = iter.next().getValue().toString();
-								//System.err.println(value);
 								if(Pattern.matches(olcRegex, value)) {
 									//get values by pattern
 									Pattern pattern = Pattern.compile(olcRegex);
@@ -1443,7 +1498,6 @@ public class LDAPServiceImpl implements ILDAPService {
 									//if matcher is true and group count is 6 then get group values
 									if (matcher.find()) {
 										if(matcher.groupCount() == 6) {	
-											//System.out.println(value + " : MATCHES");
 											rule = new OLCAccessRule();
 											rule.setOrder(Integer.parseInt(matcher.group(1)));
 											rule.setAccessDNType(matcher.group(2));
@@ -1474,18 +1528,18 @@ public class LDAPServiceImpl implements ILDAPService {
 	 * add new olcAccess rules to config
 	 * olcAccessRuleType is type of the tree: computers, users ...
 	 */
-	public Boolean addOLCAccessRule(OLCAccessRule rule, String olcAccessRuleType) {
+	public Boolean addOLCAccessRule(OLCAccessRule rule) {
 		try {
 			//parse access dn to find all father DNs
 			LdapName dn = new LdapName(rule.getAccessDN());
 			List<String> listOfDNToAddRule = new ArrayList<>();
-			List<OLCAccessRule> existingRules = getAllOLCAccessRules(rule.getAssignedDN());
-			String parentGroupDN = "";
+			List<OLCAccessRule> existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
+			//String parentGroupDN = "";
 
-			if(olcAccessRuleType.equals("computers")) {
-				parentGroupDN = configurationService.getAgentLdapBaseDn();
-			}
-			if(!parentGroupDN.equals(rule.getAccessDN())) {
+			//			if(olcAccessRuleType.equals("computers")) {
+			//				parentGroupDN = configurationService.getAgentLdapBaseDn();
+			//			}
+			if(!isParentGroupDN(rule.getAccessDN())) {
 				//find all parent DNs
 				for (int i = 1; i <= dn.size(); i++) {
 					String parentDN = "";
@@ -1493,97 +1547,651 @@ public class LDAPServiceImpl implements ILDAPService {
 						parentDN += dn.get(j) + ',';
 					}
 					parentDN = parentDN.substring(0,parentDN.length()-1);
-					if(parentDN.equals(parentGroupDN)) {
+					//					if(parentDN.equals(parentGroupDN)) {
+					//						break;
+					//					}
+					if(isParentGroupDN(parentDN)) {
 						break;
 					}
 					listOfDNToAddRule.add(parentDN);
 				}
 			} else {
-				listOfDNToAddRule.add(parentGroupDN);
+				listOfDNToAddRule.add(rule.getAccessDN());
 			}
-			//check if any rule is added for that group
-			if(existingRules.size() > 0) {
-				//if existing rules are completely different than new ones add new ones
-				for (int i = 0; i < existingRules.size(); i++) {
-					if(existingRules.get(i).getAccessDNType().equals("dn.subtree") && existingRules.get(i).getAccessDN().equals(rule.getAccessDN())) {
-						logger.error("Same olcAccess rule exists in config node. Rule will not be added.");
+
+			//if parentRuleExists is true that means this rule's parent DN has existing rule or rules
+			Boolean parentRuleExists = false;
+			//if childRuleExists is true that means this rule's child or children has existing rule
+			Boolean childRuleExists = false;
+			//if sameRuleWithDifferentAccessType is true that means user is trying to update access type(read or write) of
+			//same rule that is already in olcRule list
+			Boolean sameRuleWithDifferentAccessType = false;
+			//if user is trying to add same rule
+			Boolean sameRule = false;
+			for (int i = 0; i < existingRules.size(); i++) {
+				if(existingRules.get(i).getAccessDNType().equals("dn.subtree")) {
+					if(rule.getAccessDN().equals(existingRules.get(i).getAccessDN())) {
+						if(existingRules.get(i).getAccessType().equals(rule.getAccessType())) {
+							sameRule = true;
+						} else {
+							sameRuleWithDifferentAccessType = true;
+						}
+					} else if(rule.getAccessDN().contains(existingRules.get(i).getAccessDN())) {
+						parentRuleExists = true;
+					}  else if(existingRules.get(i).getAccessDN().contains(rule.getAccessDN())) {
+						childRuleExists = true;
+					}
+				}
+
+			}
+			//if new rule's access type is read it should not have any parent with rules. If this condidition exists do not add new rule
+			//if new rule's access type is write 
+			//if child of new access DN is added before clean them.
+			if(sameRule) {
+				logger.error("Same olcAccess rule exists in config node. Rule will not be added.");
+				return false;
+			}
+			if(parentRuleExists) {
+				if(rule.getAccessType().equals("write")) {
+					//check if any of parent has write access do not add
+					for (int i = 0; i < existingRules.size(); i++) {
+						if(rule.getAccessDN().contains(existingRules.get(i).getAccessDN())
+								&& existingRules.get(i).getAccessType().equals("write")) {
+							logger.error("This rule can not be added because it has parent with write access and it covers new rule.");
+							return false;
+						}
+					}
+					//add new rules
+					OLCAccessRule newRule;
+
+					for (int i = 0; i < listOfDNToAddRule.size(); i++) {
+						//before save check if rule is added as dn.base or as dn.subtree
+						Boolean isOLCAddedForDN = false;
+						for (int j = 0; j < existingRules.size(); j++) {
+							if(listOfDNToAddRule.get(i).equals(existingRules.get(j).getAccessDN())) {
+								isOLCAddedForDN = true;
+							}
+						}
+
+						if(!isOLCAddedForDN) {
+							newRule = new OLCAccessRule();
+							newRule.setOrder(3);
+							if(i == 0) {
+								newRule.setAccessDNType("dn.subtree");
+
+							} else {
+								newRule.setAccessDNType("dn.base");
+							}
+							newRule.setAccessDN(listOfDNToAddRule.get(i));
+							newRule.setAssignedDNType("group.exact");
+							newRule.setAssignedDN(rule.getAssignedDN());
+							if(i == 0) {
+								newRule.setAccessType(rule.getAccessType());
+							} else {
+								newRule.setAccessType("read");
+							}
+							saveOLCRulesToConfig(newRule);
+						}
+					}
+
+				} else {
+					//user is trying to change access type from write to read
+					//in that case this rule will be covered by parent so delete that rule and allowed parents
+					if(sameRuleWithDifferentAccessType) {
+						logger.info("This rule and its parent base dns will be deleted till parent rule because it will be covered by the parent");
+
+						for (int i = 0; i < listOfDNToAddRule.size(); i++) {
+							existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
+							for (int j = 0; j < existingRules.size(); j++) {
+								OLCAccessRule o = existingRules.get(j);
+								if(existingRules.get(j).getAccessDN().equals(listOfDNToAddRule.get(i))) {
+									System.err.println("delete : " + existingRules.get(j).getAccessDN());
+									deleteOLCAccessRule(existingRules.get(j));
+									existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
+									break;
+								}
+								else if(existingRules.get(j).getAccessDN().contains(listOfDNToAddRule.get(i))) {
+									if(existingRules.get(j).getAccessDNType().equals("dn.base")) {
+										System.err.println("delete : " + existingRules.get(j).getAccessDN());
+										deleteOLCAccessRule(existingRules.get(j));
+										existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
+										break;
+									} else if(existingRules.get(j).getAccessDNType().equals("dn.subtree")) {
+										//finish deleting till parent dn.subtree element
+										System.err.println("end : " + existingRules.get(j).getAccessDN());
+									}
+								}
+							}
+
+						}
+						return true;
+
+					} else {
+						logger.error("This rule can not be added because it's parent( or parents) covers new rule.");
 						return false;
 					}
 				}
-				StringBuilder value;
-				for (int i = 0; i < listOfDNToAddRule.size(); i++) {
-					value = new StringBuilder("{2}to ");
-					if(i == 0) {
-						value.append("dn.subtree=");
+			} 
+			if(childRuleExists) {
+				Boolean finishedDeletingChildren = false;
+				while(!finishedDeletingChildren) {
+					int deletedItemCount = 0;
+					for (int i = 0; i < existingRules.size(); i++) {
+						if(existingRules.get(i).getAccessDN().contains(rule.getAccessDN())) {
+							//if new rules access type is write delete all child rules because write type will cover all child rules
+							if(rule.getAccessType().equals("write")) {
+								System.err.println("child exists delete: " + existingRules.get(i).getOLCRuleString());
+								deletedItemCount++;
+								deleteOLCAccessRule(existingRules.get(i));
+								break;
+							} 
+							//if new rules access type is read delete all child rules with read access because new rule will cover child rules
+							//delete all child rules with write access
+							else {
+								if(existingRules.get(i).getAccessType().equals("read")) {
+									System.err.println("child exist delete: " + existingRules.get(i).getOLCRuleString());
+									deletedItemCount++;
+									deleteOLCAccessRule(existingRules.get(i));
+									break;
+								} else {
+									//this code is added to delete same rule from write to read
+									if(existingRules.get(i).getAccessDN().equals(rule.getAccessDN())) {
+										System.err.println("Same rule exists but access type will be updated to: " + existingRules.get(i).getOLCRuleString());
+										deletedItemCount++;
+										deleteOLCAccessRule(existingRules.get(i));
+										break;
+									}
+								}
+							}
 
-					} else {
-						value.append("dn.base=");
+						}
 					}
-					value.append("\"" + listOfDNToAddRule.get(i) +"\" ");
-					value.append("by ");
-					value.append("group.exact=");
-					value.append("\"" + rule.getAssignedDN() + "\" ");
-					if(i == listOfDNToAddRule.size()-1) {
-						value.append(rule.getAccessType() + " ");
+					if(deletedItemCount == 0) {
+						finishedDeletingChildren = true;
+						//deleted all children of new accessDN
+						//add new access dn as sub tree
+						rule.setOrder(3);
+						logger.info("Adding new rule : " + rule.getOLCRuleString());
+						saveOLCRulesToConfig(rule);
+						return true;
 					} else {
-						value.append("read ");
+						//order numbers has changed get existingRules again
+						existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
 					}
-					value.append("by * break");
-					saveOLCRulesToConfig(value.toString());
 				}
-				return true;
-			} else {
+			} 
+			if(sameRuleWithDifferentAccessType && !childRuleExists && !parentRuleExists) {
+				for (int i = 0; i < existingRules.size(); i++) {
+					if(rule.getAccessDN().equals(existingRules.get(i).getAccessDN())) {
+						deleteOLCAccessRule(existingRules.get(i));
+						rule.setOrder(3);
+						saveOLCRulesToConfig(rule);
+					}
+				}
+			} 
+			if(!childRuleExists && !parentRuleExists && !sameRuleWithDifferentAccessType && !sameRule){
+				//no rules exists add new rule
 				//no rule is added for group
 				//find all parents till group head
-				StringBuilder value;
+				OLCAccessRule newRule;
 				for (int i = 0; i < listOfDNToAddRule.size(); i++) {
-					value = new StringBuilder("{2}to ");
+					newRule = new OLCAccessRule();
+					newRule.setOrder(3);
 					if(i == 0) {
-						value.append("dn.subtree=");
+						newRule.setAccessDNType("dn.subtree");
 
 					} else {
-						value.append("dn.base=");
+						newRule.setAccessDNType("dn.base");
 					}
-					value.append("\"" + listOfDNToAddRule.get(i) +"\" ");
-					value.append("by ");
-					value.append("group.exact=");
-					value.append("\"" + rule.getAssignedDN() + "\" ");
-					if(i == listOfDNToAddRule.size()-1) {
-						value.append(rule.getAccessType() + " ");
+					newRule.setAccessDN(listOfDNToAddRule.get(i));
+					newRule.setAssignedDNType("group.exact");
+					newRule.setAssignedDN(rule.getAssignedDN());
+					if(i == 0) {
+						newRule.setAccessType(rule.getAccessType());
 					} else {
-						value.append("read ");
+						newRule.setAccessType("read");
 					}
-					value.append("by * break");
-					saveOLCRulesToConfig(value.toString());
+					saveOLCRulesToConfig(newRule);
 				}
 				return true;
 			}
+
+			return true;
 		} catch (InvalidNameException | LdapException e) {
 			logger.info("Error occured while adding olcAccesRule error: " + e.getMessage());
 			return false;
 		}
 	}
 
-	private void saveOLCRulesToConfig(String value) {
+	private void saveOLCRulesToConfig(OLCAccessRule rule) {
 		LdapConnection connection;
-		String configDN = "olcDatabase={1}mdb,cn=config";
 		Entry entry = null;
 		ModifyRequest mr = new ModifyRequestImpl();
 		try {
-			connection = getConnectionForConfig();
-			entry = connection.lookup(configDN);
-			if (entry != null) {
-				entry.put("olcAccess", value.toString());
-				mr.setName(new Dn(configDN));
-				mr.add("olcAccess", value.toString());
-				connection.modify(mr);
-				logger.info("Adding to config node attribute: olcAccess: value:" + value);
+			if(ruleExists(rule) == false) {
+				connection = getConnectionForConfig();
+				entry = connection.lookup(configOLCDN);
+				if (entry != null) {
+					entry.put("olcAccess", rule.getOLCRuleString());
+					mr.setName(new Dn(configOLCDN));
+					mr.add("olcAccess", rule.getOLCRuleString());
+					logger.info("Adding new olcAccess rule: " + rule.getOLCRuleString());
+					connection.modify(mr);
+				}
 			}
 		} catch (LdapException e) {
-			logger.info("Error occured while adding olcAccesRule value: " + value);
 			logger.info("Error occured while adding olcAccesRule error: " + e.getMessage());
 		}
 	}
 
+	private Boolean ruleExists(OLCAccessRule rule) {
+		String olcRegex = "\\{([0-9]*)\\}to (.*)";
+		LdapConnection connection = null;
+		String attribute = "olcAccess";
+
+		try {
+			connection = getConnectionForConfig();
+			Entry entry = null;
+			try {
+				entry = connection.lookup(configOLCDN);
+				if (entry != null) {
+					for (Attribute a : entry.getAttributes()) {
+						if (a.getId().contains(attribute) || a.getUpId().contains(attribute) || ( a.getAttributeType()!=null && a.getAttributeType().getName().equalsIgnoreCase(attribute))) {
+							Iterator<Value<?>> iter = entry.get(a.getId()).iterator();
+							while (iter.hasNext()) {
+								String value = iter.next().getValue().toString();
+								//System.err.println(value);
+								if(Pattern.matches(olcRegex, value) && Pattern.matches(olcRegex, rule.getOLCRuleString())) {
+									//get values by pattern
+									Pattern pattern = Pattern.compile(olcRegex);
+									Matcher matcher = pattern.matcher(value);
+									Matcher matcherNewValue = pattern.matcher(rule.getOLCRuleString());
+									//if matcher is true and group count is 6 then get group values
+									if (matcher.find() && matcherNewValue.find()) {
+										if(matcher.groupCount() == 2 && matcherNewValue.groupCount() == 2) {	
+											if(matcher.group(2).equals(matcherNewValue.group(2))) {
+												System.err.println("exists not added value: " + rule.getOLCRuleString());
+												return true;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} catch (org.apache.directory.api.ldap.model.exception.LdapException e) {
+				logger.error(e.getMessage(), e);
+				return false;
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return false;
+		}
+		return false;
+	}
+
+
+	private  Boolean deleteOLCAccessRule(OLCAccessRule rule) {
+		LdapConnection connection = null;
+		try {
+			connection = getConnectionForConfig();
+			Entry entry = null;
+			entry = connection.lookup(configOLCDN);
+			if (entry != null) {
+				logger.info("Rule will be deleted: ");
+				logger.info(rule.getOLCRuleString());
+				ModifyRequest mr = new ModifyRequestImpl();
+				mr.setName(new Dn(configOLCDN));
+				mr.remove("olcAccess", rule.getOLCRuleString());
+				connection.modify(mr);
+				return true;
+			}
+		}
+		catch (Exception e) {
+			logger.error(e.getMessage());
+			return false;
+		}
+		return false;
+	}
+
+
+	/*
+	 *remove olcAccess rules to config
+	 * olcAccessRuleType is type of the tree: computers, users ...
+	 */
+	public Boolean removeOLCAccessRuleWithParents(OLCAccessRule rule) {
+		//parse access dn to find all father DNs
+
+		try {
+			LdapName dn = new LdapName(rule.getAccessDN());
+			List<String> listOfParentDN = new ArrayList<>();
+			List<OLCAccessRule> existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
+
+			if(!isParentGroupDN(rule.getAccessDN())) {
+				//find all parent DNs
+				for (int i = 1; i <= dn.size(); i++) {
+					String parentDN = "";
+					for (int j = dn.size()-i; j >= 0; j--) {
+						parentDN += dn.get(j) + ',';
+					}
+					parentDN = parentDN.substring(0,parentDN.length()-1);
+					if(isParentGroupDN(parentDN)) {
+						break;
+					}
+					listOfParentDN.add(parentDN);
+				}
+			} else {
+				listOfParentDN.add(rule.getAccessDN());
+			}
+
+
+			//if parentRuleExists is true that means this rule's parent DN has existing rule or rules
+			Boolean parentRuleExists = false;
+			//if childRuleExists is true that means this rule's child or children has existing rule
+			Boolean childRuleExists = false;
+
+			for (int i = 0; i < existingRules.size(); i++) {
+				if(existingRules.get(i).getAccessDNType().equals("dn.subtree")) {
+					if(!rule.getAccessDN().equals(existingRules.get(i).getAccessDN())) {
+						if(rule.getAccessDN().contains(existingRules.get(i).getAccessDN())) {
+							parentRuleExists = true;
+						}  else if(existingRules.get(i).getAccessDN().contains(rule.getAccessDN())) {
+							childRuleExists = true;
+						}
+					}
+				}
+
+			}
+
+			if(childRuleExists) {
+				//delete itself and add itself as dn.base
+				logger.info("child exists");
+				deleteOLCAccessRule(rule);
+				//if access dn is was dn.subtree do not add it again as dn.base because all users has access to read this base dn
+				if(!isParentGroupDN(rule.getAccessDN())) {
+					rule.setOrder(3);
+					rule.setAccessDNType("dn.base");
+					saveOLCRulesToConfig(rule);
+				}
+
+			} else if(parentRuleExists){
+				logger.info("parent exists");
+				//delete rule and its parent rules till parent who has dn.subtree access type
+				//attribute for ending loop when finds father rule with "dn.subtree access
+				Boolean foundFatherSubtreeAccessType = false;
+				for (int i = 0; i < listOfParentDN.size(); i++) {
+					for (int j = 0; j < existingRules.size(); j++) {
+						if(listOfParentDN.get(i).equals(existingRules.get(j).getAccessDN())) {
+							//delete rule itself
+							if(i == 0) {
+								deleteOLCAccessRule(existingRules.get(j));
+							} else {
+								if(existingRules.get(j).getAccessDNType().equals("dn.subtree")) {
+									foundFatherSubtreeAccessType = true;
+									break;
+								} else {
+									//if has child
+									for (int k = 0; k < existingRules.size(); k++) {
+										if((existingRules.get(k).getAccessDN().length() > existingRules.get(j).getAccessDN().length())
+												&& (existingRules.get(k).getAccessDN().contains(existingRules.get(j).getAccessDN()))) {
+											foundFatherSubtreeAccessType = true;
+											break;
+										}
+									}
+									if(foundFatherSubtreeAccessType == false) {
+										deleteOLCAccessRule(existingRules.get(j));
+										break;
+									}
+								}
+							}
+						}
+					}
+					if(foundFatherSubtreeAccessType) {
+						break;
+					}
+					existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
+
+				}
+			} else {
+				logger.info("single");
+				//delete all entries which does not have child rules
+
+				for (int i = 0; i < listOfParentDN.size(); i++) {
+					System.err.println(listOfParentDN.get(i));
+					existingRules = getAllOLCAccessRulesByDN(rule.getAssignedDN());
+					for (int j = 0; j < existingRules.size(); j++) {
+						if(existingRules.get(j).getAccessDN().equals(listOfParentDN.get(i))) {
+							if(i == 0) {
+								deleteOLCAccessRule(existingRules.get(j));
+							} else {
+								Boolean hasChildNode = false;
+								for (int k = 0; k < existingRules.size(); k++) {
+									if((existingRules.get(k).getAccessDN().length() > existingRules.get(j).getAccessDN().length())
+											&& (existingRules.get(k).getAccessDN().contains(existingRules.get(j).getAccessDN()))) {
+										hasChildNode = true;
+										break;
+									}
+								}
+								if(hasChildNode == false) {
+									System.err.println("******");
+									System.err.println(existingRules.get(j).getOLCRuleString());
+									deleteOLCAccessRule(existingRules.get(j));
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return true;
+		} catch (InvalidNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LdapException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	//if an entry is renamed check if that entry exists in olcAccess rules
+	//if exists update olcAccess rules
+	public void updateOLCAccessRulesAfterEntryRename(String newName, String oldEntryDN) {
+		try {
+			String newEntryDN = newName + ",";
+			LdapName dn = new LdapName(oldEntryDN);
+			for (int i = dn.size()-2; 0 <= i; i--) {
+				newEntryDN += dn.get(i);
+				if(i>0) {
+					newEntryDN += ",";
+				}
+			}
+			System.err.println("new dn: " + newEntryDN);
+			List<OLCAccessRule> existingRules = getAllOLCAccessRules();
+			for (int i = 0; i < existingRules.size(); i++) {
+				System.err.println(existingRules.get(i).getOLCRuleString());
+				if(existingRules.get(i).getAccessDN().contains(oldEntryDN) || existingRules.get(i).getAssignedDN().contains(oldEntryDN)) {
+					deleteOLCAccessRule(existingRules.get(i));
+					existingRules.get(i).setAccessDN(existingRules.get(i).getAccessDN().replace(oldEntryDN, newEntryDN));
+					existingRules.get(i).setAssignedDN(existingRules.get(i).getAssignedDN().replace(oldEntryDN, newEntryDN));
+
+					saveOLCRulesToConfig(existingRules.get(i));
+				}
+			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	//if an entry is deleted check if that entry exists in olcAccess rules
+	//if exists update olcAccess rules
+	public void updateOLCAccessRulesAfterEntryDelete(String deletedDN) {
+		try {
+			//if deletedDN is a userGroups delete all rules of that group
+			LdapEntry entry = getEntryDetail(deletedDN);
+			if(entry.getType() == DNType.GROUP) {
+				//check if deleted entry is a userGroups
+				if(deletedDN.contains(configurationService.getUserGroupLdapBaseDn())) {
+
+					List<OLCAccessRule> existingRules = getAllOLCAccessRulesByDN(deletedDN);
+					if(existingRules != null && existingRules.size()> 0) {
+						while(true) {
+							deleteOLCAccessRule(existingRules.get(0));
+							existingRules = getAllOLCAccessRulesByDN(deletedDN);
+							if(existingRules.size() == 0) {
+								break;
+							}
+						}
+						return;
+					}
+				}
+			} else if(entry.getType() == DNType.ORGANIZATIONAL_UNIT) {
+				//check assigned DN part if there is a user group parent deleted
+				if(deletedDN.contains(configurationService.getUserGroupLdapBaseDn())) {
+					List<OLCAccessRule> existingRules = getAllOLCAccessRules();
+
+					//if assigned DN's parent is deleted, delete all assigned DNs which is child of that deletedDN
+
+					while(true) {
+						Boolean deletedAllChild = true;
+						for (int i = 0; i < existingRules.size(); i++) {
+							if(existingRules.get(i).getAssignedDN().contains(deletedDN)) {
+								deleteOLCAccessRule(existingRules.get(i));
+								deletedAllChild = false;
+								break;
+							}
+						}
+						if(deletedAllChild) {
+							break;
+						}
+						existingRules = getAllOLCAccessRules();
+
+					}
+
+					//clean access dn part
+					System.err.println("dsadas");
+
+					//delete all child rules of dn 
+					while(true) {
+						Boolean deletedAllChild = true;
+						for (int i = 0; i < existingRules.size(); i++) {
+							if(existingRules.get(i).getAccessDN().contains(deletedDN)) {
+								deleteOLCAccessRule(existingRules.get(i));
+								deletedAllChild = false;
+								break;
+							}
+						}
+						if(deletedAllChild) {
+							break;
+						}
+						existingRules = getAllOLCAccessRules();
+
+					}
+
+					//delete if dn has any father with access type dn.base without any children
+					//find all parent DNs
+					LdapName dn = new LdapName(deletedDN);
+					List<String> listOfParentDN = new ArrayList<>();
+
+					if(!isParentGroupDN(deletedDN)) {
+						//find all parent DNs
+						for (int i = 1; i <= dn.size(); i++) {
+							String parentDN = "";
+							for (int j = dn.size()-i; j >= 0; j--) {
+								parentDN += dn.get(j) + ',';
+							}
+							parentDN = parentDN.substring(0,parentDN.length()-1);
+							if(isParentGroupDN(parentDN)) {
+								break;
+							}
+							listOfParentDN.add(parentDN);
+						}
+					}
+					existingRules = getAllOLCAccessRules();
+					Boolean foundFatherSubtreeAccessType = false;
+					for (int i = 0; i < listOfParentDN.size(); i++) {
+						for (int j = 0; j < existingRules.size(); j++) {
+							if(listOfParentDN.get(i).equals(existingRules.get(j).getAccessDN())) {
+								//delete rule itself
+								if(existingRules.get(j).getAccessDNType().equals("dn.subtree")) {
+									foundFatherSubtreeAccessType = true;
+									break;
+								} else {
+									//if has child
+									for (int k = 0; k < existingRules.size(); k++) {
+										if((existingRules.get(k).getAccessDN().length() > existingRules.get(j).getAccessDN().length())
+												&& (existingRules.get(k).getAccessDN().contains(existingRules.get(j).getAccessDN()))) {
+											foundFatherSubtreeAccessType = true;
+											break;
+										}
+									}
+									if(foundFatherSubtreeAccessType == false) {
+										deleteOLCAccessRule(existingRules.get(j));
+										break;
+									}
+								}
+							}
+						}
+						if(foundFatherSubtreeAccessType) {
+							break;
+						}
+						existingRules = getAllOLCAccessRules();
+
+					}
+				} else {
+					//find all parent DNs
+					LdapName dn = new LdapName(deletedDN);
+					List<String> listOfParentDN = new ArrayList<>();
+
+					if(!isParentGroupDN(deletedDN)) {
+						//find all parent DNs
+						for (int i = 1; i <= dn.size(); i++) {
+							String parentDN = "";
+							for (int j = dn.size()-i; j >= 0; j--) {
+								parentDN += dn.get(j) + ',';
+							}
+							parentDN = parentDN.substring(0,parentDN.length()-1);
+							if(isParentGroupDN(parentDN)) {
+								break;
+							}
+							listOfParentDN.add(parentDN);
+						}
+					}
+				}
+
+			}
+		} catch (LdapException e) {
+			logger.error("Error occured while updating rules after deleting entry");
+		} catch (InvalidNameException e) {
+			logger.error("Invalid dn: " + deletedDN);
+		}
+
+
+	}
+
+	//if an entry is moved check if that entry exists in olcAccess rules
+	//if exists update olcAccess rules
+	public void updateOLCAccessRulesAfterEntryMove(String newDN, String oldDN) {
+
+	}
+
+	public Boolean isParentGroupDN(String dn) {
+		if(dn.equals(configurationService.getAgentLdapBaseDn()))
+			return true;
+		else if(dn.equals(configurationService.getAgentLdapBaseDn()))
+			return true;
+		else if(dn.equals(configurationService.getUserLdapBaseDn()))
+			return true;
+		else if(dn.equals(configurationService.getAhenkGroupLdapBaseDn()))
+			return true;
+		else if(dn.equals(configurationService.getUserGroupLdapBaseDn()))
+			return true;
+		else if(dn.equals(configurationService.getUserLdapRolesDn()))
+			return true;
+		else 
+			return false;
+	}
 }
 

@@ -263,19 +263,27 @@ public class SettingsController {
 	}
 
 	@RequestMapping(method=RequestMethod.POST ,value = "/addOLCAccessRule", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Boolean addOLCAccessRule(@RequestParam (value = "type", required = true) String type,
-			@RequestParam (value = "groupDN", required = true) String groupDN,
+	public Boolean addOLCAccessRule(@RequestParam (value = "groupDN", required = true) String groupDN,
 			@RequestParam (value = "olcAccessDN", required = true) String olcAccessDN,
 			@RequestParam (value = "accessType", required = true) String accessType) {
 		if(!groupDN.equals("")) {
 			OLCAccessRule rule = new OLCAccessRule();
+			rule.setAccessDNType("dn.subtree");
 			rule.setAccessDN(olcAccessDN);
+			rule.setAssignedDNType("group.exact");
 			rule.setAssignedDN(groupDN);
 			rule.setAccessType(accessType);
-			return ldapService.addOLCAccessRule(rule, type);
+			return ldapService.addOLCAccessRule(rule);
 		} else {
 			return false;
 		}
+	}
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/deleteOLCAccessRule", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Boolean deleteOLCAccessRule(@RequestBody OLCAccessRule rule) 
+	{
+		ldapService.removeOLCAccessRuleWithParents(rule);
+		return true;
 	}
 
 }

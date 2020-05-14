@@ -31,7 +31,7 @@
 										<th style="width: 40%">Ev Dizini</th>
 									</tr>
 								</thead>
-								<tbody></tbody>
+								<tbody id="localUserBody"></tbody>
 							</table>
 							<small id="localUserHelp" class="text-muted">İstemcideki yerel kullanıcıları listelemek için Kullanıcı Listele butonuna tıklayınız.</small>
 						</div>
@@ -41,10 +41,10 @@
 							<div class="form-group row">
 							    <label for="colFormLabel" class="col-sm-3 col-form-label"><i class="fa fa-user"></i> Kullanıcı Adı</label>
 							    <div class="col-sm-6">
-							      	<input type="text" class="form-control" id="localUserName" placeholder="lider" onkeyup="userNameFocus()">
+							      	<input type="text" class="form-control form-control-sm" id="localUserName" placeholder="lider" onkeyup="userNameFocus()">
 							    </div>
 							    <div class="col-sm-3">
-									<select class="form-control" id="localUserActiveSb">
+									<select class="form-control form-control-sm" id="localUserActiveSb">
 										<option value="true" selected>Aktif</option>
 										<option value="false">Pasif</option>
 									</select>
@@ -53,25 +53,25 @@
 							 <div class="form-group row">
 							    <label for="colFormLabel" class="col-sm-3 col-form-label"><i class="fa fa-lock"></i> Yeni Parola</label>
 							    <div class="col-sm-9">
-							      	<input type="password" class="form-control" id="localUserNewPassword" placeholder="Yeni Parola...">
+							      	<input type="password" class="form-control form-control-sm" id="localUserNewPassword" placeholder="Yeni Parola...">
 							    </div>
 							 </div>
 							 <div class="form-group row">
 							    <label for="colFormLabel" class="col-sm-3 col-form-label"><i class="fa fa-lock"></i> Parola Doğrula</label>
 							    <div class="col-sm-9">
-							    	<input type="password" class="form-control" id="localUserVerifyPassword" placeholder="Parola Doğrula...">
+							    	<input type="password" class="form-control form-control-sm" id="localUserVerifyPassword" placeholder="Parola Doğrula...">
 							    </div>
 							 </div>
 							 <div class="form-group row">
 							    <label for="colFormLabel" class="col-sm-3 col-form-label"><i class="fa fa-home"></i> Ev Dizini</label>
 							    <div class="col-sm-9">
-							      <input type="text" class="form-control" id="localUserHomeDirectory" placeholder="/home/lider">
+							      <input type="text" class="form-control form-control-sm" id="localUserHomeDirectory" placeholder="/home/lider">
 							    </div>
 							 </div>
 							 <div class="form-group row">
 							 	<label for="colFormLabel" class="col-sm-3 col-form-label"><i class="fas fa-layer-group"></i> Kullanıcı Grupları</label>
 							   	<div class="col-sm-9">
-									<select class="form-control" id="localUserOfGroups" multiple="multiple">
+									<select class="form-control form-control-sm" id="localUserOfGroups" multiple="multiple">
 									</select>
 								</div>
 							 </div>

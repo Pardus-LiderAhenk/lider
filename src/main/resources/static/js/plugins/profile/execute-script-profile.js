@@ -1,7 +1,6 @@
 /**
- * 	EXECUTE SCRIPT definition and task module
- * This page Script definition. Get script templates from database. Save script and edit, delete registered scripts
- * This task allows registered scripts to run on the agent
+ * 	SCRIPT PROFILE definition
+ * This page Script profile definition. This page added, updated, deleted and add to policy script profile
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
  * 
@@ -12,16 +11,16 @@
 var scriptTable = null;
 var scriptProfileTable = null;
 var scriptTempList = [];
-var profileList = null;
+var scriptProfileList = null;
 var sId = null; // selected script id
 var selectScript = false;
-var selectProfile = false;
+var selectScriptProfile = false;
 var selectedScriptProfileId = null;
 var pluginImpl = null;
 
 getScriptTemp();
 getProfileList();
-hideAndShowProfileButton();
+hideAndShowScriptProfileButton();
 $("#scriptProfileEditForm").hide();
 
 for (var i = 0; i < pluginProfileList.length; i++) {
@@ -129,27 +128,27 @@ $('#scriptProfileTable tbody').on( 'click', 'tr', function () {
 	if (scriptProfileTable) {
 		if ( $(this).hasClass('selected') ) {
 			$(this).removeClass('selected');
-			selectProfile = false;
+			selectScriptProfile = false;
 			selectedScriptProfileId = null;
-			hideAndShowProfileButton();
+			hideAndShowScriptProfileButton();
 		}
 		else {
 			scriptProfileTable.$('tr.selected').removeClass('selected');
 			$(this).addClass('selected');
 			selectedScriptProfileId = $(this).attr('id');
-			selectProfile = true;
-			hideAndShowProfileButton();
+			selectScriptProfile = true;
+			hideAndShowScriptProfileButton();
 		}
 		showDetailSelectedScriptAndProfile();
 	}
 });
 
 function showDetailSelectedScriptAndProfile() {
-	if (selectScript == false && selectProfile == true) {
-		for (var i = 0; i < profileList.length; i++) {
-			if (selectedScriptProfileId == profileList[i].id) {
-				$('#scriptProfileContent').val(profileList[i].profileData.SCRIPT_CONTENTS);
-				var existType = profileList[i].profileData.SCRIPT_TYPE;
+	if (selectScript == false && selectScriptProfile == true) {
+		for (var i = 0; i < scriptProfileList.length; i++) {
+			if (selectedScriptProfileId == scriptProfileList[i].id) {
+				$('#scriptProfileContent').val(scriptProfileList[i].profileData.SCRIPT_CONTENTS);
+				var existType = scriptProfileList[i].profileData.SCRIPT_TYPE;
 				if (existType == "BASH") {
 					$('#scriptProfileType').val("bash").change();
 				} else if (existType == "PYTHON") {
@@ -159,18 +158,18 @@ function showDetailSelectedScriptAndProfile() {
 				} else if (existType == "PERL") {
 					$('#scriptProfileType').val("perl").change();
 				}
-				$('#scriptProfileParameters').val(profileList[i].profileData.SCRIPT_PARAMS);
-				$('#scriptProfileNameForm').val(profileList[i].label);
-				$('#scriptProfileDescriptionForm').val(profileList[i].description);
+				$('#scriptProfileParameters').val(scriptProfileList[i].profileData.SCRIPT_PARAMS);
+				$('#scriptProfileNameForm').val(scriptProfileList[i].label);
+				$('#scriptProfileDescriptionForm').val(scriptProfileList[i].description);
 			}
 		}
-	} else if (selectScript == false && selectProfile == false) {
+	} else if (selectScript == false && selectScriptProfile == false) {
 		$("#scriptProfileEditForm").hide();
 	}
 }
 
-function hideAndShowProfileButton() {
-	if (selectProfile == false) {
+function hideAndShowScriptProfileButton() {
+	if (selectScriptProfile == false) {
 		$("#scriptProfileDel").hide();
 		$("#scriptProfileUpdate").hide();
 		$("#scriptProfileAddToPolicy").hide();
@@ -201,7 +200,7 @@ function getProfileList() {
 		data: params,
 		dataType : 'json',
 		success : function(data) {
-			profileList = data;
+			scriptProfileList = data;
 			createScriptProfileTable();
 		}
 	});
@@ -211,26 +210,26 @@ function createScriptProfileTable() {
 	if ($("#scriptProfleListEmptyInfo").length > 0) {
 		$("#scriptProfleListEmptyInfo").remove();
 	}
-	
+
 	if (scriptTable) {
 		scriptTable.$('tr.selected').removeClass('selected');
 		$("#scriptProfileEditForm").hide();
 		selectScript = false;
 	}
-	
+
 	if (scriptProfileTable) {
 		scriptProfileTable.clear();
 		scriptProfileTable.destroy();
 		scriptProfileTable = null;
 	}
-	if(profileList != null && profileList.length > 0) {
-		for (var i = 0; i < profileList.length; i++) {
-			var profileId = profileList[i].id;
-			var profileName = profileList[i].label;
-			var profileDescription = profileList[i].description;
-			var profileCreateDate = profileList[i].createDate;
-			var profileOfPlugin = profileList[i].plugin.name;
-			var profileDeleted = profileList[i].deleted;
+	if(scriptProfileList != null && scriptProfileList.length > 0) {
+		for (var i = 0; i < scriptProfileList.length; i++) {
+			var profileId = scriptProfileList[i].id;
+			var profileName = scriptProfileList[i].label;
+			var profileDescription = scriptProfileList[i].description;
+			var profileCreateDate = scriptProfileList[i].createDate;
+			var profileOfPlugin = scriptProfileList[i].plugin.name;
+			var profileDeleted = scriptProfileList[i].deleted;
 			if (profileDeleted == false) {
 				var year = profileCreateDate.substring(0,4);
 				var month = profileCreateDate.substring(5,7);
@@ -294,7 +293,7 @@ $("#scriptProfileSave").click(function(e){
 					success : function(data) {
 						if(data != null) {
 							$.notify("Betik ayarı başarıyla kaydedildi.", "success");
-							profileList.push(data);
+							scriptProfileList.push(data);
 							createScriptProfileTable();
 							$('#scriptProfileNameForm').val("");
 							$('#scriptProfileDescriptionForm').val("");
@@ -317,7 +316,7 @@ $("#scriptProfileSave").click(function(e){
 
 //delete selected script profile
 $("#scriptProfileDel").click(function(e){
-	if (selectProfile == true) {
+	if (selectScriptProfile == true) {
 		var params = {
 				"id": selectedScriptProfileId,
 		};
@@ -330,30 +329,30 @@ $("#scriptProfileDel").click(function(e){
 			contentType: "application/json",
 			success : function(data) {
 				if(data != null) {
-					$.notify("Betik profili başarıyla silindi.", "success");
+					$.notify("Betik ayarı başarıyla silindi.", "success");
 					var index = findIndexInScriptProfileList(selectedScriptProfileId);
 					if (index > -1) {
-						profileList.splice(index, 1);
+						scriptProfileList.splice(index, 1);
 					}
 					selectedScriptProfileId = null;
 					createScriptProfileTable();
-					selectProfile = false;
-					hideAndShowProfileButton();
+					selectScriptProfile = false;
+					hideAndShowScriptProfileButton();
 				} 
 			},
 			error: function (data, errorThrown) {
-				$.notify("Profil silinirken hata oluştu.", "error");
+				$.notify("Betik ayarı silinirken hata oluştu.", "error");
 			},
 		});
 	} else {
-		$.notify("Lütfen silmek için profil seçiniz.", "warn");
+		$.notify("Lütfen silmek için ayar seçiniz.", "warn");
 	}
 });
 
 function findIndexInScriptProfileList(id) {
 	var index = -1;
-	for (var i = 0; i < profileList.length; i++) { 
-		if (profileList[i]["id"] == id) {
+	for (var i = 0; i < scriptProfileList.length; i++) { 
+		if (scriptProfileList[i]["id"] == id) {
 			index = i;
 		}
 	}
@@ -362,8 +361,8 @@ function findIndexInScriptProfileList(id) {
 
 function checkedProfileName(label) {
 	var isExist = false;
-	for (var i = 0; i < profileList.length; i++) {
-		if (label == profileList[i].label) {
+	for (var i = 0; i < scriptProfileList.length; i++) {
+		if (label == scriptProfileList[i].label) {
 			isExist = true;
 		}
 	}
@@ -372,9 +371,9 @@ function checkedProfileName(label) {
 
 //added select profile to general profile table profileListTable
 $("#scriptProfileAddToPolicy").click(function(e){
-	for (var i = 0; i < profileList.length; i++) {
-		if (selectedScriptProfileId == profileList[i].id) {
-			addProfileToPolicy(profileList[i]);
+	for (var i = 0; i < scriptProfileList.length; i++) {
+		if (selectedScriptProfileId == scriptProfileList[i].id) {
+			addProfileToPolicy(scriptProfileList[i]);
 		}
 	}
 });
@@ -386,9 +385,9 @@ $("#scriptProfileUpdate").click(function(e){
 	var description = $('#scriptProfileDescriptionForm').val();
 
 	var existLabel = null;
-	for (var i = 0; i < profileList.length; i++) {
-		if (selectedScriptProfileId == profileList[i].id) {
-			existLabel = profileList[i].label;
+	for (var i = 0; i < scriptProfileList.length; i++) {
+		if (selectedScriptProfileId == scriptProfileList[i].id) {
+			existLabel = scriptProfileList[i].label;
 		}
 	}
 	var profileData = {
@@ -419,20 +418,20 @@ $("#scriptProfileUpdate").click(function(e){
 			contentType: "application/json",
 			success : function(data) {
 				if(data != null) {
-					$.notify("Betik profili başarıyla güncellendi.", "success");
+					$.notify("Betik ayarı başarıyla güncellendi.", "success");
 					var index = findIndexInScriptProfileList(selectedScriptProfileId);
 					if (index > -1) {
-						profileList.splice(index, 1);
+						scriptProfileList.splice(index, 1);
 					}
-					profileList.push(data);
+					scriptProfileList.push(data);
 					selectedScriptProfileId = null;
 					createScriptProfileTable();
-					selectProfile = false;
-					hideAndShowProfileButton();
+					selectScriptProfile = false;
+					hideAndShowScriptProfileButton();
 				} 
 			},
 			error: function (data, errorThrown) {
-				$.notify("Profil güncellenirken hata oluştu.", "error");
+				$.notify("Betik ayarı güncellenirken hata oluştu.", "error");
 			},
 		});
 	} else {

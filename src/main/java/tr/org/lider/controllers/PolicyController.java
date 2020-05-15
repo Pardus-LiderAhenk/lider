@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import tr.org.lider.entities.PluginProfile;
 import tr.org.lider.entities.PolicyImpl;
 import tr.org.lider.services.PolicyService;
 
@@ -100,5 +101,10 @@ public class PolicyController {
 			return null;
 		}
 	}
-
+	
+//	return executed policy
+	@RequestMapping(method=RequestMethod.POST ,value = "/execute", produces = MediaType.APPLICATION_JSON_VALUE)
+	public PolicyImpl policyExecute(@RequestBody PolicyImpl params) {
+		return null;
+	}
 }

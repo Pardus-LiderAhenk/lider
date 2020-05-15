@@ -2,6 +2,19 @@
 <script type="text/javascript" src="js/user-groups/user_groups_treemanager.js"></script>
 <script type="text/javascript" src="js/user-groups/user_groups.js"></script>
 
+<style>
+<!--
+.table tbody tr.selectpolicytable td {
+  background-color: #85C1E9;
+}
+.allow-scroll {
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+-->
+</style>
+
 <div class="col-lg-2">
 	
 	<div class="d-block dropdown" style="margin: 5px;" >
@@ -45,51 +58,38 @@
 					</div>
 				</div>
 					<hr>
-					<div>
+						<div>
 							<div class="row">
-								<div class="col-lg-4">
+								<div class="col-lg-5">
 									<div >
 										<div class="main-card mb-3 card"  >
 											<div class="card-header">
 												<div class="col-lg-4"> GRUP ÜYELERİ </div>
 												<div class="col-lg-8 pull-right">
 													<div class="pull-right" id="userGroupButtonActions">	
-														
-														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
-											                        <span class="btn-icon-wrapper pr-2">
-											                            <i class="fa fa-cogs fa-w-20"></i>
-											                        </span>
-											                        Grup Yönetimi
-											                </button>
+														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info"><span class="btn-icon-wrapper pr-2"><i class="fa fa-cogs fa-w-20"></i></span>Grup Yönetimi</button>
 															<div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
-													                    	 	<ul class="nav flex-column">
-													 									<li class="nav-item">
-													 									<a href="#"  class="nav-link" id="addMemberUserGroupBtn" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-plus"></i> <span>
-													                                                            Gruba Kullanıcı Ekle
-													                                                        </span></a>
-													                                        
-													                                     </li>
-													                                     <li class="nav-item">
-													                                     <a href="#" class="nav-link"  id="editUserGroupBtn" title="İstemci Grubunu Düzenle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-edit"></i> <span>
-													                                                            Grup Adını Düzenle
-													                                                        </span></a> 
-													                                      </li>
-													                                      <li class="nav-item">
-													                                      <a href="#" class="nav-link" id="moveUserGroupBtn" title="İstemci Grubunu Taşı" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-car"></i><span>
-													                                                           Grubu Taşı
-													                                                        </span> </a>
-													                                      </li>     
-													                                      <li class="nav-item">
-													                                      <a href="#" class="nav-link" id="deleteUserGroupBtn" title="İstemci Grubunu Sil" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-minus"></i>  <span>
-													                                                            Grubu Sil
-													                                                        </span></a> 
-													                                      </li>                                          
-													                         	</ul>
-													           </div>
-														
-														
+										                   		<ul class="nav flex-column">
+							 									<li class="nav-item">
+							 										<a href="#"  class="nav-link" id="addMemberUserGroupBtn" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-plus"></i> <span>
+							                                     	Gruba Kullanıcı Ekle</span></a>
+							                                        
+							                                     </li>
+							                                     <li class="nav-item">
+							                                    	 <a href="#" class="nav-link"  id="editUserGroupBtn" title="İstemci Grubunu Düzenle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-edit"></i> <span>
+							                                    	  Grup Adını Düzenle</span></a> 
+							                                      </li>
+							                                      <li class="nav-item">
+							                                      	<a href="#" class="nav-link" id="moveUserGroupBtn" title="İstemci Grubunu Taşı" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-car"></i><span>
+							                                     	  Grubu Taşı</span> </a>
+							                                      </li>     
+							                                      <li class="nav-item">
+							                                     	 <a href="#" class="nav-link" id="deleteUserGroupBtn" title="İstemci Grubunu Sil" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-minus"></i> 
+							                                    	 <span>Grubu Sil</span></a> 
+							                                	</li>                                          
+										                	</ul>
+														</div>
 													</div>
-
 												</div>
 											</div>
 											<div class="card-body">
@@ -111,13 +111,39 @@
 										</div>
 									</div>
 								</div>
-								<div class="col-lg-8">
+								<div class="col-lg-7">
+									<div class="main-card mb-3 card"  >
+										<div class="card-header">
+											<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+											<div class="col-lg-6 text-left">Aktif Politika Listesi</div>
+											<div class="col-lg-6 text-right">
+												<button id="policyApplyBtn" type="button" class="btn-shadow btn btn-info" title="Uygula"><i class="fas fa-users"></i> Uygula</button>
+											</div>
+										</div>
+										<div class="card-body">
+											<div class="allow-scroll">
+												<div> 
+													<table class="mb-0 table table-bordered" id="activePolicyTable">
+														<thead>
+															<tr>
+																<th style="width: 10%">#</th>
+																<th style="width: 25%">Politika Adı</th>
+																<th style="width: 65%">Açıklama</th>
+															</tr>
+														</thead>
+														<tbody id="bodyPolicies">
+															<tr id="bodyPolicyRow"><td colspan="100%" class="text-center">Politika bulunamadı</td></tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
 								</div>
-					   </div>
-					
+				  			 </div>
+						</div>
 					</div>
-			</div>
-		</div>
+				</div>
 
 
 <!-- <div class="col-lg-10 white main-card mb-3 card" style="height: 1200px;"> -->

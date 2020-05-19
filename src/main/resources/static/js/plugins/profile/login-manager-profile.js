@@ -56,12 +56,12 @@ function getCurrentDate() {
 	$("#lastAvailabilityDate").val(currentDate);
 
 	var hour = date.getHours();
+	if (hour < 10) {
+		hour = "0" + hour;
+	}
 	var minute = date.getMinutes();
 	if (minute < 10) {
 		minute = "0" + minute;
-	}
-	if (hour == "0") {
-		hour = "00";
 	}
 	var currentTime = hour + ':' + minute;
 	$("#loginManagerStartTime").val(currentTime);

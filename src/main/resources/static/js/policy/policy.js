@@ -11,8 +11,6 @@
 //generic variables
 var pluginProfileList = null;
 var policyList = null;
-var policyTable = null;
-var policyProfileTable = null;
 var policyProfileList = [];
 var selectedProfileId = null;
 var selectedPolicyId = null;
@@ -40,13 +38,8 @@ function createPolicyTable() {
 		$("#policyListEmptyInfo").remove();
 	}
 
-	if (policyTable) {
-		policyTable.clear();
-		policyTable.destroy();
-		policyTable = null;
-	}
-
 	if(policyList != null && policyList.length > 0) {
+		var policy = "";
 		for (var i = 0; i < policyList.length; i++) {
 			var policyId = policyList[i].id;
 			var policyName = policyList[i].label;
@@ -56,43 +49,24 @@ function createPolicyTable() {
 				policyStatus = "Pasif";
 			}
 			if (policyList[i].deleted == false) {
-				var newRow = $("<tr id="+ policyId +">");
-				var html = '<td>'+ policyName +'</td>';
-				html += '<td>'+ policyDescription +'</td>';
-				html += '<td>'+ policyStatus +'</td>';
-				newRow.append(html);
-				$("#policyListTable").append(newRow);
+				policy += "<tr id="+ policyId +">";
+				policy += '<td>'+ policyName +'</td>';
+				policy += '<td>'+ policyDescription +'</td>';
+				policy += '<td>'+ policyStatus +'</td>';
+				policy += '</td>';
 			}
 		}
-		policyTable = $('#policyListTable').DataTable( {
-			"scrollY": "200px",
-			"scrollX": false,
-			"paging": false,
-			"scrollCollapse": true,
-			"oLanguage": {
-				"sSearch": "Politika Ara:",
-				"sInfo": "Toplam politika sayısı: _TOTAL_",
-				"sInfoEmpty": "Gösterilen politika sayısı: 0",
-				"sZeroRecords" : "Politika bulunamadı",
-				"sInfoFiltered": " - _MAX_ kayıt arasından",
-			},
-		} );
+		$("#policyListBody").html(policy);
 	} else {
 		$('#policyListBody').html('<tr id="policyListEmptyInfo"><td colspan="3" class="text-center">Politika bulunamadı.</td></tr>');
 	}
 }
 
-//clicked on policy list table 
-$('#policyListTable tbody').on( 'click', 'tr', function () {
-	if (policyProfileTable) {
-		policyProfileTable.clear();
-		policyProfileTable.destroy();
-		policyProfileTable = null;
-		policyProfileList = [];
-	}
-	if (policyTable) {
-		if ( $(this).hasClass('selected') ) {
-			$(this).removeClass('selected');
+//clicked policy table
+$('#policyListTable').on('click', 'tbody tr', function(event) {
+	if(policyList != null && policyList.length > 0) {
+		if($(this).hasClass('policysettings')){
+			$(this).removeClass('policysettings');
 			$("#policyNameForm").val("");
 			$("#policyDescriptionForm").val("");
 			createPolicyChart(null);
@@ -100,8 +74,7 @@ $('#policyListTable tbody').on( 'click', 'tr', function () {
 			selectedPolicyId = null;
 			policyProfileList = [];
 		} else {
-			policyTable.$('tr.selected').removeClass('selected');
-			$(this).addClass('selected');
+			$(this).addClass('policysettings').siblings().removeClass('policysettings');
 			selectedPolicyId = $(this).attr('id');
 			hideAndShowPolicyButton(true);
 			getSelectedPolicyData();
@@ -128,42 +101,25 @@ function createProfileTableOfPolicy() {
 	if ($("#profileListEmptyInfo").length > 0) {
 		$("#profileListEmptyInfo").remove();
 	}
-	if (policyProfileTable) {
-		policyProfileTable.clear();
-		policyProfileTable.destroy();
-		policyProfileTable = null;
-	}
 	var chartLabelList = [];
 
 	if(policyProfileList != null && policyProfileList.length > 0) {
+		profile = "";
 		for (var i = 0; i < policyProfileList.length; i++) {
 			var profileId = policyProfileList[i].id;
 			var profileName = policyProfileList[i].label;
 			var profileDescription =  policyProfileList[i].description;
 			var pluginOfProfile = policyProfileList[i].plugin.name;
 
-			var newRow = $("<tr id="+ profileId +">");
-			var html = '<td>'+ profileName +'</td>';
-			html += '<td>'+ profileDescription +'</td>';
-			html += '<td>'+ pluginOfProfile +'</td>';
-			newRow.append(html);
-			$("#profileListBody").append(newRow);
+			profile += "<tr id="+ profileId +">";
+			profile += '<td>'+ profileName +'</td>';
+			profile += '<td>'+ profileDescription +'</td>';
+			profile += '<td>'+ pluginOfProfile +'</td>';
+			profile += '</td>';
+
 			chartLabelList.push(pluginOfProfile);
 		}
-		policyProfileTable = $('#policyProfileTable').DataTable( {
-			"scrollY": "200px",
-			"scrollX": false,
-			"searching": false,
-			"paging": false,
-			"scrollCollapse": true,
-			"oLanguage": {
-				"sSearch": "Ara:",
-				"sInfo": "Toplam ayar sayısı: _TOTAL_",
-				"sInfoEmpty": "Gösterilen ayar sayısı: 0",
-				"sZeroRecords" : "Ayar bulunamadı",
-				"sInfoFiltered": " - _MAX_ kayıt arasından",
-			},
-		} );
+		$("#profileListBody").html(profile);
 	} else {
 		$('#profileListBody').html('<tr id="profileListEmptyInfo"><td colspan="3" class="text-center">Lütfen ayar ekleyiniz.</td></tr>');
 	}
@@ -198,16 +154,14 @@ function checkedPluginOfProfile(profile) {
 	return isExist;
 }
 
-//clicked on policy profile list
-$('#policyProfileTable tbody').on( 'click', 'tr', function () {
-	if (policyProfileTable) {
-		if ( $(this).hasClass('selected') ) {
-			$(this).removeClass('selected');
+$('#policyProfileTable').on('click', 'tbody tr', function(event) {
+	if(policyProfileList != null && policyProfileList.length > 0) {
+		if($(this).hasClass('policysettings')){
+			$(this).removeClass('policysettings');
 			$('#removeProfileBtn').hide();
 			selectedProfileId = null;
 		} else {
-			policyProfileTable.$('tr.selected').removeClass('selected');
-			$(this).addClass('selected');
+			$(this).addClass('policysettings').siblings().removeClass('policysettings');
 			selectedProfileId = $(this).attr('id');
 			$('#removeProfileBtn').show();
 		}
@@ -228,9 +182,11 @@ function findIndexInPolicyAndProfileList(listName, id) {
 //checked policy name 
 function checkedPolicyName(label) {
 	var isExist = false;
-	for (var i = 0; i < policyList.length; i++) {
-		if (label == policyList[i].label) {
-			isExist = true;
+	if(policyList != null && policyList.length > 0) {
+		for (var i = 0; i < policyList.length; i++) {
+			if (label == policyList[i].label) {
+				isExist = true;
+			}
 		}
 	}
 	return isExist;
@@ -250,7 +206,6 @@ $("#removeProfileBtn").click(function(e){
 
 //save policy to database
 $("#policyAddBtn").click(function(e){
-
 	var label = $('#policyNameForm').val();
 	var description = $('#policyDescriptionForm').val();
 	if (policyProfileList.length > 0) {

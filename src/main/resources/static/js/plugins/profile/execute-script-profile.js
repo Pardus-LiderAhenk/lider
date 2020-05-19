@@ -8,15 +8,13 @@
  * 
  */
 
-var scriptTable = null;
-var scriptProfileTable = null;
 var scriptTempList = [];
 var scriptProfileList = null;
 var sId = null; // selected script id
 var selectScript = false;
 var selectScriptProfile = false;
 var selectedScriptProfileId = null;
-var pluginImpl = null;
+var sciptPluginImpl = null;
 
 getScriptTemp();
 getProfileList();
@@ -25,7 +23,7 @@ $("#scriptProfileEditForm").hide();
 
 for (var i = 0; i < pluginProfileList.length; i++) {
 	if(pluginProfileList[i].page == 'execute-script-profile'){
-		pluginImpl = pluginProfileList[i].plugin;
+		sciptPluginImpl = pluginProfileList[i].plugin;
 	}
 }
 
@@ -50,91 +48,66 @@ function getScriptTemp() {
 }
 
 function createScriptTempTable() {
-	for (var i = 0; i < scriptTempList.length; i++) {
-		var scriptName = scriptTempList[i]['label'];
-		var scriptType = scriptTempList[i]['scriptType'];
-		var createDate = scriptTempList[i]['createDate'];
-		var modifyDate = scriptTempList[i]['modifyDate'];
-		var scriptId = scriptTempList[i]["id"];
-		var scriptContents = scriptTempList[i]['contents'];
+	if(scriptTempList != null && scriptTempList.length > 0) {
+		var script = "";
+		for (var i = 0; i < scriptTempList.length; i++) {
+			var scriptName = scriptTempList[i]['label'];
+			var scriptType = scriptTempList[i]['scriptType'];
+			var createDate = scriptTempList[i]['createDate'];
+			var modifyDate = scriptTempList[i]['modifyDate'];
+			var scriptId = scriptTempList[i]["id"];
+			var scriptContents = scriptTempList[i]['contents'];
 
-		if (modifyDate == null) {
-			modifyDate = "";
+			if (modifyDate == null) {
+				modifyDate = "";
+			}
+			if (createDate == null) {
+				createDate = "";
+			}
+			script += "<tr id="+ scriptId +">";
+			script += '<td>'+ scriptName +'</td>';
+			script += '<td>'+ scriptType +'</td>';
+			script += '</td>';
 		}
-		if (createDate == null) {
-			createDate = "";
-		}
-		var newRow = $("<tr id="+ scriptId +">");
-		var html = '<td>'+ scriptName +'</td>';
-		html += '<td>'+ scriptType +'</td>';
-		newRow.append(html);
-		$("#scriptTableTemp").append(newRow);
+		$("#scriptsBody").html(script);
+	} else {
+		$('#scriptsBody').html('<tr><td colspan="2" class="text-center">Betik bulunamadı.</td></tr>');
 	}
-
-	scriptTable = $('#scriptTableTemp').DataTable( {
-		"scrollY": "200px",
-		"scrollX": false,
-		"paging": false,
-		"scrollCollapse": true,
-		"oLanguage": {
-			"sSearch": "Betik Ara:",
-			"sInfo": "Toplam Betik sayısı: _TOTAL_",
-			"sInfoEmpty": "Gösterilen betik sayısı: 0",
-			"sZeroRecords" : "Betik bulunamadı",
-			"sInfoFiltered": " - _MAX_ kayıt arasından",
-		},
-	} );
 }
 
-$('#scriptTableTemp tbody').on( 'click', 'tr', function () {
-	if ( $(this).hasClass('selected') ) {
-		$(this).removeClass('selected');
-		$('#scriptProfileType').val("bash").change();
-		sId = null;
-		selectScript = false;
-	}
-	else {
-		scriptTable.$('tr.selected').removeClass('selected');
-		$(this).addClass('selected');
-		var rowData = scriptTable.rows('.selected').data()[0];
-		sId = $(this).attr('id');
-		$("#scriptProfileEditForm").show();
-		var sType = null;
-		selectScript = true;
+$('#scriptTableTemp').on('click', 'tbody tr', function(event) {
+	if(policyList != null && policyList.length > 0) {
+		if($(this).hasClass('policysettings')){
+			$(this).removeClass('policysettings');
+			$('#scriptProfileType').val("bash").change();
+			sId = null;
+			selectScript = false;
 
-		if (rowData[1] == "BASH" || rowData[1] == "Bash" || rowData[1] == "bash") {
-			sType = "bash";
-		}
-		else if (rowData[1] == "PYTHON" || rowData[1] == "Python" || rowData[1] == "python") {
-			sType = "python";
-		}
-		else if (rowData[1] == "PERL" || rowData[1] == "Perl" || rowData[1] == "perl") {
-			sType = "perl";
-		}
-		else if (rowData[1] == "RUBY" || rowData[1] == "Ruby" || rowData[1] == "ruby") {
-			sType = "ruby";
-		}
-		$('#scriptProfileType').val(sType).change();
-		for (var i = 0; i < scriptTempList.length; i++) {
-			if (scriptTempList[i]['id'] == sId) {
-				$('#scriptProfileContent').val(scriptTempList[i]['contents']);
+		} else {
+			$(this).addClass('policysettings').siblings().removeClass('policysettings');
+			sId = $(this).attr('id');
+			$("#scriptProfileEditForm").show();
+			selectScript = true;
+			for (var i = 0; i < scriptTempList.length; i++) {
+				if (scriptTempList[i]['id'] == sId) {
+					$('#scriptProfileContent').val(scriptTempList[i].contents);
+					$('#scriptProfileType').val(scriptTempList[i].scriptType.toLowerCase()).change();
+				}
 			}
 		}
 	}
 	showDetailSelectedScriptAndProfile();
-} );
+});
 
-$('#scriptProfileTable tbody').on( 'click', 'tr', function () {
-	if (scriptProfileTable) {
-		if ( $(this).hasClass('selected') ) {
-			$(this).removeClass('selected');
+$('#scriptProfileTable').on('click', 'tbody tr', function(event) {
+	if(scriptProfileList != null && scriptProfileList.length > 0) {
+		if($(this).hasClass('policysettings')){
+			$(this).removeClass('policysettings');
 			selectScriptProfile = false;
 			selectedScriptProfileId = null;
 			hideAndShowScriptProfileButton();
-		}
-		else {
-			scriptProfileTable.$('tr.selected').removeClass('selected');
-			$(this).addClass('selected');
+		} else {
+			$(this).addClass('policysettings').siblings().removeClass('policysettings');
 			selectedScriptProfileId = $(this).attr('id');
 			selectScriptProfile = true;
 			hideAndShowScriptProfileButton();
@@ -207,22 +180,18 @@ function getProfileList() {
 }
 
 function createScriptProfileTable() {
-	if ($("#scriptProfleListEmptyInfo").length > 0) {
-		$("#scriptProfleListEmptyInfo").remove();
+	if ($("#scriptProfileListEmptyInfo").length > 0) {
+		$("#scriptProfileListEmptyInfo").remove();
 	}
 
-	if (scriptTable) {
-		scriptTable.$('tr.selected').removeClass('selected');
+	if(selectScript == true){
+		$('#scriptTableTemp tr').removeClass('policysettings');
 		$("#scriptProfileEditForm").hide();
 		selectScript = false;
 	}
 
-	if (scriptProfileTable) {
-		scriptProfileTable.clear();
-		scriptProfileTable.destroy();
-		scriptProfileTable = null;
-	}
 	if(scriptProfileList != null && scriptProfileList.length > 0) {
+		var profile = "";
 		for (var i = 0; i < scriptProfileList.length; i++) {
 			var profileId = scriptProfileList[i].id;
 			var profileName = scriptProfileList[i].label;
@@ -231,37 +200,18 @@ function createScriptProfileTable() {
 			var profileOfPlugin = scriptProfileList[i].plugin.name;
 			var profileDeleted = scriptProfileList[i].deleted;
 			if (profileDeleted == false) {
-				var year = profileCreateDate.substring(0,4);
-				var month = profileCreateDate.substring(5,7);
-				var day = profileCreateDate.substring(8,10);
-				var time = profileCreateDate.substring(11,16);
-				var createDate = day + '.' + month + '.' + year + ' ' + time;
 
-				var newRow = $("<tr id="+ profileId +">");
-				var html = '<td>'+ profileName +'</td>';
-				html += '<td>'+ profileDescription +'</td>';
-				html += '<td>'+ profileCreateDate +'</td>';
-				newRow.append(html);
-				$('#scriptProfileTable').append(newRow);
+				profile += "<tr id="+ profileId +">";
+				profile += '<td>'+ profileName +'</td>';
+				profile += '<td>'+ profileDescription +'</td>';
+				profile += '<td>'+ profileCreateDate +'</td>';
+				profile += '</td>';
 			}
 		}
-		scriptProfileTable = $('#scriptProfileTable').DataTable( {
-			"scrollY": "200px",
-			"scrollX": false,
-			"paging": false,
-			"scrollCollapse": true,
-			"oLanguage": {
-				"sSearch": "Ara:",
-				"sInfo": "Toplam ayar sayısı: _TOTAL_",
-				"sInfoEmpty": "Gösterilen ayar sayısı: 0",
-				"sZeroRecords" : "Ayar bulunamadı",
-				"sInfoFiltered": " - _MAX_ kayıt arasından",
-			},
-		} );
+		$('#scriptProfileBody').html(profile);
 	} else {
-		$('#scriptProfileBody').html('<tr id="scriptProfleListEmptyInfo"><td colspan="3" class="text-center">Betik ayarı bulunamadı.</td></tr>');
+		$('#scriptProfileBody').html('<tr id="scriptProfileListEmptyInfo"><td colspan="3" class="text-center">Betik ayarı bulunamadı.</td></tr>');
 	}
-
 }
 
 //save script profile
@@ -281,7 +231,7 @@ $("#scriptProfileSave").click(function(e){
 						"label": label,
 						"description": description,
 						"profileData": profileData,
-						"plugin": pluginImpl
+						"plugin": sciptPluginImpl
 				};
 
 				$.ajax({

@@ -7,10 +7,9 @@
  * 
  */
 
-var loginManagerProfileTable = null;
 var loginManagerProfileList = null;
 var selectLoginManProfile = false;
-var pluginImpl = null;
+var loginManagerPluginImpl = null;
 var days = [];
 var selectedLoginManagerProfileId = null;
 
@@ -20,7 +19,7 @@ getCurrentDate();
 
 for (var i = 0; i < pluginProfileList.length; i++) {
 	if(pluginProfileList[i].page == 'login-manager-profile'){
-		pluginImpl = pluginProfileList[i].plugin;
+		loginManagerPluginImpl = pluginProfileList[i].plugin;
 	}
 }
 
@@ -57,6 +56,9 @@ function getCurrentDate() {
 	$("#lastAvailabilityDate").val(currentDate);
 
 	var hour = date.getHours();
+	if (hour < 10) {
+		hour = "0" + hour;
+	}
 	var minute = date.getMinutes();
 	if (minute < 10) {
 		minute = "0" + minute;
@@ -66,25 +68,21 @@ function getCurrentDate() {
 	$("#loginManagerEndTime").val(currentTime);
 }
 
-
-$('#loginManagerProfileTable tbody').on( 'click', 'tr', function () {
-	if (loginManagerProfileTable) {
+$('#loginManagerProfileTable').on('click', 'tbody tr', function(event) {
+	if(loginManagerProfileList != null && loginManagerProfileList.length > 0) {
 		defaultSetting();
-		if ( $(this).hasClass('selected') ) {
-			$(this).removeClass('selected');
+		if($(this).hasClass('policysettings')){
+			$(this).removeClass('policysettings');
 			selectLoginManProfile = false;
 			selectedLoginManagerProfileId = null;
 			hideAndShowLoginManagerProfileButton();
-		}
-		else {
-			loginManagerProfileTable.$('tr.selected').removeClass('selected');
-			$(this).addClass('selected');
+		} else {
+			$(this).addClass('policysettings').siblings().removeClass('policysettings');
 			selectedLoginManagerProfileId = $(this).attr('id');
 			selectLoginManProfile = true;
 			hideAndShowLoginManagerProfileButton();
 			showDetailSelectedLoginManagerProfile();
 		}
-
 	}
 });
 
@@ -170,12 +168,8 @@ function createLoginManagerProfileTable() {
 		$("#LoginManagerProfleListEmptyInfo").remove();
 	}
 
-	if (loginManagerProfileTable) {
-		loginManagerProfileTable.clear();
-		loginManagerProfileTable.destroy();
-		loginManagerProfileTable = null;
-	}
 	if(loginManagerProfileList != null && loginManagerProfileList.length > 0) {
+		var profile = "";
 		for (var i = 0; i < loginManagerProfileList.length; i++) {
 			var profileId = loginManagerProfileList[i].id;
 			var profileName = loginManagerProfileList[i].label;
@@ -184,33 +178,16 @@ function createLoginManagerProfileTable() {
 			var profileOfPlugin = loginManagerProfileList[i].plugin.name;
 			var profileDeleted = loginManagerProfileList[i].deleted;
 			if (profileDeleted == false) {
-				var year = profileCreateDate.substring(0,4);
-				var month = profileCreateDate.substring(5,7);
-				var day = profileCreateDate.substring(8,10);
-				var time = profileCreateDate.substring(11,16);
-				var createDate = day + '.' + month + '.' + year + ' ' + time;
 
-				var newRow = $("<tr id="+ profileId +">");
-				var html = '<td>'+ profileName +'</td>';
-				html += '<td>'+ profileDescription +'</td>';
-				html += '<td>'+ profileCreateDate +'</td>';
-				newRow.append(html);
-				$('#loginManagerProfileTable').append(newRow);
+				profile += "<tr id="+ profileId +">";
+				profile += '<td>'+ profileName +'</td>';
+				profile += '<td>'+ profileDescription +'</td>';
+				profile += '<td>'+ profileCreateDate +'</td>';
+				profile += '</td>';
+
 			}
 		}
-		loginManagerProfileTable = $('#loginManagerProfileTable').DataTable( {
-			"scrollY": "200px",
-			"scrollX": false,
-			"paging": false,
-			"scrollCollapse": true,
-			"oLanguage": {
-				"sSearch": "Ara:",
-				"sInfo": "Toplam ayar sayısı: _TOTAL_",
-				"sInfoEmpty": "Gösterilen ayar sayısı: 0",
-				"sZeroRecords" : "Ayar bulunamadı",
-				"sInfoFiltered": " - _MAX_ kayıt arasından",
-			},
-		} );
+		$('#loginManagerProfileBody').html(profile);
 	} else {
 		$('#loginManagerProfileBody').html('<tr id="LoginManagerProfleListEmptyInfo"><td colspan="3" class="text-center">Oturum yönetimi ayarı bulunamadı.</td></tr>');
 	}
@@ -227,7 +204,7 @@ $("#loginManagerProfileSave").click(function(e){
 			"start-time": $("#loginManagerStartTime").val(),
 			"end-time": $("#loginManagerEndTime").val(),
 			"last-date": $("#lastAvailabilityDate").val(),
-			"duration:": $("#notifyBeforeLogout").val()
+			"duration": $("#notifyBeforeLogout").val()
 	};
 
 	if (label != "") {
@@ -236,7 +213,7 @@ $("#loginManagerProfileSave").click(function(e){
 					"label": label,
 					"description": description,
 					"profileData": profileData,
-					"plugin": pluginImpl
+					"plugin": loginManagerPluginImpl
 			};
 			$.ajax({
 				type : 'POST',

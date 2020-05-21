@@ -26,28 +26,12 @@ import tr.org.lider.messaging.messages.UserSessionResponseMessageImpl;
 import tr.org.lider.repositories.AgentRepository;
 import tr.org.lider.services.ConfigurationService;
 
-//import tr.org.liderahenk.lider.core.api.configuration.IConfigurationService;
-//import tr.org.liderahenk.lider.core.api.ldap.ILDAPService;
-//import tr.org.liderahenk.lider.core.api.ldap.LdapSearchFilterAttribute;
-//import tr.org.liderahenk.lider.core.api.ldap.enums.SearchFilterEnum;
-//import tr.org.liderahenk.lider.core.api.ldap.exceptions.LdapException;
-//import tr.org.liderahenk.lider.core.api.ldap.model.LdapEntry;
-//import tr.org.liderahenk.lider.core.api.messaging.enums.AgentMessageType;
-//import tr.org.liderahenk.lider.core.api.messaging.messages.ILiderMessage;
-//import tr.org.liderahenk.lider.core.api.messaging.messages.IUserSessionMessage;
-//import tr.org.liderahenk.lider.core.api.messaging.subscribers.IUserSessionSubscriber;
-//import tr.org.liderahenk.lider.core.api.persistence.dao.IAgentDao;
-//import tr.org.liderahenk.lider.core.api.persistence.entities.IAgent;
-//import tr.org.liderahenk.lider.core.api.persistence.entities.IUserSession;
-//import tr.org.liderahenk.lider.core.api.persistence.enums.SessionEvent;
-//import tr.org.liderahenk.lider.core.api.persistence.factories.IEntityFactory;
-//import tr.org.liderahenk.lider.messaging.messages.UserSessionResponseMessageImpl;
-
 /**
  * <p>
  * Provides default user login/logout event handler in case no other bundle
  * provides its user session subscriber.
  * </p>
+ * 
  * @see tr.org.liderahenk.lider.core.api.messaging.IUserSessionMessage
  */
 
@@ -58,44 +42,45 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 
 	@Autowired
 	private AgentRepository agentRepository;
-	
+
 	@Autowired
 	private ConfigurationService configurationService;
-	
+
 	@Autowired
 	private ILDAPService ldapService;
-	
-	
+
 	@Override
 	public ILiderMessage messageReceived(IUserSessionMessage message) throws Exception {
 
 		String uid = message.getFrom().split("@")[0];
-
+		logger.info("User {} to agent... User Name: {} , Agent : {}", message.getType(), message.getUsername(), uid);
 		// Find related agent
 		List<AgentImpl> agents = agentRepository.findByJid(uid);
-		
+
 		if (agents != null && agents.size() > 0) {
-			
+
 			AgentImpl agent = agents.get(0);
 			// Add new user session info
-			UserSessionImpl userSession = new UserSessionImpl(null, null, message.getUsername(), message.getUserIp(), 
+			UserSessionImpl userSession = new UserSessionImpl(null, null, message.getUsername(), message.getUserIp(),
 					getSessionEvent(message.getType()), new Date());
-			
+
 			agent.addUserSession(userSession);
-			if (message.getType() == AgentMessageType.LOGIN	&& (message.getIpAddresses() == null || message.getIpAddresses().isEmpty())) {
+			if (message.getType() == AgentMessageType.LOGIN
+					&& (message.getIpAddresses() == null || message.getIpAddresses().isEmpty())) {
 				logger.warn("Couldn't find IP addresses of the agent with JID: {}", uid);
 			}
 			// Merge records
 			agentRepository.save(agent);
-			// find user authority for sudo role 
+			// find user authority for sudo role
 			// if user has sudo role user get sudoRole on agent
-			List<LdapEntry> role= getUserRoleGroupList(configurationService.getUserLdapRolesDn(), userSession.getUsername(), message.getHostname());
-			
-			if (role != null  && role.size() > 0) {
-				Map<String, Object> params= new HashMap<>();
-				return new UserSessionResponseMessageImpl(message.getFrom(),params,userSession.getUsername(),new Date());
-			}
-			else {
+			List<LdapEntry> role = getUserRoleGroupList(configurationService.getUserLdapRolesDn(),
+					userSession.getUsername(), message.getHostname());
+
+			if (role != null && role.size() > 0) {
+				Map<String, Object> params = new HashMap<>();
+				return new UserSessionResponseMessageImpl(message.getFrom(), params, userSession.getUsername(),
+						new Date());
+			} else {
 				logger.info("Logined user not authorized. User = " + userSession.getUsername());
 				return null;
 			}
@@ -104,27 +89,30 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 			return null;
 		}
 	}
-	
-	private List<LdapEntry> getUserRoleGroupList(String userLdapRolesDn, String userName, String hostName) throws LdapException {
+
+	private List<LdapEntry> getUserRoleGroupList(String userLdapRolesDn, String userName, String hostName)
+			throws LdapException {
 		List<LdapEntry> userAuthDomainGroupList;
 		List<LdapSearchFilterAttribute> filterAttt = new ArrayList();
-		
+
 		filterAttt.add(new LdapSearchFilterAttribute("sudoUser", userName, SearchFilterEnum.EQ));
 		filterAttt.add(new LdapSearchFilterAttribute("sudoHost", "ALL", SearchFilterEnum.EQ));
 		logger.info("Serching for username " + userName + " in OU " + userLdapRolesDn);
-		userAuthDomainGroupList = ldapService.search(userLdapRolesDn, filterAttt, new String[] { "cn", "dn", "sudoCommand", "sudoHost", "sudoUser" });
-		
-		if(userAuthDomainGroupList.size()==0) {
+		userAuthDomainGroupList = ldapService.search(userLdapRolesDn, filterAttt,
+				new String[] { "cn", "dn", "sudoCommand", "sudoHost", "sudoUser" });
+
+		if (userAuthDomainGroupList.size() == 0) {
 			filterAttt = new ArrayList();
 			filterAttt.add(new LdapSearchFilterAttribute("sudoUser", userName, SearchFilterEnum.EQ));
 			filterAttt.add(new LdapSearchFilterAttribute("sudoHost", hostName, SearchFilterEnum.EQ));
-			
-			userAuthDomainGroupList = ldapService.search(userLdapRolesDn, filterAttt, new String[] { "cn", "dn", "sudoCommand", "sudoHost", "sudoUser" });
+
+			userAuthDomainGroupList = ldapService.search(userLdapRolesDn, filterAttt,
+					new String[] { "cn", "dn", "sudoCommand", "sudoHost", "sudoUser" });
 		}
-		
-		
+
 		return userAuthDomainGroupList;
 	}
+
 	/**
 	 * 
 	 * @param type
@@ -140,7 +128,6 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 			return null;
 		}
 	}
-
 
 	public ILDAPService getLdapService() {
 		return ldapService;

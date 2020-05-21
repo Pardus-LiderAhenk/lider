@@ -91,8 +91,7 @@ public class TaskStatusSubscriberImpl implements ITaskStatusSubscriber {
 					// agents on agents!
 					try {
 
-						List<CommandExecutionImpl> executions = commanExecutionRepository
-								.findCommandExecutionByTaskAndUid(jid, message.getTaskId());
+						List<CommandExecutionImpl> executions = commanExecutionRepository.findCommandExecutionByTaskAndUid(jid, message.getTaskId());
 
 						CommandExecutionImpl commandExecution = null;
 

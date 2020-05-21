@@ -670,11 +670,10 @@ function showGroups(row){
 		var value = $(this).data('value');
 		
 		var params = {
-				"dn" : value,
+				"dn" : dn,
 				"attribute" : "memberOf",
 				"value": value
 		};
-		
 		$.ajax({
 			type : 'POST',
 			url : 'lider/user/removeAttributeWithValue',

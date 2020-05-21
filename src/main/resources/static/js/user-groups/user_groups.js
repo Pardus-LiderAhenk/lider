@@ -22,7 +22,7 @@ var selectedPolicyRow = false;
 var selectedPolicyRowId = null;
 
 var selectedEntryUUIDForTreeMove = "";
-
+var policyList=[]
 clearAndHide();
 getActivePolicies();
 
@@ -657,7 +657,6 @@ function btnCreateUserGroupClicked() {
 			"checkedList": selectedDNList,
 			"selectedOUDN" : selectedDN
 	};
-
 	$.ajax({ 
 		type: 'POST', 
 		url: "/lider/user_groups/createNewGroup",
@@ -1421,8 +1420,6 @@ function createMemberList(row) {
 		}
 		$('#bodyMembers').html(members);
 		showUserButtons();
-
-
 	} else {
 		var html =""
 
@@ -1468,6 +1465,7 @@ function getActivePolicies() {
 		url : '/policy/list',
 		dataType : 'json',
 		success : function(data) {
+			policyList = data
 			if (data != null && data.length > 0) {
 				if ($("#bodyPolicyRow").length > 0) {
 					$("#bodyPolicyRow").remove();
@@ -1497,32 +1495,39 @@ function getActivePolicies() {
 $('#activePolicyTable').on('click', 'tbody tr', function(event) {
 	if($(this).hasClass('selectpolicytable')){
 		$(this).removeClass('selectpolicytable');
-		selectedPolicyRow = false;
+		isPolicySelected = false;
 		selectedPolicyRowId = null;
 	} else {
 		$(this).addClass('selectpolicytable').siblings().removeClass('selectpolicytable');
 		selectedPolicyRowId = $(this).attr('id');
-		selectedPolicyRow = true;
+		isPolicySelected = true;
 	}
 });
 
 $("#policyApplyBtn").click(function(e){
-	if (selectedPolicyRow) {
-
-//		policyBody.dnList = dnlist;
-		policyBody.entryList = selectedDN;
-		policyBody.dnType = "GROUP";
-		policyBody.parameterMap = selectedPolicyRowId;
-		var params = JSON.stringify(policyBody);
-		
-		
+	if (isPolicySelected) {
+		var selectedPolicy=null;
+		for (var i = 0; i < policyList.length; i++) {
+			if(policyList[i].id==selectedPolicyRowId){
+				selectedPolicy = policyList[i];
+			}
+		}
+		console.log(selectedRow)
+		console.log(selectedDN)
+		var params ={
+				"id" : selectedPolicy.id,
+				"dnType" : selectedRow.type,
+				"dnList" : [selectedDN],
+		}
+		var paramsJson = JSON.stringify(params);
+		console.log(params)
 		$.ajax({
 			type: "POST",
 			url: "/policy/execute",
 			headers: {
 				'Content-Type':'application/json',
 			}, 
-			data: params,
+			data: paramsJson,
 			contentType: "application/json",
 			dataType: "json",
 			converters: {
@@ -1530,14 +1535,13 @@ $("#policyApplyBtn").click(function(e){
 			},
 			success: function(result) {
 				var res = jQuery.parseJSON(result);
+				console.log(res)
 			},
 			error: function(result) {
 				$.notify(result, "error");
+				console.log(result)
 			}
 		});
-		
-		alert("apply policy")
-		console.log(selectedDN)
 
 	} else {
 		alert("select policy")

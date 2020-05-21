@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	connection = new Strophe.Connection(BOSH_SERVICE);
 
-		connection.connect(username, password, onConnect,2, 2);
+		connection.connect(username, password, onConnect);
 		
 			$('#rosterListModal').on('show.bs.modal',function(event) {
 				showRosterList();

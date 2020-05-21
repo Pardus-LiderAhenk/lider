@@ -79,6 +79,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tr.org.lider.messaging.listeners.OnlineRosterListener;
 import tr.org.lider.messaging.listeners.PacketListener;
+import tr.org.lider.messaging.listeners.PolicyListener;
+import tr.org.lider.messaging.listeners.PolicyStatusListener;
 //import tr.org.liderahenk.lider.messaging.listeners.AgreementStatusListener;
 //import tr.org.liderahenk.lider.messaging.listeners.MissingPluginListener;
 //import tr.org.liderahenk.lider.messaging.listeners.OnlineRosterListener;
@@ -93,6 +95,8 @@ import tr.org.lider.messaging.listeners.RegistrationListener;
 import tr.org.lider.messaging.listeners.TaskStatusListener;
 import tr.org.lider.messaging.listeners.UserSessionListener;
 import tr.org.lider.messaging.listeners.XMPPConnectionListener;
+import tr.org.lider.messaging.subscribers.IPolicyStatusSubscriber;
+import tr.org.lider.messaging.subscribers.IPolicySubscriber;
 import tr.org.lider.messaging.subscribers.IPresenceSubscriber;
 import tr.org.lider.messaging.subscribers.IRegistrationSubscriber;
 import tr.org.lider.messaging.subscribers.ITaskStatusSubscriber;
@@ -130,14 +134,14 @@ public class XMPPClientImpl {
 	private PacketListener packetListener;
 	private TaskStatusListener taskStatusListener;
 
-	//	private PolicyStatusListener policyStatusListener;
+	private PolicyStatusListener policyStatusListener;
 	private RegistrationListener registrationListener;
 	private UserSessionListener userSessionListener;
-	//	private MissingPluginListener missingPluginListener;
-	//	private PolicyListener policyListener;
+	private PolicyListener policyListener;
 	//	private RequestAgreementListener reqAggrementListener;
 	//	private AgreementStatusListener aggrementStatusListener;
 	//	private ScriptResultListener scriptResultListener;
+//	private MissingPluginListener missingPluginListener;
 
 	/**
 	 * Packet subscribers
@@ -148,13 +152,15 @@ public class XMPPClientImpl {
 
 	@Autowired
 	private List<IPresenceSubscriber> presenceSubscribers;
-
-	//	private List<IPolicyStatusSubscriber> policyStatusSubscribers;
+	
+	@Autowired
+	private List<IPolicyStatusSubscriber> policyStatusSubscribers;
 	
 	@Autowired
 	private IUserSessionSubscriber userSessionSubscriber;
 	//	private IMissingPluginSubscriber missingPluginSubscriber;
-	//	private IPolicySubscriber policySubscriber;
+	@Autowired
+	private IPolicySubscriber policySubscriber;
 	//	private IRequestAgreementSubscriber reqAggrementSubscriber;
 
 	@Autowired
@@ -323,7 +329,6 @@ public class XMPPClientImpl {
 		SmackConfiguration.setDefaultPacketReplyTimeout(packetReplyTimeout);
 		logger.debug("Successfully set server settings: {} - {}", new Object[] { pingTimeout, packetReplyTimeout });
 	}
-
 	/**
 	 * Hook packet and connection listeners
 	 */
@@ -343,30 +348,24 @@ public class XMPPClientImpl {
 		packetListener = new PacketListener();
 		connection.addAsyncStanzaListener(packetListener, packetListener);
 
-
 		// Hook listener for task status messages
 		taskStatusListener = new TaskStatusListener();
 		taskStatusListener.setSubscribers(taskStatusSubscribers);
 		connection.addAsyncStanzaListener(taskStatusListener, taskStatusListener);
-
-
-		//		// Hook listener for get-policy messages
-		//		policyListener = new PolicyListener(this);
-		//		policyListener.setSubscriber(policySubscriber);
-		//		connection.addAsyncStanzaListener(policyListener, policyListener);
-		//	
-		//		// Hook listener for policy status messages
-		//		policyStatusListener = new PolicyStatusListener();
-		//		policyStatusListener.setSubscribers(policyStatusSubscribers);
-		//		connection.addAsyncStanzaListener(policyStatusListener, policyStatusListener);
-		//		
+		// Hook listener for get-policy messages
+		policyListener = new PolicyListener(this);
+		policyListener.setSubscriber(policySubscriber);
+		connection.addAsyncStanzaListener(policyListener, policyListener);
+		// Hook listener for policy status messages
+		policyStatusListener = new PolicyStatusListener();
+		policyStatusListener.setSubscribers(policyStatusSubscribers);
+		connection.addAsyncStanzaListener(policyStatusListener, policyStatusListener);
 		// Hook listener for registration messages
 		registrationListener = new RegistrationListener(this);
 		registrationListener.setSubscriber(registrationSubscriber);
 		//registrationListener.setDefaultSubcriber(defaultRegistrationSubscriber);
 		connection.addAsyncStanzaListener(registrationListener, registrationListener);
-		//		
-				// Hook listener for user session messages
+		// Hook listener for user session messages
 		userSessionListener = new UserSessionListener(this);
 		userSessionListener.setSubscriber(userSessionSubscriber);
 		connection.addAsyncStanzaListener(userSessionListener, userSessionListener);

@@ -191,16 +191,11 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 								});  
 					      }
 					 }); 
-					
 			 postTreeCreatedAction(rootComputer , treeGridId)
 		}
 	});
 }
-
-
-
 function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
-	
 	var srcInputId= treeHolderDiv+"srcInput";
 	var srcBtnId= treeHolderDiv+"srcBtn";
 	var srcSelectId= treeHolderDiv+"srcSelect";
@@ -243,29 +238,24 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 					"key" : key,
 					"value": value
 			};
-			
 			$.ajax({
 				type : 'POST',
 				url : 'lider/ldap/searchEntry',
 				data : params,
 				dataType: "json",
 				success : function(ldapResult) {
-					
 					if(ldapResult.length==0){
 						$.notify("Sonuç Bulunamadı", "warn");
 						return;
 					}
-					
 					$('#'+treeGridId).jqxTreeGrid('deleteRow', "Results")
 					$('#'+treeGridId).jqxTreeGrid('addRow', "Results", { name: "Arama Sonuçları" }, 'last')
-					
 					for (var i = 0; i < ldapResult.length; i++) {
 				    	 var entry = ldapResult[i];
 				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.name , entry , 'last' ,'Results');
 					}
 					$('#'+treeGridId).jqxTreeGrid('collapseAll');
 					$('#'+treeGridId).jqxTreeGrid('expandRow', "Results");
-					
 				},
 			    error: function (data, errorThrown) {
 					$.notify("Hata Oluştu.", "error");
@@ -276,7 +266,4 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 			$.notify("Lütfen Arama Dizini Seçiniz", "warn");
 		}
 	});
-	
-	
-	
 }

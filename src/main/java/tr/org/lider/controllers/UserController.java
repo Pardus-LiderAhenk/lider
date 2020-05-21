@@ -351,8 +351,11 @@ public class UserController {
 	public Boolean deleteUserOu(@RequestBody LdapEntry[] selectedEntryArr) {
 		try {
 			for (LdapEntry ldapEntry : selectedEntryArr) {
-				if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT))
-				ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(ldapEntry.getDistinguishedName()));
+				if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
+					ldapService.updateOLCAccessRulesAfterEntryDelete(ldapEntry.getDistinguishedName());
+					ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(ldapEntry.getDistinguishedName()));
+				}
+				
 			}
 			return true;
 		} catch (Exception e) {

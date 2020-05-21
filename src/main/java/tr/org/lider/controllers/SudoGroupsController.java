@@ -96,6 +96,7 @@ public class SudoGroupsController {
 	public Boolean deleteEntry(@RequestParam(value = "dn") String dn) {
 		try {
 			if(dn != configurationService.getAgentLdapBaseDn()) {
+				ldapService.updateOLCAccessRulesAfterEntryDelete(dn);
 				ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(dn));
 				return true;
 			} else {

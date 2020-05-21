@@ -126,8 +126,6 @@ public class PolicyImpl  {
 			}
 		}
 	}
-
-	
 	public Long getId() {
 		return id;
 	}

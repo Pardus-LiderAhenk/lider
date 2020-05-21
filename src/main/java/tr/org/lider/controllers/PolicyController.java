@@ -1,5 +1,6 @@
 package tr.org.lider.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tr.org.lider.entities.PluginProfile;
 import tr.org.lider.entities.PolicyImpl;
+import tr.org.lider.models.PolicyExecutionRequestImpl;
 import tr.org.lider.services.PolicyService;
+import tr.org.lider.utils.RestResponseImpl;
+import tr.org.lider.utils.RestResponseStatus;
 
 /**
  * 
@@ -101,10 +105,10 @@ public class PolicyController {
 			return null;
 		}
 	}
-	
-//	return executed policy
+	//return executed policy
 	@RequestMapping(method=RequestMethod.POST ,value = "/execute", produces = MediaType.APPLICATION_JSON_VALUE)
-	public PolicyImpl policyExecute(@RequestBody PolicyImpl params) {
-		return null;
+	public RestResponseImpl policyExecute(@RequestBody PolicyExecutionRequestImpl request) {
+		policyService.executePolicy(request);
+		return new RestResponseImpl(RestResponseStatus.OK, new ArrayList<>(), null);
 	}
 }

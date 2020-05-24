@@ -1342,21 +1342,24 @@ function createUserGroupsTree() {
 	createUserGroupTree('lider/user_groups/getGroups',treeGridHolderDiv, false, false,
 			// row select
 			function(row, rootDnComputer,treeGridIdName){
-		treeGridId = treeGridIdName;
-		selectedRow=row;
-		baseRootDnComputer=rootDnComputer;
-		createMemberList(row)
-	},
-	//check action
-	function(checkedRows, row){
-	},
-	//uncheck action
-	function(unCheckedRows, row){
-	},
-	// post tree created
-	function(rootComputer , treeGridId){
-		$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
-	}
+				treeGridId = treeGridIdName;
+				selectedRow=row;
+				baseRootDnComputer=rootDnComputer;
+				createMemberList(row);
+				if(row.type=='GROUP'){
+					getPolicyList4SelectedGroup(row);
+				}
+			},
+			//check action
+			function(checkedRows, row){
+			},
+			//uncheck action
+			function(unCheckedRows, row){
+			},
+			// post tree created
+			function(rootComputer , treeGridId){
+				$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
+			}
 	);
 }
 
@@ -1546,8 +1549,60 @@ $("#policyApplyBtn").click(function(e){
 	} else {
 		alert("select policy")
 	}
-
 });
 
-
+// getting all policy history for selected group
+function getPolicyList4SelectedGroup(selectedGroup) {
+	var params ={
+			"distinguishedName" : selectedGroup.distinguishedName,
+	}
+	var paramsJson = JSON.stringify(params);
+	$.ajax({
+		type: "POST",
+		url: "/policy/getPolicies4Group",
+		headers: {
+			'Content-Type':'application/json',
+		}, 
+		data: paramsJson,
+		contentType: "application/json",
+		dataType: "json",
+		converters: {
+			'text json': true
+		},
+		success: function(result) {
+			$("#executedPolicies").html("");
+			var data = jQuery.parseJSON(result);
+			if (data != null && data.length > 0) {
+				var html ='<table class="table table-striped table-bordered display table-hover" id="executedPoliciesTable" > ';
+				html += '<thead>';
+				html +=	 '<tr>';
+				html +=	'<th style="width: 5%"> </th>';
+				html +=	'<th style="width: 20%"> Politika Adı </th>';
+				html +=	'<th style="width: 20%"> Oluşturulma Tarihi</th>';
+				html +=	'<th style="width: 20%">Gönderilme Tarihi</th>';
+				html +=	'<th style="width: 20%">Versiyon</th>';
+				html += '</tr>';
+				html += '</thead>';
+				html += '<tbody id="executedPoliciesTableBody">';
+				var number = 0;
+				
+				for (var i = 0; i < data.length; i++) {
+					console.log(data[i])
+					html += '<tr id="'+ data[i].policyImpl.id +'">';
+					html += '<td>  </td>';
+					html += '<td>'+ data[i].policyImpl.label +'</td>';
+					html += '<td>'+ data[i].policyImpl.createDate +'</td>';
+					html += '<td>'+ data[i].commandExecutionImpl.createDate +'</td>';
+					html += '<td>'+ data[i].policyImpl.policyVersion +'</td>';
+				}
+			}
+			$("#executedPolicies").html(html);
+			
+		},
+		error: function(result) {
+			$.notify(result, "error");
+			console.log(result)
+		}
+	});
+}
 

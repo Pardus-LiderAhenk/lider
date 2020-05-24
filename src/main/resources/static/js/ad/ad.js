@@ -4,6 +4,7 @@ var treeGridId=null
 var entryTable = null;
 var selectedADEntries=[]
 var selectedLdapRow=[]
+
 $('#treeMenu').hide();
 
 createTree(treeGridHolderDiv, false, false,
@@ -29,25 +30,11 @@ createTree(treeGridHolderDiv, false, false,
 			}else{
 				$('#'+ treeGridId).jqxTreeGrid('selectRow', firstRow.uid);
 				getChildEntries(firstRow)
-				$('#treeMenu').show();
 			}
 		}
 );
 
-createUserTree("ldapUserTreeGrid", false, false,
-		// row select
-		function(row, rootDnUser){
-			selectedLdapRow=row;
-		},
-		//check action
-		function(checkedRows, row){
-			
-		},
-		//uncheck action
-		function(unCheckedRows, row){
-			
-		}
-);
+
 
 $('#btnAdUserReplication').on('click', function (event) {
 	
@@ -58,6 +45,21 @@ $('#btnAdUserReplication').on('click', function (event) {
 		$('#genericModalLargeHeader').html("AD Kullanıcı Senkronizasyonu");
 		$('#genericModalLargeBodyRender').html(data);
 		$('#selectedEntrySize').html(selectedADEntries.length);
+		
+		createUserTree("ldapUserTreeGrid", false, false,
+				// row select
+				function(row, rootDnUser){
+					selectedLdapRow=row;
+				},
+				//check action
+				function(checkedRows, row){
+					
+				},
+				//uncheck action
+				function(unCheckedRows, row){
+					
+				}
+		);
 		// selected AD users adding modal
 		for (var i = 0; i < selectedADEntries.length; i++) {
 			var entry=selectedADEntries[i]
@@ -72,8 +74,6 @@ $('#btnAdUserReplication').on('click', function (event) {
 			
 			$('#selectedEntryTableBody').append(html);
 		}
-		// selected LDAP row adding modal
-		$('#destinationLdapOu').append(selectedLdapRow.distinguishedName);
 	});
 });
 
@@ -222,12 +222,21 @@ function getChildEntries(row) {
 		});  
 }
 function btnSyncUserAd2LdapClicked() {
+	if(selectedLdapRow.type != "ORGANIZATIONAL_UNIT")
+		{
+			$.notify("Lütfen Ldap Dizini Seçiniz.", "warn");
+			return;
+		}
+	if(selectedADEntries.length ==0){
+		$.notify("Lütfen aktarılacak kullanıcı Seçiniz.", "warn");
+		return;
+	}
+	console.log(selectedADEntries)
+	console.log(selectedLdapRow)
 	
-	selectedADEntries
-	selectedLdapRow
 	 $.ajax({
 			type : 'POST',
-			url : 'ad/getChildEntries',
+			url : 'ad/syncUserFromAd2Ldap',
 			data : 'distinguishedName=' + row.distinguishedName 	+ '&name=' + row.name + '&parent=' + row.parent,
 			dataType : 'text',
 			success : function(resultList) {

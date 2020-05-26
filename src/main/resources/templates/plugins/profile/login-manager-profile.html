@@ -1,127 +1,123 @@
 <script type="text/javascript" src="js/plugins/profile/login-manager-profile.js"></script>
 <link rel="stylesheet" href="css/policy.profile.css" />
 <div class="login-form-1">
-	<div class="row">
-		<div class="col-lg-12">
-			<div class="main-card mb-3 card">
-				<div class="card-header">
-					<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-					<div class="col-lg-6 text-left">Oturum Yönetim Ayarları</div>
-					<div class="col-lg-6 text-right">
-						<button id="loginManagerProfileSave" type="button" class="btn-shadow btn btn-info" title="Profil Kaydet"><i class="fa fa-save"></i></button>
-						<button id="loginManagerProfileDel" type="button" class="btn-shadow btn btn-info" title="Profil Sil"><i class="fa fa-trash-alt"></i></button>
-						<button id="loginManagerProfileUpdate" type="button" class="btn-shadow btn btn-info" title="Profil Güncelle"><i class="fa fa-sync-alt"></i></button>
-						<button id="loginManagerProfileAddToPolicy" type="button" class="btn-shadow btn btn-info" title="Politikaya Ekle"><i class="fa fa-layer-group"></i></button>
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">Oturum Yönetim Ayarları</div>
+			<div class="col-lg-6 text-right">
+				<button id="loginManagerProfileSave" type="button" class="btn-shadow btn btn-info" title="Kaydet"><i class="fa fa-save"></i></button>
+				<button id="loginManagerProfileDel" type="button" class="btn-shadow btn btn-info" title="Sil"><i class="fa fa-trash-alt"></i></button>
+				<button id="loginManagerProfileUpdate" type="button" class="btn-shadow btn btn-info" title="Güncelle"><i class="fa fa-sync-alt"></i></button>
+				<button id="loginManagerProfileAddToPolicy" type="button" class="btn-shadow btn btn-info" title="Politikaya Ekle"><i class="fa fa-layer-group"></i></button>
+			</div>
+		</div>
+		<div class="card-body">
+			<div class="form-row">
+				<div class="col-md-5">
+					<div class="position-relative form-group">
+						<label for="loginManagerProfileNameForm" class="control-label">Ayar Adı</label>
+						<input type="text" class="form-control form-control-sm" id="loginManagerProfileNameForm" placeholder="Ayar adı giriniz...">
 					</div>
 				</div>
-				<div class="card-body">
-					<div class="form-row">
-						<div class="col-md-5">
-							<div class="position-relative form-group">
-								<label for="loginManagerProfileNameForm" class="control-label">Profil Adı</label>
-								<input type="text" class="form-control form-control-sm" id="loginManagerProfileNameForm" placeholder="Profil adı giriniz...">
-							</div>
-						</div>
-						<div class="col-md-7">
-							<div class="position-relative form-group">
-								<label for="loginManagerProfileDescriptionForm" class="control-label">Profil Açıklaması</label>
-								<input type="text" class="form-control form-control-sm" id="loginManagerProfileDescriptionForm" placeholder="Açıklama giriniz...">
-							</div>
-						</div>
+				<div class="col-md-7">
+					<div class="position-relative form-group">
+						<label for="loginManagerProfileDescriptionForm" class="control-label">Ayar Açıklaması</label>
+						<input type="text" class="form-control form-control-sm" id="loginManagerProfileDescriptionForm" placeholder="Açıklama giriniz...">
 					</div>
-					<div class="profile-scroll">
-						<table class="table table-striped table-bordered policy-profile-table" id="loginManagerProfileTable" border="1">
-							<thead>
-								<tr>
-									<th style="width: 25%">Profil Adı</th>
-									<th style="width: 50%">Açıklama</th>
-									<th style="width: 25%">Oluşturma Tarihi</th>
-								</tr>
-							</thead>
-							<tbody id="loginManagerProfileBody"></tbody>
-						</table>
+				</div>
+			</div>
+			
+			<div class="profile">
+				<table class="table table-striped table-bordered" id="loginManagerProfileTable" border="1">
+					<thead>
+						<tr>
+							<th style="width: 25%">Profil Adı</th>
+							<th style="width: 50%">Açıklama</th>
+							<th style="width: 25%">Oluşturma Tarihi</th>
+						</tr>
+					</thead>
+					<tbody id="loginManagerProfileBody"></tbody>
+				</table>
+			</div>
+			<small class="text-muted">Listeden bir profil seçerek silebilir, gücelleyebilirsiniz. Politikada kullanmak için Politikaya Ekle butonuna tıklayınız</small>
+		</div>
+	</div>
+	<div class="main-card mb-3 card">
+		<div class="card-header"><h6 class="card-subtitle mb-2 text-muted" style="text-transform: none;">Oturum açılmasına izin verilen günler ve zaman ayarı</h6></div>
+		<div class="card-body">
+			<div class="row">
+				<div class="col">
+					<div class=" custom-control custom-checkbox form-check-inline form-check">
+						<input type="checkbox" class="custom-control-input days" name="daysCheckBox" onclick="changeDay(this)" value=0 id="mondayCb">
+						<label class="custom-control-label" for="mondayCb">Pazartesi</label>
 					</div>
-					<br>
-					<div class="main-card mb-3 card">
-						<div class="card-header"><h6 class="card-subtitle mb-2 text-muted" style="text-transform: none;">Oturum açılmasına izin verilen günler ve zaman ayarı</h6></div>
-						<div class="card-body">
-							<div class="row">
-								<div class="col">
-									<div class=" custom-control custom-checkbox form-check-inline form-check">
-										<input type="checkbox" class="custom-control-input days" name="daysCheckBox" onclick="changeDay(this)" value=0 id="mondayCb">
-										<label class="custom-control-label" for="mondayCb">Pazartesi</label>
-									</div>
-								</div>
-								<div class="col">
-									<div class="custom-control custom-checkbox form-check-inline form-check">
-										<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=1 id="tuesdayCb">
-										<label class="custom-control-label" for="tuesdayCb">Salı</label>
-									</div>
-								</div>
-								<div class="col">
-									<div class="custom-control custom-checkbox form-check-inline form-check">
-										<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=2 id="wednesdayCb">
-										<label class="custom-control-label" for="wednesdayCb">Çarşamba</label>
-									</div>
-								</div>
-								<div class="col">
-									<div class="custom-control custom-checkbox form-check-inline form-check">
-										<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=3 id="thursdayCb">
-										<label class="custom-control-label" for="thursdayCb">Perşembe</label>
-									</div>
-								</div>
-								<div class="col">
-									<div class="custom-control custom-checkbox form-check-inline form-check">
-										<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=4 id="fridayCb">
-										<label class="custom-control-label" for="fridayCb">Cuma</label>
-									</div>
-								</div>
-								<div class="col">
-									<div class="custom-control custom-checkbox form-check-inline form-check">
-										<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=5 id="saturdayCb">
-										<label class="custom-control-label" for="saturdayCb">Cumartesi</label>
-									</div>
-								</div>
-								<div class="col">
-									<div class="custom-control custom-checkbox form-check-inline form-check">
-										<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=6 id="sundayCb">
-										<label class="custom-control-label" for="sundayCb">Pazar</label>
-									</div>
-								</div>
-							</div>
-							<hr>
-							<div class="form-row">
-								<div class="col-md-3">
-									<div class="position-relative form-group">
-										<label for="loginManagerStartTime" class="control-label">Başlangıç Zamanı</label>
-										<input type="time" class="form-control form-control-sm" id="loginManagerStartTime">
-									</div>
-								</div>
-								<div class="col-md-3">
-									<div class="position-relative form-group">
-										<label for="loginManagerEndTime" class="control-label">Bitiş Zamanı</label>
-										<input type="time" class="form-control form-control-sm"  id="loginManagerEndTime">
-									</div>
-								</div>
-								<div class="col-md-3">
-									<div class="position-relative form-group">
-										<label for="lastAvailabilityDate" class="control-label">Son Geçerlilik Tarihi</label>
-										<input type="date" class="form-control form-control-sm" id="lastAvailabilityDate">
-									</div>
-								</div>
-								<div class="col-md-3">
-									<div class="position-relative form-group">
-										<label for="notifyBeforeLogout" class="control-label">Bildirim Zamanı</label>
-										<select class="form-control form-control-sm" id="notifyBeforeLogout">
-											<option value="1">1 dk önce</option>
-											<option value="5">5 dk önce</option>
-										</select>
-									</div>
-								</div>
-							</div>
-						</div>
+				</div>
+				<div class="col">
+					<div class="custom-control custom-checkbox form-check-inline form-check">
+						<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=1 id="tuesdayCb">
+						<label class="custom-control-label" for="tuesdayCb">Salı</label>
 					</div>
-					<small class="text-muted">Listeden bir profil seçerek silebilir, gücelleyebilirsiniz. Politikada kullanmak için Politikaya Ekle butonuna tıklayınız</small>
+				</div>
+				<div class="col">
+					<div class="custom-control custom-checkbox form-check-inline form-check">
+						<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=2 id="wednesdayCb">
+						<label class="custom-control-label" for="wednesdayCb">Çarşamba</label>
+					</div>
+				</div>
+				<div class="col">
+					<div class="custom-control custom-checkbox form-check-inline form-check">
+						<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=3 id="thursdayCb">
+						<label class="custom-control-label" for="thursdayCb">Perşembe</label>
+					</div>
+				</div>
+				<div class="col">
+					<div class="custom-control custom-checkbox form-check-inline form-check">
+						<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=4 id="fridayCb">
+						<label class="custom-control-label" for="fridayCb">Cuma</label>
+					</div>
+				</div>
+				<div class="col">
+					<div class="custom-control custom-checkbox form-check-inline form-check">
+						<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=5 id="saturdayCb">
+						<label class="custom-control-label" for="saturdayCb">Cumartesi</label>
+					</div>
+				</div>
+				<div class="col">
+					<div class="custom-control custom-checkbox form-check-inline form-check">
+						<input type="checkbox" class="custom-control-input days" onclick="changeDay(this)" value=6 id="sundayCb">
+						<label class="custom-control-label" for="sundayCb">Pazar</label>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class="form-row">
+				<div class="col-md-3">
+					<div class="position-relative form-group">
+						<label for="loginManagerStartTime" class="control-label">Başlangıç Zamanı</label>
+						<input type="time" class="form-control form-control-sm" id="loginManagerStartTime">
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="position-relative form-group">
+						<label for="loginManagerEndTime" class="control-label">Bitiş Zamanı</label>
+						<input type="time" class="form-control form-control-sm"  id="loginManagerEndTime">
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="position-relative form-group">
+						<label for="lastAvailabilityDate" class="control-label">Son Geçerlilik Tarihi</label>
+						<input type="date" class="form-control form-control-sm" id="lastAvailabilityDate">
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="position-relative form-group">
+						<label for="notifyBeforeLogout" class="control-label">Bildirim Zamanı</label>
+						<select class="form-control form-control-sm" id="notifyBeforeLogout">
+							<option value="1">1 dk önce</option>
+							<option value="5">5 dk önce</option>
+						</select>
+					</div>
 				</div>
 			</div>
 		</div>

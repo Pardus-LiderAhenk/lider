@@ -67,7 +67,7 @@ function createScriptTempTable() {
 			script += "<tr id="+ scriptId +">";
 			script += '<td>'+ scriptName +'</td>';
 			script += '<td>'+ scriptType +'</td>';
-			script += '</td>';
+			script += '</tr>';
 		}
 		$("#scriptsBody").html(script);
 	} else {
@@ -205,7 +205,7 @@ function createScriptProfileTable() {
 				profile += '<td>'+ profileName +'</td>';
 				profile += '<td>'+ profileDescription +'</td>';
 				profile += '<td>'+ profileCreateDate +'</td>';
-				profile += '</td>';
+				profile += '</tr>';
 			}
 		}
 		$('#scriptProfileBody').html(profile);

@@ -70,7 +70,7 @@ function getCurrentDate() {
 
 $('#loginManagerProfileTable').on('click', 'tbody tr', function(event) {
 	if(loginManagerProfileList != null && loginManagerProfileList.length > 0) {
-		defaultSetting();
+		defaultLoginManagerSetting();
 		if($(this).hasClass('policysettings')){
 			$(this).removeClass('policysettings');
 			selectLoginManProfile = false;
@@ -112,14 +112,13 @@ function setDaysOfProfile(days) {
 	}
 }
 
-function defaultSetting() {
+function defaultLoginManagerSetting() {
 	$('#loginManagerProfileNameForm').val("");
 	$('#loginManagerProfileDescriptionForm').val("");
 	getCurrentDate();
 	days = [];
 	$('.days').prop('checked', false);
 	$('#notifyBeforeLogout').val("1").change();
-
 }
 
 function hideAndShowLoginManagerProfileButton() {
@@ -163,7 +162,7 @@ function findIndexDayList(day) {
 //created login manager profile table
 function createLoginManagerProfileTable() {
 	hideAndShowLoginManagerProfileButton();
-	defaultSetting();
+	defaultLoginManagerSetting();
 	if ($("#LoginManagerProfleListEmptyInfo").length > 0) {
 		$("#LoginManagerProfleListEmptyInfo").remove();
 	}
@@ -183,7 +182,7 @@ function createLoginManagerProfileTable() {
 				profile += '<td>'+ profileName +'</td>';
 				profile += '<td>'+ profileDescription +'</td>';
 				profile += '<td>'+ profileCreateDate +'</td>';
-				profile += '</td>';
+				profile += '</tr>';
 
 			}
 		}
@@ -191,7 +190,6 @@ function createLoginManagerProfileTable() {
 	} else {
 		$('#loginManagerProfileBody').html('<tr id="LoginManagerProfleListEmptyInfo"><td colspan="3" class="text-center">Oturum yönetimi ayarı bulunamadı.</td></tr>');
 	}
-
 }
 
 //save login manager profile

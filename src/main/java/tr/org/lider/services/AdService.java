@@ -501,6 +501,9 @@ public class AdService implements ILDAPService{
 		}
 	}
 	
+	public void syncUserFromAd2Ldap(String selectedLdapDn, String[] adUsersDn) {
+		
+	}
 	
 
 }

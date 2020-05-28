@@ -116,7 +116,7 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 			 });
 				 
 			// create context menu
-	            var contextMenu = $("#treeMenu").jqxMenu({ width: 250, height: 110, autoOpenPopup: false, mode: 'popup' });
+	            var contextMenu = $("#treeMenu").jqxMenu({ width: 250, height: 88, autoOpenPopup: false, mode: 'popup' });
 	           
 	            $('#'+treeGridId).on('contextmenu', function () {
 	                return false;

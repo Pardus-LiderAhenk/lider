@@ -77,13 +77,13 @@
 			data-toggle="modal"> <i class="fa fa-user-plus"> &nbsp;</i>
 		</a>
 		<div id="treeGridAdUserHolderDiv" style="margin-top: 7px;"></div>
-		<div id='treeMenu' style="background-color: grey;">
+		<div id='treeMenu'>
 			<div class="main-card mb-3 card">
 					<div id="treeMenuContent" >
 						<ul>  
-							<li> <i class="fa fa-user">&nbsp;</i> Kullanıcı Ekle</li>    
-							<li>  <i class="fa fa-folder-open">&nbsp;</i> Organizasyon Birimi Ekle </li> 
-							<li>  <i class="fa fa-folder-open">&nbsp;</i> Grup Ekle</li> 
+							<li> <a href="#"  id="btnAdUserAdd" data-target="#genericModalLarge"	data-toggle="modal"> <i class="fa fa-plus">&nbsp;</i> <span> Kullanıcı Ekle </span> </a></li>    
+							<li> <a href="#"  id="btnAdOuAdd" data-target="#genericModalLarge"	data-toggle="modal"> <i class="fa fa-folder">&nbsp;</i> <span> Organizasyon Birimi Ekle </span> </a>  </li> 
+							<li> <a href="#"  id="btnAdGroupAdd" data-target="#genericModalLarge"	data-toggle="modal"> <i class="fa fa-folder-open">&nbsp;</i> <span> Grup Ekle </span> </a>  </li> 
 						</ul>
 					</div>
 			</div>
@@ -93,20 +93,18 @@
 <div class="col-lg-10 green" style="height: 750px;">
 		<div>
 			<div class="row" style="margin-top: 15px">
-					<div class="col-lg-7 col-md-7">
+					<div class="col-lg-12 col-md-12">
 						<div>
 							<div class="main-card mb-3 card" >
 								<div class="card-body">
 									<div class="row">
-											<div class="col-lg-12">
 												<div class="col-lg-6"> 
 													<a href="#" class="nav-link" id="btnAdUserReplication" data-target="#genericModalLarge"
 													data-toggle="modal"> <i	class="fa fa-angle-double-right"> &nbsp;</i> <span> Seçili Kullanıcıları Ldap'a Aktarmak  için tıklayınız. </span>
 													</a>
 												</div>
-												
-											</div>
 											<div class="col-lg-12">
+											<hr>
 												<div id="adEntryDiv"></div>
 											</div>
 									</div>

@@ -1,9 +1,10 @@
 
 var treeGridHolderDiv="treeGridAdUserHolderDiv"
-var treeGridId=null
+var treeGridIdGlob=null
 var entryTable = null;
 var selectedADEntries=[]
 var selectedLdapRow=[]
+var treeMenuSelection=null;
 
 $('#treeMenu').hide();
 
@@ -23,6 +24,7 @@ createTree(treeGridHolderDiv, false, false,
 		},
 		//after create tree action
 		function(rootDN, treeGridId,firstRow, error){
+			treeGridIdGlob=treeGridId
 			if(error != null ){
 				console.log(error)
 				$.notify("Lütfen AD bağlantı ayarlarınızı kontrol ediniz.", "error");
@@ -34,10 +36,7 @@ createTree(treeGridHolderDiv, false, false,
 		}
 );
 
-
-
 $('#btnAdUserReplication').on('click', function (event) {
-	
 	var selecteds= entryTable.rows( { selected: true } )
 	console.log(selecteds)
 	
@@ -76,6 +75,32 @@ $('#btnAdUserReplication').on('click', function (event) {
 		}
 	});
 });
+$('#btnAdUserAdd').on('click', function (event) {
+	console.log(treeMenuSelection)
+	getModalContent("modals/ad/adUserAdd", function content(data){
+		$('#genericModalLargeHeader').html("AD Kullanıcı Ekle");
+		$('#genericModalLargeBodyRender').html(data);
+		$('#userFolderInfo').html(treeMenuSelection.distinguishedName);
+		 
+	
+	});
+});
+$('#btnAdOuAdd').on('click', function (event) {
+	console.log(treeMenuSelection)
+	getModalContent("modals/ad/adUserAdd", function content(data){
+		$('#genericModalLargeHeader').html("AD Organizasyon Birimi Ekle");
+		$('#genericModalLargeBodyRender').html(data);
+		
+	});
+});
+$('#btnAdGroupAdd').on('click', function (event) {
+	console.log(treeMenuSelection)
+	getModalContent("modals/ad/adUserAdd", function content(data){
+		$('#genericModalLargeHeader').html("AD Grup Ekle");
+		$('#genericModalLargeBodyRender').html(data);
+		
+	});
+});
 
 $("#adChildSearchTxt").keyup(function() {
 	var txt=$('#adChildSearchTxt').val();
@@ -85,14 +110,13 @@ $("#adChildSearchTxt").keyup(function() {
 });
 
 $("#treeMenu").on('itemclick', function (event) {
+	console.log(treeGridIdGlob)
     var args = event.args;
-//    var selection = $('#'+treeGridId).jqxTreeGrid('getSelection');
-//    var rowid = selection[0].uid
-//    if ($.trim($(args).text()) == "Edit Selected Row") {
-//        $('#'+treeGridId).jqxTreeGrid('beginRowEdit', rowid);
-//    } else {
-//        $('#'+treeGridId).jqxTreeGrid('deleteRow', rowid);
-//    }
+    console.log(args)
+    var selection = $('#'+treeGridIdGlob).jqxTreeGrid('getSelection');
+    console.log(selection)
+    var rowid = selection[0].uid
+    treeMenuSelection=selection[0];
 });
 
 function attributeTable(orderedAttributes) {
@@ -149,14 +173,14 @@ function getChildEntries(row) {
 				    },
 				    "buttons": [
 			            {
-			                text: 'Seç',
+			                text: 'Tümünü Seç',
 			                action: function () {
 			                	entryTable.rows().select();
 			                	
 			                }
 			            },
 			            {
-			                text: 'Kaldır',
+			                text: 'Tümünü Kaldır',
 			                action: function () {
 			                	entryTable.rows().deselect();
 			                }
@@ -168,10 +192,10 @@ function getChildEntries(row) {
 					"scrollCollapse": true,
 					"order": [[ 1, "asc" ]],
 					"columns": [
-					    { "width": "10%" },
+					    { "width": "5%" },
 					    { "width": "30%" },
 					    { "width": "20%" },
-					    { "width": "40%" },
+					    { "width": "45%" },
 					],
 					"oLanguage": {
 						"sSearch": "Ara:",
@@ -221,26 +245,37 @@ function getChildEntries(row) {
 			}
 		});  
 }
+
 function btnSyncUserAd2LdapClicked() {
-	if(selectedLdapRow.type != "ORGANIZATIONAL_UNIT")
-		{
-			$.notify("Lütfen Ldap Dizini Seçiniz.", "warn");
-			return;
-		}
+	if(selectedLdapRow.type != "ORGANIZATIONAL_UNIT"){
+		$.notify("Lütfen Ldap Dizini Seçiniz.", "warn");
+		return;
+	}
 	if(selectedADEntries.length ==0){
 		$.notify("Lütfen aktarılacak kullanıcı Seçiniz.", "warn");
 		return;
 	}
-	console.log(selectedADEntries)
-	console.log(selectedLdapRow)
+	adUsersDnArr = [];
+	for( var a = 0; a < selectedADEntries.length; a++){
+		adUsersDnArr.push({"distinguishedName":selectedADEntries[a].distinguishedName});
+	}
+	var selectedLdap={
+			"distinguishedName":selectedLdapRow.distinguishedName,
+			"childEntries" :adUsersDnArr,
+	}
 	
-	 $.ajax({
-			type : 'POST',
-			url : 'ad/syncUserFromAd2Ldap',
-			data : 'distinguishedName=' + row.distinguishedName 	+ '&name=' + row.name + '&parent=' + row.parent,
-			dataType : 'text',
-			success : function(resultList) {
-				
-			}
-	 });
+	$.ajax({
+		type: "POST",
+		url: "ad/syncUserFromAd2Ldap",
+		data: JSON.stringify(selectedLdap),
+		dataType: "json",
+		contentType: "application/json",
+		success: function(result) {
+			console.log(result)
+		},
+		error: function(result) {
+			$.notify(result, "error");
+			console.log(result)
+		}
+	});
 }

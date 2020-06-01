@@ -26,6 +26,7 @@ import tr.org.lider.entities.PolicyImpl;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.models.PolicyExecutionRequestImpl;
+import tr.org.lider.models.PolicyResponse;
 import tr.org.lider.repositories.PolicyRepository;
 
 /**
@@ -171,5 +172,18 @@ public class PolicyService {
 			} 
 		}
 		return null;
+	}
+	
+	public List<PolicyResponse> getPolicies4Group(String dn) {
+		List<Object[]> results = policyRepository.findPoliciesByGroupDn(dn);
+		List<PolicyResponse> resp= new ArrayList<PolicyResponse>();
+		for (Object[] objects : results) {
+			PolicyResponse policyResponse= new PolicyResponse();
+			policyResponse.setPolicyImpl((PolicyImpl)objects[0]);
+			policyResponse.setCommandExecutionImpl((CommandExecutionImpl)objects[1]);
+			policyResponse.setCommandImpl((CommandImpl)objects[2]);
+			resp.add(policyResponse);
+		}
+		return resp;
 	}
 }

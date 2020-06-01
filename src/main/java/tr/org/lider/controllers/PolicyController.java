@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tr.org.lider.entities.PluginProfile;
 import tr.org.lider.entities.PolicyImpl;
+import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.models.PolicyExecutionRequestImpl;
+import tr.org.lider.models.PolicyResponse;
 import tr.org.lider.services.PolicyService;
 import tr.org.lider.utils.RestResponseImpl;
 import tr.org.lider.utils.RestResponseStatus;
@@ -105,10 +107,17 @@ public class PolicyController {
 			return null;
 		}
 	}
-	//return executed policy
+	// executed policy
 	@RequestMapping(method=RequestMethod.POST ,value = "/execute", produces = MediaType.APPLICATION_JSON_VALUE)
 	public RestResponseImpl policyExecute(@RequestBody PolicyExecutionRequestImpl request) {
 		policyService.executePolicy(request);
 		return new RestResponseImpl(RestResponseStatus.OK, new ArrayList<>(), null);
+	}
+	
+	// 
+	@RequestMapping(method=RequestMethod.POST ,value = "/getPolicies4Group", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<PolicyResponse> getPolicies4Group(@RequestBody LdapEntry dn) {
+		logger.info("Getting executed policies for group. DN : " +dn);
+		return policyService.getPolicies4Group(dn.getDistinguishedName());
 	}
 }

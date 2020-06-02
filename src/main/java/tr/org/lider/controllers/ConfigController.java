@@ -41,6 +41,7 @@ public class ConfigController {
 		if(configurationService.isConfigurationDone()) {
 			return null;
 		} else {
+			logger.info("Data confige geldi");
 			configParams.setDefaultParams();
 			try {
 				//convert params object to string and save it to Config table

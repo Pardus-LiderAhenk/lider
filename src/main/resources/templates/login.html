@@ -10,8 +10,8 @@
 
 <!-- AppUI CSS stylesheets -->
 <link rel="stylesheet" type="text/css" href="css/main_b.css" />
-<script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
 
 <script type="text/javascript" src="assets/scripts/main.js"></script>
 <script src='js/jquery-ui.min.js'></script>
@@ -33,7 +33,7 @@
 						<h5>Lütfen Giriş Yapınız</h5>
 					</div>
 					<div class="card-block">
-						<form action="/login" method="post">
+						<form action="login" method="post">
 							<div th:if="${param.error}" class="alert alert-error">Kullanıcı Adı veya Parola Yanlış</div>
 							<div th:if="${param.logout}" class="alert alert-success">Çıkış yaptınız.</div>
 							<div th:if="${noAccess}" class="alert alert-error">Yetkiniz Bulunmamaktadır.</div>

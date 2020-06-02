@@ -62,8 +62,8 @@ body {
 
 <!-- AppUI CSS stylesheets -->
 <link rel="stylesheet" type="text/css" href="css/main_b.css" />
-<script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
-<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
 
 <script type="text/javascript" src="assets/scripts/main.js"></script>
 <script src='js/jquery-ui.min.js'></script>
@@ -149,7 +149,7 @@ body {
 		console.log(params)
 		$.ajax({ 
 		    type: 'POST', 
-		    url: "/lider/config/save",
+		    url: "lider/config/save",
 		    dataType: 'json',
 		    data: params,
 		    success: function (data) {
@@ -166,8 +166,11 @@ body {
 		    		$.notify("Sunucu kayıt işlemi esnasında hata oluştu. Lütfen tekrar deneyiniz.1", "error");
 		    	}
 		    },
-		    error: function (data, errorThrown) {
+		    error: function (jqXHR, textStatus, errorThrown) {
 		    	$.notify("Sunucu kayıt işlemi esnasında hata oluştu. Lütfen tekrar deneyiniz.2", "error");
+		    	console.log(jqXHR);
+		    	console.log(textStatus);
+		    	console.log(errorThrown);
 		    }
 		});
 	}
@@ -176,7 +179,10 @@ body {
 <title>Lider Ahenk Merkezi Yonetim Sistemi</title>
 </head>
 <body>
-	<div class="container"></div>
+	<div class="container">
+	<a href="lider/config/save">Save URL</a>
+	<a href="/lider/config/save">Save URL</a>
+	</div>
 	<div class="container">
 
 		<div class="stepwizard">

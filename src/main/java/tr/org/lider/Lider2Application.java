@@ -2,9 +2,16 @@ package tr.org.lider;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class Lider2Application {
+public class Lider2Application extends SpringBootServletInitializer {
+
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(Lider2Application.class);
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(Lider2Application.class, args);

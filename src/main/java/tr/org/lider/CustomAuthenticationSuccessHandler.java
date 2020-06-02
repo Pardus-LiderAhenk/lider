@@ -13,11 +13,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.services.ConfigurationService;
 
 /**
- * Handler for setting up XMPP Service and start it after successfull login.
+ * Handler for setting up XMPP Service and start it after successful login.
  * 
  * @author <a href="mailto:hasan.kara@pardus.org.tr">Hasan Kara</a>
  * 
@@ -29,21 +28,12 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 	Logger logger = LoggerFactory.getLogger(CustomAuthenticationSuccessHandler.class);
 	
 	@Autowired
-	private XMPPClientImpl xmppClientImpl;
-	
-	@Autowired
 	private ConfigurationService configurationService;
 	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
-		try {
-			configurationService.destroyConfigParams();
-			xmppClientImpl.initXMPPClient();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error occured during initialization of XMPP parameters.");
-		}
+		configurationService.destroyConfigParams();
 		response.sendRedirect("/");
 	}
 }

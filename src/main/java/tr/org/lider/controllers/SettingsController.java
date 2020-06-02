@@ -122,7 +122,6 @@ public class SettingsController {
 			logger.info("XMPP settings are updated. XMPP will disconnect and reconnect after resetting XMPP parameters.");
 			try {
 				xmppClient.disconnect();
-				xmppClient.setIsXMPPInitialized(false);
 				xmppClient.initXMPPClient();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

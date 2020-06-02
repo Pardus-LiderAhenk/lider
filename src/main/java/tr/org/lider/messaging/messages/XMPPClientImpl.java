@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
@@ -141,7 +142,7 @@ public class XMPPClientImpl {
 	//	private RequestAgreementListener reqAggrementListener;
 	//	private AgreementStatusListener aggrementStatusListener;
 	//	private ScriptResultListener scriptResultListener;
-//	private MissingPluginListener missingPluginListener;
+	//	private MissingPluginListener missingPluginListener;
 
 	/**
 	 * Packet subscribers
@@ -152,10 +153,10 @@ public class XMPPClientImpl {
 
 	@Autowired
 	private List<IPresenceSubscriber> presenceSubscribers;
-	
+
 	@Autowired
 	private List<IPolicyStatusSubscriber> policyStatusSubscribers;
-	
+
 	@Autowired
 	private IUserSessionSubscriber userSessionSubscriber;
 	//	private IMissingPluginSubscriber missingPluginSubscriber;
@@ -178,27 +179,11 @@ public class XMPPClientImpl {
 	private XMPPTCPConnection connection;
 	private XMPPTCPConnectionConfiguration config;
 
-	
 
-//	@PostConstruct
-//	public void init() throws Exception {
-//	}
-	
-	private Boolean isXMPPInitialized = false;
-	
-	//if configuration settings are changed set isXMPPInitialized to false and call initXMPPClient() again 
-	public Boolean getIsXMPPInitialized() {
-		return isXMPPInitialized;
-	}
 
-	public void setIsXMPPInitialized(Boolean isXMPPInitialized) throws Exception {
-		disconnect();
-		initXMPPClient();
-		this.isXMPPInitialized = isXMPPInitialized;
-	}
-
-	public void initXMPPClient() throws Exception  {
-		if(isXMPPInitialized == false) {
+	@PostConstruct
+	public void init() throws Exception {
+		if(connection == null && configurationService.isConfigurationDone()) {
 			logger.info("XMPP service initialization is started");
 			setParameters();
 			createXmppTcpConfiguration();
@@ -206,10 +191,21 @@ public class XMPPClientImpl {
 			login();
 			setServerSettings();
 			addListeners();
-			isXMPPInitialized = true;
 			logger.info("XMPP service initialized");
 		}
 	}
+
+	public void initXMPPClient() throws Exception  {
+		logger.info("XMPP service initialization is started");
+		setParameters();
+		createXmppTcpConfiguration();
+		connect();
+		login();
+		setServerSettings();
+		addListeners();
+		logger.info("XMPP service initialized");
+	}
+	
 	/**
 	 * Sets XMPP client parameters.
 	 */
@@ -471,7 +467,6 @@ public class XMPPClientImpl {
 
 			try {
 				logger.debug("Tring again to connect..");
-				isXMPPInitialized = false;
 				initXMPPClient();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -500,7 +495,6 @@ public class XMPPClientImpl {
 
 			try {
 				logger.debug("Tring again to connect..");
-				isXMPPInitialized = false;
 				initXMPPClient();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

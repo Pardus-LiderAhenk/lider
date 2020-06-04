@@ -130,7 +130,7 @@ function sendLocalUserTaskConfirm(commandId, parameterMap) {
 		pluginTask_LocalUser.dnType="AHENK";
 		pluginTask_LocalUser.parameterMap=parameterMap;
 		pluginTask_LocalUser.cronExpression = scheduledParamLocalUser;
-		pluginTask_LocalUser.commandId = commandId;;  		
+		pluginTask_LocalUser.commandId = commandId;	
 		var params = JSON.stringify(pluginTask_LocalUser);
 	}
 	var content = "Görev Gönderilecek, emin misiniz?";

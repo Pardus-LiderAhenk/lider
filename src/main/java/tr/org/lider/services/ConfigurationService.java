@@ -417,6 +417,10 @@ public class ConfigurationService {
 		return getConfigParams().getAdAdminUserName();
 	}
 
+	public String getAdAdminUserFullDN() {
+		return getConfigParams().getAdAdminUserFullDN();
+	}
+	
 	public String getAdAdminPassword() {
 		return getConfigParams().getAdAdminPassword();
 	}

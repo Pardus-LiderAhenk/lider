@@ -39,6 +39,37 @@ function getProfileList() {
 		}
 	});
 }
+//created usb profile table
+function createUsbProfileTable() {
+	hideAndShowUsbProfileButton();
+	defaultUsbSetting();
+	if ($("#usbProfleListEmptyInfo").length > 0) {
+		$("#usbProfleListEmptyInfo").remove();
+	}
+
+	if(usbProfileList != null && usbProfileList.length > 0) {
+		var profile = "";
+		for (var i = 0; i < usbProfileList.length; i++) {
+			var profileId = usbProfileList[i].id;
+			var profileName = usbProfileList[i].label;
+			var profileDescription = usbProfileList[i].description;
+			var profileCreateDate = usbProfileList[i].createDate;
+			var profileOfPlugin = usbProfileList[i].plugin.name;
+			var profileDeleted = usbProfileList[i].deleted;
+			if (profileDeleted == false) {
+
+				profile += "<tr id="+ profileId +">";
+				profile += '<td>'+ profileName +'</td>';
+				profile += '<td>'+ profileDescription +'</td>';
+				profile += '<td>'+ profileCreateDate +'</td>';
+				profile += '</tr>';
+			}
+		}
+		$('#usbProfileBody').html(profile);
+	} else {
+		$('#usbProfileBody').html('<tr id="usbProfleListEmptyInfo"><td colspan="3" class="text-center">USB ayarı bulunamadı.</td></tr>');
+	}
+}
 
 $('#usbProfileTable').on('click', 'tbody tr', function(event) {
 	if(usbProfileList != null && usbProfileList.length > 0) {
@@ -116,38 +147,6 @@ function hideAndShowUsbProfileButton() {
 		$("#usbProfileUpdate").show();
 		$("#usbProfileAddToPolicy").show();
 		$("#usbProfileSave").hide();
-	}
-}
-
-//created usb profile table
-function createUsbProfileTable() {
-	hideAndShowUsbProfileButton();
-	defaultUsbSetting();
-	if ($("#usbProfleListEmptyInfo").length > 0) {
-		$("#usbProfleListEmptyInfo").remove();
-	}
-
-	if(usbProfileList != null && usbProfileList.length > 0) {
-		var profile = "";
-		for (var i = 0; i < usbProfileList.length; i++) {
-			var profileId = usbProfileList[i].id;
-			var profileName = usbProfileList[i].label;
-			var profileDescription = usbProfileList[i].description;
-			var profileCreateDate = usbProfileList[i].createDate;
-			var profileOfPlugin = usbProfileList[i].plugin.name;
-			var profileDeleted = usbProfileList[i].deleted;
-			if (profileDeleted == false) {
-
-				profile += "<tr id="+ profileId +">";
-				profile += '<td>'+ profileName +'</td>';
-				profile += '<td>'+ profileDescription +'</td>';
-				profile += '<td>'+ profileCreateDate +'</td>';
-				profile += '</tr>';
-			}
-		}
-		$('#usbProfileBody').html(profile);
-	} else {
-		$('#usbProfileBody').html('<tr id="usbProfleListEmptyInfo"><td colspan="3" class="text-center">USB ayarı bulunamadı.</td></tr>');
 	}
 }
 
@@ -316,7 +315,7 @@ $("#usbProfileDel").click(function(e){
 			success : function(data) {
 				if(data != null) {
 					$.notify("USB ayarı başarıyla silindi.", "success");
-					var index = findIndexIndexUsbProfile(selectedUsbProfileId);
+					var index = findIndexUsbProfile(selectedUsbProfileId);
 					if (index > -1) {
 						usbProfileList.splice(index, 1);
 					}

@@ -76,7 +76,7 @@ function createScriptTempTable() {
 }
 
 $('#scriptTableTemp').on('click', 'tbody tr', function(event) {
-	if(policyList != null && policyList.length > 0) {
+	if(scriptTempList != null && scriptTempList.length > 0) {
 		if($(this).hasClass('policysettings')){
 			$(this).removeClass('policysettings');
 			$('#scriptProfileType').val("bash").change();
@@ -189,6 +189,7 @@ function createScriptProfileTable() {
 		$("#scriptProfileEditForm").hide();
 		selectScript = false;
 	}
+	$("#scriptProfileEditForm").hide();
 
 	if(scriptProfileList != null && scriptProfileList.length > 0) {
 		var profile = "";

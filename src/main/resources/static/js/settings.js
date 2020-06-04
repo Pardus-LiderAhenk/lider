@@ -769,7 +769,7 @@ function getConfigurationParams() {
 	    		if((data.adDomainName != null && data.adDomainName != "") &&
 	    				(data.adIpAddress != null && data.adIpAddress != "") &&
 	    				(data.adAdminUserName != null && data.adAdminUserName != "") &&
-	    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
+	    				(data.adAdminUserFullDN != null && data.adAdminUserFullDN != "") &&
 	    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
 	    				(data.adPort != null && data.adPort != "")) {
 	    				$(".adSettings").show();
@@ -806,15 +806,17 @@ function setAttributes(data) {
 	if((data.adDomainName != null && data.adDomainName != "") &&
 	    				(data.adIpAddress != null && data.adIpAddress != "") &&
 	    				(data.adAdminUserName != null && data.adAdminUserName != "") &&
-	    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
+	    				(data.adAdminUserFullDN != null && data.adAdminUserFullDN != "") &&
 	    				(data.adAdminPassword != null && data.adAdminPassword != "") &&
 	    				(data.adPort != null && data.adPort != "")) {
 		$('#adIpAddress').val(data.adIpAddress);
 		$('#adPort').val(data.adPort);
 		$('#adDomainName').val(data.adDomainName);
 		$('#adAdminUserName').val(data.adAdminUserName);
+		$('#adAdminUserFullDN').val(data.adAdminUserFullDN);
 		$('#adAdminPassword').val(data.adAdminPassword);
 		$('#adHostName').val(data.adHostName);
+		
 	} 
 	
 	//set XMPP configuration
@@ -903,9 +905,11 @@ function saveChanges(type) {
 				    "adPort": $('#adPort').val(),
 				    "adDomainName": $('#adDomainName').val(),
 				    "adAdminUserName": $('#adAdminUserName').val(),
+				    "adAdminUserFullDN": $('#adAdminUserFullDN').val(),
 				    "adAdminPassword": $('#adAdminPassword').val(),
 				    "adHostName": $('#adHostName').val()
 				};
+			console.log(params);
 			$.ajax({ 
 			    type: 'POST', 
 			    url: "/lider/settings/update/ldap",

@@ -68,7 +68,6 @@ public class SettingsController {
 			ldapEntries  = ldapService.findSubEntries(filter,
 					new String[] { "*" }, SearchScope.SUBTREE);
 		} catch (LdapException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ldapEntries;
@@ -83,6 +82,7 @@ public class SettingsController {
 			@RequestParam (value = "adPort", required = true) String adPort,
 			@RequestParam (value = "adDomainName", required = true) String adDomainName,
 			@RequestParam (value = "adAdminUserName", required = true) String adAdminUserName,
+			@RequestParam (value = "adAdminUserFullDN", required = true) String adAdminUserFullDN,
 			@RequestParam (value = "adAdminPassword", required = true) String adAdminPassword,
 			@RequestParam (value = "adHostName", required = true) String adHostName) {
 
@@ -95,6 +95,7 @@ public class SettingsController {
 		configParams.setAdPort(adPort);
 		configParams.setAdDomainName(adDomainName);
 		configParams.setAdAdminUserName(adAdminUserName);
+		configParams.setAdAdminUserFullDN(adAdminUserFullDN);
 		configParams.setAdAdminPassword(adAdminPassword);
 		configParams.setAdHostName(adHostName);
 		return configurationService.updateConfigParams(configParams);

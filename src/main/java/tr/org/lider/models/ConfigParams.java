@@ -121,6 +121,7 @@ public class ConfigParams {
 	private String adHostName;
 	private String adIpAddress;
 	private String adAdminUserName;
+	private String adAdminUserFullDN;
 	private String adAdminPassword;
 	private String adPort;
 	
@@ -130,7 +131,6 @@ public class ConfigParams {
 	public ConfigParams() {
 		super();
 	}
-
 
 	public ConfigParams(String liderLocale, String ldapServer, String ldapPort, String ldapUsername,
 			String ldapPassword, String ldapRootDn, Boolean ldapUseSsl, String ldapSearchAttributes,
@@ -152,8 +152,8 @@ public class ConfigParams {
 			Integer mailSmtpWriteTimeout, Boolean mailSendOnTaskCompletion, Long mailCheckTaskCompletionPeriod,
 			Boolean mailSendOnPolicyCompletion, Long mailCheckPolicyCompletionPeriod, String hotDeploymentPath,
 			String cronTaskList, Integer entrySizeLimit, Integer cronIntervalEntrySize, String adDomainName,
-			String adHostName, String adIpAddress, String adAdminUserName, String adAdminPassword, String adPort,
-			Boolean disableLocalUser) {
+			String adHostName, String adIpAddress, String adAdminUserName, String adAdminUserFullDN,
+			String adAdminPassword, String adPort, Boolean disableLocalUser) {
 		super();
 		this.liderLocale = liderLocale;
 		this.ldapServer = ldapServer;
@@ -228,6 +228,7 @@ public class ConfigParams {
 		this.adHostName = adHostName;
 		this.adIpAddress = adIpAddress;
 		this.adAdminUserName = adAdminUserName;
+		this.adAdminUserFullDN = adAdminUserFullDN;
 		this.adAdminPassword = adAdminPassword;
 		this.adPort = adPort;
 		this.disableLocalUser = disableLocalUser;
@@ -887,6 +888,14 @@ public class ConfigParams {
 
 	public void setDisableLocalUser(Boolean disableLocalUser) {
 		this.disableLocalUser = disableLocalUser;
+	}
+
+	public String getAdAdminUserFullDN() {
+		return adAdminUserFullDN;
+	}
+
+	public void setAdAdminUserFullDN(String adAdminUserFullDN) {
+		this.adAdminUserFullDN = adAdminUserFullDN;
 	}
 
 	public FileServerConf getFileServerConf(String jid) {

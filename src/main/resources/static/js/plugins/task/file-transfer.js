@@ -169,8 +169,13 @@ $("#selectedFileTransfer").on('change', function() {
 			encodedFile = this.result.substr(comma + 1);
 		}
 		reader.readAsDataURL(selectedFile);
+		$('#selectedFileTransfer').prop('title', 'Seçili dosya: '+ fileName);
+
 	} else {
-		$.notify("Dosya boyutu 20 MB'tan fazla olamaz.", "warn");
+		$(this).next('.custom-file-label').html("Gönderilecek dosyayı seçiniz...");
+		$.notify("Dosya boyutu 20 MB'tan fazla olamaz.", "error");
+		$('#selectedFileTransfer').prop('title', 'Dosya seçili değil');
+		fileName = null;
 	}
 });
 
@@ -202,12 +207,14 @@ $('#sendTaskFileTransfer').click(function(e){
 		parameterMap.writeOther = $('#otherWritePerCb').is(":checked");
 		parameterMap.executeOther = $('#otherExecutePerCb').is(":checked");
 	}
-
 	var localPath = $('#remotePath').val();
+	if (fileName == null || localPath == "") {
+		$.notify("Lütfen dosya seçiniz ve hedef dizin belirtiniz.", "warn");
+		return
+	}
 	if (!localPath.endsWith("/")) {
 		localPath = localPath + "/";
 	}
-
 	parameterMap.fileName = fileName;
 	parameterMap.localPath = localPath;
 	parameterMap.encodedFile = encodedFile;
@@ -222,26 +229,22 @@ $('#sendTaskFileTransfer').click(function(e){
 		var params = JSON.stringify(pluginTask_FileTransfer);
 	}
 
-	if (fileName != null && remotePath != "") {
-		var content = "Görev Gönderilecek, emin misiniz?";
-		if (scheduledParamFileTransfer != null) {
-			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
-		}
-		$.confirm({
-			title: 'Uyarı!',
-			content: content,
-			theme: 'light',
-			buttons: {
-				Evet: function () {
-					sendFileTransferTask(params);
-					scheduledParamFileTransfer = null;
-				},
-				Hayır: function () {
-				}
-			}
-		});
-	}else {
-		$.notify("Lütfen dosya seçiniz ve hedef dizin belirtiniz.", "warn");
+	var content = "Görev Gönderilecek, emin misiniz?";
+	if (scheduledParamFileTransfer != null) {
+		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
 	}
+	$.confirm({
+		title: 'Uyarı!',
+		content: content,
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+				sendFileTransferTask(params);
+				scheduledParamFileTransfer = null;
+			},
+			Hayır: function () {
+			}
+		}
+	});
 });
 

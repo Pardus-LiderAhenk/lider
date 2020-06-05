@@ -132,7 +132,7 @@ function repositoryListener(msg) {
 					var newRow = $("<tr>");
 					if(repo_addr[i] != ""){
 						var html = '<td class="repoAdrr">'+ repo_addr[i] +'</td>';
-						html += '<td class="text-center"><button id="' + repo_addr[i] +'" type="button" onclick="repoChecked(this)" title="Sil" value="' + repo_addr[i] +'" class="btn-shadow btn btn-info"><i class="fa fa-trash-alt"></i></button></td>';
+						html += '<td class="text-center"><button id="' + repo_addr[i] +'" type="button" onclick="repoChecked(this)" title="Sil" value="' + repo_addr[i] +'" class="btn btn-sm btn-outline-danger"><i class="pe-7s-trash"></i></button></td>';
 						newRow.append(html);
 						$("#repositoriesListTable").append(newRow);
 					}				  								

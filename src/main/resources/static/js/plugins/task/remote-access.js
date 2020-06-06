@@ -12,6 +12,7 @@ if (ref_remote_access) {
 	connection.deleteHandler(ref_remote_access);
 }
 
+$('#btnSendVNCReuqest').hide();
 var scheduledParamRemoteAccess = null;
 var scheduledModalRemoteAccessOpened = false;
 var ref_remote_access = connection.addHandler(remoteAccessListener, null, 'message', null, null,  null);
@@ -70,11 +71,14 @@ function remoteAccessListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
+		
 		if(xmppResponse.commandClsId == "SETUP-VNC-SERVER") {
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					$("#plugin-result-remote-access").html("");
 					$.notify(xmppResponse.result.responseMessage, "success");
+					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+					startRemoteAccess(arrg);
 				} else {
 					$("#plugin-result-remote-access").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
 					$.notify(xmppResponse.result.responseMessage, "error");
@@ -86,6 +90,34 @@ function remoteAccessListener(msg) {
 	return true;
 }
 
+function startRemoteAccess(data) {
+	var params = {
+			"protocol" : "vnc",
+			"host" : data.host,
+			"port": data.port,
+			"password": data.password,
+			"username": ""
+	};
+	
+	$.ajax({
+		type: 'POST', 
+		url: "/sendremote",
+		data: params,
+		success: function(data) {
+			console.log(data)
+			$('#btnSendVNCReuqest').show();
+		},
+		 error: function (jqXHR, textStatus, errorThrown) {
+			 console.log(jqXHR)
+			 console.log(textStatus)
+			 console.log(errorThrown)
+		 }
+	});
+}
+
+$('#btnSendVNCReuqest').click(function(e){
+	$('#btnSendVNCReuqest').hide();
+});
 $('#sendTaskCronRemoteAccess').click(function(e){
 	$('#scheduledTasksModal').modal('toggle');
 	scheduledParam = null;

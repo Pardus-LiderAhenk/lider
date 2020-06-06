@@ -161,6 +161,23 @@
 		</dependency>
 
 
+ 	<!-- Main Guacamole library -->
+ 	       <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-common</artifactId>
+            <version>1.1.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Guacamole JavaScript library -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-common-js</artifactId>
+            <version>1.1.0</version>
+            <type>zip</type>
+            <scope>runtime</scope>
+        </dependency>
+
 	</dependencies>
 
 	<build>
@@ -170,6 +187,35 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
+			<!-- Compile using Java 1.8 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+			
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                 <configuration>
+                	<failOnMissingWebXml>false</failOnMissingWebXml>    
+            	
+                    <overlays>
+                        <overlay>
+                            <groupId>org.apache.guacamole</groupId>
+                            <artifactId>guacamole-common-js</artifactId>
+                            <type>zip</type>
+                        </overlay>
+                    </overlays>
+                </configuration>
+            </plugin>
+			
 		</plugins>
 	</build>
 </project>

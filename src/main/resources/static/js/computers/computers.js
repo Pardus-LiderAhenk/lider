@@ -8,6 +8,7 @@
 
 // generic variables
 var selectedRow= null;
+var selectedRowDataFromDB= null;
 var baseRootDnComputer=null;
 var selectedEntries = []; 
 var selectedAgentGroupDN = "";
@@ -38,6 +39,7 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 			baseRootDnComputer=rootDnComputer;
 			addSelectedEntryToTable(selectedRow)
 			$("#selectedAgentDN").text(selectedRow.distinguishedName);
+			$("#selectedAgentDNSSH").text("DN : "+selectedRow.distinguishedName);
 		},
 		//check action
 		function(checkedRows, row){
@@ -97,6 +99,9 @@ $('#btn-service').click(function() {
 $('#btn-script').click(function() {
 	setScriptPluginPage();
 });
+$('#btn-ssh').click(function() {
+	setShhPage();
+});
 
 $('#btn-securityAndNetwork').click(function() {
 	setSecurityAndNetworkPluginPage();
@@ -109,63 +114,9 @@ $('#btn-taskHistory').click(function() {
 $('#getTaskHistoryBtn').click(function() {
 	taskHistory()
 });
-
-//$('#btnAddAgents').click(function() {
-//	addSelectedEntryToTable(selectedRow)
-//});
-
-//$('#addOnlyOnlineAgents').click(function() {
-//	var selection =$('#computerTreeDivGrid').jqxTreeGrid('getSelection');
-//	if(selection && selection.length>0){
-//		var checkedEntryArray=[]
-//
-//		for (var i = 0; i < selection.length; i++) {
-//			// get a row.
-//			var rowData = selection[i];
-//
-//			checkedEntryArray.push(
-//					{
-//						distinguishedName :rowData.distinguishedName, 
-//						entryUUID: rowData.entryUUID, 
-//						name: rowData.name,
-//						type: rowData.type,
-//						uid: rowData.uid
-//					});
-//		}
-//		$.ajax({
-//			url : 'lider/ldap/getOnlineAhenks',
-//			type : 'POST',
-//			data: JSON.stringify(checkedEntryArray),
-//			dataType: "json",
-//			contentType: "application/json",
-//			success : function(data) {
-//				var ahenks = data;
-//				selectedEntries=[]
-//				if(ahenks.length==0)
-//					$.notify("Online istemci bulunmamaktadır.", "warn");
-//				else
-//					$.notify(ahenks.length+ " adet online istemci eklendi.", "success");
-//				for (var i = 0; i < ahenks.length; i++) {
-//					// get a row.
-//					var rowData = ahenks[i];
-//					if(rowData.type=="AHENK"){
-//						var indexx=$.grep(selectedEntries, function(item){
-//							return item.entryUUID == rowData.entryUUID;
-//						}).length
-//
-//						if(indexx ==0 ){
-//							selectedEntries.push(rowData);
-//						}
-//					}
-//				}
-//				showSelectedEntries();
-//			}
-//		});
-//	}
-//	else{
-//		$.notify("Lütfen Arama Dizini Seçiniz", "warn");
-//	}
-//});
+$('#btnSSHConnect').click(function() {
+	SHHConnect()
+});
 
 function setSystemPluginPage() {
 	showPageAndHideOthers('systemPage')
@@ -433,8 +384,9 @@ function setTaskHistoryPage() {
 	showPageAndHideOthers('taskHistoryPage')
 }
 
-
-
+function setShhPage() {
+	showPageAndHideOthers('sshPage')
+}
 
 function executedTaskDetailClicked(executionDate, pluginName, commandExecutionResultID) {
 
@@ -794,6 +746,8 @@ function showSelectedEntries() {
 		data: params,
 		dataType: 'json',
 		success: function (data) {
+			selectedRowDataFromDB=data;
+			$("#selectedAgentDNSSHIP").text("IP : "+selectedRowDataFromDB.ipAddresses);
 			if(data.properties.length > 0) {
 				var year = data.createDate.substring(0,4);
 				var month = data.createDate.substring(5,7);
@@ -924,7 +878,6 @@ function taskHistory() {
 	}
 }
 
-
 function showPageAndHideOthers(showPageId){
 	
 	$("#systemPage").hide();
@@ -933,6 +886,139 @@ function showPageAndHideOthers(showPageId){
 	$("#scriptManagementPage").hide();
 	$("#securityAndNetworkManagementPage").hide();
 	$("#taskHistoryPage").hide();
+	$("#sshPage").hide();
 	
 	$('#' +showPageId).show();
+}
+
+function SHHConnect(){
+	
+	var sshUserName=$("#sshUserName").val();
+	var sshUserPassword=$("#sshUserPassword").val();
+	if(sshUserName=="" | sshUserPassword ==""){
+		$.notify("Lütfen kullanıcı adı veya parola giriniz.", "warn");
+		return;
+	}
+	var params = {
+			"protocol" : "ssh",
+			"host" : selectedRowDataFromDB.ipAddresses,
+			"port": "22",
+			"password": sshUserPassword,
+			"username": sshUserName
+	};
+	
+	$.ajax({
+		type: 'POST', 
+		url: "/sendremote",
+		data: params,
+		success: function(data) {
+			console.log(data)
+			displaySSHConnection();
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			 console.log(jqXHR)
+			 console.log(textStatus)
+			 console.log(errorThrown)
+		}
+	});
+}
+
+function displaySSHConnection() {
+	$('#sshDisplay').show()
+	 // Get display div from document
+    var display = document.getElementById("sshDisplay");
+
+    // Instantiate client, using an HTTP tunnel for communications.
+    var guac = new Guacamole.Client(
+        new Guacamole.HTTPTunnel("tunnel")
+    );
+
+    // Add client to display div
+    display.append(guac.getDisplay().getElement());
+    
+    // Error handler
+    guac.onerror = function(error) {
+    	console.log(error)
+    	$.notify("Uzak Masaüstü sunucusunda hata oluştu", "warn");
+    };
+    // Connect
+    guac.connect();
+   
+    
+    // Disconnect on close
+    window.onunload = function() {
+        guac.disconnect();
+    }
+    
+    var mouse = new Guacamole.Mouse(guac.getDisplay().getElement());
+    mouse.onmousemove = function(mouseState) {
+        guac.sendMouseState(mouseState);
+    };
+
+    mouse.onmouseup = function(mouseState) {
+     };
+     mouse.onmousedown = function(mouseState) {
+     };
+    // Keyboard
+    var keyboard = new Guacamole.Keyboard(document);
+
+    keyboard.onkeydown = function (keysym) {
+        guac.sendKeyEvent(1, keysym);
+    };
+
+    keyboard.onkeyup = function (keysym) {
+        guac.sendKeyEvent(0, keysym);
+    };
+    
+//    $("#sshUserName").click(function(e) {
+//
+//        // called when textfield is clicked (so it must be focussed)
+//
+//        keyboard.onkeydown = null;
+//        keyboard.onkeyup = null;
+//
+//    }).on("blur", function(e) {
+//
+//    // called when textfield it is unfocussed
+//
+//        keyboard.onkeydown = function(keysym) {
+//            guac.sendKeyEvent(1, keysym);
+//        };
+//        keyboard.onkeyup = function(keysym) {
+//            guac.sendKeyEvent(0, keysym);
+//        };
+//
+//    });
+    
+    $('#btnSSHDisconnect').click(function(e){
+    	 keyboard.onkeydown = null;
+         keyboard.onkeyup = null;
+		 
+         guac.disconnect();
+		 $('#sshDisplay').html("")
+    });
+    
+    $('.dizin').click(function(e){
+    	keyboard.onkeydown = null;
+    	keyboard.onkeyup = null;
+    	
+    	guac.disconnect();
+    	$('#sshDisplay').html("")
+    });
+    
+    $('.computerActions').click(function(e){
+    	keyboard.onkeydown = null;
+    	keyboard.onkeyup = null;
+    });
+    
+    $('#btn-ssh').click(function(e){
+    	  keyboard.onkeydown = function (keysym) {
+    	        guac.sendKeyEvent(1, keysym);
+    	    };
+
+    	    keyboard.onkeyup = function (keysym) {
+    	        guac.sendKeyEvent(0, keysym);
+    	    };
+    });
+   
 }

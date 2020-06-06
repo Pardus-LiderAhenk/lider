@@ -1,3 +1,4 @@
+<script type="text/javascript"  src="js/guacamole-common-js/all.min.js"></script>
 <script type="text/javascript" src="js/computers/computerTreeManager.js"></script>
 <script type="text/javascript" src="js/computers/computers.js"></script>
 
@@ -22,12 +23,13 @@
 							<button  class="btn btn-danger btn-sm" id="agentOnlineStatus" >  </button>
 							<button  class="btn btn-sm"> </button>
 							
-							<button role="tab" class="btn btn-info btn-sm" id="btn-system" data-toggle="tab"><i class="fa fa-sliders-h"></i> Sistem Yönetimi </button>
-							<button role="tab" class="btn btn-info btn-sm" id="btn-package" data-toggle="tab"><i class="nav-link-icon fas fa-cubes"> </i> Paket ve Depo Yönetimi </button>
-							<button role="tab" class="btn btn-info btn-sm" id="btn-service" data-toggle="tab"><i class="nav-link-icon fas fa-tv"> </i> Servisler </button>
-							<button role="tab" class="btn btn-info btn-sm" id="btn-script" data-toggle="tab"><i class="fa fa-terminal"></i> Betik</button>
-							<button role="tab" class="btn btn-info btn-sm" id="btn-securityAndNetwork" data-toggle="tab"><i class="fa fa-network-wired"></i> Güvenlik ve Ağ Yönetimi</button>
-							<button role="tab" class="btn btn-info btn-sm" id="btn-taskHistory" data-toggle="tab"><i class="fa fa-history"></i> Geçmiş Görevler</button>
+							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-system" data-toggle="tab"><i class="fa fa-sliders-h"></i> Sistem Yönetimi </button>
+							<button role="tab" class="btn btn-info btn-sm computerActions " id="btn-package" data-toggle="tab"><i class="nav-link-icon fas fa-cubes"> </i> Paket ve Depo Yönetimi </button>
+							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-service" data-toggle="tab"><i class="nav-link-icon fas fa-tv"> </i> Servisler </button>
+							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-script" data-toggle="tab"><i class="fa fa-terminal"></i> Betik</button>
+							<button role="tab" class="btn btn-info btn-sm" id="btn-ssh" data-toggle="tab"><i class="fa fa-terminal"></i> SSH </button>
+							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-securityAndNetwork" data-toggle="tab"><i class="fa fa-network-wired"></i> Güvenlik ve Ağ Yönetimi</button>
+							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-taskHistory" data-toggle="tab"><i class="fa fa-history"></i> Geçmiş Görevler</button>
 						</div>
 					</div>
 					<div class="col-lg-2" >
@@ -118,6 +120,43 @@
 					  <div id="scriptManagementPage">
 						<div id="execute-script"></div>
 					  </div>
+					  
+					  <div id="sshPage">
+							<div class="col-lg-12">
+								<div class="form-row">
+									<div class="col-md-12">
+										<div class="position-relative form-group">
+											<label id="selectedAgentDNSSH" class="control-label">Lütfen İstemci Seçniz.</label> <label id="selectedAgentDNSSHIP" class="control-label"></label>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-6"> 
+									<div class="form-row">
+										<div class="col-md-3">
+											<div class="position-relative form-group">
+												<input type="text" class="form-control form-control-sm" id="sshUserName" placeholder="Kullanıcı adı giriniz...">
+											</div>
+										</div>
+										<div class="col-md-3">
+											<div class="position-relative form-group">
+												<input type="password" class="form-control form-control-sm" id="sshUserPassword" placeholder="Parola giriniz...">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="position-relative form-group">
+													<button id="btnSSHConnect" type="button" class="btn-shadow btn btn-info" title="SSH Bağlantı Kur"><i class="fa fa-redo-alt"> SSH Bağlantı Kur</i></button>
+													<button id="btnSSHDisconnect" type="button" class="btn-shadow btn btn-info" title="SSH Bağlantı Kapat"><i class="fa fa-redo-alt"> SSH Bağlantı Kapat</i></button>
+											</div>
+										</div>
+									</div>
+								</div>
+						    </div>
+						    <div class="col-lg-12" > 
+							    <div id="sshDisplay">
+							    </div>
+						    </div>
+					  </div>
+					  
 					  <div id="securityAndNetworkManagementPage">
 					 	 <div class="row">
 							<div class="col-lg-7">
@@ -129,7 +168,7 @@
 					  	</div>
 					  </div>
 					  
-					  <div id="taskHistoryPage">
+					  <div id="taskHistoryPage" style="height: 700px;">
 						<div id="selectedAgentInfoSection"> <b id="selectedAgentDN"></b></div>
 						<hr>
 						<div><button class="btn btn-info" id="getTaskHistoryBtn" data-toggle="tab"><i class="fa fa-history"></i> Geçmiş Görevleri Getir</button></div>

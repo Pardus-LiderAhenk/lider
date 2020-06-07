@@ -791,19 +791,22 @@ function fillUserInfo(ldapResult) {
 //	$('#userPasswordPolicy').html();
 	
 	var policy=""
-		if(passwordPoliciesGen){
+	if(passwordPoliciesGen){
 			for (var k = 0; k < passwordPoliciesGen.length; k++) {
 		    	  var row = passwordPoliciesGen[k];
 		    	  if(row.distinguishedName==ldapResult.attributes.pwdPolicySubentry){
 		    		  policy=row
 		    	  }
 			}
-		}
+	}
 	var html='<table class="table">';
 	
 	html += '<thead>';
 	html += '<tr>';
+	if(policy)
 	html += '<th colspan= 2>'+policy.name+'</th>';
+	else
+		html += '<th colspan= 2></th>';
 	html += '</tr>';
 	html += '</thead>';
     for (key in policy.attributes) {
@@ -857,7 +860,6 @@ function fillUserInfo(ldapResult) {
     html += '</table>';
     $("#userPolicyDetails").html("")
     $("#userPolicyDetails").html(html)
-    console.log(policy)
 	
 }
 
@@ -878,17 +880,15 @@ function fillUserSessions(ldapResult) {
 		data: 'uid='+ldapResult.attributes.uid,
 		dataType: "json",
 		success : function(sessionList) {
-			var html='<table class="table">';
-			
-			html += '<thead>';
-			html += '<th style="width: 10%" ></th>';
-			html += '<th style="width: 30%" >HOSTNAME</th>';
-			html += '<th style="width: 30%" >IP</th>';
-			html += '<th style="width: 30%" >DURUM</th>';
-			html += '<th style="width: 30%" >TARİH</th>';
-			html += '</thead>';
-			
-			if(sessionList){
+			if(sessionList.length>0){
+				var html='<table class="table">';
+				html += '<thead>';
+				html += '<th style="width: 10%" ></th>';
+				html += '<th style="width: 30%" >HOSTNAME</th>';
+				html += '<th style="width: 30%" >IP</th>';
+				html += '<th style="width: 30%" >DURUM</th>';
+				html += '<th style="width: 30%" >TARİH</th>';
+				html += '</thead>';
 				
 				console.log(sessionList)
 				for (var m = 0; m < sessionList.length; m++) {
@@ -903,9 +903,10 @@ function fillUserSessions(ldapResult) {
 					html += '</tr>';
 					
 				}
+				html += '</table>';
+				$("#sessionListDiv").html(html);
 			}
-			html += '</table>';
-			$("#sessionListDiv").html(html);
+			
 		},
 	    error: function (data, errorThrown) {
 		}

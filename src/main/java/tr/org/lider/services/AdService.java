@@ -73,7 +73,7 @@ public class AdService implements ILDAPService{
 		try {
 			String host = configurationService.getAdIpAddress();
 			String port = configurationService.getAdPort();
-			String userName = configurationService.getAdAdminUserName();
+			String userName = configurationService.getAdAdminUserFullDN();
 			String password = configurationService.getAdAdminPassword();
 			Boolean useSSL = configurationService.getLdapUseSsl(); 
 			Boolean allowSelfSignedCert =configurationService.getLdapAllowSelfSignedCert();
@@ -415,11 +415,23 @@ public class AdService implements ILDAPService{
 
 	@Override
 	public LdapEntry getDomainEntry() throws LdapException {
-		String domainName = configurationService.getAdDomainName(); 
-		domainName="DC=pardus,DC=tr";
+		String domainName = configurationService.getAdDomainName();
+		String domainNameStr="";
+		if(domainName!=null && !domainName.equals("")) {
+			String[] domainNameArr=  domainName.split("\\.");
+			if(domainNameArr.length>0) {
+				for (int i = 0; i < domainNameArr.length; i++) {
+					domainNameStr += "DC="+domainNameArr[i];
+					if(i!=domainNameArr.length-1) {
+						domainNameStr += ",";
+					}
+				}
+			}
+		}
+		logger.info("Searching on AD for DN: "+domainNameStr);
 		LdapEntry domainEntry = null;
 		try {
-			List<LdapEntry> list = findSubEntries(domainName, "(objectclass=*)",new String[] { "*" }, SearchScope.OBJECT);
+			List<LdapEntry> list = findSubEntries(domainNameStr, "(objectclass=*)",new String[] { "*" }, SearchScope.OBJECT);
 
 			if (list.size() > 0) {
 				domainEntry = list.get(0);

@@ -144,7 +144,7 @@ function getChildEntries(row) {
 				
 				for (var i = 0; i < childs.length; i++) {
 					var child=childs[i]
-					html += '<tr id="'+ child.attributesMultiValues.objectGUID +'">';
+					html += '<tr id="'+ child.attributesMultiValues.distinguishedName +'">';
 					var imgPath="";
 					if(child.type=="CONTAINER"){imgPath="img/entry_org.gif"}
 					if(child.type=="USER"){	imgPath="img/person.png"; }
@@ -242,6 +242,45 @@ function getChildEntries(row) {
 					}
 		        });
 				
+				entryTable.on('dblclick', 'tr', function () {
+				    var data = entryTable.row(this).data();
+				    console.log(data)
+				    console.log(data.DT_RowId)
+				    var dtSelectedRw=null
+				    for (var k = 0; k < childs.length; k++) {
+				    	var child=childs[k]
+				    	if(data.DT_RowId==child.attributesMultiValues.distinguishedName){
+				    		dtSelectedRw=child;
+				    	}
+				    }
+				    console.log(dtSelectedRw);
+				    
+				    $('#adInfoDet').html(dtSelectedRw.distinguishedName); 
+				    
+				    var members = "";
+					//to print members at different tab
+				    for (var key in dtSelectedRw.attributesMultiValues) {
+						if (dtSelectedRw.attributesMultiValues.hasOwnProperty(key) ) {
+							console.log(key)
+							for(var i = 0; i< dtSelectedRw.attributesMultiValues[key].length; i++) {
+								members += '<tr>';
+								members += '<td>' +key + '</td>';
+								members += '<td>' + dtSelectedRw.attributesMultiValues[key][i] + '</td>';
+								members += '</tr>';
+							}
+						}
+					}
+					if(members == "") {
+						members = '<tr><td colspan="100%" class="text-center">Kayıt bulunamadı</td></tr>';
+					}
+					$('#bodyMembers').html(members);
+					$('#adEntryDetailModal').modal('show'); 
+				} );
+
+//				$(document).on("dblclick", "#adChildEntryTable tr", function () {
+//					var ref = $(this).find('td:first').text();
+//				    alert(ref);
+//				});
 			}
 		});  
 }

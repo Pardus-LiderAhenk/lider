@@ -1,70 +1,333 @@
-<script type="text/javascript" src="js/plugins/profile/execute-script-profile.js"></script>
-<!-- <script type="text/javascript" src="js/policy/policy.js"></script> -->
+<script type="text/javascript" src="js/plugins/profile/browser-profile.js"></script>
+<link rel="stylesheet" href="css/policy.profile.css"/>
+
 <div class="login-form-1">
-	<div class="row">
-		<div class="col-lg-6">
-			<div class="main-card mb-3 card">
-				<div class="card-header">
-					<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-					<div>BETİK LİSTESİ</div>
-				</div>
-				<div class="card-body">
-					<table class="table table-striped table-bordered display table-hover"
-						id="scriptTableTemp" border="1">
-						<thead>
-							<tr>
-								<th style="width: 50%">Adı</th>
-								<th style="width: 25%">Türü</th>
-		<!-- 						<th style="width: 25%">Oluşturma Tarihi</th> -->
-							</tr>
-						</thead>
-						<tbody></tbody>
-					</table>
-				</div>
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">İnternet Tarayıcı Ayarları</div>
+			<div class="col-lg-6 text-right">
+				<button id="browserProfileSave" type="button" class="btn-shadow btn btn-info" title="Kaydet"><i class="fa fa-save"></i></button>
+				<button id="browserProfileDel" type="button" class="btn-shadow btn btn-info" title="Sil"><i class="fa fa-trash-alt"></i></button>
+				<button id="browserProfileUpdate" type="button" class="btn-shadow btn btn-info" title="Güncelle"><i class="fa fa-sync-alt"></i></button>
+				<button id="browserProfileAddToPolicy" type="button" class="btn-shadow btn btn-info" title="Politikaya Ekle"><i class="fa fa-layer-group"></i></button>
 			</div>
 		</div>
-		<div class="col-lg-6">
-			<div class="main-card mb-3 card">
-				<div class="card-header">
-					<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-					<div class="col-lg-6 text-left">Betik Profil Listesi</div>
-					<div class="col-lg-6 text-right">
-						<button id="scriptProfileSave" type="button" class="btn-shadow btn btn-info" title="Profil Kaydet"><i class="fa fa-save"></i></button>
-						<button id="scriptProfileDel" type="button" class="btn-shadow btn btn-info" title="Profil Sil"><i class="fa fa-trash-alt"></i></button>
-						<button id="scriptProfileUpdate" type="button" class="btn-shadow btn btn-info" title="Profil Güncelle"><i class="fa fa-sync-alt"></i></button>
-						<button id="scriptProfileAddToPolicy" type="button" class="btn-shadow btn btn-info" title="Politikaya Ekle"><i class="fa fa-layer-group"></i></button>
+		<div class="card-body">
+			<div class="form-row">
+				<div class="col-md-5">
+					<div class="position-relative form-group">
+						<label for="browserProfileNameForm" class="control-label">Ayar Adı</label>
+						<input type="text" class="form-control form-control-sm" id="browserProfileNameForm" placeholder="Ayar adı giriniz...">
 					</div>
 				</div>
-				<div class="card-body">
-					<div class="form-row">
-						<div class="col-md-5">
-							<div class="position-relative form-group">
-								<label for="scriptProfileNameForm" class="control-label">Profil Adı</label>
-								<input type="text" class="form-control form-control-sm" id="scriptProfileNameForm" placeholder="Profil adı giriniz...">
-							</div>
-						</div>
-						<div class="col-md-7">
-							<div class="position-relative form-group">
-								<label for="scriptProfileDescriptionForm" class="control-label">Profil Açıklaması</label>
-								<input type="text" class="form-control form-control-sm" id="scriptProfileDescriptionForm" placeholder="Açıklama giriniz...">
-							</div>
-						</div>
+				<div class="col-md-7">
+					<div class="position-relative form-group">
+						<label for="browserProfileDescriptionForm" class="control-label">Ayar Açıklaması</label>
+						<input type="text" class="form-control form-control-sm" id="browserProfileDescriptionForm" placeholder="Açıklama giriniz...">
 					</div>
-					<small class="text-muted">Yeni bir profil oluşturmak için betik seçiniz. Daha sonra profil adı ve açıklama girerek Profil Ekle butonuna tıklayınız. </small>
-					<br>
-					<table class="table table-striped table-bordered display table-hover" id="scriptProfileTable" border="1">
-						<thead>
-							<tr>
-								<th style="width: 25%">Profil Adı</th>
-								<th style="width: 50%">Açıklama</th>
-								<th style="width: 25%">Oluşturma Tarihi</th>
-							</tr>
-						</thead>
-						<tbody></tbody>
-					</table>
-					<small class="text-muted">Listeden bir profil seçerek silebilir, gücelleyebilirsiniz.. Politikada kullanmak için Politikaya Ekle butonuna tıklayınız</small>
 				</div>
 			</div>
+			<div class="profile">
+				<table class="table table-striped table-bordered" id="browserProfileTable" border="1">
+					<thead>
+						<tr>
+							<th style="width: 25%">Profil Adı</th>
+							<th style="width: 50%">Açıklama</th>
+							<th style="width: 25%">Oluşturma Tarihi</th>
+						</tr>
+					</thead>
+					<tbody id="browserProfileBody"></tbody>
+				</table>
+			</div>
+			<small class="text-muted">Listeden bir profil seçerek silebilir, gücelleyebilirsiniz. Politikada kullanmak için Politikaya Ekle butonuna tıklayınız</small>
+		</div>
+	</div>
+	<div class="main-card mb-3 card">
+		<div class="card-body">
+			<ul id="conkyTabsTask" class="nav nav-tabs">
+				<li class="nav-item"><a role="tab" class="nav-link active" data-toggle="tab" href="#browserGeneralSettingsTab"><span><i class="fa fa-home"></i> Genel</span></a></li>
+				<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#browserProxySettingsTab"><span><i class="fa fa-globe"></i> Vekil Sunucu</span></a></li>
+				<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#browserPrivacySettingsTab"><span><i class="fa fa-lock"></i> Gizlilik</span></a></li>
+				<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#browserSettingsTab"><span><i class="fa fa-cog"></i> Ayarlar</span></a></li>
+			</ul>
+			<div class="tab-content">
+			
+<!-- 				GENERAL SETTINGS -->
+				<div class="tab-pane fade" id="browserGeneralSettingsTab">
+					<p style="font-weight: bold;">Başlangıç</p>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="checkDefaultBrowser">
+					  		<label class="custom-control-label" for="checkDefaultBrowser">Firefox'un varsayılan tarayıcı olduğunu her zaman kontrol et</label>
+					  	</div>
+					</div>
+					<div class="row">
+						<div class="position-relative form-group col-md-6">
+							<label for="pageMode" class="control-label">Firefox başlatıldığında</label>
+							<select class="form-control form-control-sm" id="pageMode">
+								<option value="1">Anasayfayı göster</option>
+								<option value="0">Boş sayfa göster</option>
+								<option value="3">Geçen seferden kalan pencere ve sekmeleri göster</option>
+							</select>
+						</div>
+						<div class="position-relative form-group col-md-6">
+							<label for="homePage" class="control-label">Ana Sayfa</label>
+							<input type="text" class="form-control form-control-sm" id="homePage" placeholder="http://liderahenk.org/">
+						</div>
+					</div>
+					<br>
+					<p style="font-weight: bold;">İndirilenler</p>
+					<div class="form-row">
+						<div class="col-md-6">
+							<div class="custom-control custom-radio">
+								<input type="radio" id="downloadRadioBtn1" name=customDownloadRadioBtn class="custom-control-input">
+							  	<label class="custom-control-label" for="downloadRadioBtn1">Dosyaları buraya kaydet</label>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<input type="text" class="form-control form-control-sm" disabled="disabled" id="downloadDirectory" placeholder="İndirilenler">
+						</div>
+					</div>
+					<div class="custom-control custom-radio">
+					  	<input type="radio" id="downloadRadioBtn2" name="customDownloadRadioBtn" class="custom-control-input" checked="checked">
+					  	<label class="custom-control-label" for="downloadRadioBtn2">Dosyaların nereye kaydedileceğini her seferinde sor</label>
+					</div>
+					<br>
+					<p style="font-weight: bold;">Sekmeler</p>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="openNewWindow">
+					  		<label class="custom-control-label" for="openNewWindow">Bağlantıları yeni sekmede aç</label>
+					  	</div>
+					</div>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="warnOnClose">
+					  		<label class="custom-control-label" for="warnOnClose">Birden fazla sekme kapatılırken beni uyar</label>
+					  	</div>
+					</div>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="warnOnOpen">
+					  		<label class="custom-control-label" for="warnOnOpen">Firefox'un yavaşlamasına neden olabilecek sayıda sekme açılırken beni uyar</label>
+					  	</div>
+					</div>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="restoreOnDemond">
+					  		<label class="custom-control-label" for="restoreOnDemond">Seçilene kadar sekmeleri yükleme</label>
+					  	</div>
+					</div>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="loadInBackground">
+					  		<label class="custom-control-label" for="loadInBackground">Yeni sekme açıldığında, ona geç</label>
+					  	</div>
+					</div>
+					<br>
+					<p style="font-weight: bold;">Eklenti kurulumu</p>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="enableXpInstall">
+					  		<label class="custom-control-label" for="enableXpInstall">Eklenti kurulumunu engelle</label>
+					  	</div>
+					</div>
+				</div>
+				
+<!-- 				PROXY SETTINGS -->
+				<div class="tab-pane fade" id="browserProxySettingsTab">
+				<p style="font-weight: bold;">İnternete Erişmek İçin Vekil Sunucu Yapılandır</p>
+					<div>
+						<select class="form-control form-control-sm" id="proxyType">
+							<option value="0" selected="selected">Vekil sunucu kullanma</option>
+							<option value="1">Elle yapılandır</option>
+							<option value="2">Otomatik vekil sunucu yapılandırma URL'i</option>
+							<option value="3">Sistem vekil sunucu ayarlarını kullan</option>
+							<option value="4">Bu ağ için vekil sunucu ayarlarını otomatik keşfet</option>
+						</select>
+					</div>
+					<br>
+					<p style="font-weight: bold;">Elle Yapılandırma</p>
+					<div class="form-row">
+						<div class="position-relative form-group col-md-8">
+							<label for="httpProxy" class="control-label">HTTP Vekil Sunucu</label>
+							<input type="text" class="form-control form-control-sm proxy-settings" id="httpProxy" disabled="disabled">
+						</div>
+						<div class="position-relative form-group col-md-4">
+							<label for="httpPort" class="control-label">HTTP Port</label>
+							<input type="text" class="form-control form-control-sm proxy-settings" id="httpPort" disabled="disabled">
+						</div>
+					</div>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb proxy-settings" id="useThisServerForAllProtocols" disabled="disabled">
+					  		<label class="custom-control-label" for="useThisServerForAllProtocols">Tüm protokoller için bu sunucuyu kullan</label>
+					  	</div>
+					</div>
+					<div class="form-row">
+						<div class="position-relative form-group col-md-8">
+							<label for="sslProxy" class="control-label">SSL Vekil Sunucu</label>
+							<input type="text" class="form-control form-control-sm proxy-settings" id="sslProxy" disabled="disabled">
+						</div>
+						<div class="position-relative form-group col-md-4">
+							<label for="sslPort" class="control-label">SSL Port</label>
+							<input type="text" class="form-control form-control-sm proxy-settings" id="sslPort" disabled="disabled">
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="position-relative form-group col-md-8">
+							<label for="ftpProxy" class="control-label">FTP Vekil Sunucu</label>
+							<input type="text" class="form-control form-control-sm proxy-settings" id="ftpProxy" disabled="disabled">
+						</div>
+						<div class="position-relative form-group col-md-4">
+							<label for="ftpPort" class="control-label">FTP Port</label>
+							<input type="text" class="form-control form-control-sm proxy-settings" id="ftpPort" disabled="disabled">
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="position-relative form-group col-md-8">
+							<label for="socksProxy" class="control-label">SOCKS Vekil Sunucu</label>
+							<input type="text" class="form-control form-control-sm proxy-settings" id="socksProxy" disabled="disabled">
+						</div>
+						<div class="position-relative form-group col-md-2">
+							<label for="socksPort" class="control-label">SOCKS Port</label>
+							<input type="text" class="form-control form-control-sm" id="socksPort" disabled="disabled">
+						</div>
+						<div class="position-relative form-group col-md-2">
+							<label for="socksVersion" class="control-label">SOCKS Sürümü</label>
+							<select class="form-control form-control-sm" id="socksVersion" disabled="disabled">
+								<option value="4" selected="selected">4</option>
+								<option value="5">5</option>
+							</select>
+						</div>
+					</div>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb proxy-settings" id="remoteDns" disabled="disabled">
+					  		<label class="custom-control-label" for="remoteDns">Uzak DNS</label>
+					  	</div>
+					</div>
+					<div class="position-relative form-group">
+						<label for="noProxyOn" class="control-label">Vekil Sunucu Kullanma</label>
+						<textarea class="form-control form-control-sm proxy-settings" id="noProxyOn" rows="4" disabled="disabled">localhost, 127.0.0.1</textarea>
+					</div>
+					<div class="position-relative form-group">
+						<label for="autoProxyConfigUrl" class="control-label" style="font-weight: bold;">Oromatik Vekil Sunucu Yapılandırma URL'i</label>
+						<input type="text" class="form-control form-control-sm proxy-settings" id="autoProxyConfigUrl" disabled="disabled">
+					</div>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb proxy-settings" id="dontPromptForAuth" disabled="disabled">
+					  		<label class="custom-control-label" for="dontPromptForAuth">Eğer parola kaydedildiyse yetkilendirme için sorma</label>
+					  	</div>
+					</div>
+				</div>
+				
+<!-- 				PRIVACY SETTINGS -->
+				<div class="tab-pane fade" id="browserPrivacySettingsTab">
+					<p style="font-weight: bold;">Takip Edilme</p>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="dontWantToBeTracked">
+					  		<label class="custom-control-label" for="dontWantToBeTracked">Sitelere takip edilmek istemediğimi söyle</label>
+					  	</div>
+					</div>
+					<br>
+					<p style="font-weight: bold;">Geçmiş</p>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="rememberBrowsingDownloadHistory">
+					  		<label class="custom-control-label" for="rememberBrowsingDownloadHistory">Gezinme ve indirme geçmişini hatırla</label>
+					  	</div>
+					</div>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="rememberSearchFormHistory">
+					  		<label class="custom-control-label" for="rememberSearchFormHistory">Arama ve form geçmişini hatırla</label>
+					  	</div>
+					</div>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="acceptCookiesFromSites">
+					  		<label class="custom-control-label" for="acceptCookiesFromSites">Çerezleri kabul et</label>
+					  	</div>
+					</div>
+					<div class="form-row">
+						<div class="position-relative form-group col-md-3">
+							<label for="acceptThirdPartyCookies" class="control-label">Üçüncü şahıs çerezleri kabul et</label>
+							<select class="form-control form-control-sm" id="acceptThirdPartyCookies" disabled="disabled">
+								<option value="0">Her zaman</option>
+								<option value="3">Ziyaret edilenlerden</option>
+								<option value="2" selected="selected">Asla</option>
+							</select>
+						</div>
+						<div class="position-relative form-group col-md-3">
+							<label for="keepCookiesUntil" class="control-label">Şu zamana dek tut</label>
+							<select class="form-control form-control-sm" id="keepCookiesUntil" disabled="disabled">
+								<option value="0">Süresi dolana dek tut</option>
+								<option value="2">Firefox kapatıldığında</option>
+							</select>
+						</div>
+					</div>
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input firefox-cb" id="clearHistoryOnClose">
+					  		<label class="custom-control-label" for="clearHistoryOnClose">Firefox kapatıldığında geçmişi temizle</label>
+					  	</div>
+					</div>
+					<br>
+					<p style="font-weight: bold;">Adres Çubuğu (Adres çubuğunu kullanırken, öner)</p>
+					<div class="form-row">
+						<div class="col-md-3">
+							<div class="custom-control custom-switch">
+								<div>
+									<input type="checkbox" class="custom-control-input firefox-cb" id="suggestHistory">
+							  		<label class="custom-control-label" for="suggestHistory">Geçmiş</label>
+							  	</div>
+							</div>
+						</div>
+						<div class="col-md-3">
+						<div class="custom-control custom-switch">
+							<div>
+								<input type="checkbox" class="custom-control-input firefox-cb" id="suggestBookmarks">
+						  		<label class="custom-control-label" for="suggestBookmarks">Yer imleri</label>
+						  	</div>
+						</div>
+						</div>
+						<div class="col-md-3">
+						<div class="custom-control custom-switch">
+							<div>
+								<input type="checkbox" class="custom-control-input firefox-cb" id="suggestOpenTabs">
+						  		<label class="custom-control-label" for="suggestOpenTabs">Açık sekmeler</label>
+						  	</div>
+						</div>
+						</div>
+					</div>
+				</div>
+				
+<!-- 				BROWSER SETTINGS -->
+				<div class="tab-pane fade" id="browserSettingsTab">
+					<div class="form-row">
+							<div class="col-md-6"><input type="text" class="form-control form-control-sm" id="preferenceName" placeholder="Özellik Adı"></div>
+							<div class="col-md-5"><input type="text" class="form-control form-control-sm" id="preferenceValue" placeholder="Değer"></div>
+							<div class="col-md-1"><button id="addPreferenceBtn" type="button" class="btn-shadow btn btn-info btn-sm"><i class="fa"></i>Ekle</button></div>
+					</div>
+					<br>
+					<div class="browser">
+						<table class="table table-sm table-striped table-bordered" id="browserPreferenceTable" style="line-height: 10px;">
+							<thead>
+								<tr>
+									<th style="width: 50%">Özellik Adı</th>
+									<th style="width: 40%">Değer</th>
+									<th style="width: 10%">#</th>
+								</tr>
+							</thead>
+							<tbody id="browserPreferenceBody"></tbody>
+						</table>
+					</div>
+				</div>
+          	</div>
 		</div>
 	</div>
 </div>

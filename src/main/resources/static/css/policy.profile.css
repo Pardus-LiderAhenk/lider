@@ -33,3 +33,9 @@
 .script-scroll table tr {
 	line-height: 10px;
 }
+
+.browser {
+	height: 370px;
+	overflow-y: auto;
+	overflow-x: auto;
+}

@@ -1515,15 +1515,12 @@ $("#policyApplyBtn").click(function(e){
 				selectedPolicy = policyList[i];
 			}
 		}
-		console.log(selectedRow)
-		console.log(selectedDN)
 		var params ={
 				"id" : selectedPolicy.id,
 				"dnType" : selectedRow.type,
 				"dnList" : [selectedDN],
 		}
 		var paramsJson = JSON.stringify(params);
-		console.log(params)
 		$.ajax({
 			type: "POST",
 			url: "/policy/execute",
@@ -1538,11 +1535,10 @@ $("#policyApplyBtn").click(function(e){
 			},
 			success: function(result) {
 				var res = jQuery.parseJSON(result);
-				console.log(res)
+				$.notify("Politika başarıyla uygulandı.", "success");
 			},
 			error: function(result) {
 				$.notify(result, "error");
-				console.log(result)
 			}
 		});
 

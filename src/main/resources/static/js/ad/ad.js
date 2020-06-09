@@ -311,6 +311,13 @@ function btnSyncUserAd2LdapClicked() {
 		contentType: "application/json",
 		success: function(result) {
 			console.log(result)
+			if(result){
+				$.notify("Kullanıcı başarı ile LDAP a aktarıldı.", "success");
+			}else{
+				$.notify("Kullanıcı aktarılırken sorun oluştu.", "warn");
+			}
+			$('#genericModalLarge').trigger('click');
+			
 		},
 		error: function(result) {
 			$.notify(result, "error");

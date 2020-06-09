@@ -128,8 +128,8 @@ $(document).ready(function(){
 				$('#genericModalBodyRender').html(data);
 				
 				$('#uidEdit').val(selectedRowGen.attributes.uid)
-				$('#cnEdit').val(selectedRowGen.name)
-				$('#snEdit').val(selectedRowGen.sn)
+				$('#cnEdit').val(selectedRowGen.attributes.cn)
+				$('#snEdit').val(selectedRowGen.attributes.sn)
 				$('#telephoneNumberEdit').val(selectedRowGen.attributes.telephoneNumber)
 				$('#homePostalAddressEdit').val(selectedRowGen.attributes.homePostalAddress)
 				$('#userPasswordEdit').val(selectedRowGen.userPassword)
@@ -774,11 +774,12 @@ function getLastUser() {
 }
 
 function fillUserInfo(ldapResult) {
-	
+	console.log(ldapResult)
 	$('#userName').html("");
 	$('#userAddress').html("");
 	$('#userPhone').html("");
 	$('#userMail').html("");
+	$('#userAd').html("");
 	
 	$('#userId').html(ldapResult.attributes.uid);
 	$('#userName').html(ldapResult.cn +" "+ldapResult.sn);
@@ -788,6 +789,7 @@ function fillUserInfo(ldapResult) {
 	$('#userMail').html(ldapResult.attributes.mail);
 	$('#userHomeDirectory').html(ldapResult.attributes.homeDirectory);
 	$('#userDistinguishedName').html(ldapResult.distinguishedName);
+	$('#userAd').html(ldapResult.attributes.employeeType);
 //	$('#userPasswordPolicy').html();
 	
 	var policy=""

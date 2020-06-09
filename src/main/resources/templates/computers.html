@@ -121,28 +121,33 @@
 						<div id="execute-script"></div>
 					  </div>
 					  
-					  <div id="sshPage">
+				  <div id="sshPage">
 							<div class="col-lg-12">
 								<div class="form-row">
 									<div class="col-md-12">
 										<div class="position-relative form-group">
-											<label id="selectedAgentDNSSH" class="control-label">Lütfen İstemci Seçniz.</label> <label id="selectedAgentDNSSHIP" class="control-label"></label>
+											<div class="col-md-6"> <label id="selectedAgentDNSSH" class="control-label">Lütfen İstemci Seçiniz..</label>  </div>
 										</div>
 									</div>
 								</div>
-								<div class="col-lg-6"> 
+								<div class="col-lg-12"> 
 									<div class="form-row">
-										<div class="col-md-3">
+										<div class="col-md-4">
+											<div class="position-relative form-group">
+												<input id="selectedAgentDNSSHIP"  type="text" class="form-control form-control-sm" />
+											</div>
+										</div>
+										<div class="col-md-2">
 											<div class="position-relative form-group">
 												<input type="text" class="form-control form-control-sm" id="sshUserName" placeholder="Kullanıcı adı giriniz...">
 											</div>
 										</div>
-										<div class="col-md-3">
+										<div class="col-md-2">
 											<div class="position-relative form-group">
 												<input type="password" class="form-control form-control-sm" id="sshUserPassword" placeholder="Parola giriniz...">
 											</div>
 										</div>
-										<div class="col-md-6">
+										<div class="col-md-4">
 											<div class="position-relative form-group">
 													<button id="btnSSHConnect" type="button" class="btn-shadow btn btn-info" title="SSH Bağlantı Kur"><i class="fa fa-redo-alt"> SSH Bağlantı Kur</i></button>
 													<button id="btnSSHDisconnect" type="button" class="btn-shadow btn btn-info" title="SSH Bağlantı Kapat"><i class="fa fa-redo-alt"> SSH Bağlantı Kapat</i></button>

@@ -747,7 +747,10 @@ function showSelectedEntries() {
 		dataType: 'json',
 		success: function (data) {
 			selectedRowDataFromDB=data;
-			$("#selectedAgentDNSSHIP").text("IP : "+selectedRowDataFromDB.ipAddresses);
+			
+			var ipAddress= selectedRowDataFromDB.ipAddresses.replace(/\'/g, '');
+			
+			$("#selectedAgentDNSSHIP").val(ipAddress);
 			if(data.properties.length > 0) {
 				var year = data.createDate.substring(0,4);
 				var month = data.createDate.substring(5,7);
@@ -895,13 +898,18 @@ function SHHConnect(){
 	
 	var sshUserName=$("#sshUserName").val();
 	var sshUserPassword=$("#sshUserPassword").val();
+	var ip=$("#selectedAgentDNSSHIP").val();
+	if(ip.includes(",")){
+		$.notify("Lütfen IP adresini kontrol ediniz.", "warn");
+		return;
+	}
 	if(sshUserName=="" | sshUserPassword ==""){
 		$.notify("Lütfen kullanıcı adı veya parola giriniz.", "warn");
 		return;
 	}
 	var params = {
 			"protocol" : "ssh",
-			"host" : selectedRowDataFromDB.ipAddresses,
+			"host" : ip,
 			"port": "22",
 			"password": sshUserPassword,
 			"username": sshUserName
@@ -951,14 +959,13 @@ function displaySSHConnection() {
     }
     
     var mouse = new Guacamole.Mouse(guac.getDisplay().getElement());
-    mouse.onmousemove = function(mouseState) {
-        guac.sendMouseState(mouseState);
-    };
-
-    mouse.onmouseup = function(mouseState) {
-     };
-     mouse.onmousedown = function(mouseState) {
-     };
+    
+    
+    mouse.onmousedown = 
+        mouse.onmouseup   =
+        mouse.onmousemove = function(mouseState) {
+            guac.sendMouseState(mouseState);
+        };
     // Keyboard
     var keyboard = new Guacamole.Keyboard(document);
 

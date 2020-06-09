@@ -12,6 +12,7 @@
     <div>
     <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script> 
 	<script type="text/javascript" src="js/bootstrap.min.js"></script> 
+	<script type="text/javascript" src="js/notify.min.js"></script>
 		<!-- Guacamole -->
         <script type="text/javascript"  src="js/guacamole-common-js/all.min.js"></script>
     	
@@ -31,51 +32,60 @@
             var display = document.getElementById("display");
 
             // Instantiate client, using an HTTP tunnel for communications.
-            var guac = new Guacamole.Client(
+           var guac = new Guacamole.Client(
                 new Guacamole.HTTPTunnel("tunnel")
             );
 
-            // Add client to display div
-            display.append(guac.getDisplay().getElement());
-            
-            // Error handler
-            guac.onerror = function(error) {
-            	console.log(error)
-                alert(error);
-            };
+            console.log(guac)
+            if(guac == null){
+            	$.notify("Uzak Masaüstü sunucusunda hata oluştu", "warn");
+            }else{
+            	 // Add client to display div
+                display.append(guac.getDisplay().getElement());
+                
+                // Error handler
+                guac.onerror = function(error) {
+                	console.log(error)
+                	$.notify("Uzak Masaüstü sunucusunda hata oluştu", "warn");
+                };
 
-            // Connect
-            guac.connect();
+                // Connect
+                guac.connect();
 
-            // Disconnect on close
-            window.onunload = function() {
-                guac.disconnect();
-            }
-            
-            var mouse = new Guacamole.Mouse(guac.getDisplay().getElement());
+                // Disconnect on close
+                window.onunload = function() {
+                    guac.disconnect();
+                }
+                
+                var mouse = new Guacamole.Mouse(guac.getDisplay().getElement());
 
-            mouse.onmousemove = function(mouseState) {
-                guac.sendMouseState(mouseState);
-            };
-           
+                mouse.onmousedown = 
+                    mouse.onmouseup   =
+                    mouse.onmousemove = function(mouseState) {
+                        guac.sendMouseState(mouseState);
+                    };
+               
 
-            // Keyboard
-            var keyboard = new Guacamole.Keyboard(document);
+                // Keyboard
+                var keyboard = new Guacamole.Keyboard(document);
 
-            keyboard.onkeydown = function (keysym) {
-                guac.sendKeyEvent(1, keysym);
-            };
+                keyboard.onkeydown = function (keysym) {
+                    guac.sendKeyEvent(1, keysym);
+                };
 
-            keyboard.onkeyup = function (keysym) {
-                guac.sendKeyEvent(0, keysym);
-            };
-            
-            $(document).ready(function(){
-            	$('#btnDisconnectVCN').click(function(e){
-            		guac.disconnect();
-             		$('#display').hide()
+                keyboard.onkeyup = function (keysym) {
+                    guac.sendKeyEvent(0, keysym);
+                };
+                
+                $(document).ready(function(){
+                	$('#btnDisconnectVCN').click(function(e){
+                		guac.disconnect();
+                 		$('#display').hide()
+                    });
                 });
-            });
+            }
+
+           
 
         /* ]]> */ </script>
         

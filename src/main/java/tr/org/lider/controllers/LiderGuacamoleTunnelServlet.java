@@ -36,31 +36,40 @@ public class LiderGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request)
-        throws GuacamoleException {
-
+         {
+    	try {
         // Create our configuration
-    	if(PROTOCOL!="" && HOST!="" && PORT!="" && PASSWORD!="") {
-	        GuacamoleConfiguration config = new GuacamoleConfiguration();
-	        config.setProtocol(PROTOCOL);
-	        if(PROTOCOL.equals("ssh")) {
-	            config.setParameter("hostname", "192.168.56.103");
-	            config.setParameter("port", PORT);
-	            config.setParameter("password", PASSWORD);
-	            config.setParameter("username", USERNAME);
-	        }
-	        else if(PROTOCOL.equals("vnc")) {
-	          config.setParameter("hostname", HOST);
-	          config.setParameter("port", PORT);
-	          config.setParameter("password", PASSWORD);
-	        }
-	        // Connect to guacd - everything is hard-coded here.
-	        GuacamoleSocket socket = new ConfiguredGuacamoleSocket(new InetGuacamoleSocket("localhost", 4822), config);
-	        // Return a new tunnel which uses the connected socket
-	        return new SimpleGuacamoleTunnel(socket);
-	    	}
-    	else {
-    		return null;
+	    	if(PROTOCOL!="" && HOST!="" && PORT!="" && PASSWORD!="") {
+		        GuacamoleConfiguration config = new GuacamoleConfiguration();
+		        config.setProtocol(PROTOCOL);
+		        if(PROTOCOL.equals("ssh")) {
+		        	String host= HOST.trim();
+		            config.setParameter("hostname", host);
+		            config.setParameter("port", PORT);
+		            config.setParameter("password", PASSWORD);
+		            config.setParameter("username", USERNAME);
+		        }
+		        else if(PROTOCOL.equals("vnc")) {
+		          config.setParameter("hostname", HOST);
+		          config.setParameter("port", PORT);
+		          config.setParameter("password", PASSWORD);
+		        }
+		        // Connect to guacd - everything is hard-coded here.
+		        GuacamoleSocket socket;
+				
+					socket = new ConfiguredGuacamoleSocket(new InetGuacamoleSocket("10.200.87.51", 4822), config);
+				
+		        // Return a new tunnel which uses the connected socket
+		        return new SimpleGuacamoleTunnel(socket);
+		    	}
+	    	else {
+	    		return null;
     		}
+    
+    	} catch (GuacamoleException e) {
+			e.printStackTrace();
+			return null;
+		}
     }
     
     @Override

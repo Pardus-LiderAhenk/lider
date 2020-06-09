@@ -63,12 +63,12 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 //	private IMessageFactory messageFactory;
 
 	@Override
-	public IExecutePoliciesMessage messageReceived(IGetPoliciesMessage message) throws Exception {
+	public List<IExecutePoliciesMessage> messageReceived(IGetPoliciesMessage message) throws Exception {
 
 		String agentUid = message.getFrom().split("@")[0];
 		String userUid = message.getUsername();
 		String userPolicyVersion = message.getUserPolicyVersion();
-		String agentPolicyVersion = message.getAgentPolicyVersion();
+		//String agentPolicyVersion = message.getAgentPolicyVersion();
 
 		// Find LDAP user entry
 		String userDn = findUserDn(userUid);
@@ -87,67 +87,97 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 		PolicyImpl userPolicy = null;
 		Long userCommandExecutionId = null;
 		Date userExpirationDate = null;
-		if (resultList != null && !resultList.isEmpty() && resultList.get(0) != null && resultList.get(0).length >= 3) {
-			userPolicy = (PolicyImpl) resultList.get(0)[0];
-			userCommandExecutionId = ((CommandExecutionImpl) resultList.get(0)[1]).getId();
-			userExpirationDate = ((CommandImpl) resultList.get(0)[2]).getExpirationDate();
+//		if (resultList != null && !resultList.isEmpty() && resultList.get(0) != null && resultList.get(0).length >= 3) {
+//			userPolicy = (PolicyImpl) resultList.get(0)[0];
+//			userCommandExecutionId = ((CommandExecutionImpl) resultList.get(0)[1]).getId();
+//			userExpirationDate = ((CommandImpl) resultList.get(0)[2]).getExpirationDate();
+//		}
+		List<IExecutePoliciesMessage> executePoliciesMessageList = new ArrayList<IExecutePoliciesMessage>();
+		if(resultList != null && !resultList.isEmpty()) {
+			for (int i = 0; i < resultList.size(); i++) {
+				userPolicy = (PolicyImpl) resultList.get(i)[0];
+				userCommandExecutionId = ((CommandExecutionImpl) resultList.get(i)[1]).getId();
+				userExpirationDate = ((CommandImpl) resultList.get(i)[2]).getExpirationDate();
+				boolean sendUserPolicy = userPolicy != null && userPolicy.getPolicyVersion() != null && !userPolicy.getPolicyVersion().equalsIgnoreCase(userPolicyVersion);
+				// Check if one of the plugins use file transfer
+				boolean usesFileTransfer = false;
+				if (sendUserPolicy) {
+					for (ProfileImpl profile : userPolicy.getProfiles()) {
+						if (profile.getPlugin() != null && profile.getPlugin().isUsesFileTransfer()) {
+							usesFileTransfer = true;
+							break;
+						}
+					}
+				}
+				IExecutePoliciesMessage response = new ExecutePoliciesMessageImpl(
+						null, 
+						userUid,
+						sendUserPolicy ? new ArrayList<ProfileImpl>(userPolicy.getProfiles()) : null,
+						userPolicy != null ? userPolicy.getPolicyVersion() : null, 
+					    userCommandExecutionId,
+						sendUserPolicy ? userExpirationDate : null,
+						null, null, null, null,
+						new Date(),
+						usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null
+						);
+				executePoliciesMessageList.add(response);
+				
+				
+			}
 		}
 		// If policy version is different than the policy version provided by
 		// user who is logged in, send its profiles to agent.
-		boolean sendUserPolicy = userPolicy != null && userPolicy.getPolicyVersion() != null && !userPolicy.getPolicyVersion().equalsIgnoreCase(userPolicyVersion);
+		//boolean sendUserPolicy = userPolicy != null && userPolicy.getPolicyVersion() != null && !userPolicy.getPolicyVersion().equalsIgnoreCase(userPolicyVersion);
 
 		// Find agent policy.
-//		resultList = policyDao.getLatestAgentPolicy(agentUid);
-		resultList =null;
-		PolicyImpl agentPolicy = null;
-		Long agentCommandExecutionId = null;
-		Date agentExpirationDate = null;
-		if (resultList != null && !resultList.isEmpty() && resultList.get(0) != null && resultList.get(0).length >= 3) {
-			agentPolicy = (PolicyImpl) resultList.get(0)[0];
-			agentCommandExecutionId = (Long) resultList.get(0)[1];
-			agentExpirationDate = (Date) resultList.get(0)[2];
-		}
-		// If policy version is different than the policy version provided by
-		// agent, send its profiles to agent.
-		boolean sendAgentPolicy = agentPolicy != null && agentPolicy.getPolicyVersion() != null
-				&& !agentPolicy.getPolicyVersion().equalsIgnoreCase(agentPolicyVersion);
-
-		// Check if one of the plugins use file transfer
-		boolean usesFileTransfer = false;
-		if (sendUserPolicy) {
-			for (ProfileImpl profile : userPolicy.getProfiles()) {
-				if (profile.getPlugin() != null && profile.getPlugin().isUsesFileTransfer()) {
-					usesFileTransfer = true;
-					break;
-				}
-			}
-		}
-		if (!usesFileTransfer && sendAgentPolicy) {
-			for (ProfileImpl profile : agentPolicy.getProfiles()) {
-				if (profile.getPlugin() != null && profile.getPlugin().isUsesFileTransfer()) {
-					usesFileTransfer = true;
-					break;
-				}
-			}
-		}
-		// Create message
-		IExecutePoliciesMessage response = new ExecutePoliciesMessageImpl(
-				null, 
-				userUid,
-				sendUserPolicy ? new ArrayList<ProfileImpl>(userPolicy.getProfiles()) : null,
-				userPolicy != null ? userPolicy.getPolicyVersion() : null, 
-			    userCommandExecutionId,
-				sendUserPolicy ? userExpirationDate : null,
-				sendAgentPolicy ? new ArrayList<ProfileImpl>(agentPolicy.getProfiles()) : null,
-				agentPolicy != null ? agentPolicy.getPolicyVersion() : null, 
-			    agentCommandExecutionId,
-				sendAgentPolicy ? agentExpirationDate : null,
-				new Date(),
-				usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null
-						);
 		
-		logger.debug("Execute policies message: {}", response);
-		return response;
+//		resultList =null;
+//		PolicyImpl agentPolicy = null;
+//		Long agentCommandExecutionId = null;
+//		Date agentExpirationDate = null;
+//		if (resultList != null && !resultList.isEmpty() && resultList.get(0) != null && resultList.get(0).length >= 3) {
+//			agentPolicy = (PolicyImpl) resultList.get(0)[0];
+//			agentCommandExecutionId = (Long) resultList.get(0)[1];
+//			agentExpirationDate = (Date) resultList.get(0)[2];
+//		}
+//		// If policy version is different than the policy version provided by
+//		// agent, send its profiles to agent.
+//		boolean sendAgentPolicy = agentPolicy != null && agentPolicy.getPolicyVersion() != null
+//				&& !agentPolicy.getPolicyVersion().equalsIgnoreCase(agentPolicyVersion);
+//
+//		// Check if one of the plugins use file transfer
+//		boolean usesFileTransfer = false;
+//		if (sendUserPolicy) {
+//			for (ProfileImpl profile : userPolicy.getProfiles()) {
+//				if (profile.getPlugin() != null && profile.getPlugin().isUsesFileTransfer()) {
+//					usesFileTransfer = true;
+//					break;
+//				}
+//			}
+//		}
+//		if (!usesFileTransfer && sendAgentPolicy) {
+//			for (ProfileImpl profile : agentPolicy.getProfiles()) {
+//				if (profile.getPlugin() != null && profile.getPlugin().isUsesFileTransfer()) {
+//					usesFileTransfer = true;
+//					break;
+//				}
+//			}
+//		}
+		// Create message
+//		IExecutePoliciesMessage response = new ExecutePoliciesMessageImpl(
+//				null, 
+//				userUid,
+//				sendUserPolicy ? new ArrayList<ProfileImpl>(userPolicy.getProfiles()) : null,
+//				userPolicy != null ? userPolicy.getPolicyVersion() : null, 
+//			    userCommandExecutionId,
+//				sendUserPolicy ? userExpirationDate : null,
+//				null, null, null, null,
+//				new Date(),
+//				usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null
+//				);
+		
+		logger.debug("Execute policies message: {}", executePoliciesMessageList);
+		return executePoliciesMessageList;
 	}
 
 	/**

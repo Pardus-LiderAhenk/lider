@@ -1,5 +1,7 @@
 package tr.org.lider.messaging.subscribers;
 
+import java.util.List;
+
 import tr.org.lider.messaging.messages.IExecutePoliciesMessage;
 import tr.org.lider.messaging.messages.IGetPoliciesMessage;
 
@@ -17,6 +19,6 @@ public interface IPolicySubscriber {
 	 * @return
 	 * @throws Exception
 	 */
-	IExecutePoliciesMessage messageReceived(IGetPoliciesMessage message) throws Exception;
+	List<IExecutePoliciesMessage> messageReceived(IGetPoliciesMessage message) throws Exception;
 
 }

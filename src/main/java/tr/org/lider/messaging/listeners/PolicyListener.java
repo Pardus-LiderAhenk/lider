@@ -1,7 +1,10 @@
 package tr.org.lider.messaging.listeners;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
+
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.filter.StanzaFilter;
@@ -9,9 +12,11 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tr.org.lider.messaging.messages.GetPoliciesMessageImpl;
+import tr.org.lider.messaging.messages.IExecutePoliciesMessage;
 import tr.org.lider.messaging.messages.ILiderMessage;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.messaging.subscribers.IPolicySubscriber;
@@ -71,9 +76,11 @@ public class PolicyListener implements StanzaListener, StanzaFilter {
 				message.setFrom(msg.getFrom());
 
 				if (subscriber != null) {
-					ILiderMessage response = subscriber.messageReceived(message);
+					List<IExecutePoliciesMessage> responseExecutePoliciesMessageList = subscriber.messageReceived(message);
+					List<ILiderMessage> responseLiderMessage = new ArrayList<ILiderMessage>();
+					responseLiderMessage.addAll(responseExecutePoliciesMessageList);
 					logger.debug("Notified subscriber => {}", subscriber);
-					client.sendMessage(new ObjectMapper().writeValueAsString(response), msg.getFrom());
+					client.sendMessage(new ObjectMapper().writeValueAsString(responseLiderMessage.get(0)), msg.getFrom());
 				}
 			}
 		} catch (Exception e) {

@@ -57,7 +57,7 @@ public class LiderGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 		        // Connect to guacd - everything is hard-coded here.
 		        GuacamoleSocket socket;
 				
-					socket = new ConfiguredGuacamoleSocket(new InetGuacamoleSocket("10.200.87.51", 4822), config);
+					socket = new ConfiguredGuacamoleSocket(new InetGuacamoleSocket("localhost", 4822), config);
 				
 		        // Return a new tunnel which uses the connected socket
 		        return new SimpleGuacamoleTunnel(socket);

@@ -38,6 +38,7 @@ import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.messaging.messages.ExecutePoliciesMessageImpl;
+import tr.org.lider.messaging.messages.ExecutePolicyImpl;
 import tr.org.lider.messaging.messages.IExecutePoliciesMessage;
 import tr.org.lider.messaging.messages.IGetPoliciesMessage;
 import tr.org.lider.repositories.PolicyRepository;
@@ -92,7 +93,9 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 //			userCommandExecutionId = ((CommandExecutionImpl) resultList.get(0)[1]).getId();
 //			userExpirationDate = ((CommandImpl) resultList.get(0)[2]).getExpirationDate();
 //		}
-		List<IExecutePoliciesMessage> executePoliciesMessageList = new ArrayList<IExecutePoliciesMessage>();
+		List<IExecutePoliciesMessage> executePolicyList = new ArrayList<IExecutePoliciesMessage>();
+		ExecutePoliciesMessageImpl response = new ExecutePoliciesMessageImpl();
+		
 		if(resultList != null && !resultList.isEmpty()) {
 			for (int i = 0; i < resultList.size(); i++) {
 				userPolicy = (PolicyImpl) resultList.get(i)[0];
@@ -109,18 +112,29 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 						}
 					}
 				}
-				IExecutePoliciesMessage response = new ExecutePoliciesMessageImpl(
-						null, 
-						userUid,
-						sendUserPolicy ? new ArrayList<ProfileImpl>(userPolicy.getProfiles()) : null,
-						userPolicy != null ? userPolicy.getPolicyVersion() : null, 
-					    userCommandExecutionId,
-						sendUserPolicy ? userExpirationDate : null,
-						null, null, null, null,
-						new Date(),
-						usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null
-						);
-				executePoliciesMessageList.add(response);
+				ExecutePolicyImpl policy = new ExecutePolicyImpl();
+				policy.setAgentCommandExecutionId(null);
+				policy.setAgentPolicyExpirationDate(null);
+				policy.setAgentPolicyProfiles(null);
+				policy.setAgentPolicyVersion(null);
+				policy.setFileServerConf(usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null);
+				policy.setUserCommandExecutionId(userCommandExecutionId);
+				policy.setUsername(userUid);
+				policy.setUserPolicyExpirationDate(sendUserPolicy ? userExpirationDate : null);
+				policy.setUserPolicyProfiles(sendUserPolicy ? new ArrayList<ProfileImpl>(userPolicy.getProfiles()) : null);
+				policy.setUserPolicyVersion(userPolicy != null ? userPolicy.getPolicyVersion() : null);
+//				IExecutePoliciesMessage response = new ExecutePoliciesMessageImpl(
+//						null, 
+//						userUid,
+//						sendUserPolicy ? new ArrayList<ProfileImpl>(userPolicy.getProfiles()) : null,
+//						userPolicy != null ? userPolicy.getPolicyVersion() : null, 
+//					    userCommandExecutionId,
+//						sendUserPolicy ? userExpirationDate : null,
+//						null, null, null, null,
+//						new Date(),
+//						usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null
+//						);
+				response.getExecutePolicyList().add(policy);
 				
 				
 			}

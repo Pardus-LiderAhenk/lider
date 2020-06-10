@@ -114,20 +114,20 @@
 
 </head>
 <body>
-	<div class="app-container app-theme-white body-tabs-shadow  fixed-header" id="mainHtmlContent">
+	<div class="app-container app-theme-white body-tabs-shadow fixed-header" id="mainHtmlContent">
 		<div class="app-header header-shadow" >
 			<div class="app-header__content">
 				<div class="app-header-left">
-                    <ul class="header-menu nav">
-                        <li class="nav-item">
-                           <a class="nav-link dizin" href="#" data-page="dashboard"> <img width="26"
-									class="rounded-circle" src="img/LiderAhenk-Logo-02.png"
-									alt=""> <i class="fa ml-2 opacity-8"></i>
-						   </a>
-                        </li>
-                        <li class="nav-item">
+                    <ul class="nav">
+<!--                         <li class="nav-item"> -->
+<!--                            <a class="nav-link dizin" href="#" data-page="dashboard"> <img width="26" -->
+<!-- 									class="rounded-circle" src="img/LiderAhenk-Logo-02.png" -->
+<!-- 									alt=""> <i class="fa ml-2 opacity-8"></i> -->
+<!-- 						   </a> -->
+<!--                         </li> -->
+<!--                         <li class="nav-item"> -->
                            
-                        </li>
+<!--                         </li> -->
                         <li class="nav-item" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTERS')}">
                             <a class="nav-link dizin" href="#" data-page="computers" >
                                 <i class="nav-link-icon fas fa-network-wired"> </i>
@@ -217,20 +217,23 @@
 						<div class="widget-content p-0">
 							<div class="widget-content-wrapper">
 								<div class="widget-content-left">
-									<div class="btn-group">
-										<a data-toggle="dropdown" aria-haspopup="true"
-											aria-expanded="false" class="p-0 btn"> <img width="42"
-											class="rounded-circle" src="img/LiderAhenk-Logo-02.png"
-											alt=""> <i class="fa fa-angle-down ml-2 opacity-8"></i>
-										</a>
-										<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
-											<button type="button" tabindex="0" class="dropdown-item">Bilgilerim</button>											
-										</div>
-									</div>
+<!-- 									<div class="btn-group"> -->
+<!-- 										<a data-toggle="dropdown" aria-haspopup="true" -->
+<!-- 											aria-expanded="false" class="p-0 btn"> <img width="42" -->
+<!-- 											class="rounded-circle" src="img/LiderAhenk-Logo-02.png" -->
+<!-- 											alt=""> <i class="fa fa-angle-down ml-2 opacity-8"></i> -->
+<!-- 										</a> -->
+<!-- 										<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right"> -->
+<!-- 											<button type="button" tabindex="0" class="dropdown-item">Bilgilerim</button>											 -->
+<!-- 										</div> -->
+<!-- 									</div> -->
 								</div>
 								<div class="widget-content-left  ml-3 header-user-info">
-									<div class="widget-heading" th:text="${user.liderUser.name}"> </div>
-									<div class="widget-subheading"> Lider Yönetici</div>
+									<div class="widget-heading" th:text="${user.liderUser.name}">   <a class="nav-link dizin" href="#" data-page="dashboard"> <img width="26"
+									class="rounded-circle" src="img/LiderAhenk-Logo-02.png"
+									alt=""> <i class="fa ml-2 opacity-8"></i>
+						   </a>  </div>
+<!-- 									<div class="widget-subheading"> Lider Yönetici</div> -->
 								</div>
 								<div class="widget-content-right header-user-info ml-3">
 								

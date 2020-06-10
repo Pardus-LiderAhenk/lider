@@ -167,7 +167,12 @@ public class AdController {
 						attributes.put("mail", new String[] { adUser.get("mail") });
 						attributes.put("gidNumber", new String[] { gidNumber });
 						attributes.put("homeDirectory", new String[] { home });
-						attributes.put("sn", new String[] { adUser.getSn() });
+						if(adUser.get("sn") !=null &&  adUser.get("sn")!="" ) {
+							attributes.put("sn", new String[] { adUser.get("sn") });
+						}else {
+							logger.info("SN not exist ="+adUser.getDistinguishedName() );
+							attributes.put("sn", new String[] { " " });
+						}
 						attributes.put("uid", new String[] { sAMAccountName });
 						attributes.put("uidNumber", new String[] { uidNumber });
 						attributes.put("loginShell", new String[] { "/bin/bash" });
@@ -182,6 +187,7 @@ public class AdController {
 						ldapService.addEntry(rdn, attributes);
 					}
 					else {
+						logger.info("SYNC AD to LDAP.. User exist ="+adUser.getDistinguishedName() );
 						existUserList.add(adUser);
 					}
 				}

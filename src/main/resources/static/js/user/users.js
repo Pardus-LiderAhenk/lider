@@ -882,6 +882,8 @@ function fillUserSessions(ldapResult) {
 		data: 'uid='+ldapResult.attributes.uid,
 		dataType: "json",
 		success : function(sessionList) {
+			
+			$("#sessionListDiv").html("");
 			if(sessionList.length>0){
 				var html='<table class="table">';
 				html += '<thead>';
@@ -907,6 +909,9 @@ function fillUserSessions(ldapResult) {
 				}
 				html += '</table>';
 				$("#sessionListDiv").html(html);
+			}
+			else{
+				$("#sessionListDiv").html("<span>Kullanıcı Henüz herhangi bir istemciye login olmamıştır </span>");
 			}
 			
 		},

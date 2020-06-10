@@ -2,7 +2,13 @@
 <script type="text/javascript" src="js/user/users.js"></script>
 <script type="text/javascript" src="js/user/ouManager.js"></script>
 <script type="text/javascript" src="js/custom.js"></script>
+<script type="text/javascript" >
 
+$(document).ready(function(){
+	$('.collapse-link').click();
+	$('#loginCollapseLink').click();
+	  });
+</script>
 <style type="text/css">
 .userInfo {
     font-size: 13px;
@@ -65,7 +71,7 @@
 											<div class="row">
 												<div class="x_panel">
 									                  <div class="x_content">
-									                    <div class="col-md-3 col-sm-3  profile_left">
+									                    <div class="col-md-4 col-sm-4  profile_left">
 <!-- 									                      <div class="profile_img"> -->
 <!-- 									                        <div id="crop-avatar"> -->
 <!-- 									                          <img class="img-responsive avatar-view" src="images/user_icon.png" width="90" height="70" alt="Avatar" title="Change the avatar"> -->
@@ -109,93 +115,103 @@
 									                       <a href="#" class="btn btn-danger btn-sm" id="btnDeleteUserModal" title="Sil" data-target="#genericModal" data-toggle="modal">
 		                                                        <i class="fa fa-minus-circle"> &nbsp; Sil</i>
 		                                                    </a>
-									
-<!-- 									                      <a class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Düzenle</a> -->
-									                      <hr>
-									
-<!-- 									                      <h4>  </h4> -->
-<!-- 									                      <ul class="list-unstyled user_data"> -->
-									                        
-<!-- 									                        <li> -->
-<!-- 									                          <i class="user-profile-icon">Ev Dizini : </i> -->
-<!-- 									                          <span id="userHomeDirectory"></span> -->
-<!-- 									                        </li> -->
-<!-- 									                        <li> -->
-<!-- 									                          <i class="user-profile-icon">Oluşturulma Tarihi : </i> -->
-<!-- 									                          <span id="userCreateDate"></span> -->
-<!-- 									                        </li> -->
-									                      
-									                      
-<!-- 									                      </ul> -->
-									
 									                    </div>
-									                    <div class="col-md-9 col-sm-9 ">
-									                    	
-									                    	<div class="col-lg-6 col-md-6"> 
-									                    			<div class="main-card mb-3 card">
-																			<div class="card-header">
-																				<div class="col-lg-6 text-left">Login Geçmişi</div>
-																			</div>
-																			<div class="card-body">
-																				<div id="sessionListDiv">
-																				</div>
-																			</div>
-																	</div>
-									                    	
-									                    			
-																	<div class="main-card mb-3 card">
-																			<div class="card-header">
-																				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-																				<div class="col-lg-6 text-left">POLİTİKA GEÇMİŞİ</div>
-																				<div class="col-lg-6 text-right">
-																				</div>
-																			</div>
-																			<div class="card-body">
-																			</div>
-																	</div>
-									                    	
-									                    	</div>
-									                    	<div class="col-lg-6 col-md-6"> 
-									                    			<div class="main-card mb-3 card">
-																			<div class="card-header">
-																				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-																				<div class="col-lg-6 text-left">Parola Politikası</div>
-																				<div class="col-lg-6 text-right">
-																					<button id="btnSetPasswordPolicyModal" type="button" data-target="#genericModal" data-toggle="modal" title="Politika Ata" class="btn-shadow btn btn-link">Politika Ata</button>
-																				</div>
-																			</div>
-																			<div class="card-body">
-																				<span id="userPasswordPolicy"></span>
+									                    <div class="col-md-8 col-sm-8 ">
+									                    
+									                     <div class="x_panel tile ">
+															                <div class="x_title">
+															                  <h2>Login Geçmişi</h2>
+															                  <ul class="nav navbar-right panel_toolbox">
+															                    <li><a class="collapse-link" id="loginCollapseLink"><i class="fa fa-chevron-up"></i></a>
+															                    </li>
+															                    <li class="dropdown">
+															                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+															                    </li>
+															                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+															                    </li>
+															                  </ul>
+															                  <div class="clearfix"></div>
+															                </div>
+															                <div class="x_content">
+															                  <div id="sessionListDiv"></div>
+															              </div>
+														  </div>
+									                    
+									                     <div class="x_panel tile ">
+															                <div class="x_title">
+															                  <h2>Grup Listesi</h2>
+															                  <ul class="nav navbar-right panel_toolbox">
+															                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+															                    </li>
+															                    <li class="dropdown">
+															                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+															                    </li>
+															                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+															                    </li>
+															                  </ul>
+															                  <div class="clearfix"></div>
+															                </div>
+															                <div class="x_content">
+															               			<div id="groupsDiv">Kullanıcı herhangi bir gruba üye değildir.</div>
+															              </div>
+														  </div>
+									                     <div class="x_panel tile ">
+															                <div class="x_title">
+															                  <h2>Parola Politikası</h2>
+															                  <ul class="nav navbar-right panel_toolbox">
+															                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+															                    </li>
+															                    <li class="dropdown">
+															                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+															                    </li>
+															                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+															                    </li>
+															                  </ul>
+															                  <div class="clearfix"></div>
+															                </div>
+															                <div class="x_content">
+															                <button id="btnSetPasswordPolicyModal" type="button" data-target="#genericModal" data-toggle="modal" title="Politika Ata" class="btn-shadow btn btn-link">Politika Ata</button>
+															                 	<span id="userPasswordPolicy"></span>
 																				<div id="userPolicyDetails"></div>
-																			</div>
-																	</div>
-																	
-																	<div class="main-card mb-3 card">
-																			<div class="card-header">
-																				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-																				<div class="col-lg-6 text-left">GRUPLAR</div>
-																				<div class="col-lg-6 text-right">
-																				</div>
-																			</div>
-																			<div class="card-body">
-																			<div id="groupsDiv">Kullanıcı herhangi bir gruba üye değildir.</div>
-																			</div>
-																	</div>
-									                    			
-									                    			<div class="main-card mb-3 card">
-																			<div class="card-header">
-																				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-																				<div class="col-lg-6 text-left">YETKİ GRUPLARI</div>
-																				<div class="col-lg-6 text-right">
-																				</div>
-																			</div>
-																			<div class="card-body">
-																			<div id="rolesDiv">Kullanıcının istemci yönetim yetki grubu bulunmamaktadir.</div>
-																			</div>
-																	</div>
+															              </div>
+														  </div>
+									                     <div class="x_panel tile ">
+															                <div class="x_title">
+															                  <h2>Yetki Grupları</h2>
+															                  <ul class="nav navbar-right panel_toolbox">
+															                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+															                    </li>
+															                    <li class="dropdown">
+															                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+															                    </li>
+															                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+															                    </li>
+															                  </ul>
+															                  <div class="clearfix"></div>
+															                </div>
+															                <div class="x_content">
+															                <div id="rolesDiv">Kullanıcının istemci yönetim yetki grubu bulunmamaktadir.</div>
+															              </div>
+														  </div>
 									                    	
-									                    	
-									                    	</div>
+									                     <div class="x_panel tile ">
+															                <div class="x_title">
+															                  <h2>Politika Geçmişi</h2>
+															                  <ul class="nav navbar-right panel_toolbox">
+															                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+															                    </li>
+															                    <li class="dropdown">
+															                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+															                    </li>
+															                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+															                    </li>
+															                  </ul>
+															                  <div class="clearfix"></div>
+															                </div>
+															                <div class="x_content">
+															                  <div id="policyHistoryDiv"></div>
+															              </div>
+														  </div>
 									                    </div>
 									                  </div>
                 							</div>
@@ -203,46 +219,4 @@
 											</div>	
 										</div>
 									</div>
-	
-<!-- 		<div class="main-card mb-3 card"> -->
-<!-- 			<div class="card-header card-header-tab-animation"> -->
-<!-- 				<ul class="nav nav-justified" > -->
-<!-- 					<li class="nav-item"> -->
-<!-- 						<a role="tab" class="nav-link " -->
-<!-- 							id="tab-btn-userInfo" data-toggle="tab" href="#tab-entry-info">  -->
-<!-- 							<span>Kullanıcı Detay</span> -->
-<!-- 						</a> -->
-<!-- 					</li> -->
-<!-- 					<li class="nav-item"> -->
-<!-- 						<a role="tab" class="nav-link " -->
-<!-- 							id="tab-btn-userGroups" data-toggle="tab" href="#tab-user-groups">  -->
-<!-- 							<span>Kullanıcı Grupları</span> -->
-<!-- 						</a> -->
-<!-- 					</li> -->
-<!-- 					<li class="nav-item"> -->
-<!-- 						<a role="tab" class="nav-link " -->
-<!-- 							id="tab-btn-userRoles" data-toggle="tab" href="#tab-user-roles">  -->
-<!-- 							<span>İstemci Yetki Grupları (Sudo)</span> -->
-<!-- 						</a> -->
-<!-- 					</li> -->
-					
-<!-- 				</ul> -->
-<!-- 			</div> -->
-<!-- 			<div class="card-body"> -->
-<!-- 				<div class="tab-content"> -->
-<!-- 					<div class="tab-pane" id="tab-entry-info" role="tabpanel"> -->
-<!-- 							<p id="selectedDnInfo"></p> -->
-<!-- 							<div id="ldapAttrInfoHolder"></div> -->
-<!-- 					</div> -->
-<!-- 					<div class="tab-pane" id="tab-user-groups" role="tabpanel"> -->
-<!-- 							<div id="groupsDiv">Kullanıcı herhangi bir gruba üye değildir.</div> -->
-<!-- 					</div> -->
-<!-- 					<div class="tab-pane" id="tab-user-roles" role="tabpanel"> -->
-<!-- 							<div id="rolesDiv">Kullanıcının istemci yönetim yetki grubu bulunmamaktadir.</div> -->
-<!-- 					</div> -->
-					
-<!-- 				</div> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
-
 	</div>

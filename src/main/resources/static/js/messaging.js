@@ -67,7 +67,7 @@ function onConnect(status)
 	} 
 	else if (status == Strophe.Status.CONNECTED) {
 		log('Mesajlaşma Servisi ile bağlantı kuruldu.',"SUCCESS");
-		$.notify("Mesajlaşma Servisine bağlanıldı....","success");
+//		$.notify("Mesajlaşma Servisine bağlanıldı....","success");
 //		log('Mesaj göndermek için kullanıcı adım: ' + connection.jid );
 		connection.addHandler(onMessage, null, 'message', null, null,  null); 
 		var iq = $iq({type: 'get'}).c('query', {xmlns: 'jabber:iq:roster'});

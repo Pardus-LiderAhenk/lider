@@ -39,7 +39,6 @@ import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.messaging.messages.ExecutePoliciesMessageImpl;
 import tr.org.lider.messaging.messages.ExecutePolicyImpl;
-import tr.org.lider.messaging.messages.IExecutePoliciesMessage;
 import tr.org.lider.messaging.messages.IGetPoliciesMessage;
 import tr.org.lider.repositories.PolicyRepository;
 import tr.org.lider.services.ConfigurationService;
@@ -64,7 +63,7 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 //	private IMessageFactory messageFactory;
 
 	@Override
-	public List<IExecutePoliciesMessage> messageReceived(IGetPoliciesMessage message) throws Exception {
+	public ExecutePoliciesMessageImpl messageReceived(IGetPoliciesMessage message) throws Exception {
 
 		String agentUid = message.getFrom().split("@")[0];
 		String userUid = message.getUsername();
@@ -93,9 +92,7 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 //			userCommandExecutionId = ((CommandExecutionImpl) resultList.get(0)[1]).getId();
 //			userExpirationDate = ((CommandImpl) resultList.get(0)[2]).getExpirationDate();
 //		}
-		List<IExecutePoliciesMessage> executePolicyList = new ArrayList<IExecutePoliciesMessage>();
 		ExecutePoliciesMessageImpl response = new ExecutePoliciesMessageImpl();
-		
 		if(resultList != null && !resultList.isEmpty()) {
 			for (int i = 0; i < resultList.size(); i++) {
 				userPolicy = (PolicyImpl) resultList.get(i)[0];
@@ -113,6 +110,7 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 					}
 				}
 				ExecutePolicyImpl policy = new ExecutePolicyImpl();
+				policy.setPolicyID(userPolicy.getId());
 				policy.setAgentCommandExecutionId(null);
 				policy.setAgentPolicyExpirationDate(null);
 				policy.setAgentPolicyProfiles(null);
@@ -190,8 +188,8 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 //				usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null
 //				);
 		
-		logger.debug("Execute policies message: {}", executePoliciesMessageList);
-		return executePoliciesMessageList;
+		logger.debug("Execute policies message: {}", response);
+		return response;
 	}
 
 	/**

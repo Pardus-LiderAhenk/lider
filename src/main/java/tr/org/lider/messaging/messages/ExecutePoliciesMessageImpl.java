@@ -19,6 +19,7 @@
 */
 package tr.org.lider.messaging.messages;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class ExecutePoliciesMessageImpl implements IExecutePoliciesMessage {
 	private LiderMessageType type = LiderMessageType.EXECUTE_POLICY;
 	private String recipient;
 	private Date timestamp;
-	private List<ExecutePolicyImpl> executePolicyList;
+	private List<ExecutePolicyImpl> executePolicyList = new ArrayList<ExecutePolicyImpl>();
 	
 	public ExecutePoliciesMessageImpl() {
 		super();

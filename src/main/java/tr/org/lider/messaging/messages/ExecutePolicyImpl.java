@@ -18,6 +18,8 @@ public class ExecutePolicyImpl {
 	
 	private String username;
 
+	private Long policyID;
+	
 	private List<ProfileImpl> userPolicyProfiles;
 
 	private String userPolicyVersion;
@@ -41,13 +43,15 @@ public class ExecutePolicyImpl {
 	}
 
 	public ExecutePolicyImpl(String recipient, Date timestamp, String username,
-			List<ProfileImpl> userPolicyProfiles, String userPolicyVersion, Long userCommandExecutionId,
+			Long policyID, List<ProfileImpl> userPolicyProfiles, 
+			String userPolicyVersion, Long userCommandExecutionId,
 			Date userPolicyExpirationDate, List<ProfileImpl> agentPolicyProfiles, String agentPolicyVersion,
 			Long agentCommandExecutionId, Date agentPolicyExpirationDate, FileServerConf fileServerConf) {
 		super();
 		this.recipient = recipient;
 		this.timestamp = timestamp;
 		this.username = username;
+		this.policyID = policyID;
 		this.userPolicyProfiles = userPolicyProfiles;
 		this.userPolicyVersion = userPolicyVersion;
 		this.userCommandExecutionId = userCommandExecutionId;
@@ -163,6 +167,12 @@ public class ExecutePolicyImpl {
 		this.timestamp = timestamp;
 	}
 
-	
+	public Long getPolicyID() {
+		return policyID;
+	}
 
+	public void setPolicyID(Long policyID) {
+		this.policyID = policyID;
+	}
+	
 }

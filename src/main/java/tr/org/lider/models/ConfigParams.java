@@ -276,7 +276,6 @@ public class ConfigParams {
 		// File server configuration
 		this.fileServerPluginPath = "/plugins/ahenk-{0}_{1}_amd64.deb";
 		this.fileServerAgreementPath = "/home/pardus/sample-agreement.txt";
-		this.fileServerAgentFilePath = "/home/pardus/dev/agent-files/{0}/";
 		
 		//other settings
 		this.disableLocalUser = false;

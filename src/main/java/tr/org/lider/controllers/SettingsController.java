@@ -138,7 +138,8 @@ public class SettingsController {
 			@RequestParam (value = "fileServerAddress", required = true) String fileServerAddress,
 			@RequestParam (value = "fileServerUsername", required = true) String fileServerUsername,
 			@RequestParam (value = "fileServerPassword", required = true) String fileServerPassword,
-			@RequestParam (value = "fileServerPort", required = true) int fileServerPort) {
+			@RequestParam (value = "fileServerPort", required = true) int fileServerPort,
+			@RequestParam (value = "fileServerAgentFilePath", required = true) String fileServerAgentFilePath) {
 
 		ConfigParams configParams = configurationService.getConfigParams();
 		configParams.setFileServerProtocol(fileTransferType);
@@ -146,6 +147,7 @@ public class SettingsController {
 		configParams.setFileServerHost(fileServerAddress);
 		configParams.setFileServerUsername(fileServerUsername);
 		configParams.setFileServerPassword(fileServerPassword);
+		configParams.setFileServerAgentFilePath(fileServerAgentFilePath);
 		return configurationService.updateConfigParams(configParams);
 	}
 

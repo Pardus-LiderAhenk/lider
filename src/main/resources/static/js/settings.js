@@ -836,6 +836,8 @@ function setAttributes(data) {
 	$('#fileServerPort').val(data.fileServerPort);
 	$('#fileServerUserName').val(data.fileServerUsername);
 	$('#fileServerUserPassword').val(data.fileServerPassword);
+	$('#fileServerAgentFilePath').val(data.fileServerAgentFilePath);
+	
 	if(data.disableLocalUser == true) {
 		$('#cbDisableLocalUser').prop("checked", true);
 	} else {
@@ -968,6 +970,7 @@ function saveChanges(type) {
 				"fileServerAddress": $('#fileServerAddress').val(),
 				"fileServerUsername": $('#fileServerUserName').val(),
 				"fileServerPassword": $('#fileServerUserPassword').val(),
+				"fileServerAgentFilePath": $('#fileServerAgentFilePath').val(),
 				"fileServerPort": $('#fileServerPort').val()
 			};
 		$.ajax({ 

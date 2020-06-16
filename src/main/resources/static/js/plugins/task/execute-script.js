@@ -208,7 +208,11 @@ $('#scriptSaveBtn').click(function(e){
 							scriptTable.clear().draw();
 							scriptTable.destroy();
 							createScriptsTable();
-//							$("#scriptSaveBtn").html("Kaydet");
+							$("#scriptNameTemp").val("");
+							$("#scriptContentTemp").val("");
+							$('#scriptType').val("bash").change();
+							$("#scriptDelBtn").hide();
+							$("#scriptCleanBtn").hide();
 							$("#scriptSaveBtn").attr("title","Kaydet");
 						}else {
 							$.notify("Betik güncellenirken hata oluştu.", "error");
@@ -314,10 +318,9 @@ $('#scriptDelBtn').click(function(e){
 					// the scriptTable is refreshed after the script is deleted
 					scriptTable.clear().draw();
 					scriptTable.destroy();
-					$("#scriptNameTemp").val("");
-					$('#scriptType').val("bash").change();
 					createScriptsTable();
 					$("#scriptNameTemp").val("");
+					$("#scriptContentTemp").val("");
 					$('#scriptType').val("bash").change();
 //					$("#scriptSaveBtn").html("Kaydet");
 					$("#scriptSaveBtn").attr("title","Kaydet");

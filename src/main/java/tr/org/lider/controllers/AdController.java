@@ -27,8 +27,11 @@ import org.springframework.web.servlet.ModelAndView;
 import tr.org.lider.constant.LiderConstants;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
+import tr.org.lider.ldap.LdapSearchFilterAttribute;
+import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.services.AdService;
 import tr.org.lider.services.CommandService;
+import tr.org.lider.services.ConfigurationService;
 
 /**
  * 
@@ -45,6 +48,9 @@ public class AdController {
 
 	@Autowired
 	private LDAPServiceImpl ldapService;
+	
+	@Autowired
+	private ConfigurationService configurationService;
 	
 	@RequestMapping(value = "/getDomainEntry")
 	public List<LdapEntry> getDomainEntry(HttpServletRequest request) {
@@ -128,24 +134,43 @@ public class AdController {
 		return true;
 	}
 	
+	@RequestMapping(value = "/searchEntry")
+	public List<LdapEntry>  searchEntry(HttpServletRequest request,
+			@RequestParam(value="searchDn", required=true) String searchDn,
+			@RequestParam(value="key", required=true) String key, 
+			@RequestParam(value="value", required=true) String value) {
+		List<LdapEntry> results=null;
+		try {
+			if(searchDn.equals("")) {
+				searchDn=configurationService.getAdDomainName();
+			}
+			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+			filterAttributes.add(new LdapSearchFilterAttribute(key, value, SearchFilterEnum.EQ));
+			results = service.search(searchDn,filterAttributes, new String[] {"*"});
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+	
 	@RequestMapping(method=RequestMethod.POST ,value = "/syncUserFromAd2Ldap")
-	public Boolean syncUserFromAd2Ldap(HttpServletRequest request,@RequestBody LdapEntry selectedLdapDn) {
+	public List<LdapEntry> syncUserFromAd2Ldap(HttpServletRequest request,@RequestBody LdapEntry selectedLdapDn) {
 		logger.info("SYNC AD to LDAP starting.. Sync to LDAP OU ="+selectedLdapDn.getDistinguishedName() );
-		
 		String filter="(objectClass=organizationalUnit)";
+		List<LdapEntry> existUserList= new ArrayList<>();
 		try {
 			//getting ldap ou, userss added this ou
 			List<LdapEntry> selectedLdapEntryList=ldapService.findSubEntries(selectedLdapDn.getDistinguishedName() , filter, new String[] { "*" }, SearchScope.OBJECT);
 			
 			String adfilter="(objectclass=organizationalPerson)";
-			
-			List<LdapEntry> existUserList= new ArrayList<>();
-					
+			/**
+			 *  selectedLdapDn.getChildEntries() holds users that they will add to ldap
+			 */
 			for (LdapEntry adUserEntry : selectedLdapDn.getChildEntries()) {
+				//getting users from AD
 				List<LdapEntry> adUserList = service.findSubEntries(adUserEntry.getDistinguishedName(),adfilter,new String[] { "*" }, SearchScope.OBJECT);
 				
 				if(adUserList !=null && adUserList.size()>0) {
-					
 					LdapEntry adUser= adUserList.get(0);
 					String sAMAccountName= adUser.getAttributesMultiValues().get("sAMAccountName")[0];
 					String CN= adUser.getAttributesMultiValues().get("cn")[0];
@@ -154,37 +179,7 @@ public class AdController {
 							, "(uid="+sAMAccountName+")", new String[] { "*" }, SearchScope.SUBTREE);
 					
 					if(adUserListForCheck!=null && adUserListForCheck.size()==0) {
-						String gidNumber="9000";
-						int randomInt = (int)(1000000.0 * Math.random());
-						String uidNumber= Integer.toString(randomInt);
-						
-						String home="/home/"+adUser.get("sAMAccountName"); 
-
-						Map<String, String[]> attributes = new HashMap<String, String[]>();
-						
-						attributes.put("objectClass", new String[] { "top", "posixAccount",	"person","pardusLider","pardusAccount","organizationalPerson","inetOrgPerson"});
-						attributes.put("cn", new String[] { adUser.get("givenName") });
-						attributes.put("mail", new String[] { adUser.get("mail") });
-						attributes.put("gidNumber", new String[] { gidNumber });
-						attributes.put("homeDirectory", new String[] { home });
-						if(adUser.get("sn") !=null &&  adUser.get("sn")!="" ) {
-							attributes.put("sn", new String[] { adUser.get("sn") });
-						}else {
-							logger.info("SN not exist ="+adUser.getDistinguishedName() );
-							attributes.put("sn", new String[] { " " });
-						}
-						attributes.put("uid", new String[] { sAMAccountName });
-						attributes.put("uidNumber", new String[] { uidNumber });
-						attributes.put("loginShell", new String[] { "/bin/bash" });
-						attributes.put("userPassword", new String[] { sAMAccountName });
-						attributes.put("homePostalAddress", new String[] { adUser.get("streetAddress") });
-						attributes.put("employeeType", new String[] { "ADUser" });
-						if(adUser.get("telephoneNumber")!=null && adUser.get("telephoneNumber")!="")
-							attributes.put("telephoneNumber", new String[] { adUser.get("telephoneNumber") });
-
-						String rdn="uid="+sAMAccountName+","+selectedLdapEntryList.get(0).getDistinguishedName();
-
-						ldapService.addEntry(rdn, attributes);
+						addUser(selectedLdapEntryList.get(0).getDistinguishedName(), adUser, sAMAccountName);
 					}
 					else {
 						logger.info("SYNC AD to LDAP.. User exist ="+adUser.getDistinguishedName() );
@@ -195,8 +190,124 @@ public class AdController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
+			return null;
 		}
-		return true;
+		return existUserList;
+	}
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/syncGroupFromAd2Ldap")
+	public List<LdapEntry> syncGroupFromAd2Ldap(HttpServletRequest request,@RequestBody LdapEntry selectedLdapDn) {
+		logger.info("SYNC GROUP AD to LDAP starting.. Sync to LDAP OU ="+selectedLdapDn.getDistinguishedName() );
+		
+		List<LdapEntry> existGroupList= new ArrayList<>();
+		String filter="(objectClass=organizationalUnit)";
+		try {
+			//getting ldap ou, userss added this ou
+			List<LdapEntry> selectedLdapEntryList=ldapService.findSubEntries(selectedLdapDn.getDistinguishedName() , filter, new String[] { "*" }, SearchScope.OBJECT);
+			String destinationDnLdap=selectedLdapEntryList.get(0).getDistinguishedName();
+			String adGroupfilter="(objectclass=group)";
+			
+			for (LdapEntry adGroupEntry : selectedLdapDn.getChildEntries()) {
+				List<LdapEntry> adGroupList = service.findSubEntries(adGroupEntry.getDistinguishedName(),adGroupfilter,new String[] { "*" }, SearchScope.OBJECT);
+				
+				if(adGroupList !=null && adGroupList.size()>0) {
+					
+					LdapEntry adGroup= adGroupList.get(0);
+					String cn=adGroup.get("cn");
+					String filterLdapSearch="(&(objectClass=groupOfNames)(cn="+cn+"))";
+					List<LdapEntry> adGroupListForCheck=ldapService.findSubEntries(ldapService.getDomainEntry().getDistinguishedName(), filterLdapSearch , new String[] { "*" }, SearchScope.SUBTREE);
+					
+					if(adGroupListForCheck!=null && adGroupListForCheck.size()==0) {
+						
+					
+ 						
+						// find users of selected member and add this users to ldap user folder( ou=Users).. 
+						String[] memberArr=adGroup.getAttributesMultiValues().get("member");
+						// create temp list to add members for ldap adding
+						List<String> memberDistinguishedNameArr= new ArrayList<>();
+						if(memberArr.length>0) {
+							for (int i = 0; i < memberArr.length; i++) {
+								String memberDistinguishedName=memberArr[i];
+								String adUserfilter="(objectclass=organizationalPerson)";
+								/**
+								 * getting ad group member details from AD
+								 */
+								List<LdapEntry> adUserList = service.findSubEntries(memberDistinguishedName,adUserfilter,new String[] { "*" }, SearchScope.OBJECT);
+								
+								String sAMAccountName=adUserList.get(0).get("sAMAccountName");
+								
+								List<LdapEntry> adUserListForCheck=ldapService.findSubEntries(ldapService.getDomainEntry().getDistinguishedName(), "(uid="+sAMAccountName+")", new String[] { "*" }, SearchScope.SUBTREE);
+								/**
+								 * if user isn't in ldap, user can add ldap
+								 */
+								if(adUserListForCheck!=null && adUserListForCheck.size()==0) {
+									String rdn=addUser(configurationService.getUserLdapBaseDn(), adUserList.get(0), sAMAccountName);
+									memberDistinguishedNameArr.add(rdn);
+								}
+								else {
+									memberDistinguishedNameArr.add(adUserListForCheck.get(0).getDistinguishedName());
+								}
+							}
+						}
+						// add selected AD group to LDAP
+						Map<String, String[]> attributes = new HashMap<String, String[]>();
+						attributes.put("objectClass", new String[] { "top", "groupOfNames", "pardusLider"});
+						attributes.put("cn", new String[] { adGroup.get("cn") });
+						attributes.put("liderGroupType", new String[] { "USER" });
+						attributes.put("description", new String[] { "ADGROUP" });
+						attributes.put("member", memberDistinguishedNameArr.stream().toArray(String[]::new));
+						
+						String rdn="cn="+adGroup.get("cn")+","+destinationDnLdap;
+						ldapService.addEntry(rdn, attributes);
+					}
+					else {
+						logger.info("SYNC AD to LDAP.. Group already exist ="+adGroup.getDistinguishedName() );
+						existGroupList.add(adGroup);
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return existGroupList;
+	}
+
+	private String addUser(String destinationDistinguishedName, LdapEntry adUser, String sAMAccountName)
+			throws LdapException {
+		String gidNumber="9000";
+		int randomInt = (int)(1000000.0 * Math.random());
+		String uidNumber= Integer.toString(randomInt);
+		
+		String home="/home/"+adUser.get("sAMAccountName"); 
+		
+		Map<String, String[]> attributes = new HashMap<String, String[]>();
+		
+		attributes.put("objectClass", new String[] { "top", "posixAccount",	"person","pardusLider","pardusAccount","organizationalPerson","inetOrgPerson"});
+		attributes.put("cn", new String[] { adUser.get("givenName") });
+		attributes.put("mail", new String[] { adUser.get("mail") });
+		attributes.put("gidNumber", new String[] { gidNumber });
+		attributes.put("homeDirectory", new String[] { home });
+		if(adUser.get("sn") !=null &&  adUser.get("sn")!="" ) {
+			attributes.put("sn", new String[] { adUser.get("sn") });
+		}else {
+			logger.info("SN not exist ="+adUser.getDistinguishedName() );
+			attributes.put("sn", new String[] { " " });
+		}
+		attributes.put("uid", new String[] { sAMAccountName });
+		attributes.put("uidNumber", new String[] { uidNumber });
+		attributes.put("loginShell", new String[] { "/bin/bash" });
+		attributes.put("userPassword", new String[] { sAMAccountName });
+		attributes.put("homePostalAddress", new String[] { adUser.get("streetAddress") });
+		attributes.put("employeeType", new String[] { "ADUser" });
+		if(adUser.get("telephoneNumber")!=null && adUser.get("telephoneNumber")!="")
+			attributes.put("telephoneNumber", new String[] { adUser.get("telephoneNumber") });
+		
+		String rdn="uid="+sAMAccountName+","+destinationDistinguishedName;
+		
+		ldapService.addEntry(rdn, attributes);
+		
+		return rdn;
 	}
 }

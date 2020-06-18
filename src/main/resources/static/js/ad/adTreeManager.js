@@ -223,9 +223,9 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 	       
 		   if(showOnlyFolder==false){
 				searchHtml +='<option selected value="uid"> ID </option> '+
-						'<option value="cn"> Ad </option> '+ 
-						'<option value="sn"> Soyad </option>'+
-						'<option value="ou"> Klasör </option>';
+						'<option value="CN"> Ad </option> '+ 
+						'<option value="SN"> Soyad </option>'+
+						'<option value="OU"> Klasör </option>';
 			}
 			else if(showOnlyFolder==true){
 				searchHtml +='<option selected value="ou"> Klasör </option> ';
@@ -259,7 +259,7 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 			
 			$.ajax({
 				type : 'POST',
-				url : 'lider/ad/searchEntry',
+				url : 'ad/searchEntry',
 				data : params,
 				dataType: "json",
 				success : function(ldapResult) {

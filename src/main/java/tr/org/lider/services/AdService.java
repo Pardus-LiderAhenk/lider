@@ -5,10 +5,13 @@ import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PreDestroy;
 import javax.net.ssl.KeyManager;
@@ -227,8 +230,98 @@ public class AdService implements ILDAPService{
 	@Override
 	public List<LdapEntry> search(String baseDn, List<LdapSearchFilterAttribute> filterAttributes,
 			String[] returningAttributes) throws LdapException {
-		// TODO Auto-generated method stub
-		return null;
+
+
+		List<LdapEntry> result = new ArrayList<LdapEntry>();
+		LdapConnection connection = null;
+
+		Map<String, String> attrs = null;
+		Map<String, String[]> attributesMultiValues = null;
+
+		try {
+			connection = getConnection();
+
+			SearchRequest req = new SearchRequestImpl();
+			req.setScope(SearchScope.SUBTREE);
+
+			// Add 'objectClass' to requested attributes to determine entry type
+			Set<String> requestAttributeSet = new HashSet<String>();
+			requestAttributeSet.add("objectClass");
+			if (returningAttributes != null) {
+				requestAttributeSet.addAll(Arrays.asList(returningAttributes));
+			}
+			req.addAttributes(requestAttributeSet.toArray(new String[requestAttributeSet.size()]));
+			req.addAttributes("+");
+			// Construct filter expression
+			String searchFilterStr = "(&";
+			for (LdapSearchFilterAttribute filterAttr : filterAttributes) {
+				searchFilterStr = searchFilterStr + "(" + filterAttr.getAttributeName()
+				+ filterAttr.getOperator().getOperator() + filterAttr.getAttributeValue() + ")";
+			}
+			searchFilterStr = searchFilterStr + ")";
+			req.setFilter(searchFilterStr);
+
+			req.setTimeLimit(0);
+			baseDn = baseDn.replace("+", " ");
+			req.setBase(new Dn(baseDn));
+
+			SearchCursor searchCursor = connection.search(req);
+			while (searchCursor.next()) {
+				Response response = searchCursor.get();
+				attrs = new HashMap<String, String>();
+				attributesMultiValues = new HashMap<String, String[]>();
+				if (response instanceof SearchResultEntry) {
+					Entry entry = ((SearchResultEntry) response).getEntry();
+					if (returningAttributes != null) {
+						for (String attr : returningAttributes) {
+							attrs.put(attr, entry.get(attr) != null ? entry.get(attr).getString() : "");
+						}
+					}
+					List<String> priviliges=null;
+					if (null != entry.get("liderPrivilege")) {
+
+						priviliges=new ArrayList<>();
+						Iterator<Value<?>> iter2 = entry.get("liderPrivilege").iterator();
+						while (iter2.hasNext()) {
+							String privilege = iter2.next().getValue().toString();
+							priviliges.add(privilege);
+						}
+					} else {
+						logger.debug("No privilege found in group => {}", entry.getDn());
+					}
+
+					for (Iterator iterator = entry.getAttributes().iterator(); iterator.hasNext();) {
+						Attribute attr = (Attribute) iterator.next();
+						String attrName= attr.getUpId();
+						String value=attr.get().getString();
+
+						if(attr.size() > 1) {
+							Iterator<Value<?>> iter2 = entry.get(attrName).iterator();
+							String [] values = new String[attr.size()];
+							int counter = 0;
+							while (iter2.hasNext()) {
+								value = iter2.next().getValue().toString();
+								values[counter++] = value;
+							}
+							attributesMultiValues.put(attrName, values);
+						} else {
+							attrs.put(attrName, value);
+							attributesMultiValues.put(attrName, new String[] {value});
+						}
+					}
+
+					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, priviliges,convertObjectClass2DNType(entry.get("objectClass")));
+
+					result.add(ldapEntry);
+				}
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+		return result;
 	}
 
 	@Override
@@ -307,35 +400,6 @@ public class AdService implements ILDAPService{
 					}
 
 					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, null,convertObjectClass2DNType(entry.get("objectClass")));
-					
-					String[] objectClasses= ldapEntry.getAttributesMultiValues().get("objectClass");
-					logger.info(objectClasses.toString());
-					
-					for (int i = 0; i < objectClasses.length; i++) {
-						String objClass=objectClasses[i];
-						if(objClass.equals("group")) { ldapEntry.setType(DNType.GROUP); break; }
-						else if(objClass.equals("container")) { ldapEntry.setType(DNType.CONTAINER); break;  }
-						else if(objClass.equals("computer")) { 
-							if(ldapEntry.getAttributesMultiValues().get("operatingSystem")[0].contains("linux-gnu") ) {ldapEntry.setType(DNType.AHENK);}
-							else if(ldapEntry.getAttributesMultiValues().get("operatingSystem")[0].contains("Windows") ) {ldapEntry.setType(DNType.WIND0WS_AHENK);}
-							 break;  
-						}
-						else if(objClass.equals("organizationalPerson")) { ldapEntry.setType(DNType.USER);  }
-						else if(objClass.equals("organizationalUnit")) { ldapEntry.setType(DNType.ORGANIZATIONAL_UNIT);  }
-					}
-					String dateStr= ldapEntry.get("createTimestamp");
-					if(dateStr!=null) {
-						
-						String year=dateStr.substring(0,4);
-						String month=dateStr.substring(4,6);
-						String day=dateStr.substring(6,8);
-						String hour=dateStr.substring(8,10);
-						String min=dateStr.substring(10,12);
-						String sec=dateStr.substring(12,14);
-						String crtDate=day+"/"+ month+"/"+ year+" "+ hour +":"+min;
-
-						ldapEntry.setCreateDateStr(crtDate);
-					}
 					
 					result.add(ldapEntry);
 				}

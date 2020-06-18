@@ -7,34 +7,44 @@
 </head>
 <body>
 	<div class="main-card mb-3 card">
-		<div class="card-header">
-			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-			<div class="col-lg-6 text-left">DOSYA YÖNETİMİ</div>
-			<div class="col-lg-6 text-right">
-				<button id="sendTaskCronFileManagement" type="button"	class="btn-shadow btn btn-info"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
-				<button id="sendTaskFileManagement" type="button" title="Kaydet" class="btn-shadow btn btn-info"><i class="fa fa-save"></i></button>
+		<div id="fileManagementContent"> 
+			<div class="card-header">
+				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+				<div class="col-lg-6 text-left">DOSYA YÖNETİMİ</div>
+				<div class="col-lg-6 text-right">
+					<button id="sendTaskCronFileManagement" type="button"	class="btn-shadow btn btn-info"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+					<button id="sendTaskFileManagement" type="button" title="Kaydet" class="btn-shadow btn btn-info"><i class="fa fa-save"></i></button>
+				</div>
 			</div>
-		</div>
-		<div class="card-body">
-			<div class="login-form-1">
-				<div class="form-group">
-					<div class="input-group mb-3">
-						<div class="input-group-prepend">
-							<span class="input-group-text">Dosya Yolu</span>
-						</div>
-						<input type="text" id="filePath" class="form-control" placeholder="/tmp/example.txt" aria-describedby="fileManagementHelp">
-						<button id=getFileBtn type="button"	class="btn-shadow btn btn-info" title=" Dosya Ara"><i class="fa fa-search"></i></button>
-					</div>
-					<small id="fileManagementHelp" class="form-text text-muted">Dosya yolu girilir ve Dosya Ara butonuna tıklanarak istemcide bulunan dosya içeriği getirilir. Getirilen veya yeni oluşturulmak istenen dosya,
-					dosya yolu ve içeriği girilerek/düzenlenerek Kaydet butonuna tıklanır.</small>
-					</div>
+			<div class="card-body">
+				<div class="login-form-1">
 					<div class="form-group">
-						<label for="fileContent">Dosya İçeriği</label>
-						<textarea class="form-control" id="fileContent" rows="16"></textarea>
-					</div>
-					<div id="plugin-result-file-management"></div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text">Dosya Yolu</span>
+							</div>
+							<input type="text" id="filePath" class="form-control" placeholder="/tmp/example.txt" aria-describedby="fileManagementHelp">
+							<button id=getFileBtn type="button"	class="btn-shadow btn btn-info" title=" Dosya Ara"><i class="fa fa-search"></i></button>
+						</div>
+						<small id="fileManagementHelp" class="form-text text-muted">Dosya yolu girilir ve Dosya Ara butonuna tıklanarak istemcide bulunan dosya içeriği getirilir. Getirilen veya yeni oluşturulmak istenen dosya,
+						dosya yolu ve içeriği girilerek/düzenlenerek Kaydet butonuna tıklanır.</small>
+						</div>
+						<div class="form-group">
+							<label for="fileContent">Dosya İçeriği</label>
+							<textarea class="form-control" id="fileContent" rows="16"></textarea>
+						</div>
+						<div id="plugin-result-file-management"></div>
+				</div>
 			</div>
 		</div>
+		
+		 <div id="waitFileManagement"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+		    	<div style="position:absolute; ; top: 38%; left: 30%;"> 
+		    	<img src="img/LoadingPage.gif" width="80" height="80"  /> <span> <b>   Görev Gönderildi.. Lütfen Bekleyiniz... </b> </span> 
+		    	</div>
+            	
+		    </div>
+		   
 	</div>
 </body>
 </html>

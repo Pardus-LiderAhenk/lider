@@ -7,6 +7,7 @@
 </head>
 <body>
 	<div class="main-card mb-3 card">
+		<div id="manageRootDiv">
 		<div class="card-header">
 			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
 			<div class="col-lg-6 text-left">ROOT PAROLA YÖNETİMİ</div>
@@ -36,15 +37,15 @@
 								<div class="col-lg-10">
 									<div class="input-group mb-3">
 									    <div class="input-group-prepend">
-									      	<span class="input-group-text"><i class="fas fa-lock-open"></i></span>
+									      	 <button class="btn btn-outline-info btn-xs showPassword">  <i class="fas fa-eye "></i> </button> 
 									    </div>
-									    <input type="text" class="form-control" id="inputRootPassword" placeholder="Yeni Root Parolası...">
+									    <input type="password" class="form-control" id="inputRootPassword" placeholder="Yeni Root Parolası...">
 									</div>
 					 				<div class="input-group mb-3">
 									    <div class="input-group-prepend">
-									      	<span class="input-group-text"><i class="fas fa-lock-open"></i></span>
+									      	<button class="btn btn-outline-info btn-xs showPassword">  <i class="fas fa-eye "></i> </button>
 									    </div>
-									    <input type="text" class="form-control" id="inputRootPasswordConfirm" placeholder="Root Parolası Doğrula...">
+									    <input type="password" class="form-control" id="inputRootPasswordConfirm" placeholder="Root Parolası Doğrula...">
 					 				</div>
 				 				</div>
 				 				<div class="col-lg-2">
@@ -60,7 +61,14 @@
 					<div id="plugin-result-manage-root"></div>
 				</div>
 			</div>
-		</div>
+		</div> 
+		</div> 
+		
+		<div id="progressManageRoot"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+		    	<div style="position:absolute; ; top: 38%; left: 30%;"> 
+		    	<img src="img/LoadingPage.gif" width="40" height="40"  /> <span> <b>   Görev Gönderildi.. Lütfen Bekleyiniz... </b> </span> 
+		    	</div>
+		  </div>
 	</div>
 </body>
 </html>

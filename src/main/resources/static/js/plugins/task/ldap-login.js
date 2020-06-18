@@ -81,7 +81,7 @@ function sendLdapLogin(params) {
 				if (scheduledParamLdapLogin != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamLdapLogin;
 				}
-
+				progress("divLdapLogin","progressLdapLogin",'show')
 				$.ajax({
 					type: "POST",
 					url: "/lider/task/execute",
@@ -124,6 +124,7 @@ function ldapLoginListener(msg) {
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
 		if(xmppResponse.commandClsId == "EXECUTE_LDAP_LOGIN" || xmppResponse.commandClsId == "EXECUTE_AD_LOGIN" || xmppResponse.commandClsId == "EXECUTE_CANCEL_LDAP_LOGIN"){
+			progress("divLdapLogin","progressLdapLogin",'hide')
 			if (xmppResponse.result.responseCode != "TASK_ERROR") {
 				$("#plugin-result-ldap-login").html("");
 				$.notify(xmppResponse.result.responseMessage, "success");

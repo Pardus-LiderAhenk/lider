@@ -55,7 +55,7 @@ function getResourceUsage(){
 		if (scheduledParamResUsage != null) {
 			message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri: "+ scheduledParamResUsage;
 		}
-
+		progress("resouceUsageDiv","progressResourceUsage",'show')
 		$.ajax({
 			type: "POST",
 			url: "/lider/task/execute",
@@ -135,6 +135,7 @@ function resourceUsageListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		if(xmppResponse.commandClsId == "RESOURCE_INFO_FETCHER"){
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+				progress("resouceUsageDiv","progressResourceUsage",'hide')
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 					var phase = "";

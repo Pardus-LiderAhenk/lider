@@ -51,7 +51,7 @@ function sendTaskEndSession(commandId) {
 		theme: 'light',
 		buttons: {
 			Evet: function () {
-
+				progress("endSessionsContent","progressDivEndSessions",'show')
 				var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 				if (scheduledParamEndSessions != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamEndSessions;
@@ -101,6 +101,7 @@ function endSessionsListener(msg) {
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					$("#plugin-result-end-sessions").html("");
+					progress("endSessionsContent","progressDivEndSessions",'hide')
 					$.notify(xmppResponse.result.responseMessage, "success");
 				} else {
 					$("#plugin-result-end-sessions").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));

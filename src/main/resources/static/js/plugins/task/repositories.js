@@ -82,7 +82,7 @@ function sendRepositoryTask(params){
 	if (scheduledParamRepositories != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamRepositories;
 	}
-
+	progress("divRepositories","progressRepositories",'show')
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -119,8 +119,8 @@ function repositoryListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if (xmppResponse.commandClsId == "REPOSITORIES" || xmppResponse.commandClsId == "PACKAGE_SOURCES") {
+			progress("divRepositories","progressRepositories",'hide')
 			if(xmppResponse.result.responseCode == "TASK_PROCESSED") {
-
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				var repo_addr = arrg["packageSource"].split("\n");
 
@@ -143,8 +143,6 @@ function repositoryListener(msg) {
 				$('#repositoryHelp').html('Depo eklemek için Depo Adresi tanımlayarak Ekle butonuna tıklayınız. Silmek istediğiniz depo adresini Sil butonuna tıklayarak listeden silebilirsiniz. Çalıştır butonuna tıklayarak Sil ve/veya Ekle görevini gönderiniz.');
 				$('#sendTaskRepositories').show();
 				$('#repoAddressDefinition').show();
-
-
 			}else {
 				createRepositorieTable();
 				$("#plugin-result-repositories").html(("HATA:" + responseMessage).fontcolor("red"));
@@ -157,7 +155,6 @@ function repositoryListener(msg) {
 }
 
 function createRepositorieTable() {
-
 	tableRepositories = $('#repositoriesListTable').DataTable( {
 		"scrollY": "500px",
 		"paging": false,

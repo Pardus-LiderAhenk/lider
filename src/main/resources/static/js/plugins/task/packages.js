@@ -49,6 +49,7 @@ $('#getPackagesListBtn').click(function(e){
 });
 
 function getPackagesList(params){
+	progress("divPackages","progressPackages",'show')
 	$.ajax({
 		type: "POST",
 		url: "/packages/list",
@@ -134,6 +135,7 @@ function packagesListener(msg) {
 		var xmppResponse=JSON.parse(data);
 //		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		if(xmppResponse.commandClsId == "PACKAGES"){
+			progress("divPackages","progressPackages",'hide')
 			if (xmppResponse.result.responseCode != "TASK_ERROR") {
 				$("#plugin-result-packages").html("");
 				$.notify(xmppResponse.result.responseMessage, "success");

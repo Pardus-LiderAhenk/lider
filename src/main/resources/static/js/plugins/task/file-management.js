@@ -68,6 +68,7 @@ function sendFileManagementTask(params) {
 		theme: 'light',
 		buttons: {
 			Evet: function () {
+				progress("fileManagementContent","waitFileManagement",'show')
 				var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 				if (scheduledParamFileMan != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamFileMan;
@@ -115,6 +116,7 @@ function fileManagementListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+			progress("fileManagementContent","waitFileManagement",'hide')
 			if (xmppResponse.commandClsId == "GET_FILE_CONTENT") {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
@@ -165,7 +167,12 @@ $('#sendTaskFileManagement').click(function(e){
 	var filePath = $("#filePath").val();
 	var fileContent = $("#fileContent").val();
 	var fileContentSize = (fileContent.length / 1024).toFixed(2);
-
+	
+	if(fileContent ==""){
+		$.notify("Dosya içeriği boş bırakılamaz ", "warn");
+		return;
+	}
+	
 	if (filePath != "") {
 		if (fileContentSize <= 5) {
 

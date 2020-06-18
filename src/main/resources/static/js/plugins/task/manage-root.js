@@ -61,7 +61,7 @@ function sendRootTask(params) {
 				if (scheduledParamManageRoot != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamManageRoot;
 				}
-
+				progress("manageRootDiv","progressManageRoot",'show')
 				$.ajax({
 					type: "POST",
 					url: "/lider/task/execute",
@@ -104,6 +104,7 @@ function manageRootListener(msg) {
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
 		if(xmppResponse.commandClsId == "SET_ROOT_PASSWORD"){
+			progress("manageRootDiv","progressManageRoot",'hide')
 			if (xmppResponse.result.responseCode != "TASK_ERROR") {
 				$("#plugin-result-manage-root").html("");
 				$.notify(xmppResponse.result.responseMessage, "success");
@@ -127,7 +128,6 @@ $('#generateRootPassword').click(function(e){
 	if(ucaseFlag2 && lcaseFlag2 && digitsFlag2 && splCharsFlag2){
 		$("#inputRootPassword").val(pwd);
 	}
-
 	while (ucaseFlag2 == false || lcaseFlag2 == false || digitsFlag2 == false || splCharsFlag2 == false) {
 		var pwd = generatePassword();
 		var ucaseFlag2 = contains(pwd, upperCase);
@@ -137,6 +137,22 @@ $('#generateRootPassword').click(function(e){
 	}
 	$("#inputRootPassword").val(pwd);
 	$("#inputRootPasswordConfirm").val(pwd);
+	
+	$("#inputRootPassword").attr("type","text");
+	$("#inputRootPasswordConfirm").attr("type","text");
+});
+var showPasswordClicked=false;
+$('.showPassword').click(function(e){
+	if(showPasswordClicked==false){
+	$("#inputRootPassword").attr("type","text");
+	$("#inputRootPasswordConfirm").attr("type","text");
+	showPasswordClicked=true;
+	}
+	else if(showPasswordClicked==true){
+		$("#inputRootPassword").attr("type","password");
+		$("#inputRootPasswordConfirm").attr("type","password");
+		showPasswordClicked=false;
+	}
 });
 
 function generatePassword(){

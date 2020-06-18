@@ -61,6 +61,7 @@ function localUserListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+			progress("divLocalUser","progressLocalUser",'hide')
 			if (xmppResponse.commandClsId == "GET_USERS") {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
@@ -166,6 +167,8 @@ function sendLocalUserTask(params) {
 	if (scheduledParamLocalUser != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamLocalUser;
 	}
+	
+	progress("divLocalUser","progressLocalUser",'show')
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",

@@ -81,7 +81,7 @@ function serviceManagementTask(params){
 	if (scheduledParamServiceList != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamServiceList;
 	}
-
+	progress("divServiceList","progressServiceList",'show')
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -118,6 +118,7 @@ function getServiceListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+			progress("divServiceList","progressServiceList",'hide')
 			if (xmppResponse.commandClsId == "GET_SERVICES") {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {

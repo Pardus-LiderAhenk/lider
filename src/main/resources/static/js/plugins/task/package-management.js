@@ -41,7 +41,7 @@ function sendPackageManagementTask(params){
 	if (scheduledParamPackageManagement != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamPackageManagement;
 	}
-
+	progress("divPackageManager","progressPackageManager",'show')
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -79,6 +79,7 @@ function getPackagesListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+			progress("divPackageManager","progressPackageManager",'hide')
 			if (xmppResponse.commandClsId == "INSTALLED_PACKAGES") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED" && xmppResponse.result.contentType =="TEXT_PLAIN") {
 					var params = {

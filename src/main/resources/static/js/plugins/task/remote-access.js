@@ -36,6 +36,7 @@ function sendTaskRemoteAccess(params) {
 	if (scheduledParamRemoteAccess != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamRemoteAccess;
 	}
+	progress("remoteAccessDiv","progressRemoteAccess",'show')
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -73,9 +74,11 @@ function remoteAccessListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		
 		if(xmppResponse.commandClsId == "SETUP-VNC-SERVER") {
+			progress("remoteAccessDiv","progressRemoteAccess",'hide')
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					$("#plugin-result-remote-access").html("");
+					progress("resourceUsageContent","progressDivResourceUsage",'hide')
 					$.notify(xmppResponse.result.responseMessage, "success");
 					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 					startRemoteAccess(arrg);

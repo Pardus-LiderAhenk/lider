@@ -256,7 +256,6 @@ $(document).ready(function(){
 				$('#genericModalHeader').html("Parola Politikası Ata")
 				$('#genericModalBodyRender').html(data);
 				
-				
 				fillPasswordPolicyDiv();
 				
 				$('#setPasswordPolicydBtn').on('click', function(event) {
@@ -631,14 +630,19 @@ function showAttributes(row){
    $('#tab-btn-userInfo').tab('show');
 }
 
+var groupPanelOpened=false;
+
 function showGroups(row){
 	var memberHtml='<table class="table table-striped table-bordered " id="attrMemberTable">';
 	memberHtml +='<thead> <tr><th style="width: 80%" > Kullanıcı Grup Adı </th> <th style="width: 20%"> </th></tr> </thead>';
 	console.log(row)
+	var isGroupExist=false;
 	for (key in row.attributesMultiValues) {
 		if (row.attributesMultiValues.hasOwnProperty(key)) {
 			if((key == "memberOf")){
+				
 				if(row.attributesMultiValues[key].length > 1) {
+					isGroupExist=true;
 					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
 						memberHtml += '<tr>';
 						memberHtml += '<td>' + row.attributesMultiValues[key][i] + '</td>'; 
@@ -646,6 +650,7 @@ function showGroups(row){
 						memberHtml += '</tr>';
 					}
 				} else {
+					isGroupExist=true;
 					memberHtml += '<tr>';
 					memberHtml += '<td>' + row.attributesMultiValues[key] + '</td>';
 					memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' > <i class="fas fa-minus"></i>  </button></td>'; 
@@ -657,6 +662,14 @@ function showGroups(row){
 	memberHtml +='</table>';
 	
 	$('#groupsDiv').html(memberHtml);
+	
+	if(isGroupExist && groupPanelOpened == false){
+		$('#sudoGroupCollapseLink').click();
+		groupPanelOpened=true;
+	}else {
+		$('#sudoGroupCollapseLink').click();
+		groupPanelOpened=false;
+	}
 	
 	$('.nav-link').each(function(){               
 		var $tweet = $(this);                    

@@ -55,6 +55,9 @@ public class AgentImpl implements Serializable{
 
 	@Column(name = "IP_ADDRESSES", nullable = false)
 	private String ipAddresses; // Comma-separated IP addresses
+	
+	@Column(name = "USER_DIRECTORY_DOMAIN")
+	private String userDirectoryDomain; 
 
 	@Column(name = "MAC_ADDRESSES", nullable = false)
 	private String macAddresses; // Comma-separated MAC addresses
@@ -96,6 +99,26 @@ public class AgentImpl implements Serializable{
 		this.isOnline = isOnline;
 		this.properties = properties;
 		this.sessions = sessions;
+	}
+	
+	public AgentImpl(Long id, String jid, Boolean deleted, String dn, String password, String hostname,
+			String ipAddresses, String macAddresses, Date createDate, Date modifyDate, Boolean isOnline,
+			Set<AgentPropertyImpl> properties, Set<UserSessionImpl> sessions, String userDirectoryDomain) {
+		super();
+		this.id = id;
+		this.jid = jid;
+		this.deleted = deleted;
+		this.dn = dn;
+		this.password = password;
+		this.hostname = hostname;
+		this.ipAddresses = ipAddresses;
+		this.macAddresses = macAddresses;
+		this.createDate = createDate;
+		this.modifyDate = modifyDate;
+		this.isOnline = isOnline;
+		this.properties = properties;
+		this.sessions = sessions;
+		this.userDirectoryDomain = userDirectoryDomain;
 	}
 
 	
@@ -265,6 +288,14 @@ public class AgentImpl implements Serializable{
 				+ ", hostname=" + hostname + ", ipAddresses=" + ipAddresses + ", macAddresses=" + macAddresses
 				+ ", createDate=" + createDate + ", modifyDate=" + modifyDate + ", properties=" + properties
 				+ ", sessions=" + sessions + "]";
+	}
+
+	public String getUserDirectoryDomain() {
+		return userDirectoryDomain;
+	}
+
+	public void setUserDirectoryDomain(String userDirectoryDomain) {
+		this.userDirectoryDomain = userDirectoryDomain;
 	}
 
 }

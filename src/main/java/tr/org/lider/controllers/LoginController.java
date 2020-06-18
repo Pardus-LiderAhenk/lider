@@ -29,13 +29,15 @@ public class LoginController {
 	public String getMainPage(Model model, Authentication authentication) {
 		try {
 			LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) authentication.getPrincipal();
-			logger.info("User logged as " + userDetails.getAuthorities());
+			logger.info("User logged as " + userDetails.getUsername());
 			logger.info("User has authorities: " + userDetails.getAuthorities());
 			model.addAttribute("user", userDetails);
 			model.addAttribute("password", userDetails.getPassword());
 			model.addAttribute("userNameJid", userDetails.getLiderUser().getName() + "@" + configurationService.getXmppServiceName());
+			logger.info("User jid : " + userDetails.getLiderUser().getName() + "@" + configurationService.getXmppServiceName());
 			model.addAttribute("xmppHost", configurationService.getXmppHost());
 			model.addAttribute("roleNames", userDetails.getLiderUser().getRoles());
+			logger.info("User roles : " + userDetails.getLiderUser().getRoles());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

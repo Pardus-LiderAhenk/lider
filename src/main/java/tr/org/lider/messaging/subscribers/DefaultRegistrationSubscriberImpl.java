@@ -119,6 +119,11 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			
 			LdapEntry ldapUserEntry= getUserFromLdap(userName, userPassword);
 			
+			if(directoryServer==null) {
+				
+				DIRECTORY_SERVER_LDAP="LDAP";
+			}
+			
 			if(ldapUserEntry==null) {
 				
 				RegistrationResponseMessageImpl	respMessage = new RegistrationResponseMessageImpl(StatusCode.NOT_AUTHORIZED,
@@ -169,7 +174,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 						new Date(),
 						false,
 						(Set<AgentPropertyImpl>) agent.getProperties(),
-						(Set<UserSessionImpl>) agent.getSessions());
+						(Set<UserSessionImpl>) agent.getSessions(),directoryServer);
 				
 				
 				if (message.getData() != null) {
@@ -190,7 +195,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 						message.getHostname(), 
 						message.getIpAddresses(),  
 						message.getMacAddresses(),
-						new Date(), null, false, null, null);
+						new Date(), null, false, null, null,directoryServer);
 				if (message.getData() != null) {
 					for (Entry<String, Object> entryy : message.getData().entrySet()) {
 						if (entryy.getKey() != null && entryy.getValue() != null) {

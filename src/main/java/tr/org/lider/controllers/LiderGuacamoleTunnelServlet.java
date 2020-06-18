@@ -4,7 +4,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.coyote.Response;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -13,20 +12,18 @@ import org.apache.guacamole.net.SimpleGuacamoleTunnel;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.servlet.GuacamoleHTTPTunnelServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 public class LiderGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
+	Logger logger = LoggerFactory.getLogger(LiderGuacamoleTunnelServlet.class);
 	
 	private static String PROTOCOL="";
 	private static String HOST="";
@@ -40,6 +37,7 @@ public class LiderGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
     	try {
         // Create our configuration
 	    	if(PROTOCOL!="" && HOST!="" && PORT!="" && PASSWORD!="") {
+	    		logger.info("Starting Remote Connection HOST: "+ HOST+ " PORT: "+ PORT +" PROTOCOL"+ PROTOCOL);
 		        GuacamoleConfiguration config = new GuacamoleConfiguration();
 		        config.setProtocol(PROTOCOL);
 		        if(PROTOCOL.equals("ssh")) {
@@ -50,23 +48,36 @@ public class LiderGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 		            config.setParameter("username", USERNAME);
 		        }
 		        else if(PROTOCOL.equals("vnc")) {
-		          config.setParameter("hostname", HOST);
+		        	String host="";
+		        	if(HOST.contains(",")){
+			        	String[] hostArr=	HOST.replace("'", "").split(",");
+			        	if(hostArr.length>0) {
+			        		host= hostArr[0];
+			        	}else {
+			        		host=hostArr[0];
+			        	}
+		        	}
+		        	else {
+		        		host=HOST.replace("'", "");
+		        	}
+		          config.setParameter("hostname", host.trim());
 		          config.setParameter("port", PORT);
 		          config.setParameter("password", PASSWORD);
 		        }
 		        // Connect to guacd - everything is hard-coded here.
-		        GuacamoleSocket socket;
-				
-					socket = new ConfiguredGuacamoleSocket(new InetGuacamoleSocket("localhost", 4822), config);
+		        GuacamoleSocket socket = new ConfiguredGuacamoleSocket(new InetGuacamoleSocket("localhost", 4822), config);
 				
 		        // Return a new tunnel which uses the connected socket
-		        return new SimpleGuacamoleTunnel(socket);
+		        GuacamoleTunnel tunnel=new SimpleGuacamoleTunnel(socket);
+		        
+		        return tunnel;
 		    	}
 	    	else {
 	    		return null;
     		}
     
     	} catch (GuacamoleException e) {
+    		logger.error(" Error occured when cretaing remote tunnel. Error:" + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}

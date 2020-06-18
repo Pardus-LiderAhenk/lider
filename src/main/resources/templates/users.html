@@ -5,9 +5,9 @@
 <script type="text/javascript" >
 
 $(document).ready(function(){
-	$('.collapse-link').click();
-	$('#loginCollapseLink').click();
-	  });
+// 	$('.collapse-link').click();
+// 	$('#loginCollapseLink').click();
+});
 </script>
 <style type="text/css">
 .userInfo {
@@ -138,7 +138,7 @@ $(document).ready(function(){
 															                <div class="x_title">
 															                  <h2>Grup Listesi</h2>
 															                  <ul class="nav navbar-right panel_toolbox">
-															                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+															                    <li><a class="collapse-link"  id="groupCollapseLink"><i class="fa fa-chevron-up"></i></a>
 															                    </li>
 															                    <li><a class="close-link"><i class="fa fa-minus"></i></a>
 															                    </li>
@@ -146,7 +146,7 @@ $(document).ready(function(){
 															                  <div class="clearfix"></div>
 															                </div>
 															                <div class="x_content">
-															               			<div id="groupsDiv">Kullanıcı herhangi bir gruba üye değildir.</div>
+															               			<div id="groupsDiv"></div>
 															              </div>
 														  </div>
 									                     <div class="x_panel tile ">
@@ -161,7 +161,9 @@ $(document).ready(function(){
 															                  <div class="clearfix"></div>
 															                </div>
 															                <div class="x_content">
-															                <button id="btnSetPasswordPolicyModal" type="button" data-target="#genericModal" data-toggle="modal" title="Politika Ata" class="btn-shadow btn btn-link">Politika Ata</button>
+															                	<div class="col-md-6"> 
+															                	<button id="btnSetPasswordPolicyModal" type="button" data-target="#genericModal" data-toggle="modal" title="Politika Ata" class="btn-shadow btn btn-link">Parola Politikası Ata</button>
+															                	</div>
 															                 	<span id="userPasswordPolicy"></span>
 																				<div id="userPolicyDetails"></div>
 															              </div>
@@ -170,7 +172,7 @@ $(document).ready(function(){
 															                <div class="x_title">
 															                  <h2>Yetki Grupları</h2>
 															                  <ul class="nav navbar-right panel_toolbox">
-															                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+															                    <li><a class="collapse-link" id="sudoGroupCollapseLink"><i class="fa fa-chevron-up"></i></a>
 															                    </li>
 															                    <li><a class="close-link"><i class="fa fa-minus"></i></a>
 															                    </li>
@@ -194,7 +196,7 @@ $(document).ready(function(){
 															                  <div class="clearfix"></div>
 															                </div>
 															                <div class="x_content">
-															                  <div id="policyHistoryDiv"></div>
+															                  <div id="policyHistoryDiv"> Kullanıcıya ait politika bulunmamaktadır.</div>
 															              </div>
 														  </div>
 									                    </div>

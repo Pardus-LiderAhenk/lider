@@ -1084,6 +1084,7 @@ public class LDAPServiceImpl implements ILDAPService {
 			List<LdapEntry> usersGroupEntrylist = findSubEntries(globalUserOu, "(objectclass=*)", new String[] { "*" }, SearchScope.OBJECT);
 			if (usersGroupEntrylist.size() > 0) {
 				usersGroupDn = usersGroupEntrylist.get(0);
+				usersGroupDn.setName("User Groups");
 				usersGroupDn.setExpandedUser("FALSE");
 			}
 		} catch (LdapException e) {

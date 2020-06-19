@@ -16,6 +16,8 @@ public interface PolicyRepository extends BaseJpaRepository<PolicyImpl, Long>{
 			+ "INNER JOIN c.policy pol "
 			+ "WHERE ce.dn =?1 "
 			+ "AND c.policy IS NOT NULL "
-			+ "ORDER BY c.createDate DESC")
+			+ "AND pol.active = true "
+			+ "AND pol.deleted = false "
+			+ "ORDER BY c.createDate ASC")
 	List<Object[]> findPoliciesByGroupDn(String groupDn);
 }

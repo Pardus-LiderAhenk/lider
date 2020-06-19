@@ -19,12 +19,12 @@
 */
 package tr.org.lider.messaging.messages;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import tr.org.lider.entities.ProfileImpl;
 import tr.org.lider.messaging.enums.LiderMessageType;
 
 /**
@@ -39,46 +39,23 @@ public class ExecutePoliciesMessageImpl implements IExecutePoliciesMessage {
 	private static final long serialVersionUID = 8283628510292186821L;
 
 	private LiderMessageType type = LiderMessageType.EXECUTE_POLICY;
-
 	private String recipient;
-
-	private String username;
-
-	private List<ProfileImpl> userPolicyProfiles;
-
-	private String userPolicyVersion;
-
-	private Long userCommandExecutionId;
-
-	private Date userPolicyExpirationDate;
-
-	private List<ProfileImpl> agentPolicyProfiles;
-
-	private String agentPolicyVersion;
-
-	private Long agentCommandExecutionId;
-
-	private Date agentPolicyExpirationDate;
-
 	private Date timestamp;
+	private String username;
+	private List<ExecutePolicyImpl> executePolicyList = new ArrayList<ExecutePolicyImpl>();
+	
+	public ExecutePoliciesMessageImpl() {
+		super();
+	}
 
-	private FileServerConf fileServerConf;
-
-	public ExecutePoliciesMessageImpl(String recipient, String username, List<ProfileImpl> userPolicyProfiles,
-			String userPolicyVersion, Long userCommandExecutionId, Date userPolicyExpirationDate, List<ProfileImpl> agentPolicyProfiles,
-			String agentPolicyVersion, Long agentCommandExecutionId, Date agentPolicyExpirationDate, Date timestamp, FileServerConf fileServerConf) {
+	public ExecutePoliciesMessageImpl(LiderMessageType type, String recipient, Date timestamp, String username,
+			List<ExecutePolicyImpl> executePolicyList) {
+		super();
+		this.type = type;
 		this.recipient = recipient;
-		this.username = username;
-		this.userPolicyProfiles = userPolicyProfiles;
-		this.userPolicyVersion = userPolicyVersion;
-		this.userPolicyExpirationDate = userPolicyExpirationDate;
-		this.userCommandExecutionId = userCommandExecutionId;
-		this.agentPolicyProfiles = agentPolicyProfiles;
-		this.agentPolicyVersion = agentPolicyVersion;
-		this.agentCommandExecutionId = agentCommandExecutionId;
-		this.agentPolicyExpirationDate = agentPolicyExpirationDate;
 		this.timestamp = timestamp;
-		this.fileServerConf = fileServerConf;
+		this.username = username;
+		this.executePolicyList = executePolicyList;
 	}
 
 	@Override
@@ -100,69 +77,6 @@ public class ExecutePoliciesMessageImpl implements IExecutePoliciesMessage {
 	}
 
 	@Override
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	@Override
-	public List<ProfileImpl> getUserPolicyProfiles() {
-		return userPolicyProfiles;
-	}
-
-	public void setUserPolicyProfiles(List<ProfileImpl> userPolicyProfiles) {
-		this.userPolicyProfiles = userPolicyProfiles;
-	}
-
-	@Override
-	public String getUserPolicyVersion() {
-		return userPolicyVersion;
-	}
-
-	public void setUserPolicyVersion(String userPolicyVersion) {
-		this.userPolicyVersion = userPolicyVersion;
-	}
-
-	@Override
-	public Long getUserCommandExecutionId() {
-		return userCommandExecutionId;
-	}
-
-	public void setUserCommandExecutionId(Long userCommandExecutionId) {
-		this.userCommandExecutionId = userCommandExecutionId;
-	}
-
-	@Override
-	public List<ProfileImpl> getAgentPolicyProfiles() {
-		return agentPolicyProfiles;
-	}
-
-	public void setAgentPolicyProfiles(List<ProfileImpl> agentPolicyProfiles) {
-		this.agentPolicyProfiles = agentPolicyProfiles;
-	}
-
-	@Override
-	public Long getAgentCommandExecutionId() {
-		return agentCommandExecutionId;
-	}
-
-	public void setAgentCommandExecutionId(Long agentCommandExecutionId) {
-		this.agentCommandExecutionId = agentCommandExecutionId;
-	}
-
-	@Override
-	public String getAgentPolicyVersion() {
-		return agentPolicyVersion;
-	}
-
-	public void setAgentPolicyVersion(String agentPolicyVersion) {
-		this.agentPolicyVersion = agentPolicyVersion;
-	}
-
-	@Override
 	public Date getTimestamp() {
 		return timestamp;
 	}
@@ -172,30 +86,21 @@ public class ExecutePoliciesMessageImpl implements IExecutePoliciesMessage {
 	}
 
 	@Override
-	public FileServerConf getFileServerConf() {
-		return fileServerConf;
+	public List<ExecutePolicyImpl> getExecutePolicyList() {
+		return this.executePolicyList;
 	}
 
-	public void setFileServerConf(FileServerConf fileServerConf) {
-		this.fileServerConf = fileServerConf;
-	}
-
-	@Override
-	public Date getUserPolicyExpirationDate() {
-		return userPolicyExpirationDate;
-	}
-
-	public void setUserPolicyExpirationDate(Date userPolicyExpirationDate) {
-		this.userPolicyExpirationDate = userPolicyExpirationDate;
+	public void setExecutePolicyList(List<ExecutePolicyImpl> executePolicyList) {
+		this.executePolicyList = executePolicyList;
 	}
 
 	@Override
-	public Date getAgentPolicyExpirationDate() {
-		return agentPolicyExpirationDate;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setAgentPolicyExpirationDate(Date agentPolicyExpirationDate) {
-		this.agentPolicyExpirationDate = agentPolicyExpirationDate;
+	public void setUsername(String username) {
+		this.username = username;
 	}
-
+	
 }

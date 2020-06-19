@@ -38,6 +38,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -83,6 +84,7 @@ public class CommandExecutionImpl implements Serializable {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "CREATE_DATE", nullable = false)
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Europe/Istanbul")
 	private Date createDate;
 
 	@OneToMany(mappedBy = "commandExecution", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = false)

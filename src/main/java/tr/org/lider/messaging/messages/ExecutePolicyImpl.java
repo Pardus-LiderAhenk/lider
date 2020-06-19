@@ -3,6 +3,7 @@ package tr.org.lider.messaging.messages;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import tr.org.lider.entities.ProfileImpl;
@@ -26,6 +27,7 @@ public class ExecutePolicyImpl {
 
 	private Long userCommandExecutionId;
 
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Europe/Istanbul")
 	private Date userPolicyExpirationDate;
 
 	private List<ProfileImpl> agentPolicyProfiles;
@@ -34,20 +36,28 @@ public class ExecutePolicyImpl {
 
 	private Long agentCommandExecutionId;
 
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Europe/Istanbul")
 	private Date agentPolicyExpirationDate;
 
 	private FileServerConf fileServerConf;
-
+	
+	//if an agent is deleted on server and still exists in agent db send deleted flag as true to agent
+	private Boolean isDeleted;
+	
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Europe/Istanbul")
+	private Date assignDate;
+	
 	public ExecutePolicyImpl() {
 		super();
 	}
 
-	public ExecutePolicyImpl(String recipient, Date timestamp, String username,
-			Long policyID, List<ProfileImpl> userPolicyProfiles, 
-			String userPolicyVersion, Long userCommandExecutionId,
+	public ExecutePolicyImpl(LiderMessageType type, String recipient, Date timestamp, String username, Long policyID,
+			List<ProfileImpl> userPolicyProfiles, String userPolicyVersion, Long userCommandExecutionId,
 			Date userPolicyExpirationDate, List<ProfileImpl> agentPolicyProfiles, String agentPolicyVersion,
-			Long agentCommandExecutionId, Date agentPolicyExpirationDate, FileServerConf fileServerConf) {
+			Long agentCommandExecutionId, Date agentPolicyExpirationDate, FileServerConf fileServerConf,
+			Boolean isDeleted, Date assignDate) {
 		super();
+		this.type = type;
 		this.recipient = recipient;
 		this.timestamp = timestamp;
 		this.username = username;
@@ -61,6 +71,8 @@ public class ExecutePolicyImpl {
 		this.agentCommandExecutionId = agentCommandExecutionId;
 		this.agentPolicyExpirationDate = agentPolicyExpirationDate;
 		this.fileServerConf = fileServerConf;
+		this.isDeleted = isDeleted;
+		this.assignDate = assignDate;
 	}
 
 	public String getUsername() {
@@ -173,6 +185,22 @@ public class ExecutePolicyImpl {
 
 	public void setPolicyID(Long policyID) {
 		this.policyID = policyID;
+	}
+
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	public Date getAssignDate() {
+		return assignDate;
+	}
+
+	public void setAssignDate(Date assignDate) {
+		this.assignDate = assignDate;
 	}
 	
 }

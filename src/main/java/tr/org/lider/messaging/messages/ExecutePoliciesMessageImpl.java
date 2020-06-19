@@ -41,18 +41,20 @@ public class ExecutePoliciesMessageImpl implements IExecutePoliciesMessage {
 	private LiderMessageType type = LiderMessageType.EXECUTE_POLICY;
 	private String recipient;
 	private Date timestamp;
+	private String username;
 	private List<ExecutePolicyImpl> executePolicyList = new ArrayList<ExecutePolicyImpl>();
 	
 	public ExecutePoliciesMessageImpl() {
 		super();
 	}
 
-	public ExecutePoliciesMessageImpl(LiderMessageType type, String recipient, Date timestamp,
+	public ExecutePoliciesMessageImpl(LiderMessageType type, String recipient, Date timestamp, String username,
 			List<ExecutePolicyImpl> executePolicyList) {
 		super();
 		this.type = type;
 		this.recipient = recipient;
 		this.timestamp = timestamp;
+		this.username = username;
 		this.executePolicyList = executePolicyList;
 	}
 
@@ -90,6 +92,15 @@ public class ExecutePoliciesMessageImpl implements IExecutePoliciesMessage {
 
 	public void setExecutePolicyList(List<ExecutePolicyImpl> executePolicyList) {
 		this.executePolicyList = executePolicyList;
+	}
+
+	@Override
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 }

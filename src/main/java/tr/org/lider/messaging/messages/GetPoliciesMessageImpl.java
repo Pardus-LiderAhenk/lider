@@ -20,6 +20,7 @@
 package tr.org.lider.messaging.messages;
 
 import java.util.Date;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -45,6 +46,8 @@ public class GetPoliciesMessageImpl implements IGetPoliciesMessage {
 	private String agentPolicyVersion;
 
 	private Date timestamp;
+	
+	private Map<String, String[]> policyList;
 
 	@Override
 	public AgentMessageType getType() {
@@ -99,5 +102,15 @@ public class GetPoliciesMessageImpl implements IGetPoliciesMessage {
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
+
+	@Override
+	public Map<String, String[]> getPolicyList() {
+		return policyList;
+	}
+
+	public void setPolicyList(Map<String, String[]> policyList) {
+		this.policyList = policyList;
+	}
+	
 
 }

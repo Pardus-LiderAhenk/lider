@@ -19,9 +19,13 @@
 */
 package tr.org.lider.messaging.subscribers;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.slf4j.Logger;
@@ -67,7 +71,7 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 
 		String agentUid = message.getFrom().split("@")[0];
 		String userUid = message.getUsername();
-		String userPolicyVersion = message.getUserPolicyVersion();
+		Map<String, String[]> agentPolicyList = message.getPolicyList();
 		//String agentPolicyVersion = message.getAgentPolicyVersion();
 
 		// Find LDAP user entry
@@ -81,24 +85,38 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 		List<Object[]> resultList=new ArrayList<>();
 		for (LdapEntry ldapEntry : groupsOfUser) {
 			List<Object[]> result = policyDao.findPoliciesByGroupDn(ldapEntry.getDistinguishedName());
-			System.out.println(resultList);
 			resultList.addAll(result);
 		}
 		PolicyImpl userPolicy = null;
 		Long userCommandExecutionId = null;
-		Date userExpirationDate = null;
-//		if (resultList != null && !resultList.isEmpty() && resultList.get(0) != null && resultList.get(0).length >= 3) {
-//			userPolicy = (PolicyImpl) resultList.get(0)[0];
-//			userCommandExecutionId = ((CommandExecutionImpl) resultList.get(0)[1]).getId();
-//			userExpirationDate = ((CommandImpl) resultList.get(0)[2]).getExpirationDate();
-//		}
+		CommandImpl command = null;
 		ExecutePoliciesMessageImpl response = new ExecutePoliciesMessageImpl();
+		response.setUsername(userUid);
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		if(resultList != null && !resultList.isEmpty()) {
 			for (int i = 0; i < resultList.size(); i++) {
 				userPolicy = (PolicyImpl) resultList.get(i)[0];
 				userCommandExecutionId = ((CommandExecutionImpl) resultList.get(i)[1]).getId();
-				userExpirationDate = ((CommandImpl) resultList.get(i)[2]).getExpirationDate();
-				boolean sendUserPolicy = userPolicy != null && userPolicy.getPolicyVersion() != null && !userPolicy.getPolicyVersion().equalsIgnoreCase(userPolicyVersion);
+				command = ((CommandImpl) resultList.get(i)[2]);
+				
+				boolean sendUserPolicy = userPolicy != null 
+						&& userPolicy.getPolicyVersion() != null;
+				if(agentPolicyList != null && agentPolicyList.size() > 0) {
+					
+					if(agentPolicyList.containsKey(String.valueOf(userPolicy.getId()))) {
+						Date assignDateOfAgentDB = formatter.parse(agentPolicyList.get(String.valueOf(userPolicy.getId()))[1]);
+						LocalDateTime ldtAgentDBDate = LocalDateTime.ofInstant(assignDateOfAgentDB.toInstant(), ZoneId.systemDefault());
+						LocalDateTime ldtAssignDate = LocalDateTime.ofInstant(command.getCreateDate().toInstant(), ZoneId.systemDefault());
+						ldtAgentDBDate = ldtAgentDBDate.withNano(0);
+						ldtAssignDate = ldtAssignDate.withNano(0);
+					
+						if(agentPolicyList.get(String.valueOf(userPolicy.getId()))[0].equals(userPolicy.getPolicyVersion())
+								&& ldtAgentDBDate.isEqual(ldtAssignDate)) {
+							sendUserPolicy = false;
+						}
+					}
+				}
+ 
 				// Check if one of the plugins use file transfer
 				boolean usesFileTransfer = false;
 				if (sendUserPolicy) {
@@ -109,85 +127,64 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 						}
 					}
 				}
-				ExecutePolicyImpl policy = new ExecutePolicyImpl();
-				policy.setPolicyID(userPolicy.getId());
-				policy.setAgentCommandExecutionId(null);
-				policy.setAgentPolicyExpirationDate(null);
-				policy.setAgentPolicyProfiles(null);
-				policy.setAgentPolicyVersion(null);
-				policy.setFileServerConf(usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null);
-				policy.setUserCommandExecutionId(userCommandExecutionId);
-				policy.setUsername(userUid);
-				policy.setUserPolicyExpirationDate(sendUserPolicy ? userExpirationDate : null);
-				policy.setUserPolicyProfiles(sendUserPolicy ? new ArrayList<ProfileImpl>(userPolicy.getProfiles()) : null);
-				policy.setUserPolicyVersion(userPolicy != null ? userPolicy.getPolicyVersion() : null);
-//				IExecutePoliciesMessage response = new ExecutePoliciesMessageImpl(
-//						null, 
-//						userUid,
-//						sendUserPolicy ? new ArrayList<ProfileImpl>(userPolicy.getProfiles()) : null,
-//						userPolicy != null ? userPolicy.getPolicyVersion() : null, 
-//					    userCommandExecutionId,
-//						sendUserPolicy ? userExpirationDate : null,
-//						null, null, null, null,
-//						new Date(),
-//						usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null
-//						);
-				response.getExecutePolicyList().add(policy);
 				
-				
+				if(sendUserPolicy) {
+					ExecutePolicyImpl policy = new ExecutePolicyImpl();
+					policy.setPolicyID(userPolicy.getId());
+					policy.setAgentCommandExecutionId(null);
+					policy.setAgentPolicyExpirationDate(null);
+					policy.setAgentPolicyProfiles(null);
+					policy.setAgentPolicyVersion(null);
+					policy.setFileServerConf(usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null);
+					policy.setUserCommandExecutionId(userCommandExecutionId);
+					policy.setUsername(userUid);
+					policy.setUserPolicyExpirationDate(sendUserPolicy ? command.getExpirationDate() : null);
+					policy.setUserPolicyProfiles(sendUserPolicy ? new ArrayList<ProfileImpl>(userPolicy.getProfiles()) : null);
+					policy.setUserPolicyVersion(userPolicy != null ? userPolicy.getPolicyVersion() : null);
+					policy.setIsDeleted(false);
+					LocalDateTime ldtAssignDate = LocalDateTime.ofInstant(command.getCreateDate().toInstant(), ZoneId.systemDefault());
+					ldtAssignDate = ldtAssignDate.withNano(0);
+					policy.setAssignDate(Date.from(ldtAssignDate.atZone(ZoneId.systemDefault()).toInstant()));
+					response.getExecutePolicyList().add(policy);
+				}
 			}
 		}
-		// If policy version is different than the policy version provided by
-		// user who is logged in, send its profiles to agent.
-		//boolean sendUserPolicy = userPolicy != null && userPolicy.getPolicyVersion() != null && !userPolicy.getPolicyVersion().equalsIgnoreCase(userPolicyVersion);
+		// check if one or more policies in database of agent is deleted or unassigned on lider server
+		// if deleted send deleted flag to ahenk to delete policy in ahenk db
+		if(agentPolicyList != null && agentPolicyList.size() > 0) {
+			for (String policyID : agentPolicyList.keySet())  
+	        { 
+	            // search  for value 
+	            boolean isPolicyDeleted = true;
+	    		if(resultList != null && !resultList.isEmpty()) {
+	    			for (int i = 0; i < resultList.size(); i++) {
+	    				userPolicy = (PolicyImpl) resultList.get(i)[0];
+	    				if(String.valueOf(userPolicy.getId()).equals(policyID)) {
+	    					isPolicyDeleted = false;
+	    					break;
+	    				}
+	    			}
+	    		}
+				
+	    		if(isPolicyDeleted) {
+	    			ExecutePolicyImpl policy = new ExecutePolicyImpl();
+					policy.setPolicyID(Long.valueOf(policyID));
+					policy.setAgentCommandExecutionId(null);
+					policy.setAgentPolicyExpirationDate(null);
+					policy.setAgentPolicyProfiles(null);
+					policy.setAgentPolicyVersion(null);
+					policy.setFileServerConf(null);
+					policy.setUserCommandExecutionId(null);
+					policy.setUsername(userUid);
+					policy.setUserPolicyExpirationDate(null);
+					policy.setUserPolicyProfiles(null);
+					policy.setUserPolicyVersion(null);
+					policy.setIsDeleted(true);
+					response.getExecutePolicyList().add(policy);
+	    		}
+	        } 
+		}
 
-		// Find agent policy.
-		
-//		resultList =null;
-//		PolicyImpl agentPolicy = null;
-//		Long agentCommandExecutionId = null;
-//		Date agentExpirationDate = null;
-//		if (resultList != null && !resultList.isEmpty() && resultList.get(0) != null && resultList.get(0).length >= 3) {
-//			agentPolicy = (PolicyImpl) resultList.get(0)[0];
-//			agentCommandExecutionId = (Long) resultList.get(0)[1];
-//			agentExpirationDate = (Date) resultList.get(0)[2];
-//		}
-//		// If policy version is different than the policy version provided by
-//		// agent, send its profiles to agent.
-//		boolean sendAgentPolicy = agentPolicy != null && agentPolicy.getPolicyVersion() != null
-//				&& !agentPolicy.getPolicyVersion().equalsIgnoreCase(agentPolicyVersion);
-//
-//		// Check if one of the plugins use file transfer
-//		boolean usesFileTransfer = false;
-//		if (sendUserPolicy) {
-//			for (ProfileImpl profile : userPolicy.getProfiles()) {
-//				if (profile.getPlugin() != null && profile.getPlugin().isUsesFileTransfer()) {
-//					usesFileTransfer = true;
-//					break;
-//				}
-//			}
-//		}
-//		if (!usesFileTransfer && sendAgentPolicy) {
-//			for (ProfileImpl profile : agentPolicy.getProfiles()) {
-//				if (profile.getPlugin() != null && profile.getPlugin().isUsesFileTransfer()) {
-//					usesFileTransfer = true;
-//					break;
-//				}
-//			}
-//		}
-		// Create message
-//		IExecutePoliciesMessage response = new ExecutePoliciesMessageImpl(
-//				null, 
-//				userUid,
-//				sendUserPolicy ? new ArrayList<ProfileImpl>(userPolicy.getProfiles()) : null,
-//				userPolicy != null ? userPolicy.getPolicyVersion() : null, 
-//			    userCommandExecutionId,
-//				sendUserPolicy ? userExpirationDate : null,
-//				null, null, null, null,
-//				new Date(),
-//				usesFileTransfer ? configurationService.getFileServerConf(agentUid) : null
-//				);
-		
 		logger.debug("Execute policies message: {}", response);
 		return response;
 	}

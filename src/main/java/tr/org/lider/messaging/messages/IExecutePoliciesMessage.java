@@ -13,6 +13,7 @@ public interface IExecutePoliciesMessage extends ILiderMessage {
 	 * @return
 	 */
 	List<ExecutePolicyImpl> getExecutePolicyList();
-
+	
+	String getUsername();
 
 }

@@ -112,6 +112,7 @@ function sendNetworkManagerTask(commandId, parameterMap) {
 				if (scheduledParamNetworkManager != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamNetworkManager;
 				}
+				progress("divNetworkManager","progressNetworkManager",'show')
 				$.ajax({
 					type: "POST",
 					url: "/lider/task/execute",
@@ -157,7 +158,7 @@ function networkManagerListener(msg) {
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 			if (clsId == "GET_NETWORK_INFORMATION" || clsId == "ADD_DNS" || clsId == "ADD_DOMAIN" || clsId == "ADD_NETWORK" || clsId == "ALLOW_PORT" || clsId == "BLOCK_PORT" || clsId == "CHANGE_HOSTNAME" || clsId == "DELETE_DOMAIN"
 				|| clsId == "DELETE_HOST" || clsId == "DELETE_DNS" || clsId == "DELETE_NETWORK" || clsId == "ADD_HOST") {
-
+				progress("divNetworkManager","progressNetworkManager",'hide')
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 					$('#networkManagerHelp').html("");

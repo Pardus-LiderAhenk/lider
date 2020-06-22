@@ -93,9 +93,11 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 			if(objClass.equals("group")) { setType(DNType.GROUP); break; }
 			else if(objClass.equals("container")) { setType(DNType.CONTAINER); break;  }
 			else if(objClass.equals("computer")) { 
+				if(getAttributesMultiValues().get("operatingSystem")!=null) {
 				if(getAttributesMultiValues().get("operatingSystem")[0].contains("linux-gnu") ) {setType(DNType.AHENK);}
 				else if(getAttributesMultiValues().get("operatingSystem")[0].contains("Windows") ) {setType(DNType.WIND0WS_AHENK);}
 				 break;  
+				}
 			}
 			else if(objClass.equals("organizationalPerson")) { setType(DNType.USER);  }
 			else if(objClass.equals("organizationalUnit")) { setType(DNType.ORGANIZATIONAL_UNIT);  }

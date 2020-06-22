@@ -685,6 +685,8 @@ function addSelectedEntryToTable(row,rootDnComputer){
 	}
 	else{
 		selectedEntries=[]
+		$("#selectedAgentInfo").html("Lütfen İstemci Seçiniz."); 
+		$("#agentOnlineStatus").hide()
 	}
 }
 
@@ -739,6 +741,7 @@ function showSelectedEntries() {
 	$("#agentProcessor").html("");
 	$("#agentOsName").html("");
 	$("#agentPhase").html("");
+	$("#userDomain").html("");
 	
 	$.ajax({ 
 		type: 'POST', 
@@ -783,6 +786,7 @@ function showSelectedEntries() {
 				$("#agentIpAddr").html(data.ipAddresses);
 				$("#agentMac").html(data.macAddresses);
 				$("#agentCreateDate").html(createDate);
+				$("#userDomain").html(data.userDirectoryDomain);
 			} else {
 				$("#agentHostname").html("");
 				$("#agentIpAddr").html("");
@@ -792,6 +796,7 @@ function showSelectedEntries() {
 //				$("#agentUsername").html("");
 				$("#agentProcessor").html("");
 				$("#agentOsName").html("");
+				$("#userDomain").html("");
 			}
 		}
 	});

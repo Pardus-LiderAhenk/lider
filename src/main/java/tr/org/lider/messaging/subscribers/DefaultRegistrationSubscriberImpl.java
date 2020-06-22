@@ -157,10 +157,19 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			
 			AgentImpl agent = agents != null && !agents.isEmpty() ? agents.get(0) : null;
 
-			// Update the record
+			String userDirectoryDomain=null;
+			// get directory server
+			if(directoryServer.equals(DIRECTORY_SERVER_LDAP)) {
+				userDirectoryDomain=configurationService.getLdapRootDn();
+			}
+			else if(directoryServer.equals(DIRECTORY_SERVER_AD)) {
+				userDirectoryDomain =configurationService.getAdDomainName();
+			}
 			
+			// Update the record
 			if (agent != null) {
 				alreadyExists = true;
+				
 				agent = new AgentImpl(
 						agent.getId(), 
 						agent.getJid(), 
@@ -185,9 +194,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 						}
 					}
 				}
-				
 				agentDao.save(agent);
-				
 			} else {
 				// Create new agent database record
 				logger.debug("Creating new agent record in database.");

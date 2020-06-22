@@ -41,7 +41,7 @@ function sendFileTransferTask(params) {
 	if (scheduledParamFileTransfer != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamFileTransfer;
 	}
-
+	progress("divFileTransfer","progressFileTransfer",'show')
 	$.ajax({
 		type: "POST",
 		url: "/file_transfer/task/execute",
@@ -78,6 +78,7 @@ function fileTransferListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+			progress("divFileTransfer","progressFileTransfer",'hide')
 			if (xmppResponse.commandClsId == "MULTIPLE-FILE-TRANSFER") {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {

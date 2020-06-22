@@ -378,7 +378,7 @@ function sendExecuteScriptTask(params) {
 	if (scheduledParamExeScript != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
 	}
-
+	progress("divExecuteScript","progressExecuteScript",'show')
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -415,6 +415,7 @@ function executeScriptListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+			progress("divExecuteScript","progressExecuteScript",'hide')
 			if (xmppResponse.commandClsId == "EXECUTE_SCRIPT") {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {

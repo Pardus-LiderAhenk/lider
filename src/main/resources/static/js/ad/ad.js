@@ -221,7 +221,10 @@ function setChildsToTable(childs) {
 		
 		html += '<td> </td>';
 		html += '<td> <img src='+imgPath+' alt="" height="24" width="24"> '+ child.attributesMultiValues.name +'</td>';
-		html += '<td>'+ child.type +'</td>';
+		var type=""
+		if(child.type=="AHENK" || child.type=="WIND0WS_AHENK" ){type= child.attributesMultiValues.operatingSystem }
+		else { type=child.type }
+		html += '<td>'+ type  +'</td>';
 		var desc=""
 		if(child.attributesMultiValues.description){desc=child.attributesMultiValues.description}
 		html += '<td>'+ desc +'</td>';

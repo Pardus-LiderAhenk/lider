@@ -44,8 +44,8 @@ function sendUsbManagement(params) {
 				var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 				if (scheduledParamUsbManagement != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamUsbManagement;
-				}
-
+				}	
+				progress("divUsbManagement","progressUsbManagement",'show')
 				$.ajax({
 					type: "POST",
 					url: "/lider/task/execute",
@@ -88,6 +88,7 @@ function usbManagementListener(msg) {
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
 		if(xmppResponse.commandClsId == "MANAGE-USB"){
+			progress("divUsbManagement","progressUsbManagement",'hide')
 			var parameterMap = {};
 			if (xmppResponse.result.responseCode != "TASK_ERROR") {
 				$("#plugin-result-usb-management").html("");

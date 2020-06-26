@@ -72,19 +72,26 @@ function onPresence2(presence)
 				var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
 				row.online=false;
 				$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name});
+				$("#agentOnlineStatus").attr("class","btn btn-danger");
+				$("#agentOnlineStatus").html("Çevrimdışı");
+				
 			}
 		} else {
 			if(computerTreeCreated){
 				var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
 				row.online=true;
 				$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name}); 
+				$("#agentOnlineStatus").attr("class","btn btn-success");
+				$("#agentOnlineStatus").html("Çevrimiçi");
 			}
 		}
 	}
 	return true;
 }
 
-
+/**
+ * open page buttons start
+ */
 $('#btn-system').click(function() {
 	setSystemPluginPage();
 });
@@ -111,11 +118,139 @@ $('#btn-taskHistory').click(function() {
 	setTaskHistoryPage()
 	
 });
+$('#btn-installAhenk').click(function() {
+	setInstallAhenkPage();
+});
+
+/**
+ * open page buttons end
+ */
+
 $('#getTaskHistoryBtn').click(function() {
 	taskHistory()
 });
 $('#btnSSHConnect').click(function() {
 	SHHConnect()
+});
+
+
+$('#btnCheckSsh').click(function() {
+	var host=$('#ahenkIp4Install').val();
+	var user=$('#sshUserName4Install').val();
+	var password=$('#sshPassword4Install').val();
+	
+	if(host == ''){
+		$.notify("Lütfen bağlanılacak IP adresi giriniz.", "error");
+		return;
+	}
+	if(user == ''){
+		$.notify("Lütfen SSH kullanıcı adı giriniz.", "error");
+		return;
+	}
+	if(password == ''){
+		$.notify("Lütfen SSH parola giriniz.", "error");
+		return;
+	}
+	
+	checkSshConnection(host,user,password)
+});
+
+$('#btnInstallAhenk').click(function() {
+	
+	var host=$('#ahenkIp4Install').val();
+	var user=$('#sshUserName4Install').val();
+	var password=$('#sshPassword4Install').val();
+	var repoAddr=$('#repoAddr').val();
+	if(host == ''){
+		$.notify("Lütfen bağlanılacak IP adresi giriniz.", "error");
+		return;
+	}
+	if(user == ''){
+		$.notify("Lütfen SSH kullanıcı adı giriniz.", "error");
+		return;
+	}
+	if(password == ''){
+		$.notify("Lütfen SSH parola giriniz.", "error");
+		return;
+	}
+	if(repoAddr == ''){
+		$.notify("Lütfen Repo addresi giriniz.", "error");
+		return;
+	}
+	
+	var cmdGetKeyring='sudo wget http://'+repoAddr+'/lider/liderahenk-archive-keyring.asc && sudo apt-key add liderahenk-archive-keyring.asc &&  sudo rm liderahenk-archive-keyring.asc '
+	var cmdSetSourcesListPardus= 'sudo printf "\ndeb http://'+repoAddr+'/pardus ondokuz main contrib non-free \ndeb http://'+repoAddr+'/guvenlik ondokuz main contrib non-free \ndeb [arch=amd64] http://'+repoAddr+'/liderahenk-test testing main" | sudo tee -a /etc/apt/sources.list'
+	var cmdUpdate= 'sudo apt update'
+	var cmdInstallAhenk= 'sudo apt install -y ahenk'
+	
+	function cbResult(result){
+		$.notify("Kurulum başarı ile gerçekleşti.", "success");
+	}
+	
+	function cbUpdate(result){
+		setShhLog("Ahenk kurulumu başlatılıyor....")
+		executeRemoteSshCommand(host,user, password,cmdInstallAhenk,cbResult)
+	}
+		
+	function cbSetSourcesList(result){
+		setShhLog("Repo update ediliyor....")
+		executeRemoteSshCommand(host,user, password,cmdUpdate,cbUpdate)
+	}
+		
+	function cbKeyring(result) {
+		setShhLog("Repo kurulumu başlatıldı....")
+		executeRemoteSshCommand(host,user, password,cmdSetSourcesListPardus,cbSetSourcesList)
+	}
+	setShhLog("Repo ayarlanıyor....")
+	executeRemoteSshCommand(host,user, password,cmdGetKeyring,cbKeyring)
+});
+
+$('#btnRegisterAhenk').click(function() {
+	var host=$('#ahenkIp4Install').val();
+	var user=$('#sshUserName4Install').val();
+	var password=$('#sshPassword4Install').val();
+	var domainUserName=$('#domainUserName').val();
+	var domainUserPassword=$('#domainUserPassword').val();
+	var domainName=$('#domainName').val();
+	
+	if(host == ''){
+		$.notify("Lütfen bağlanılacak IP adresi giriniz.", "error");
+		return;
+	}
+	if(user == ''){
+		$.notify("Lütfen SSH kullanıcı adı giriniz.", "error");
+		return;
+	}
+	if(password == ''){
+		$.notify("Lütfen SSH parola giriniz.", "error");
+		return;
+	}
+	if(domainUserName == ''){
+		$.notify("Lütfen Domain Kullanıcı Adı giriniz.", "error");
+		return;
+	}
+	if(domainUserPassword == ''){
+		$.notify("Lütfen Domain Kullanıcı Parola giriniz.", "error");
+		return;
+	}
+	
+	var cmdRegisterAhenk= 'sudo /usr/bin/python3 /usr/share/ahenk/ahenkd.py start 10.200.87.53 '+  domainUserName + ' ' + domainUserPassword + ' ' + domainName;
+	
+	function cbResultRegister(result){
+		$.notify("Kayıt başarı ile gerçekleşti.", "success");
+	}
+	
+	function cbRegisterAhenk(result) {
+		setShhLog("Ahenk MYS sistemine başarı ile kaydedildi..Ahenk yeniden başlatıılıyor..Uzak Bağlantı koparılacaktır.")
+		executeRemoteSshCommand(host,user, password,"ls",cbResultRegister)
+	}
+	
+	setShhLog("Ahenk MYS sistemine kayıt ediliyor.")
+	executeRemoteSshCommand(host,user, password,cmdRegisterAhenk,cbRegisterAhenk)
+});
+
+$('#btnClearRemoteSshLog').click(function() {
+	$('#installAhenkLog').html("");
 });
 
 function setSystemPluginPage() {
@@ -386,6 +521,10 @@ function setTaskHistoryPage() {
 
 function setShhPage() {
 	showPageAndHideOthers('sshPage')
+}
+
+function setInstallAhenkPage() {
+	showPageAndHideOthers('installAhenkPage')
 }
 
 function executedTaskDetailClicked(executionDate, pluginName, commandExecutionResultID) {
@@ -852,7 +991,7 @@ function taskHistory() {
 						var year = command.commandExecutions[0].createDate.substring(0,4);
 						var month = command.commandExecutions[0].createDate.substring(5,7);
 						var day = command.commandExecutions[0].createDate.substring(8,10);
-						var time = command.commandExecutions[0].createDate.substring(11,19);
+						var time = comminstallAhenkLogand.commandExecutions[0].createDate.substring(11,19);
 						var createDate = day + '.' + month + '.' + year + ' ' + time;
 
 						trElement += '<td>' + createDate + '</td>';
@@ -895,6 +1034,7 @@ function showPageAndHideOthers(showPageId){
 	$("#securityAndNetworkManagementPage").hide();
 	$("#taskHistoryPage").hide();
 	$("#sshPage").hide();
+	$("#installAhenkPage").hide();
 	
 	$('#' +showPageId).show();
 }
@@ -1033,4 +1173,72 @@ function displaySSHConnection() {
     	    };
     });
    
+}
+
+function executeRemoteSshCommand(host,user, password,command, callback) {
+	var params = {
+			"command" : command,
+			"host" : host,
+			"password": password,
+			"username": user
+	};
+	$.ajax({
+		type: 'POST', 
+		url: "/remoteSsh/executeSshCommand",
+		data: params,
+		success: function(data) {
+			console.log(data)
+			
+			setShhLog(data)
+			callback("OK")
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			 console.log(jqXHR)
+			 console.log(textStatus)
+			 console.log(errorThrown)
+		}
+	});
+}
+
+function checkSshConnection(host,user, password) {
+	var params = {
+			"host" : host,
+			"username" : user,
+			"password": password
+	};
+	$.ajax({
+		type: 'POST', 
+		url: "/remoteSsh/checkSSHConnection",
+		data: params,
+		success: function(data) {
+			if(data==1){
+				$.notify("Bağlantı başarı ile sağlandı.", "success");
+				setShhLog("Bağlantı başarı ile sağlandı.")
+			}
+			else if(data==0){
+				$.notify("Bağlantı başarısız. Lütfen bağlantınızı kontrol ediniz. Bağlantı kurulacak istemcide SSH kurulu olduğuna emin olunuz.");
+				setShhLog("Bağlantı başarısız. Lütfen bağlantınızı kontrol ediniz. Bağlantı kurulacak istemcide SSH kurulu olduğuna emin olunuz.")
+			}
+		},
+		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
+			console.log(jqXHR)
+			console.log(textStatus)
+			console.log(errorThrown)
+		}
+	});
+}
+
+function setShhLog(message){
+	var d = new Date();
+	var day = d.getDate();
+	var month = (d.getMonth()+1);
+	var year = d.getFullYear();
+	var h = d.getHours();
+	var minu = d.getMinutes();
+	var sec = d.getSeconds();
+	$('#installAhenkLog').append(day+'/'+month+'/'+year+' '+h+':'+ minu+ ':'+ sec)
+	$('#installAhenkLog').append("\n")
+	$('#installAhenkLog').append(message)
+	$('#installAhenkLog').append("\n")
+	$('#installAhenkLog').append("---------------------------------------------------------")
 }

@@ -280,6 +280,17 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			
 			logger.info("Unregister message from jid : "+jid);
 			logger.info("Unregister message UserName: "+message.getUserName());
+			String userName = message.getUserName();
+			String userPassword = message.getUserPassword();
+			
+			LdapEntry ldapUserEntry= getUserFromLdap(userName, userPassword);
+			
+			if(ldapUserEntry==null) {
+				
+				RegistrationResponseMessageImpl	respMessage = new RegistrationResponseMessageImpl(StatusCode.NOT_AUTHORIZED,
+						"User Not Found", null, null, new Date());
+				return respMessage;
+			}
 			
 			// Check if agent LDAP entry already exists
 			final List<LdapEntry> entry = ldapService.search(configurationService.getAgentLdapJidAttribute(), jid,

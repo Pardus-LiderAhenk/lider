@@ -136,17 +136,31 @@ $('#btnAdGroupReplication').on('click', function (event) {
 		}
 	});
 });
-$('#btnAdUserAdd').on('click', function (event) {
+$('#btnAdUserAddModal').on('click', function (event) {
 	console.log(treeMenuSelection)
 	getModalContent("modals/ad/adUserAdd", function content(data){
-		$('#genericModalLargeHeader').html("AD Kullanıcı Ekle");
+		$('#genericModalLargeHeader').html("Active Directory Kullanıcı Ekle");
 		$('#genericModalLargeBodyRender').html(data);
 		$('#userFolderInfo').html(treeMenuSelection.distinguishedName);
 		 
 	
+		$("#name").on('keyup',function(event){
+			var name=$("#name").val();
+			var sn=$("#sn").val();
+			
+			$("#cn").val(name+' '+sn);
+		});
+
+		$("#sn").keyup(function(){
+			var name=$("#name").val();
+			var sn=$("#sn").val();
+			
+			$("#cn").val(name+' '+sn);
+		});
 	});
 });
-$('#btnAdOuAdd').on('click', function (event) {
+
+$('#btnAdOuAddModal').on('click', function (event) {
 	console.log(treeMenuSelection)
 	getModalContent("modals/ad/adUserAdd", function content(data){
 		$('#genericModalLargeHeader').html("AD Organizasyon Birimi Ekle");
@@ -154,7 +168,7 @@ $('#btnAdOuAdd').on('click', function (event) {
 		
 	});
 });
-$('#btnAdGroupAdd').on('click', function (event) {
+$('#btnAdGroupAddModal').on('click', function (event) {
 	console.log(treeMenuSelection)
 	getModalContent("modals/ad/adUserAdd", function content(data){
 		$('#genericModalLargeHeader').html("AD Grup Ekle");
@@ -162,6 +176,18 @@ $('#btnAdGroupAdd').on('click', function (event) {
 		
 	});
 });
+
+$('#btnAdUserAdd').on('click', function (event) {
+	alert("user")
+});
+$('#btnAdOuAdd').on('click', function (event) {
+	alert("ou")
+});
+$('#btnAdGroupAdd').on('click', function (event) {
+	alert("group")
+});
+
+
 
 $("#adChildSearchTxt").keyup(function() {
 	var txt=$('#adChildSearchTxt').val();
@@ -451,4 +477,83 @@ function btnSyncGroupAd2LdapClicked() {
 			console.log(result)
 		}
 	});
+}
+
+function btnAdUserAddClicked() {
+	addUser(treeMenuSelection)
+}
+function btnAdGroupAddClicked() {
+	alert("sfgdf")
+}
+function btnAdOuAddClicked() {
+	alert("sfgdf")
+}
+
+function addUser(treeMenuSelection) {
+	var parentDn=treeMenuSelection.distinguishedName; 
+	var name=$('#name').val();
+	var uid=$('#uid').val();
+	var cn=$('#cn').val();
+	var sn=$('#sn').val();
+	var mail=$('#mail').val();
+	var homePostalAddress=$('#homePostalAddress').val();
+	var telephoneNumber=$('#telephoneNumber').val();
+	var userPassword=$('#userPassword').val();
+	var confirm_password=$('#confirm_password').val();
+	
+	var lowerCase = "abcdefghijklmnopqrstuvwxyz";
+	var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	var digits = "0123456789";
+	var splChars = "+=.@*!_";
+	
+	var ucaseFlag = contains(userPassword, upperCase);
+    var lcaseFlag = contains(userPassword, lowerCase);
+    var digitsFlag = contains(userPassword, digits);
+    var splCharsFlag = contains(userPassword, splChars);
+    
+    var parentEntryUUID= treeMenuSelection.entryUUID;
+    
+    if(userPassword.length < 8 || !ucaseFlag || !lcaseFlag || !digitsFlag || !splCharsFlag){
+    	$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
+    	return
+    }
+    if(userPassword!=confirm_password){
+		$.notify("Parolalar Uyuşmamaktadır.",{className: 'warn',position:"right top"}  );
+		return
+	}
+    var params = {
+			"uid" : uid,
+			"name": name,
+			"cn": cn,
+			"sn": sn,
+			"userPassword": userPassword,
+			"parentName": parentDn,
+			"telephoneNumber": telephoneNumber,
+			"homePostalAddress": homePostalAddress,
+			"mail": mail
+	};
+    $.ajax({
+		type : 'POST',
+		url : 'ad/addUser2AD',
+		data : params,
+		dataType : 'json',
+		success : function(data) {
+			console.log(data)
+			$.notify("Kullanıcı Başarı ile eklendi.",{className: 'success',position:"right top"}  );
+			$('#genericModalLarge').trigger('click');
+		},
+	    error: function (data, errorThrown) {
+			$.notify("Kullanıcı Eklenirken Hata Oluştu.", "error");
+		}
+	});  
+}
+
+function contains(rootPassword, allowedChars) {
+    for (i = 0; i < rootPassword.length; i++) {
+            var char = rootPassword.charAt(i);
+             if (allowedChars.indexOf(char) >= 0){
+            	 return true;
+             }
+         }
+     return false;
 }

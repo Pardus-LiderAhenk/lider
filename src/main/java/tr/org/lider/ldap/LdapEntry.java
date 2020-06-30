@@ -131,8 +131,8 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 		setExpandedUser("FALSE");
 		
 		setName( (getAttributes().get("ou")!=null &&  !getAttributes().get("ou").equals("")) 
-				? getAttributes().get("ou") : getAttributes().get("uid")!=null &&  !getAttributes().get("uid").equals("") 
-				? getAttributes().get("uid") : getAttributes().get("cn")!=null &&  !getAttributes().get("cn").equals("") ? getAttributes().get("cn"): getAttributes().get("o") );
+				? getAttributes().get("ou") : getAttributes().get("cn")!=null &&  !getAttributes().get("cn").equals("") 
+				? getAttributes().get("cn") : getAttributes().get("uid")!=null &&  !getAttributes().get("uid").equals("") ? getAttributes().get("uid"): getAttributes().get("o") );
 	}
 	/**
 	 * 

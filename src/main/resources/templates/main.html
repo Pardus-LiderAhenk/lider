@@ -98,6 +98,7 @@
 <script type="text/javascript" src="js/jquery-confirm.min.js"></script>
 <script type="text/javascript">
 	var username = '[[${userNameJid}]]';
+	var user_name = '[[${userName}]]';
 	var password = '[[${password}]]';
 	var xmppHost = '[[${xmppHost}]]';
 
@@ -182,12 +183,12 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}" 
-					          	class="dropdown-item dizin" href="#" data-page="user_groups">Kullanıcı Grup Yönetimi</a>
+					          	class="nav-link dizin" href="#" data-page="user_groups">Kullanıcı Grup Yönetimi</a>
 					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')}" 
-					          	class="nav-link dropdown-item dizin " href="#" data-page="computer_groups">İstemci Grup Yönetimi</a>
+					          	class="nav-link  dizin " href="#" data-page="computer_groups">İstemci Grup Yönetimi</a>
 					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}" 
-					          	class="nav-link dropdown-item dizin " href="#" data-page="sudo_groups"> Kullanıcı Yetkilendirme (Sudo) </a>
-					          <a class="nav-link dropdown-item dizin" href="#" data-page="policy" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')}" >
+					          	class="nav-link  dizin " href="#" data-page="sudo_groups"> Kullanıcı Yetkilendirme (Sudo) </a>
+					          <a class="nav-link  dizin" href="#" data-page="policy" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')}" >
                                 Politika Yönetimi
                               </a>
 					          	
@@ -201,7 +202,7 @@
                             
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}" 
-					          class="dropdown-item dizin" href="#" data-page="agent_info">Detaylı İstemci Raporu</a>
+					          class="nav-link dizin" href="#" data-page="agent_info">Detaylı İstemci Raporu</a>
 					        </div>
                         </li>
                         

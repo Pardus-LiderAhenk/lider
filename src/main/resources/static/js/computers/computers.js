@@ -28,6 +28,9 @@ $("#dropdownButton").hide();
 $("#agentOnlineStatus").hide()
 $("#selectedAgentList").hide();
 
+$("#domainUserName").val(user_name);
+$("#domainUserPassword").val(password);
+
 /*
  * create user tree select, check and uncheck action functions can be implemented if required
  * params div, onlyFolder, use Checkbox, select action , check action, uncheck action

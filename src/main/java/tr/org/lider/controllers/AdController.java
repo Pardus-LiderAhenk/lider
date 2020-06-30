@@ -119,14 +119,31 @@ public class AdController {
 		 Map<String, String[]> attributes = new HashMap<String, String[]>();
 		
 		 attributes.put("objectClass", new String[] {"top","person","organizationalPerson","user"});
-		 attributes.put("cn", new String[] {" "});
-		 attributes.put("sAMAccountName", new String[] {" "});
-		 attributes.put("userPrincipalName", new String[] {" "});
-		 attributes.put("givenName", new String[] {" "});
-		 attributes.put("sn", new String[] {" "});
-		 attributes.put("uid", new String[] {" "});
+		 attributes.put("cn", new String[] {selectedEntry.getCn()});
+		 attributes.put("sAMAccountName", new String[] {selectedEntry.getUid()});
+		 attributes.put("userPrincipalName", new String[] {selectedEntry.getUid()+"@"+configurationService.getAdDomainName()});
+		 attributes.put("givenName", new String[] {selectedEntry.getName()});
+		 attributes.put("displayName", new String[] {selectedEntry.getCn()});
+		 attributes.put("name", new String[] {selectedEntry.getCn()});
+		 attributes.put("sn", new String[] {selectedEntry.getSn()});
+		 attributes.put("userpassword", new String[] {selectedEntry.getUserPassword()});
+		 
+		// some useful constants from lmaccess.h
+	        int UF_ACCOUNTDISABLE = 0x0002;
+	        int UF_PASSWD_NOTREQD = 0x0020;
+	        int UF_PASSWD_CANT_CHANGE = 0x0040;
+	        int UF_NORMAL_ACCOUNT = 0x0200;
+	        int UF_DONT_EXPIRE_PASSWD = 0x10000;
+	        int UF_PASSWORD_EXPIRED = 0x800000;
+	        
+	     String uacStr=   Integer.toString(UF_NORMAL_ACCOUNT + UF_PASSWD_NOTREQD
+                 + UF_PASSWORD_EXPIRED);
+	     attributes.put("userAccountControl", new String[] {uacStr});
+		 
 		 try {
-			service.addEntry("ou=YeniKlasor,dc=pardus,dc=tr", attributes);
+			 
+			String rdn="CN="+selectedEntry.getCn()+","+selectedEntry.getParentName();
+			service.addEntry(rdn, attributes);
 		} catch (LdapException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

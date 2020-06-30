@@ -32,6 +32,8 @@ public class LoginController {
 			logger.info("User logged as " + userDetails.getUsername());
 			logger.info("User has authorities: " + userDetails.getAuthorities());
 			model.addAttribute("user", userDetails);
+			model.addAttribute("userName", userDetails.getLiderUser().getName());
+			
 			model.addAttribute("password", userDetails.getPassword());
 			model.addAttribute("userNameJid", userDetails.getLiderUser().getName() + "@" + configurationService.getXmppServiceName());
 			logger.info("User jid : " + userDetails.getLiderUser().getName() + "@" + configurationService.getXmppServiceName());

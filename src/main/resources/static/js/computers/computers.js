@@ -994,7 +994,7 @@ function taskHistory() {
 						var year = command.commandExecutions[0].createDate.substring(0,4);
 						var month = command.commandExecutions[0].createDate.substring(5,7);
 						var day = command.commandExecutions[0].createDate.substring(8,10);
-						var time = comminstallAhenkLogand.commandExecutions[0].createDate.substring(11,19);
+						var time = command.commandExecutions[0].createDate.substring(11,19);
 						var createDate = day + '.' + month + '.' + year + ' ' + time;
 
 						trElement += '<td>' + createDate + '</td>';

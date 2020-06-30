@@ -70,7 +70,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 					&& (message.getIpAddresses() == null || message.getIpAddresses().isEmpty())) {
 				logger.warn("Couldn't find IP addresses of the agent with JID: {}", uid);
 			}
-			
+
 			if (message.getType() == AgentMessageType.LOGIN) {
 				for (AgentPropertyImpl prop : agent.getProperties()) {
 					if (prop.getPropertyName().equals("hardware.disk.total")
@@ -99,6 +99,9 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 						logger.info("IP Addresses of Agent with ID {} has been changed. Updating in DB", agent.getId());
 						prop.setPropertyValue(message.getIpAddresses());
 						agent.setIpAddresses(message.getIpAddresses());
+					} else if (!agent.getHostname().equals(message.getHostname())) {
+						logger.info("Hostname of Agent with ID {} has been changed. Updating in DB", agent.getId());
+						agent.setHostname(message.getHostname());
 					}
 				}
 			}
@@ -126,7 +129,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 	private List<LdapEntry> getUserRoleGroupList(String userLdapRolesDn, String userName, String hostName)
 			throws LdapException {
 		List<LdapEntry> userAuthDomainGroupList;
-		List<LdapSearchFilterAttribute> filterAttt = new ArrayList();
+		List<LdapSearchFilterAttribute> filterAttt = new ArrayList<>();
 
 		filterAttt.add(new LdapSearchFilterAttribute("sudoUser", userName, SearchFilterEnum.EQ));
 		filterAttt.add(new LdapSearchFilterAttribute("sudoHost", "ALL", SearchFilterEnum.EQ));
@@ -135,7 +138,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 				new String[] { "cn", "dn", "sudoCommand", "sudoHost", "sudoUser" });
 
 		if (userAuthDomainGroupList.size() == 0) {
-			filterAttt = new ArrayList();
+			filterAttt = new ArrayList<>();
 			filterAttt.add(new LdapSearchFilterAttribute("sudoUser", userName, SearchFilterEnum.EQ));
 			filterAttt.add(new LdapSearchFilterAttribute("sudoHost", hostName, SearchFilterEnum.EQ));
 

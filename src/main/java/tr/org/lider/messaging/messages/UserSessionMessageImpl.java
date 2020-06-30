@@ -24,6 +24,16 @@ public class UserSessionMessageImpl implements IUserSessionMessage {
 	private String hostname;
 	
 	private String userIp; // for ltsp user sessions
+	
+	private int memory;
+	
+	private int diskTotal;
+	
+	private int diskUsed;
+	
+	private int diskFree;
+	
+	private String osVersion;
 
 	private Date timestamp;
 	
@@ -89,4 +99,49 @@ public class UserSessionMessageImpl implements IUserSessionMessage {
 		this.hostname = hostname;
 	}
 
+	@Override
+	public String getOsVersion() {
+		return this.osVersion;
+	}
+
+	public void setOsVersion(String osVersion) {
+		this.osVersion = osVersion;
+	}
+
+	@Override
+	public int getDiskTotal() {
+		return this.diskTotal;
+	}
+
+	@Override
+	public int getDiskUsed() {
+		return this.diskUsed;
+	}
+
+	@Override
+	public int getDiskFree() {
+		return this.diskFree;
+	}
+
+	public void setDiskTotal(int diskTotal) {
+		this.diskTotal = diskTotal;
+	}
+
+	public void setDiskUsed(int diskUsed) {
+		this.diskUsed = diskUsed;
+	}
+
+	public void setDiskFree(int diskFree) {
+		this.diskFree = diskFree;
+	}
+
+	@Override
+	public int getMemory() {
+		return this.memory;
+	}
+
+	public void setMemory(int memory) {
+		this.memory = memory;
+	}
+	
 }

@@ -24,5 +24,15 @@ public interface IUserSessionMessage extends IAgentMessage {
 	String getUserIp();
 	
 	String getHostname();
+	
+	int getMemory();
+	
+	int getDiskTotal();
+	
+	int getDiskUsed();
+	
+	int getDiskFree();
+	
+	String getOsVersion();
 
 }

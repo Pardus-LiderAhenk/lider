@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import tr.org.lider.entities.AgentImpl;
+import tr.org.lider.entities.AgentPropertyImpl;
 import tr.org.lider.entities.SessionEvent;
 import tr.org.lider.entities.UserSessionImpl;
 import tr.org.lider.ldap.ILDAPService;
@@ -68,6 +69,38 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 			if (message.getType() == AgentMessageType.LOGIN
 					&& (message.getIpAddresses() == null || message.getIpAddresses().isEmpty())) {
 				logger.warn("Couldn't find IP addresses of the agent with JID: {}", uid);
+			}
+			
+			if (message.getType() == AgentMessageType.LOGIN) {
+				for (AgentPropertyImpl prop : agent.getProperties()) {
+					if (prop.getPropertyName().equals("hardware.disk.total")
+							&& Integer.parseInt(prop.getPropertyValue()) != message.getDiskTotal()) {
+						logger.info("Total disk size of Agent with ID {} has been changed. Updating in DB", agent.getId());
+						prop.setPropertyValue(String.valueOf(message.getDiskTotal()));
+					} else if (prop.getPropertyName().equals("hardware.disk.used")
+							&& Integer.parseInt(prop.getPropertyValue()) != message.getDiskUsed()) {
+						logger.info("Used disk size of Agent with ID {} has been changed. Updating in DB", agent.getId());
+						prop.setPropertyValue(String.valueOf(message.getDiskUsed()));
+					} else if (prop.getPropertyName().equals("hardware.disk.free")
+							&& Integer.parseInt(prop.getPropertyValue()) != message.getDiskFree()) {
+						logger.info("Free disk size of Agent with ID {} has been changed. Updating in DB", agent.getId());
+						prop.setPropertyValue(String.valueOf(message.getDiskFree()));
+					} else if (prop.getPropertyName().equals("hardware.memory.total")
+							&& Integer.parseInt(prop.getPropertyValue()) != message.getMemory()) {
+						logger.info("Memory size of Agent with ID {} has been changed. Updating in DB", agent.getId());
+						prop.setPropertyValue(String.valueOf(message.getMemory()));
+					} else if (prop.getPropertyName().equals("os.version") 
+							&& !prop.getPropertyValue().equals(message.getOsVersion())) {
+						logger.info("OS Version of Agent with ID {} has been changed. Updating in DB", agent.getId());
+						prop.setPropertyValue(message.getOsVersion());
+					} else if (prop.getPropertyName().equals("hardware.network.ipAddresses")
+							&& prop.getPropertyValue() != message.getIpAddresses()
+							&& !agent.getIpAddresses().equals(message.getIpAddresses())) {
+						logger.info("IP Addresses of Agent with ID {} has been changed. Updating in DB", agent.getId());
+						prop.setPropertyValue(message.getIpAddresses());
+						agent.setIpAddresses(message.getIpAddresses());
+					}
+				}
 			}
 			// Merge records
 			agentRepository.save(agent);

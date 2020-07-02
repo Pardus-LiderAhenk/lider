@@ -116,7 +116,7 @@ function onRoster(iq)
 		var jid_id = jid_to_id(jid);
 
 
-		rosterList.push({id :jid_id, item_name: name, jid: jid });
+		//rosterList.push({id :jid_id, item_name: name, jid: jid });
 
 
 		/* var contact = $("<li id='" + jid_id + "'>" +
@@ -130,7 +130,7 @@ function onRoster(iq)
 		//insert_contact(contact);
 	});
 
-	$('#rosterListSize').html(rosterList.length);
+	//$('#rosterListSize').html(rosterList.length);
 
 	// set up presence handler and send initial presence
 	connection.addHandler(onPresence, null, "presence");
@@ -143,7 +143,8 @@ function onRosterChanged(iq) {
 		var jid = $(this).attr('jid');
 		var name = $(this).attr('name') || jid;
 		var jid_id =jid_to_id(jid);
-		$.notify("subscription  :" +sub +" jid : "+ jid+ " name : "+ name,"warn");
+		
+		$.notify("Registration yapılıyor..Kayıt defteri güncelleniyor..Kayıt id : "+ jid+ " Ad : "+ name,"success");
 
 		/*   if (sub === 'remove') {
             // contact is being removed

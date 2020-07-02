@@ -218,4 +218,57 @@ public class ComputerController {
 		return entry;
 	}
 
+	
+	/**
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST ,value = "/searchOnlineEntries", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<LdapEntry> searchOnlineEntries(
+			@RequestParam(value="searchDn", required=true) String searchDn) {
+		
+		List<LdapEntry> results=null;
+		try {
+			if(searchDn.equals("")) {
+				searchDn=configurationService.getLdapRootDn();
+			}
+//			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+//			filterAttributes.add(new LdapSearchFilterAttribute(key, value, SearchFilterEnum.EQ));
+			List<LdapEntry> res = ldapService.findSubEntries(searchDn, "(objectclass=pardusDevice)",new String[] { "*" }, SearchScope.SUBTREE);
+			results= new ArrayList<>();
+			for (LdapEntry ldapEntry : res) {
+				if(ldapEntry.isOnline()) {
+					results.add(ldapEntry);
+				}
+			}
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return results ;
+	}
+	
+	@RequestMapping(value = "/getAgentList")
+	public LdapEntry getAgentList() {
+		LdapEntry returnLdapEntry=null;
+		List<LdapEntry> retList = new ArrayList<LdapEntry>();
+		List<LdapEntry> onlineRetList = new ArrayList<LdapEntry>();
+		try {
+			returnLdapEntry=new LdapEntry();
+			retList=ldapService.findSubEntries(configurationService.getLdapRootDn(), "(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
+			
+			for (LdapEntry ldapEntry : retList) {
+				if(ldapEntry.isOnline()) {
+					onlineRetList.add(ldapEntry);
+				}
+			}
+			
+			returnLdapEntry.setOnlineAgentList(onlineRetList);
+			returnLdapEntry.setAgentListSize(retList.size());
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return returnLdapEntry;
+	}
 }

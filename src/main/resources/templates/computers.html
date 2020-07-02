@@ -11,11 +11,15 @@
 <!-- 			<hr> -->
 			<br>
 			<div id="computerTreeDiv" ></div>
+			<div id="computerTreeOnlineInfo">
+				<button  class="btn btn-link btn-sm " id="btnTotalAgent" style="color: white; font-weight: bold;">  </button> <br>
+				<button  class="btn btn-link btn-sm " id="btnOnlineAgent" style="color: white; font-weight: bold;">   </button>
+			</div>
 		</div>
 		
 		<div class="col-lg-9 green">
 			<div>
-				<div class="row" style="margin-top: 15px">
+				<div class="row" style="margin-top: 15px;">
 					<div class="col-lg-12">
 						<div>
 							<img id="agent_image" alt="" src="img/linux.png">
@@ -53,6 +57,10 @@
 												<tr>
 													<td><i class="fa fa-laptop-code"></i> Bilgisayar Adı</td>
 													<td id="agentHostname"></td>
+												</tr>
+												<tr>
+													<td><i class="fa fa-laptop-code"></i> Bulunduğu Dizin</td>
+													<td id="agentDn"></td>
 												</tr>
 												<tr>
 													<td><i class="fa fa-laptop-code"></i> Kullanıcı Domain</td>

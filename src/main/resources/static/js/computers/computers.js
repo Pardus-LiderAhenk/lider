@@ -54,6 +54,7 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 		}
 );
 
+
 computerTreeCreated=true;
 
 //to see compputer state listen connection
@@ -829,6 +830,17 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		selectedEntries=[]
 		$("#selectedAgentInfo").html("Lütfen İstemci Seçiniz."); 
 		$("#agentOnlineStatus").hide()
+		$("#agentHostname").html("");
+		$("#agentIpAddr").html("");
+		$("#agentMac").html("");
+		$("#agentCreateDate").html("");
+		$("#agentOsName").html("");
+//		$("#agentUsername").html("");
+		$("#agentProcessor").html("");
+		$("#agentOsName").html("");
+		$("#agentPhase").html("");
+		$("#userDomain").html("");
+		$("#agentDn").html("");
 	}
 }
 
@@ -851,7 +863,6 @@ function showSelectedEntries() {
 	$('#selectedAgentList').html(html);
 	$("#selectedAgentInfo").html(dnVal);
 	$('#selectedAgentInfo').prop('title', selDn);
-
 	
 //	if(selectedEntries[0].type=='AHENK')
 //	{
@@ -884,6 +895,7 @@ function showSelectedEntries() {
 	$("#agentOsName").html("");
 	$("#agentPhase").html("");
 	$("#userDomain").html("");
+	$("#agentDn").html("");
 	
 	$.ajax({ 
 		type: 'POST', 
@@ -929,6 +941,24 @@ function showSelectedEntries() {
 				$("#agentMac").html(data.macAddresses);
 				$("#agentCreateDate").html(createDate);
 				$("#userDomain").html(data.userDirectoryDomain);
+				
+				var dnArr=selDn.split(",");
+				
+				var ous=""
+				for(i=0; i<dnArr.length; i++){
+					var dn=dnArr[i];
+					
+					if(dn.startsWith("ou")){
+						console.log(arr)
+						var arr= dn.split("=");
+						console.log(arr)
+						if(arr.length>0){
+							ous += arr[1]+","
+						}
+					}
+				}
+				$('#agentDn').html(ous);
+				
 			} else {
 				$("#agentHostname").html("");
 				$("#agentIpAddr").html("");
@@ -939,6 +969,7 @@ function showSelectedEntries() {
 				$("#agentProcessor").html("");
 				$("#agentOsName").html("");
 				$("#userDomain").html("");
+				$("#agentDn").html("");
 			}
 		}
 	});
@@ -1245,3 +1276,31 @@ function setShhLog(message){
 	$('#installAhenkLog').append("\n")
 	$('#installAhenkLog').append("---------------------------------------------------------")
 }
+
+function getAllAgents() {
+	$.ajax({
+		type: 'POST', 
+		url: "/lider/computer/getAgentList",
+		success: function(data) {
+			console.log(data)
+			$('#btnTotalAgent').append("")
+			$('#btnOnlineAgent').append("")
+			$('#btnTotalAgent').append("Toplam Istemci Sayısı :"+data.agentListSize)
+			$('#btnOnlineAgent').append("Online Istemci Sayısı :"+data.onlineAgentList.length)
+			
+		},
+		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
+			console.log(jqXHR)
+			console.log(textStatus)
+			console.log(errorThrown)
+		}
+	});
+}
+
+/**
+ * getting all agent size and online agent list for show on page
+ * @param presence
+ * @returns
+ */
+getAllAgents();
+

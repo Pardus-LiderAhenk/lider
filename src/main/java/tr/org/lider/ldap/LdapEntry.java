@@ -68,6 +68,14 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 
 	private List<UserSessionsModel> sessionList;
 	
+	private Integer agentListSize;
+	
+	private Integer onlineAgentListSize;
+	
+	private List<LdapEntry> agentList;
+	
+	private List<LdapEntry> onlineAgentList;
+	
 	public LdapEntry() {
 		// TODO Auto-generated constructor stub
 	}
@@ -357,5 +365,29 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 	}
 	public void setCreateDateStr(String createDateStr) {
 		this.createDateStr = createDateStr;
+	}
+	public Integer getAgentListSize() {
+		return agentListSize;
+	}
+	public void setAgentListSize(Integer agentListSize) {
+		this.agentListSize = agentListSize;
+	}
+	public Integer getOnlineAgentListSize() {
+		return onlineAgentListSize;
+	}
+	public void setOnlineAgentListSize(Integer onlineAgentListSize) {
+		this.onlineAgentListSize = onlineAgentListSize;
+	}
+	public List<LdapEntry> getAgentList() {
+		return agentList;
+	}
+	public void setAgentList(List<LdapEntry> agentList) {
+		this.agentList = agentList;
+	}
+	public List<LdapEntry> getOnlineAgentList() {
+		return onlineAgentList;
+	}
+	public void setOnlineAgentList(List<LdapEntry> onlineAgentList) {
+		this.onlineAgentList = onlineAgentList;
 	}
 }

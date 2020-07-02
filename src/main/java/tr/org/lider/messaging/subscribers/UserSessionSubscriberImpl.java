@@ -74,22 +74,27 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 			if (message.getType() == AgentMessageType.LOGIN) {
 				for (AgentPropertyImpl prop : agent.getProperties()) {
 					if (prop.getPropertyName().equals("hardware.disk.total")
+							&& !prop.getPropertyValue().equals("0")
 							&& Integer.parseInt(prop.getPropertyValue()) != message.getDiskTotal()) {
 						logger.info("Total disk size of Agent with ID {} has been changed. Updating in DB", agent.getId());
 						prop.setPropertyValue(String.valueOf(message.getDiskTotal()));
 					} else if (prop.getPropertyName().equals("hardware.disk.used")
+							&& !prop.getPropertyValue().equals("0")
 							&& Integer.parseInt(prop.getPropertyValue()) != message.getDiskUsed()) {
 						logger.info("Used disk size of Agent with ID {} has been changed. Updating in DB", agent.getId());
 						prop.setPropertyValue(String.valueOf(message.getDiskUsed()));
 					} else if (prop.getPropertyName().equals("hardware.disk.free")
+							&& !prop.getPropertyValue().equals("0")
 							&& Integer.parseInt(prop.getPropertyValue()) != message.getDiskFree()) {
-						logger.info("Free disk size of Agent with ID {} has been changed. Updating in DB", agent.getId());
+						logger.info("Free disk size of Agent with ID {s} has been changed. Updating in DB", agent.getId());
 						prop.setPropertyValue(String.valueOf(message.getDiskFree()));
 					} else if (prop.getPropertyName().equals("hardware.memory.total")
+							&& !prop.getPropertyValue().equals("0")
 							&& Integer.parseInt(prop.getPropertyValue()) != message.getMemory()) {
 						logger.info("Memory size of Agent with ID {} has been changed. Updating in DB", agent.getId());
 						prop.setPropertyValue(String.valueOf(message.getMemory()));
-					} else if (prop.getPropertyName().equals("os.version") 
+					} else if (message.getOsVersion() != null 
+							&& prop.getPropertyName().equals("os.version") 
 							&& !prop.getPropertyValue().equals(message.getOsVersion())) {
 						logger.info("OS Version of Agent with ID {} has been changed. Updating in DB", agent.getId());
 						prop.setPropertyValue(message.getOsVersion());
@@ -99,7 +104,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 						logger.info("IP Addresses of Agent with ID {} has been changed. Updating in DB", agent.getId());
 						prop.setPropertyValue(message.getIpAddresses());
 						agent.setIpAddresses(message.getIpAddresses());
-					} else if (!agent.getHostname().equals(message.getHostname())) {
+					} else if (message.getHostname() != null && !agent.getHostname().equals(message.getHostname())) {
 						logger.info("Hostname of Agent with ID {} has been changed. Updating in DB", agent.getId());
 						agent.setHostname(message.getHostname());
 					}

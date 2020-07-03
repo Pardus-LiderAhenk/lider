@@ -9,61 +9,53 @@
 }
 </style>
 	<div class="col-lg-2">
-				<div class="d-block dropdown" style="margin: 5px;">
-				<div id="ouOperations">
-                    <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
-                        <span class="btn-icon-wrapper pr-2">
-                            <i class="fa fa-bars fa-w-20"></i>
-                        </span>
-                        Klasör İşlemleri
-                    </button>
-                    
-                    <a href="#" class="btn btn-info" id="btnCreateNewAgentGroup" title="İstemci Grubu Ekle" data-target="#genericModal" data-toggle="modal">
-                                                        <i class="fa fa-users"> &nbsp;</i>
-                                                    </a>
-                    <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
-                    	 
-                    	 	<ul class="nav flex-column">
- 									<li class="nav-item">
-                                         <a href="#" class="nav-link" id="btnCreateNewOrganizationalUnit" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
-                                                        <i class="fa fa-folder-open"> &nbsp;</i>
-                                                        <span>
-                                                            Klasör Ekle
-                                                        </span>
-                                         </a>
-                                     </li>
-                                     <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnEditOrganizationalUnitName" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
-                                                        <i class="fa fa-folder-open"> &nbsp;</i>
-                                                        <span>
-                                                            Klasör Adı Değiştir
-                                                        </span>
-                                                    </a>
-                                      </li>
-                                      <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnMoveOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
-                                                        <i class="fa fa-random"> &nbsp;</i>
-                                                        <span>
-                                                            Klasör Taşı
-                                                        </span>
-                                                    </a>
-                                      </li>     
-                                      <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnDeleteOrganizationalUnit" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
-                                                        <i class="fa fa-minus"> &nbsp;</i>
-                                                        <span>
-                                                            Klasör Sil
-                                                        </span>
-                                                    </a>
-                                      </li>                                          
-                         	</ul>
-                    	 </div>
-                    </div>
-                </div>
-			    <div id="treeGridAgentGroupsDiv">
-			    </div>
+		<div class="d-block dropdown" style="margin: 5px;">
+		<div id="ouOperations">
+	                 <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+	                     <span class="btn-icon-wrapper pr-2">
+	                         <i class="fa fa-bars fa-w-20"></i>
+	                     </span>
+	                     Klasör İşlemleri
+	                 </button>
+	                 <a href="#" class="btn btn-info" id="btnCreateNewAgentGroup" title="İstemci Grubu Ekle" data-target="#genericModal" data-toggle="modal"><i class="fa fa-users"> &nbsp;</i></a>
+	                 <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+	                 	 	<ul class="nav flex-column">
+								<li class="nav-item">
+	                                      <a href="#" class="nav-link" id="btnCreateNewOrganizationalUnit" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+	                                      	<i class="fa fa-folder-open"> &nbsp;</i><span>Klasör Ekle</span>
+	                                      </a>
+	                                  </li>
+	                                  <li class="nav-item">
+	                                        <a href="#" class="nav-link" id="btnEditOrganizationalUnitName" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+	                                            <i class="fa fa-folder-open"> &nbsp;</i>
+	                                            <span>
+	                                                Klasör Adı Değiştir
+	                                            </span>
+	                                        </a>
+	                                   </li>
+	                                   <li class="nav-item">
+	                                     <a href="#" class="nav-link" id="btnMoveOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+	                                         <i class="fa fa-random"> &nbsp;</i>
+	                                         <span>
+	                                             Klasör Taşı
+	                                         </span>
+	                                     </a>
+	                                   </li>     
+	                                   <li class="nav-item">
+	                                    <a href="#" class="nav-link" id="btnDeleteOrganizationalUnit" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
+	                                        <i class="fa fa-minus"> &nbsp;</i>
+	                                        <span>
+	                                            Klasör Sil
+	                                        </span>
+	                                    </a>
+	                                   </li>                                          
+	                      		</ul>
+	                 	 </div>
+	                 </div>
+	             </div>
+	    <div id="treeGridAgentGroupsDiv">
+	    </div>
 	</div>
-
 	<div class="col-lg-10 green">
 			<div>
 				<div class="row" style="margin-top: 15px">
@@ -73,7 +65,7 @@
 							<button  class="btn btn-link agent-offline " id=selectedAgentGroupInfo>  Lütfen İstemci Grubu Seçiniz.</button>
 							<button  class="btn"> </button>
 							<button role="tab" class="btn btn-info" id="btn-system" data-toggle="tab"><i class="fa fa-sliders-h"></i> Sistem Yönetimi </button>
-							<button role="tab" class="btn btn-info" id="btn-script" data-toggle="tab"><i class="fa fa-terminal"></i> Betik</button>
+							<button role="tab" class="btn btn-info" id="btn-script" data-toggle="tab"><i class="fas fa-hashtag"></i> Betik</button>
 							<button role="tab" class="btn btn-info" id="btn-packages" data-toggle="tab"><i class="fa fas fa-cubes"></i> Paket Yönetimi</button>
 						</div>
 					</div>
@@ -92,39 +84,29 @@
 												<div class="col-lg-4"> GRUP ÜYELERİ </div>
 												<div class="col-lg-8 pull-right">
 													<div class="pull-right" id="agentGroupButtonActions">	
-															<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class=" dropdown-toggle btn btn-info btn-sm">
-											                        <span class="btn-icon-wrapper pr-2">
-											                            <i class="fa fa-cogs fa-w-20"></i>
-											                        </span>
-											                        Grup Yönetimi
-											                </button>
-															<div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
-													                    	 	<ul class="nav flex-column">
-													 									<li class="nav-item">
-													 									<a href="#"  class="nav-link" id="addMemberAgentGroupBtn" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-plus"></i> <span>
-													                                                            İstemci Ekle
-													                                                        </span></a>
-													                                        
-													                                     </li>
-													                                     <li class="nav-item">
-													                                     <a href="#" class="nav-link"  id="editAgentGroupBtn" title="İstemci Grubunu Düzenle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-edit"></i> <span>
-													                                                            Grup Adı Düzenle
-													                                                        </span></a> 
-													                                      </li>
-													                                      <li class="nav-item">
-													                                      <a href="#" class="nav-link" id="moveAgentGroupBtn" title="İstemci Grubunu Taşı" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-car"></i><span>
-													                                                           Grubu Taşı
-													                                                        </span> </a>
-													                                      </li>     
-													                                      <li class="nav-item">
-													                                      <a href="#" class="nav-link" id="deleteAgentGroup" title="İstemci Grubunu Sil" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-minus"></i>  <span>
-													                                                            Grubu Sil
-													                                                        </span></a> 
-													                                      </li>                                          
-													                         	</ul>
-													           </div>
+														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class=" dropdown-toggle btn btn-info btn-sm">
+										                        <span class="btn-icon-wrapper pr-2">
+										                            <i class="fa fa-cogs fa-w-20"></i>
+										                        </span>
+										                        Grup Yönetimi
+										                </button>
+														<div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+								                    	 	<ul class="nav flex-column">
+							 									<li class="nav-item">
+							 										<a href="#"  class="nav-link" id="addMemberAgentGroupBtn" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-plus"></i> <span>İstemci Ekle</span></a>
+							                                     </li>
+							                                     <li class="nav-item">
+							                                     	<a href="#" class="nav-link"  id="editAgentGroupBtn" title="İstemci Grubunu Düzenle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-edit"></i> <span>Grup Adı Düzenle</span></a> 
+							                                      </li>
+							                                      <li class="nav-item">
+							                                      	<a href="#" class="nav-link" id="moveAgentGroupBtn" title="İstemci Grubunu Taşı" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-car"></i><span>Grubu Taşı</span> </a>
+							                                      </li>     
+							                                      <li class="nav-item">
+							                                      	<a href="#" class="nav-link" id="deleteAgentGroup" title="İstemci Grubunu Sil" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-minus"></i>  <span>Grubu Sil</span></a> 
+							                                      </li>                                          
+								                         		</ul>
+												           </div>
 													</div>
-
 												</div>
 											</div>
 											<div class="card-body">

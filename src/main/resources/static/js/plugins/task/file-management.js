@@ -144,6 +144,15 @@ function fileManagementListener(msg) {
 	return true;
 }
 
+$('#favUsedFileSelectBox').change(function(){
+	var favFilePath = $(this).val();
+	if (favFilePath != "NA") {
+		$("#filePath").val(favFilePath);
+	} else {
+		$("#filePath").val("");
+	}
+});
+
 $('#sendTaskCronFileManagement').click(function(e){
 	$('#scheduledTasksModal').modal('toggle');
 	scheduledParam = null;

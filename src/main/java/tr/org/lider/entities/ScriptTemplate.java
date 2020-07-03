@@ -58,8 +58,7 @@ public class ScriptTemplate implements Serializable {
 	public ScriptTemplate() {
 	}
 
-	public ScriptTemplate(Long id, ScriptType scriptType, String label, String contents, Date createDate, Date modifyDate) {
-		this.id = id;
+	public ScriptTemplate(ScriptType scriptType, String label, String contents, Date createDate, Date modifyDate) {
 		setScriptType(scriptType);
 		this.label = label;
 		this.contents = contents;

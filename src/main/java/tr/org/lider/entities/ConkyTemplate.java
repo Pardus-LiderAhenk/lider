@@ -59,8 +59,8 @@ public class ConkyTemplate implements Serializable {
 	public ConkyTemplate() {
 	}
 
-	public ConkyTemplate(Long id, String label, String contents, String settings, Date createDate, Date modifyDate) {
-		this.id = id;
+	public ConkyTemplate(String label, String contents, String settings, Date createDate, Date modifyDate) {
+//		this.id = id;
 		this.label = label;
 		this.contents = contents;
 		this.settings = settings;

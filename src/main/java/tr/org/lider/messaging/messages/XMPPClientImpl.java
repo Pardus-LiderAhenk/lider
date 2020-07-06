@@ -49,6 +49,7 @@ import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.SmackException.NotLoggedInException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.Message;
@@ -290,7 +291,7 @@ public class XMPPClientImpl {
 				// 'smack'
 				if (configurationService.getXmppResource() != null
 						&& !configurationService.getXmppResource().isEmpty()) {
-					connection.login(username, password, configurationService.getXmppResource());
+					connection.login(username, password, "edip");
 				} else {
 					connection.login(username, password);
 				}
@@ -908,6 +909,27 @@ public class XMPPClientImpl {
 	 */
 	public XMPPTCPConnection getConnection() {
 		return connection;
+	}
+	
+	public void addClientToRoster(String jid) {
+
+		Roster roster = Roster.getInstanceFor(connection);
+		if (!roster.isLoaded())
+			try {
+				roster.reloadAndWait();
+			} catch (SmackException.NotLoggedInException e) {
+				e.printStackTrace();
+			} catch (SmackException.NotConnectedException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		try {
+			roster.createEntry(jid, jid, null);
+			roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
+		} catch (NotLoggedInException | NoResponseException | XMPPErrorException | NotConnectedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

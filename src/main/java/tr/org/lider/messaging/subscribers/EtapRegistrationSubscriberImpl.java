@@ -36,6 +36,7 @@ import tr.org.lider.messaging.messages.ILiderMessage;
 import tr.org.lider.messaging.messages.IRegistrationResponseMessage;
 import tr.org.lider.messaging.messages.RegistrationMessageImpl;
 import tr.org.lider.messaging.messages.RegistrationResponseMessageImpl;
+import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.models.EtapInfo;
 import tr.org.lider.repositories.AgentRepository;
 import tr.org.lider.services.ConfigurationService;
@@ -55,6 +56,9 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 	
 	@Autowired
 	private AgentRepository agentDao;
+
+	@Autowired
+	private XMPPClientImpl xmppClient;
 	
 
 	public String fullJid;
@@ -238,6 +242,12 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 					respMessage = new RegistrationResponseMessageImpl(StatusCode.REGISTERED,
 							dn + " and its related database record created successfully!", dn, null, new Date());
 				}
+				
+				logger.info("Trying to add agent {} as a member lider_sunucu roster", dn);
+				
+				xmppClient.addClientToRoster(fullJid);
+					
+				logger.info("Agent {} added successfully as a member lider_sunucu roster", dn);
 				
 				return respMessage;
 

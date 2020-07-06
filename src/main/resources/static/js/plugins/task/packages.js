@@ -59,6 +59,7 @@ function getPackagesList(params){
 			packages_data = data;
 			var packages_list_table = [];
 			if (data != null) {
+				progress("divPackages","progressPackages",'hide')
 				for (var i = 0; i < data.length; i++) {
 					var name = data[i]["packageName"];
 					var version =  data[i]["version"];
@@ -96,7 +97,7 @@ function getPackagesList(params){
 					'<option value="30">30</option>'+
 					'<option value="40">40</option>'+
 					'<option value="50">50</option>'+
-					'<option value="-1">Tümü</option>'+
+//					'<option value="-1">Tümü</option>'+
 					'</select> kayıtları',
 					"sSearch": "Paket Ara:",
 					"sInfo": "Toplam kayıt sayısı: _TOTAL_",

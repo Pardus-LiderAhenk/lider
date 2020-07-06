@@ -36,6 +36,16 @@ public class AgentService {
         return agentRepository.findByDn(agentDn);
 	}
 	
+	public AgentImpl updateUserDirectoryAgentByJid(String jid, String userDirectoryDomain) {
+		List<AgentImpl> existAgent = agentRepository.findByJid(jid);
+		if(existAgent != null && existAgent.size() > 0) {
+			existAgent.get(0).setUserDirectoryDomain(userDirectoryDomain);
+			return agentRepository.save(existAgent.get(0));
+		} else {
+			return null;
+		}
+	}
+	
 	public Page<AgentImpl> findAllFiltered(int pageNumber, int pageSize, String status, Optional<String> field, Optional<String> text) {
         
 		PageRequest pageable = PageRequest.of(pageNumber - 1, pageSize);

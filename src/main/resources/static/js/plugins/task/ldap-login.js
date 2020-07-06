@@ -19,7 +19,6 @@ var ref_ldap_login=connection.addHandler(ldapLoginListener, null, 'message', nul
 
 $("#openLdapInfo").hide();
 $("#activeDirectoryInfo").hide();
-
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
 		dnlist.push(selectedEntries[i].distinguishedName);
@@ -81,7 +80,9 @@ function sendLdapLogin(params) {
 				if (scheduledParamLdapLogin != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamLdapLogin;
 				}
+				changeUserDirectoryDomain();
 				progress("divLdapLogin","progressLdapLogin",'show')
+
 				$.ajax({
 					type: "POST",
 					url: "/lider/task/execute",
@@ -138,6 +139,37 @@ function ldapLoginListener(msg) {
 	return true;
 }
 
+function changeUserDirectoryDomain() {
+
+	var userDirectoryDomain = $('#ldapLoginSb').val();
+	if (userDirectoryDomain == "AD") {
+		userDirectoryDomain = "AD";
+	} else if (userDirectoryDomain == "OpenLDAP") {
+		userDirectoryDomain = "LDAP";
+	} else {
+		userDirectoryDomain = null;
+	}
+	params = {
+			"agentJid": selectedEntries[0]['attributes'].uid,
+			"userDirectoryDomain": userDirectoryDomain
+	};
+	$.ajax({
+		type: 'POST', 
+		url: "ldap_login/update_directory_domain",
+		data: params,
+		dataType: "json",
+		success: function(data) {
+			if(data != null) {
+			} else {
+				$.notify("Kullanıcı domaini değiştirilirken hata oluştu. İstemci bulunamadı.", "error");
+			}
+		},
+		error: function (data, errorThrown) {
+			$.notify("Kullanıcı domaini değiştirilirken hata oluştu.", "error");
+		}
+	});
+}
+
 $('#ldapLoginCancelCb').click(function(e){
 	if($(this).is(':checked')){
 		$("#openLdapInfo").hide();
@@ -191,7 +223,7 @@ $('#sendTaskLdapLogin').click(function(e){
 		if ($('#ldapLoginSb :selected').val() == "OpenLDAP"){
 			var adminPwd = null;
 			var adminDn = null;
-			
+
 //			if selected entries type is AHENK
 			if (selectedEntries[0].type == "AHENK") {
 				adminDn = selectedEntries[0]["attributes"].entryDN;

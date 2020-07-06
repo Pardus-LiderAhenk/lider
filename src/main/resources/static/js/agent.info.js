@@ -607,7 +607,7 @@ function generateAddToNewGroupTreeGrid() {
 	
 	$.ajax({
 		type : 'POST',
-		url : 'lider/computer_groups/agentGroups',
+		url : 'lider/computer_groups/getGroups',
 		dataType : 'json',
 		success : function(data) {
 			var source =

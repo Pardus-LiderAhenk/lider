@@ -84,7 +84,7 @@ function sendNotifyTask(params) {
 	if (scheduledParamEtaNotify != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamEtaNotify;
 	}
-
+	progress("divEtaNotify","progressEtaNotify",'show')
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -121,6 +121,7 @@ function etaNotifyListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+			progress("divEtaNotify","progressEtaNotify",'hide')
 			if (xmppResponse.commandClsId == "ETA_NOTIFY") {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {

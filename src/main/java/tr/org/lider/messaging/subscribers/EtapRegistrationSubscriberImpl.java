@@ -245,7 +245,7 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 				
 				logger.info("Trying to add agent {} as a member lider_sunucu roster", dn);
 				
-				xmppClient.addClientToRoster(fullJid);
+				xmppClient.addClientToRoster(fullJid+"@"+configurationService.getXmppServiceName());
 					
 				logger.info("Agent {} added successfully as a member lider_sunucu roster", dn);
 				

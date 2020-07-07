@@ -48,12 +48,12 @@ public class ConkyTemplate implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "CREATE_DATE", nullable = false, updatable = false)
 	@CreationTimestamp
-	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Europe/Istanbul")
 	private Date createDate;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "MODIFY_DATE")
-	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Europe/Istanbul")
 	private Date modifyDate;
 
 	public ConkyTemplate() {

@@ -20,11 +20,13 @@ var selectedRow=null
 var treeGridId= "";
 var selectedPolicyRow = false;
 var selectedPolicyRowId = null;
+var policyOfSelectedGroup = null;
 
 var selectedEntryUUIDForTreeMove = "";
 var policyList=[]
 clearAndHide();
 getActivePolicies();
+$('#policyApplyBtn').hide();
 
 $(document).ready(function(){
 
@@ -1342,24 +1344,24 @@ function createUserGroupsTree() {
 	createUserGroupTree('lider/user_groups/getGroups',treeGridHolderDiv, false, false,
 			// row select
 			function(row, rootDnComputer,treeGridIdName){
-				treeGridId = treeGridIdName;
-				selectedRow=row;
-				baseRootDnComputer=rootDnComputer;
-				createMemberList(row);
-				if(row.type=='GROUP'){
-					getPolicyList4SelectedGroup(row);
-				}
-			},
-			//check action
-			function(checkedRows, row){
-			},
-			//uncheck action
-			function(unCheckedRows, row){
-			},
-			// post tree created
-			function(rootComputer , treeGridId){
-				$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
-			}
+		treeGridId = treeGridIdName;
+		selectedRow=row;
+		baseRootDnComputer=rootDnComputer;
+		createMemberList(row);
+		if(row.type=='GROUP'){
+			getPolicyListForSelectedGroup(row);
+		}
+	},
+	//check action
+	function(checkedRows, row){
+	},
+	//uncheck action
+	function(unCheckedRows, row){
+	},
+	// post tree created
+	function(rootComputer , treeGridId){
+		$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
+	}
 	);
 }
 
@@ -1450,14 +1452,14 @@ function createMemberList(row) {
 function clearAndHide() {
 	$('#userGroupName').html("Lütfen Kullanıcı Grubu Seçiniz");
 	$('#bodyMembers').html('<tr><td colspan="100%" class="text-center">Lütfen Kullanıcı Grubu Seçiniz.</td></tr>');
+	$('#bodyExecutedPolicies').html('<tr id="bodyExecutedPoliciesRow"><td colspan="100%" class="text-center">Lütfen Kullanıcı Grubu Seçiniz.</td></tr>');
 	$('#userGroupButtonActions').hide()
 	$('#ouOperations').show();
-	$('#policyApplyBtn').hide();
+	policyOfSelectedGroup = null;
 }
 function showUserButtons() {
 	$('#userGroupButtonActions').show()
 	$('#ouOperations').hide();
-	$('#policyApplyBtn').show();
 }
 
 //<--- START policy apply ---->>
@@ -1480,11 +1482,13 @@ function getActivePolicies() {
 					var policyName = data[i].label;
 					var policyDescription = data[i].description;
 					var policyStatus = "Aktif";
+					var createDate = data[i].createDate;
 					if (data[i].deleted == false && data[i].active == true) {
 						number = number + 1;
 						html += '<tr id='+ policyId +'>';
 						html += '<td>' + number + '</td>';
 						html += '<td>' + policyName + '</td>';
+						html += '<td>' + createDate + '</td>';
 						html += '<td>' + policyDescription + '</td>';
 						html += '</tr>';
 					}
@@ -1496,20 +1500,28 @@ function getActivePolicies() {
 }
 
 $('#activePolicyTable').on('click', 'tbody tr', function(event) {
-	if($(this).hasClass('selectpolicytable')){
-		$(this).removeClass('selectpolicytable');
-		isPolicySelected = false;
-		selectedPolicyRowId = null;
-	} else {
-		$(this).addClass('selectpolicytable').siblings().removeClass('selectpolicytable');
-		selectedPolicyRowId = $(this).attr('id');
-		isPolicySelected = true;
+	if (policyList != null && policyList.length) {
+		if($(this).hasClass('selectpolicytable')){
+			$(this).removeClass('selectpolicytable');
+			isPolicySelected = false;
+			selectedPolicyRowId = null;
+			$('#policyApplyBtn').hide();
+		} else {
+			$(this).addClass('selectpolicytable').siblings().removeClass('selectpolicytable');
+			selectedPolicyRowId = $(this).attr('id');
+			isPolicySelected = true;
+			$('#policyApplyBtn').show();
+		}
 	}
 });
 
 $("#policyApplyBtn").click(function(e){
+	if (selectedRow.type != "GROUP" ) {
+		$.notify("Lütfen kullanıcı grubu seçiniz.", "warn");
+		return;
+	}
 	if (isPolicySelected) {
-		var selectedPolicy=null;
+		var selectedPolicy = null;
 		for (var i = 0; i < policyList.length; i++) {
 			if(policyList[i].id==selectedPolicyRowId){
 				selectedPolicy = policyList[i];
@@ -1521,41 +1533,45 @@ $("#policyApplyBtn").click(function(e){
 				"dnList" : [selectedDN],
 		}
 		var paramsJson = JSON.stringify(params);
-		$.ajax({
-			type: "POST",
-			url: "/policy/execute",
-			headers: {
-				'Content-Type':'application/json',
-			}, 
-			data: paramsJson,
-			contentType: "application/json",
-			dataType: "json",
-			converters: {
-				'text json': true
-			},
-			success: function(result) {
-				var res = jQuery.parseJSON(result);
-				$.notify("Politika başarıyla uygulandı.", "success");
-			},
-			error: function(result) {
-				$.notify(result, "error");
-			}
-		});
-
+		if (isExistPolicyOfSelectedGroup(selectedPolicy.id) == false) {
+			$.ajax({
+				type: "POST",
+				url: "/policy/execute",
+				headers: {
+					'Content-Type':'application/json',
+				}, 
+				data: paramsJson,
+				contentType: "application/json",
+				dataType: "json",
+				converters: {
+					'text json': true
+				},
+				success: function(result) {
+					var res = jQuery.parseJSON(result);
+					$.notify("Politika başarıyla uygulandı.", "success");
+					getPolicyListForSelectedGroup(selectedRow);
+				},
+				error: function(result) {
+					$.notify(result, "error");
+				}
+			});
+		} else {
+			$.notify("Politika zaten uygulanmış", "warn");
+		}
 	} else {
-		alert("select policy")
+		$.notify("Lütfen politika seçiniz.", "warn");
 	}
 });
 
-// getting all policy history for selected group
-function getPolicyList4SelectedGroup(selectedGroup) {
+//getting all policy history for selected group
+function getPolicyListForSelectedGroup(selectedGroup) {
 	var params ={
 			"distinguishedName" : selectedGroup.distinguishedName,
 	}
 	var paramsJson = JSON.stringify(params);
 	$.ajax({
 		type: "POST",
-		url: "/policy/getPolicies4Group",
+		url: "/policy/getPoliciesForGroup",
 		headers: {
 			'Content-Type':'application/json',
 		}, 
@@ -1566,39 +1582,87 @@ function getPolicyList4SelectedGroup(selectedGroup) {
 			'text json': true
 		},
 		success: function(result) {
-			$("#executedPolicies").html("");
 			var data = jQuery.parseJSON(result);
 			if (data != null && data.length > 0) {
-				var html ='<table class="table table-striped table-bordered display table-hover" id="executedPoliciesTable" > ';
-				html += '<thead>';
-				html +=	 '<tr>';
-				html +=	'<th style="width: 5%"> </th>';
-				html +=	'<th style="width: 20%"> Politika Adı </th>';
-				html +=	'<th style="width: 20%"> Oluşturulma Tarihi</th>';
-				html +=	'<th style="width: 20%">Gönderilme Tarihi</th>';
-				html +=	'<th style="width: 20%">Versiyon</th>';
-				html += '</tr>';
-				html += '</thead>';
-				html += '<tbody id="executedPoliciesTableBody">';
+				policyOfSelectedGroup = data;
 				var number = 0;
-				
+				var html = "";
 				for (var i = 0; i < data.length; i++) {
-					console.log(data[i])
+					number = number + 1
+					var commandId = data[i].commandImpl.id;
 					html += '<tr id="'+ data[i].policyImpl.id +'">';
-					html += '<td>  </td>';
+					html += '<td>'+ number +' </td>';
 					html += '<td>'+ data[i].policyImpl.label +'</td>';
-					html += '<td>'+ data[i].policyImpl.createDate +'</td>';
 					html += '<td>'+ data[i].commandExecutionImpl.createDate +'</td>';
 					html += '<td>'+ data[i].policyImpl.policyVersion +'</td>';
+					html += '<td class="text-center">' 
+						+ '<button onclick="unassignmentUserPolicy(\'' + commandId + '\')"' 
+						+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger" title="Kaldır">' 
+						+ '<i class="fas fa-times"></i></button>' 
+						+ '</td>';
+					html += '</tr>'
+				}
+				$("#bodyExecutedPolicies").html(html);
+			} else {
+				if (selectedRow.type == "GROUP" ) {
+					$('#bodyExecutedPolicies').html('<tr id="bodyExecutedPoliciesRow"><td colspan="100%" class="text-center">Atanmış Politika Bulunamadı.</td></tr>');
+					policyOfSelectedGroup = null;
 				}
 			}
-			$("#executedPolicies").html(html);
-			
 		},
 		error: function(result) {
 			$.notify(result, "error");
-			console.log(result)
 		}
 	});
+}
+
+function unassignmentUserPolicy(commandId) {
+
+	params = {
+			"id": commandId
+	}
+
+	$.confirm({
+		title: 'Uyarı!',
+		content: 'Politikayı kullanıcı grubundan kaldırmak istiyor musunuz?',
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+				$.ajax({
+					type: "POST",
+					url: "/policy/unassignment",
+					headers: {
+						'Content-Type':'application/json',
+					}, 
+					data: JSON.stringify(params),
+					contentType: "application/json",
+					dataType: "json",
+					converters: {
+						'text json': true
+					},
+					success: function(data) {
+						if (data != null && data.length > 0) {
+							$.notify("Politika başarıyla kaldırıldı.", "success");
+							getPolicyListForSelectedGroup(selectedRow);
+						} else {
+							$.notify("Politika kaldırılırken hata oluştu.", "error");
+						}
+					}
+				});
+			},
+			Hayır: function () {
+			}
+		}
+	});
+}
+
+function isExistPolicyOfSelectedGroup(id) {
+	var isExist = false;
+	for (var i = 0; i < policyOfSelectedGroup.length; i++) {
+		if (id == policyOfSelectedGroup[i].policyImpl.id) {
+			isExist = true;
+		}
+	}
+	return isExist;
 }
 

@@ -120,6 +120,9 @@ public class CommandImpl implements Serializable{
 	@Column(name = "MAIL_THREADING_ACTIVE")
 	private boolean mailThreadingActive = false;
 	
+	@Column(name = "DELETED")
+	private boolean deleted = false;
+	
 	
 	
 	public CommandImpl() {
@@ -127,7 +130,7 @@ public class CommandImpl implements Serializable{
 
 	public CommandImpl(Long id, PolicyImpl policy, TaskImpl task, List<String> dnList, DNType dnType, List<String> uidList,
 			String commandOwnerUid, Date activationDate, Date expirationDate, Date createDate,
-			List<CommandExecutionImpl> commandExecutions, boolean sentMail)
+			List<CommandExecutionImpl> commandExecutions, boolean sentMail, boolean deleted)
 			throws JsonGenerationException, JsonMappingException, IOException {
 		this.id = id;
 		this.policy = policy;
@@ -142,6 +145,7 @@ public class CommandImpl implements Serializable{
 		this.createDate = createDate;
 		this.commandExecutions = commandExecutions;
 		this.sentMail = sentMail;
+		this.deleted = deleted;
 	}
 
 //	public CommandImpl(ICommand command) throws JsonGenerationException, JsonMappingException, IOException {
@@ -306,6 +310,14 @@ public class CommandImpl implements Serializable{
 
 	public void setSentMail(boolean sentMail) {
 		this.sentMail = sentMail;
+	}
+	
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	

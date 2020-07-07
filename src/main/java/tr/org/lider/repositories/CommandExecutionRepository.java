@@ -15,5 +15,7 @@ public interface CommandExecutionRepository extends BaseJpaRepository<CommandExe
 	@Query("SELECT DISTINCT ce FROM CommandImpl c INNER JOIN "
 			+ "c.commandExecutions ce INNER JOIN c.task t WHERE ce.uid = ?1 AND t.id = ?2")
 	List<CommandExecutionImpl> findCommandExecutionByTaskAndUid(String uid, Long taskId);
-
+	
+	List<CommandExecutionImpl> findCommandExecutionByCommandId(Long commandId);
+	
 }

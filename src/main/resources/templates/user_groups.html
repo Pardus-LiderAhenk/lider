@@ -110,16 +110,26 @@
 											</div>
 										</div>
 										<div class="main-card mb-3 card"  >
-											<div class="card-header"> POLİTİKA GEÇMİŞİ</div>
-											<div class="card-body"> 
-												<div id="executedPolicies"></div>
-											
-											
+											<div class="card-header">ATANAN POLİTİKALAR</div>
+											<div class="card-body">
+												<div id="executedPolicies">
+													<table class="mb-0 table table-bordered" id="executedPoliciesTable">
+														<thead>
+															<tr>
+																<th style="width: 10%">#</th>
+																<th style="width: 25%">Politika Adı</th>
+																<th style="width: 30%">Atama Tarihi</th>
+																<th style="width: 20%">Versiyon</th>
+																<th style="width: 15%"></th>
+															</tr>
+														</thead>
+														<tbody id="bodyExecutedPolicies">
+															<tr id="bodyExecutedPoliciesRow"><td colspan="100%" class="text-center">Lütfen Kullanıcı Grubu Seçiniz.</td></tr>
+														</tbody>
+													</table>
+												</div>
 											</div>
-										
-										
 										</div>
-										
 									</div>
 								</div>
 								<div class="col-lg-7">
@@ -139,7 +149,8 @@
 															<tr>
 																<th style="width: 10%">#</th>
 																<th style="width: 25%">Politika Adı</th>
-																<th style="width: 65%">Açıklama</th>
+																<th style="width: 25%">Oluşturma Tarihi</th>
+																<th style="width: 40%">Açıklama</th>
 															</tr>
 														</thead>
 														<tbody id="bodyPolicies">

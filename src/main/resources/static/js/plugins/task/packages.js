@@ -66,12 +66,15 @@ function getPackagesList(params){
 					var size =  data[i]["size"];
 					size = (size / 1048576).toFixed(3) + " MB";
 					var description =  data[i]["description"];
+					var selectBoxId = name + version;
+					selectBoxId = selectBoxId.replace(/[-~&\/\\#,+()$~%.'":*?<>{}]/g, '');
+
 					var cb_row = '<td class="text-center"><span class="cb-package-name">'
 						+ '<input type="checkbox" onclick="packageChecked()" name="package_name" id="'+ version +'" value="' + name +'">'
 						+ '<label for="checkbox1"></label>'
 						+ '</span>'
 						+ '</td>';
-					var toogle_btn_tag = '<select onchange="selectTagPackage(this)" disabled class="custom-select selectTag" id="' + name +'" name="'+ version +'">'
+					var toogle_btn_tag = '<select onchange="selectTagPackage(this)" disabled class="custom-select selectTag" id="' + selectBoxId + '" title="' + name + '" name="'+ version +'">'
 					+ '<option value="NA" selected>İşlem Seç</option>'
 					+ '<option value="Install">Yükle</option>'
 					+ '<option value="Uninstall">Kaldır</option>'
@@ -173,7 +176,7 @@ $(wrapper).on("click",".remove_field", function(e){ //user click on remove input
 
 function selectTagPackage(sel){
 	var tag = sel.value;
-	var pName = sel.id;
+	var pName = sel.title;
 	var pVersion = sel.name;
 	var status = checkPackageListInfo(pName, pVersion, tag);
 	var packageInfo = {};
@@ -225,17 +228,18 @@ function packageChecked() {
 		if($(this).is(':checked')){
 			pName = $(this).val();
 			pVersion = $(this).attr('id');
-			var selectTag = $("#"+pName).prop('disabled', false);
+			var selBoxId = pName + pVersion;
+			selBoxId = selBoxId.replace(/[-~&\/\\#,+()$~%.'":*?<>{}]/g, '');
+			var selectTag = $("#"+selBoxId).prop('disabled', false);
 
 		}else if(!$(this).is(':checked')){
 			pName = $(this).val();
 			pVersion = $(this).attr('id');
-			$("#"+pName).val("NA").change();
-			$("#"+pName).prop('disabled', true);
-			var status = checkPackageListInfo(pName, pVersion, null);
-			if (status == true) {
-				removePackageList(pName, pVersion);
-			}
+			var selBoxId = pName + "-" + pVersion;
+			selBoxId = selBoxId.replace(/[-~&\/\\#,+()$~%.'":*?<>{}]/g, '');
+			$("#"+selBoxId).val("NA").change();
+			$("#"+selBoxId).prop('disabled', true);
+			removePackageList(pName, pVersion);
 		}
 	});
 }
@@ -245,12 +249,7 @@ function checkPackageListInfo(pName, pVersion, tag) {
 	if (packageInfoList.length > 0) {
 		for (var i = 0; i < packageInfoList.length; i++) {
 			if (pName == packageInfoList[i]["packageName"] && pVersion == packageInfoList[i]["version"]) {
-				if (tag == packageInfoList[i]["tag"] || tag == null ) {
-					isExists = true;
-				}else {
-					removePackageList(pName, pVersion);
-					isExists = false;
-				}
+				isExists = true;
 			}
 		}
 	}
@@ -258,11 +257,19 @@ function checkPackageListInfo(pName, pVersion, tag) {
 }
 
 function removePackageList(pName, pVersion) {
-	var index = packageInfoList.findIndex(function(item, i){
-		return item.packageName === pName;
-	});
-	if (index > -1) {
-		packageInfoList.splice(index, 1);
+	if (packageInfoList.length > 0) {
+		for (var i = 0; i < packageInfoList.length; i++) {
+			if (pName == packageInfoList[i]["packageName"] && pVersion == packageInfoList[i]["version"]) {
+				var index = packageInfoList.findIndex(function(item, i){
+					if (pName == packageInfoList[i]["packageName"] && pVersion == packageInfoList[i]["version"]) {
+						return item.packageName === pName;
+					}
+				});
+				if (index > -1) {
+					packageInfoList.splice(index, 1);
+				}
+			}
+		}
 	}
 }
 

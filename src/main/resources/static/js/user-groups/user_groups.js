@@ -1658,9 +1658,11 @@ function unassignmentUserPolicy(commandId) {
 
 function isExistPolicyOfSelectedGroup(id) {
 	var isExist = false;
-	for (var i = 0; i < policyOfSelectedGroup.length; i++) {
-		if (id == policyOfSelectedGroup[i].policyImpl.id) {
-			isExist = true;
+	if (policyOfSelectedGroup != null) {
+		for (var i = 0; i < policyOfSelectedGroup.length; i++) {
+			if (id == policyOfSelectedGroup[i].policyImpl.id) {
+				isExist = true;
+			}
 		}
 	}
 	return isExist;

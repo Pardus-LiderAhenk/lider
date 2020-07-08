@@ -19,6 +19,8 @@ var checkedAgentIDList = [];
 var selectedAgentGroupDN = "";
 var selectedOUDN = "";
 
+var registrationStartDate = "";
+var registrationEndDate = "";
 $(document).ready(function(){
 	$("#dropdownButton").hide();
 	
@@ -292,10 +294,17 @@ function reloadTable(pNumber, pSize, field, text) {
 		    "pageNumber" : pNumber,
 		    "pageSize": pSize,
 		    "status" : status
+		    
 		};
+
 	if (field && text) {
 		params['field'] = field;
 		params['text'] = text;
+	}
+	
+	if(registrationStartDate != "" && registrationEndDate != "") {
+		params['registrationStartDate'] = registrationStartDate;
+		params['registrationEndDate'] = registrationEndDate;
 	}
 	$.ajax({ 
 	    type: 'POST',
@@ -351,10 +360,10 @@ function reloadTable(pNumber, pSize, field, text) {
 		        				  + '<td  class="text-center">' + order + '</td>';
 		        	order++;
 		        	if(os == "Windows") {
-		        		trElement +=  '<td><img  src="img/windows.png" class="avatar" alt="Avatar"><span>' + element.hostname + '</span></td>';
+		        		trElement +=  '<td><img src="img/windows.png" class="avatar" alt="Avatar"><span>' + element.hostname + '</span></td>';
 		        	}
 		        	else {
-		        		trElement += '<td><img  src="img/pardus.png" class="avatar" alt="Avatar"><span>' + element.hostname + '</span></td>';
+		        		trElement += '<td><img src="img/pardus.png" class="middle" alt="Avatar"><span >' + element.hostname + '</span></td>';
 		        	}
 		        	trElement    += '<td>' + element.macAddresses + '</td>'
 		        				  + '<td>' + element.ipAddresses + '</td>';
@@ -369,13 +378,17 @@ function reloadTable(pNumber, pSize, field, text) {
 		        			  + '<td>' + os + '</td>'
 		        			  + '<td>' + osDistributionVersion + '</td>'
 		        			  + '<td>' + createDate + '</td>'
-		        			  + '<td class="text-center"><a href="#agentDetailModal" class="view text-center" onclick="agentDetailClicked(' + element.id + ')" data-id="' + element.id
+		        			  + '<td class="text-center"><a href="#agentDetailModal" class="edit" data-toggle="modal" onclick="agentDetailClicked(' + element.id + ')" data-id="' + element.id
 		        			  + '" data-toggle="modal" data-target="#agentDetailModal">'
-		        			  + '<i class="pe-7s-info"></i>'
-		        			  + '</a></td>'
+		        			  + '<i class="material-icons primary" data-toggle="tooltip" title="Edit">&#xe88f;</i></a></td>'
 		        			  + '</tr>';
 		        	$('#agentsTable').append(trElement);
 		        });
+	    	} else {
+		    	var trElement = '<tr><td colspan="100%" class="text-center">Sonuç Bulunamadı</td></tr>';
+				$("#agentsTable").empty();
+				$("#pagingList").empty();
+		    	$('#agentsTable').append(trElement);
 	    	}
 	    },
 	    error: function (jqXHR, textStatus, errorThrown) {

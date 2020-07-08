@@ -89,7 +89,7 @@
 						</div>
 						<div class="filter-group"  id="date-range-picker">
 							<label>Kayıt Tarihi</label>
-		                    <input type="text" class="form-control dtpicker" id="reservation">
+		                    <input type="text" class="form-control dtpicker" id="registration_date_filter" onkeydown="return false">
 		                  
 						</div>
 						<span class="filter-icon"><i class="fa fa-filter"></i></span>
@@ -135,7 +135,7 @@
 <script>
   $(document).ready(function(){
     //Date range picker
-    $('#reservation').daterangepicker( {
+    $('#registration_date_filter').daterangepicker( {
     	 autoUpdateInput: false,
          locale: {
              cancelLabel: 'Temizle',
@@ -145,13 +145,13 @@
     	
     });
 
-    $('#reservation').on('apply.daterangepicker', function(ev, picker) {
+    $('#registration_date_filter').on('apply.daterangepicker', function(ev, picker) {
         $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
         registrationStartDate = picker.startDate.format('DD/MM/YYYY HH:mm:ss');
         registrationEndDate = picker.endDate.format('DD/MM/YYYY  HH:mm:ss');
     });
 
-    $('#reservation').on('cancel.daterangepicker', function(ev, picker) {
+    $('#registration_date_filter').on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
     });
   });

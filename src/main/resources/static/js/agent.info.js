@@ -380,7 +380,7 @@ function reloadTable(pNumber, pSize, field, text) {
 		        			  + '<td>' + createDate + '</td>'
 		        			  + '<td class="text-center"><a href="#agentDetailModal" class="edit" data-toggle="modal" onclick="agentDetailClicked(' + element.id + ')" data-id="' + element.id
 		        			  + '" data-toggle="modal" data-target="#agentDetailModal">'
-		        			  + '<i class="material-icons primary" data-toggle="tooltip" title="Edit">&#xe88f;</i></a></td>'
+		        			  + '<i class="material-icons primary" data-toggle="tooltip" title="Detaylar">&#xe88f;</i></a></td>'
 		        			  + '</tr>';
 		        	$('#agentsTable').append(trElement);
 		        });

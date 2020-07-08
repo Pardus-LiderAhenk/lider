@@ -125,6 +125,9 @@ $('#btn-taskHistory').click(function() {
 $('#btn-installAhenk').click(function() {
 	setInstallAhenkPage();
 });
+$('#btnOnlineAgent').click(function() {
+
+});
 
 /**
  * open page buttons end
@@ -1285,8 +1288,8 @@ function getAllAgents() {
 			console.log(data)
 			$('#btnTotalAgent').append("")
 			$('#btnOnlineAgent').append("")
-			$('#btnTotalAgent').append("Toplam Istemci Sayısı :"+data.agentListSize)
-			$('#btnOnlineAgent').append("Online Istemci Sayısı :"+data.onlineAgentList.length)
+			$('#btnTotalAgent').html("Toplam Istemci Sayısı :"+data.agentListSize)
+			$('#btnOnlineAgent').html("Online Istemci Sayısı :"+data.onlineAgentList.length)
 			
 		},
 		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
@@ -1303,4 +1306,21 @@ function getAllAgents() {
  * @returns
  */
 getAllAgents();
+
+//function addRoster() {
+//	$.ajax({
+//		type: 'POST', 
+//		url: "/lider/computer/addRoster",
+//		success: function(data) {
+//			console.log(data)
+//		},
+//		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
+//			console.log(jqXHR)
+//			console.log(textStatus)
+//			console.log(errorThrown)
+//		}
+//	});
+//	
+//}
+	
 

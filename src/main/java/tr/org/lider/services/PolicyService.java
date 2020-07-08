@@ -39,19 +39,19 @@ import tr.org.lider.repositories.PolicyRepository;
 @Service
 public class PolicyService {
 	Logger logger = LoggerFactory.getLogger(PolicyService.class);
-	
+
 	@Autowired
 	private PolicyRepository policyRepository;
-	
+
 	@Autowired
 	private CommandService commandService;
-	
+
 	@Autowired
 	private LDAPServiceImpl ldapService;
-	
+
 	@Autowired
 	private ConfigurationService configService;
-	
+
 	public void executePolicy(PolicyExecutionRequestImpl request) {
 		logger.debug("Finding Policy by requested policyId.");
 		PolicyImpl policy = findPolicyByID(request.getId());
@@ -61,16 +61,20 @@ public class PolicyService {
 		 * target entry must be group..
 		 * all policies send only group entry.
 		 */
+
 		List<LdapEntry> targetEntries= getTargetList(request.getDnList());
+
 		for (LdapEntry targetEntry : targetEntries) {
 			String uid=targetEntry.get(configService.getAgentLdapIdAttribute()); // group uid is cn value.
 			CommandExecutionImpl commandExecutionImpl=	new CommandExecutionImpl(null, (CommandImpl) command, uid, targetEntry.getType(), targetEntry.getDistinguishedName(),
 					new Date(), null, false);
-			
+
 			command.addCommandExecution(commandExecutionImpl);
 		}
 		if(command!=null)
-		commandService.addCommand(command);
+			commandService.addCommand(command);
+
+
 	}
 
 	private CommandImpl createCommanEntity(PolicyExecutionRequestImpl request, PolicyImpl policy) {
@@ -78,7 +82,7 @@ public class PolicyService {
 		try {
 			command= new CommandImpl(null, policy, null, request.getDnList(), request.getDnType(), null, findCommandOwnerJid(), 
 					request.getActivationDate(), 
-					request.getExpirationDate(), new Date(), null, false);
+					request.getExpirationDate(), new Date(), null, false, false);
 		} catch (JsonGenerationException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -145,7 +149,7 @@ public class PolicyService {
 		policy.setModifyDate(new Date());
 		return policyRepository.save(policy);
 	}
-	
+
 	private List<LdapEntry> getTargetList(List<String> selectedDns) {
 		List<LdapEntry> targetEntries= new ArrayList<>();
 		for (String dn : selectedDns) {
@@ -160,7 +164,7 @@ public class PolicyService {
 		}
 		return targetEntries;
 	}
-	
+
 	private String findCommandOwnerJid() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
@@ -173,7 +177,7 @@ public class PolicyService {
 		}
 		return null;
 	}
-	
+
 	public List<PolicyResponse> getPolicies4Group(String dn) {
 		List<Object[]> results = policyRepository.findPoliciesByGroupDn(dn);
 		List<PolicyResponse> resp= new ArrayList<PolicyResponse>();
@@ -185,5 +189,11 @@ public class PolicyService {
 			resp.add(policyResponse);
 		}
 		return resp;
+	}
+
+	public CommandImpl unassignmentCommandForUserPolicy(CommandImpl comImpl) {
+		CommandImpl existCommand = commandService.getCommand(comImpl.getId());
+		existCommand.setDeleted(true);
+		return commandService.updateCommand(existCommand);
 	}
 }

@@ -218,7 +218,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 										 else{
 											newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
 										 }
-										 $('#'+treeGridId).jqxTreeGrid('updateRow',row.name, {name:newName });
+										 $('#'+treeGridId).jqxTreeGrid('updateRow',row.entryUUID, {name:newName });
 									}
 								});  
 					      }

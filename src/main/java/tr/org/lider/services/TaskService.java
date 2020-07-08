@@ -105,7 +105,7 @@ public class TaskService {
 		try {
 			command= new CommandImpl(null, null, task, request.getDnList(), request.getDnType(), uidList,findCommandOwnerJid(), 
 					((PluginTask) request).getActivationDate(), 
-					null, new Date(), null, false);
+					null, new Date(), null, false, false);
 		} catch (JsonGenerationException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {

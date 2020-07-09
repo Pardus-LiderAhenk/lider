@@ -16,6 +16,7 @@ var selectedOUDN = "";
 var treeGridHolderDiv= "computerTreeDiv";
 var computerTreeCreated=false;
 var pluginTaskList=null;
+var systemSettings=null;
 
 // when page loading getting system page info package and service management page hide
 setSystemPluginPage();
@@ -56,6 +57,25 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 
 
 computerTreeCreated=true;
+
+//getting some setting params to use
+getConfigurationParams();
+function getConfigurationParams() {
+	$.ajax({ 
+	    type: 'GET', 
+	    url: "/lider/settings/configurations",
+	    dataType: 'json',
+	    success: function (data) { 
+	    	if(data != null) {
+	    		//set ldap configuration
+	    		systemSettings=data;
+	    	}
+	    },
+	    error: function (data, errorThrown) {
+	    	$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+	    }
+	});
+}
 
 //to see compputer state listen connection
 connection.addHandler(onPresence2, null, "presence");
@@ -191,7 +211,7 @@ $('#btnInstallAhenk').click(function() {
 	var cmdInstallAhenk= 'sudo apt install -y ahenk'
 	
 	function cbResult(result){
-		$.notify("Kurulum başarı ile gerçekleşti.", "success");
+		$.notify("Ahenk Kurulumu başarı ile gerçekleşti.", "success");
 	}
 	
 	function cbUpdate(result){
@@ -241,8 +261,8 @@ $('#btnRegisterAhenk').click(function() {
 		return;
 	}
 	
-	var cmdRegisterAhenk= 'sudo /usr/bin/python3 /usr/share/ahenk/ahenkd.py start 10.200.87.53 '+  domainUserName + ' ' + domainUserPassword + ' ' + domainName;
-	
+	var cmdRegisterAhenk= 'sudo /usr/bin/python3 /usr/share/ahenk/ahenkd.py start '+ systemSettings.xmppHost + ' '+ domainUserName + ' ' + domainUserPassword + ' ' + domainName;
+
 	function cbResultRegister(result){
 		$.notify("Kayıt başarı ile gerçekleşti.", "success");
 	}
@@ -956,7 +976,12 @@ function showSelectedEntries() {
 						var arr= dn.split("=");
 						console.log(arr)
 						if(arr.length>0){
-							ous += arr[1]+","
+							if(arr[1] != 'Ahenkler'){
+								ous += arr[1]
+								if(i < dnArr.length){
+									ous +=" "
+								}
+							}
 						}
 					}
 				}

@@ -88,10 +88,10 @@ function createConkyTable() {
 		"scrollCollapse": true,
 		"responsive": true,
 		"oLanguage": {
-			"sSearch": "Conky Ara:",
-			"sInfo": "Toplam Conky sayısı: _TOTAL_",
-			"sInfoEmpty": "Gösterilen Conky sayısı: 0",
-			"sZeroRecords" : "Conky bulunamadı",
+			"sSearch": "Kayıt Ara:",
+			"sInfo": "Toplam Şablon sayısı: _TOTAL_",
+			"sInfoEmpty": "Gösterilen Şablon sayısı: 0",
+			"sZeroRecords" : "Şablon bulunamadı",
 			"sInfoFiltered": " - _MAX_ kayıt arasından",
 		},
 	} );
@@ -156,7 +156,7 @@ $('#conkySaveBtn').click(function(e){
 					contentType: "application/json",
 					success: function(data) {
 						if (data != null) {
-							$.notify("Conky başarıyla güncellendi.", "success");
+							$.notify("Şablon başarıyla güncellendi.", "success");
 							updateConkyList(data.id, data.label, data.contents, data.modifyDate);
 							// the table is refreshed after the conky is updated
 							table.clear().draw();
@@ -170,16 +170,16 @@ $('#conkySaveBtn').click(function(e){
 							$("#conkyDelBtn").hide();
 							$("#conkyCleanBtn").hide();
 						}else {
-							$.notify("Conky güncellenirken hata oluştu.", "error");
+							$.notify("Şablon güncellenirken hata oluştu.", "error");
 						}
 					}
 				});
 			}else {
-				$.notify("Conky adı zaten var. Farklı bir Conky adı giriniz.", "warn");
+				$.notify("Şablon adı zaten var. Farklı bir Şablon adı giriniz.", "warn");
 				$("#conkyNameTemp").focus();
 			}
 		}else {
-			$.notify("Conky adı, içeriği ve ayarları boş bırakılamaz.", "warn");
+			$.notify("Şablon adı, içeriği ve ayarları boş bırakılamaz.", "warn");
 		}
 		// Otherwise, if no rows are selected. Save conky template
 	} else {
@@ -199,7 +199,7 @@ $('#conkySaveBtn').click(function(e){
 					contentType: "application/json",
 					success: function(data) {
 						if (data != null) {
-							$.notify("Conky başarıyla kaydedildi.", "success");
+							$.notify("Şablon başarıyla kaydedildi.", "success");
 							conkyTempList.push(data);
 
 							// the table is refreshed after the conky is saved
@@ -212,7 +212,7 @@ $('#conkySaveBtn').click(function(e){
 							$("#conkySaveBtn").html("Kaydet");
 							$("#conkyCleanBtn").hide();
 						}else {
-							$.notify("Conky kaydedilirken hata oluştu.", "error");
+							$.notify("Şablon kaydedilirken hata oluştu.", "error");
 						}
 					},
 					error: function(result) {
@@ -220,11 +220,11 @@ $('#conkySaveBtn').click(function(e){
 					}
 				});
 			}else {
-				$.notify("Conky adı aynı olamaz.", "warn");
+				$.notify("Şablon adı aynı olamaz.", "warn");
 				$("#conkyNameTemp").focus();
 			}
 		}else {
-			$.notify("Conky adı, içeriği ve ayarları boş bırakılamaz.", "warn");
+			$.notify("Şablo adı, içeriği ve ayarları boş bırakılamaz.", "warn");
 		}
 	}
 });
@@ -283,12 +283,12 @@ $('#conkyDelBtn').click(function(e){
 					$("#conkyContentTemp").val("#Your text will come here");
 					$("#conkySettingTemp").val(defaultSettings);
 				}else {
-					$.notify("Conky silinirken hata oluştu.", "error");
+					$.notify("Şablon silinirken hata oluştu.", "error");
 				}
 			}
 		});
 	}else {
-		$.notify("Lütfen silmek için Conky seçiniz.", "warn");
+		$.notify("Lütfen silmek için kayıt seçiniz.", "warn");
 	}
 });
 

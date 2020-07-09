@@ -8,19 +8,17 @@
 </style>
 <div class="main-card mb-3 card" style="margin: 10px;">
 	<div class="card-body">
-		<h4>Conky Tanımlama</h4>
-		<div class="page-title-subheading">Metin tabanlı bilgilerin kullanıcının masaüstünde görülmesini sağlar. Conky İçeriği ve Conky Ayarları eksiksiz girilerek şablon kaydedilir. Conky 
-				İçeriği ve Conky Ayarları ayrı ayrı girilmelidir. Ayarlar, Conky Ayarları sekmesinde #VARSAYILAN olarak sunulan içerik gibi olacak şekilde özelleştirilebilir. 
-				Conky İçeriği sekmesinde kullanıcıya iletilmek istenen mesaj ya da istemci masaüstünde gösterilmek istenen sistem bilgisi, ip, mac vb bilgiler Conky formatına uygun olacak 
-				şekilde girilmelidir.
+		<h4>Sistem Gözlemcisi Tanımlama</h4>
+		<div class="page-title-subheading">Metin tabanlı bilgilerin kullanıcının masaüstünde görülmesini sağlar. Şablon İçeriği ve Şablon Ayarları eksiksiz girilerek şablon kaydedilir. Şablon 
+				İçeriği ve Şablon Ayarları ayrı ayrı girilmelidir. Ayarlar, Şablon Ayarları sekmesinde #VARSAYILAN olarak sunulan içerik gibi olacak şekilde özelleştirilebilir. 
 		</div>
 		<hr>
 	<div class="row">
 		<div class="col-lg-6">
 			<div class="main-card mb-3 card">
 				<div class="card-body">
-					<div class="col-md-6"><h6>Conky Mesaj Tanımları </h6></div>
-					<div class="col-md-6">
+					<div class="col-md-6"><h6>Sistem Gözlemcisi Tanımları </h6></div>
+					<div class="col-md-6 text-right">
 						<button id=conkyDelBtn type="button"
 							class="btn-shadow btn btn-info pull-right">Sil</button>
 					</div>
@@ -54,12 +52,12 @@
 				</div>
 				<div class="card-body">
 					<div class="form-group">
-						<label for="conkyNameTemp">Conky Adı</label> <input type="text"
+						<label for="conkyNameTemp">Şablon Adı</label> <input type="text"
 							class="form-control" id="conkyNameTemp"><br>
 						<ul id="conkyTabs" class="nav nav-tabs">
-							<li class="nav-item"><a role="tab" class="nav-link active" id="conkyContentTabId" data-toggle="tab" href="#conkyContentTab"><span><i class="fa fa-comments"></i> Conky İçeriği</span></a>
+							<li class="nav-item"><a role="tab" class="nav-link active" id="conkyContentTabId" data-toggle="tab" href="#conkyContentTab"><span><i class="fa fa-comments"></i> Şablon İçeriği</span></a>
 							</li>
-							<li class="nav-item"><a role="tab" class="nav-link" id="conkySettingTabId" data-toggle="tab" href="#conkySettingTab"><span><i class="fa fa-cog"></i> Conky Ayarları</span></a>
+							<li class="nav-item"><a role="tab" class="nav-link" id="conkySettingTabId" data-toggle="tab" href="#conkySettingTab"><span><i class="fa fa-cog"></i> Şablon Ayarları</span></a>
 							</li>
 						</ul>
 						<div id="conkyTabsContents" class="tab-content">

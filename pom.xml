@@ -202,6 +202,7 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <charset>utf-8</charset>
                 </configuration>
             </plugin>
 			

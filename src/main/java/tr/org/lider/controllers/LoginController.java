@@ -1,5 +1,6 @@
 package tr.org.lider.controllers;
 
+import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.constant.LiderConstants;
+import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.services.ConfigurationService;
 
 /**
@@ -24,6 +28,9 @@ public class LoginController {
 	
 	@Autowired
 	private ConfigurationService configurationService;
+	
+	@Autowired
+	LDAPServiceImpl ldapService;
 	
 	@RequestMapping(value = "/",method = {RequestMethod.GET, RequestMethod.POST})
 	public String getMainPage(Model model, Authentication authentication) {
@@ -58,5 +65,14 @@ public class LoginController {
 		} else {
 			return "config";
 		}
+	}
+	
+	@RequestMapping(value = "/changeLanguage", method = {RequestMethod.POST})
+	@ResponseBody
+	public Boolean changeLanguage(@RequestParam String lang, Model model, Authentication authentication) throws LdapException {
+		LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) authentication.getPrincipal();
+		ldapService.updateEntryRemoveAttribute(userDetails.getLiderUser().getDn(), "preferredLanguage");
+		ldapService.updateEntryAddAtribute(userDetails.getLiderUser().getDn(), "preferredLanguage", lang);
+		return true;
 	}
 }

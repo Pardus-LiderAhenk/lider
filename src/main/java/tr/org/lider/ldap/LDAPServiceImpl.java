@@ -11,7 +11,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -922,6 +921,43 @@ public class LDAPServiceImpl implements ILDAPService {
 		logger.debug("Target entries: {}", entries);
 		return entries;
 	}
+	/**
+	 * @param dn
+	 * 
+	 */
+	public String getPreferredLanguage(String entryDn) throws LdapException {
+		logger.info("Checking if user has preferredLanguage attribute.");
+
+		LdapConnection connection = null;
+		connection = getConnection();
+		Entry entry = null;
+		String preferredLanguage = "";
+		try {
+			entry = connection.lookup(entryDn);
+			if (entry != null) {
+				for (Iterator iterator = entry.getAttributes().iterator(); iterator.hasNext();) {
+					Attribute attr = (Attribute) iterator.next();
+					String attrName= attr.getUpId();
+					String value=attr.get().getString();
+
+					if(attrName.equals("preferredLanguage")) {
+						System.err.println(value);
+						preferredLanguage = value;
+					}
+				}
+				if(preferredLanguage.equals("")) {
+					updateEntryAddAtribute(entryDn, "preferredLanguage", "tr");
+					preferredLanguage = "tr";
+				}
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+		return preferredLanguage;
+	}
 
 	/**
 	 * 
@@ -1311,7 +1347,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		try {
 			updateOLCAccessRulesAfterEntryMove(sourceDN, destinationDN);
 			connection.move(sourceDN,destinationDN);
-			
+
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
@@ -1372,7 +1408,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 		return true;
 	}
-	
+
 	private List<OLCAccessRule> getAllOLCAccessRules() throws LdapException {
 		String olcRegex = "\\{([0-9]*)\\}to (dn.base|dn.subtree)=\"(.*)\" by (dn|dn.one|group.exact)=\"(.*)\" (read|write|none) by \\* break";
 		LdapConnection connection = null;
@@ -1424,7 +1460,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 		return ruleList;
 	}
-	
+
 	private List<OLCAccessRule> getAllOLCAccessRulesByDN(String groupDN) throws LdapException {
 		String olcRegex = "\\{([0-9]*)\\}to (dn.base|dn.subtree)=\"(.*)\" by (dn|dn.one|group.exact)=\"(" + groupDN + ")\" (read|write|none) by \\* break";
 		LdapConnection connection = null;
@@ -1581,7 +1617,7 @@ public class LDAPServiceImpl implements ILDAPService {
 					}
 				}
 			}
-			
+
 			//if new rule's access type is read it should not have any parent with rules. If this condidition exists do not add new rule
 			//if new rule's access type is write 
 			//if child of new access DN is added before clean them.
@@ -2241,7 +2277,7 @@ public class LDAPServiceImpl implements ILDAPService {
 					List<OLCAccessRule> existingRules = getAllOLCAccessRules();
 
 					List<OLCAccessRule> rulesWillBeUpdated = new ArrayList<>();
-					
+
 					if(existingRules != null && existingRules.size()> 0) {
 						//first delete all rules containing source dn in their assigned dn part
 						while(true) {
@@ -2256,7 +2292,7 @@ public class LDAPServiceImpl implements ILDAPService {
 									break;
 								}
 							}
-							
+
 							if(deletedAllContainingRules) {
 								break;
 							}
@@ -2286,9 +2322,9 @@ public class LDAPServiceImpl implements ILDAPService {
 							newRulesForAddingToDestination.add(olcAccessRule);
 						}
 					}
-					
+
 					updateOLCAccessRulesAfterEntryDelete(sourceDN);
-					
+
 					for (OLCAccessRule rule : newRulesForAddingToDestination) {
 						rule.setAccessDN(rule.getAccessDN().replace(sourceDN, newDN));
 						addOLCAccessRule(rule);
@@ -2318,5 +2354,6 @@ public class LDAPServiceImpl implements ILDAPService {
 		else 
 			return false;
 	}
+
 }
 

@@ -29,3 +29,23 @@ $(document).ready(function(){
 		$('#logger').html("")
 	});
 });
+
+function changeLanguage(language) {
+	var params = {
+		    "lang": language
+	};
+	$.ajax({
+		type : 'POST',
+		url : 'changeLanguage',
+		data : params,
+		dataType: 'json',
+		success : function(data) {
+		},
+		error : function(data, errorThrown) {
+			console.log("Error occured while changing language.")
+		},
+		complete: function() {
+			location.reload();
+		}
+	});
+}

@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta http-equiv="Content-Language" content="en">
+<meta http-equiv="Content-Language" content="tr">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title></title>
 <meta name="viewport"
@@ -158,20 +158,20 @@
                         <li  class="nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTERS')}">
                             <a class="nav-link dizin " href="#" data-page="computers"  >
                                 <i class="nav-link-icon fas fa-laptop-code"> </i>
-                                İstemci Yönetimi
+                                <span th:text="#{computer.management}"></span>
                             </a>
                         </li>
                         <li class="dropdown nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}">
                             <a class="nav-link dropdown-toggle " href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
                                <i class="nav-link-icon fa fa-users-cog"></i>
-                                Kullanıcı Yönetimi
+                                <span th:text="#{user.management}"></span>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 						        <a class="nav-link dizin" href="#" data-page="users" >
-	                                Kullanıcı İşlemleri
+	                                <span th:text="#{user.operations}"></span>
 	                            </a>
 	                            <a class="nav-link dizin" href="#" data-page="ad_user" >
-		                                AD Senkronizasyon
+		                            <span th:text="#{ad.synchronization}"></span>
 		                        </a>
 					        </div>
                         </li>
@@ -182,17 +182,23 @@
                         		or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}">
                             <a class="nav-link dropdown-toggle " href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
                                 <i class="nav-link-icon fa fa-chalkboard-teacher"></i>
-                                Grup Yönetimi
+                                <span th:text="#{group.management}"></span>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}" 
-					          	class="nav-link dizin" href="#" data-page="user_groups">Kullanıcı Grup Yönetimi</a>
+					          	class="nav-link dizin" href="#" data-page="user_groups">
+					          		<span th:text="#{group.management.user}"></span>
+					          	</a>
 					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')}" 
-					          	class="nav-link  dizin " href="#" data-page="computer_groups">İstemci Grup Yönetimi</a>
+					          	class="nav-link  dizin " href="#" data-page="computer_groups">
+					          		<span th:text="#{group.management.computer}"></span>
+					          	</a>
 					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}" 
-					          	class="nav-link  dizin " href="#" data-page="sudo_groups"> Kullanıcı Yetkilendirme (Sudo) </a>
+					          	class="nav-link  dizin " href="#" data-page="sudo_groups">
+					          		<span th:text="#{group.management.role}"></span>
+					          	</a>
 					          <a class="nav-link  dizin" href="#" data-page="policy" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')}" >
-                                Politika Yönetimi
+                                <span th:text="#{policy.management}"></span>
                               </a>
 					          	
 					        </div>
@@ -200,12 +206,14 @@
                       <li class="dropdown nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                 <i class="nav-link-icon fas fa-tasks"></i>
-                                Raporlar
+                                <span th:text="#{reports}"></span>
                             </a>
                             
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}" 
-					          class="nav-link dizin" href="#" data-page="agent_info">Detaylı İstemci Raporu</a>
+					          class="nav-link dizin" href="#" data-page="agent_info">
+					          	<span th:text="#{reports.detailed.agent.report}"></span>
+					          </a>
 					        </div>
                         </li>
                         
@@ -246,34 +254,62 @@
 						<div class="widget-content p-0">
 							<div class="widget-content-wrapper">
 								<div class="widget-content-left">
-									<div class="btn-group">
 									<a style="margin-top: 10px; margin-right: 10px;"> <img width="22"
-											class="" src="img/turkey_national_country_flag-512.png"
-											alt="">   <i class="fa fa-angle-down333 ml-2 opacity-8"></i>
-										</a>
-										<br>
+										class="" src="img/turkey_national_country_flag-512.png"
+										alt="">   <i class="fa fa-angle-down333 ml-2 opacity-8"></i>
+									</a>
+									
+                                    <div class="btn-group mr-2">
+                                        <a th:if="${#locale.language == 'tr'}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                                        	class="p-0 btn" style="margin-top: 7px;">
+                                            <img width="22" class="" src="img/turkey.png" alt="">
+                                            <i class="fa fa-angle-down ml-1 opacity-8"></i>
+                                        </a>
+                                        <a th:if="${#locale.language == 'en'}"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                                        	class="p-0 btn" style="margin-top: 7px;">
+                                            <img width="22" class="" src="img/us.png" alt="">
+                                            <i class="fa fa-angle-down ml-1 opacity-8"></i>
+                                        </a>
+                                        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+	                                        <a class=" btn dropdown-item" onclick="changeLanguage('tr');">
+	                                            <img width="22" class=" mr-3" src="img/turkey.png" alt=""> <b>Türkçe</b>
+	                                        </a>
+	                                        <a class=" btn dropdown-item" onclick="changeLanguage('en');">
+	                                            <img width="22" class=" mr-3" src="img/us.png" alt=""> <b>English</b>
+	                                        </a>
+                                        </div>
+                                    </div>
+									<div class="btn-group">
 										<a data-toggle="dropdown" aria-haspopup="true"
 											aria-expanded="false" class="p-0 btn" style="margin-top: 7px;"> <img width="22"
 											class="" src="img/settings.jpeg"
-											alt="">  <i class="fa fa-angle-down ml-2 opacity-8" style=""></i>
+											alt="">  <i class="fa fa-angle-down ml-1 opacity-8" style=""></i>
 										</a>
 										
 										<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
 											 
 											 <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SETTINGS')}" 
 											 	class="nav-link dizin" href="#" data-page="settings" >
-				                               Sunucu Ayarları
+				                               <span th:text="#{server.settings}"></span>
 				                            </a>	
 				                            <div class="dropdown-divider"></div>
 								          		
 				                            <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}" 
-								          		class="nav-link dizin" href="#" data-page="plugins/definitions/script_definition">   Betik Tanımları</a>
+								          		class="nav-link dizin" href="#" data-page="plugins/definitions/script_definition">
+								          		<span th:text="#{script.definitions}"></span>
+								          	</a>
 								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_NOTIFY_DEFINITION')}" 
-								          		class="nav-link dizin " href="#" data-page="plugins/definitions/notify_definition">ETA Mesaj Tanımları</a>
+								          		class="nav-link dizin " href="#" data-page="plugins/definitions/notify_definition">
+								          		<span th:text="#{eta.message.definitions}"></span>
+								          	</a>
 								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')}" 
-								          		class="nav-link dizin " href="#" data-page="plugins/definitions/conky_definition">Conky Tanımları</a>
+								          		class="nav-link dizin " href="#" data-page="plugins/definitions/conky_definition">
+								          		<span th:text="#{conky.definitions}"></span>
+								          	</a>
 								           	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}" 
-								           		class="nav-link dizin " href="#" data-page="plugins/definitions/registration_template">Kayıt Şablonları</a>										
+								           		class="nav-link dizin " href="#" data-page="plugins/definitions/registration_template">
+								           		<span th:text="#{registration.templates}"></span>
+								           	</a>										
 										</div>
 									</div>
 								</div>
@@ -281,7 +317,7 @@
 									<div class="widget-heading ml-3" >  
 										<a data-toggle="dropdown" aria-haspopup="true"
 											aria-expanded="false" >   
-											<i class="fa fa-user ml-2 opacity-8" style=""></i>
+											<i class="fa fa-user ml-1 opacity-8" style=""></i>
 											<span th:text="${user.liderUser.name}"></span>
 											<i class="fa fa-angle-down ml-2 opacity-8" style=""></i>
 										</a>

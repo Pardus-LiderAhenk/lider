@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import tr.org.lider.entities.CommandImpl;
 import tr.org.lider.entities.PluginProfile;
 import tr.org.lider.entities.PolicyImpl;
 import tr.org.lider.ldap.LdapEntry;
@@ -115,9 +116,15 @@ public class PolicyController {
 	}
 	
 	// 
-	@RequestMapping(method=RequestMethod.POST ,value = "/getPolicies4Group", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method=RequestMethod.POST ,value = "/getPoliciesForGroup", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<PolicyResponse> getPolicies4Group(@RequestBody LdapEntry dn) {
 		logger.info("Getting executed policies for group. DN : " +dn);
 		return policyService.getPolicies4Group(dn.getDistinguishedName());
+	}
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/unassignment", produces = MediaType.APPLICATION_JSON_VALUE)
+	public CommandImpl unassignmentPolicyOfUser(@RequestBody CommandImpl id) {
+		logger.info("Getting executed policies for group. DN : " +id);
+		return policyService.unassignmentCommandForUserPolicy(id);
 	}
 }

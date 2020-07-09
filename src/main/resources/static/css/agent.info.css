@@ -104,14 +104,24 @@
 }
 
 .table-filter input {
-	width: 200px;
+	width: 230px;
 	display: inline-block;
+	font-size: 13px;
 }
 
-.filter-group select.form-control {
-	width: 180px;
+.filter-group select.filter {
+	width: 200px;
+	font-size: 13px;
 }
 
+.filter-group select.stat {
+	width: 110px;
+	font-size: 13px;
+}
+.filter-group input.dtpicker {
+	width: 200px;
+	font-size: 13px;
+}
 .filter-icon {
 	float: right;
 	margin-top: 7px;
@@ -189,7 +199,17 @@ table.table td a.view {
 
 table.table td a.view i {
 	font-size: 22px;
-	margin: 2px 0 0 1px;
+	margin: 12px 0 0 1px;
+	outline: 4px solid red;
+  	outline-offset: 15px;
+}
+
+table.table td a i {
+	color: #2196F3;
+}
+
+table.table td a i:hover {
+	color: #566787;
 }
 
 table.table .avatar {
@@ -198,6 +218,8 @@ table.table .avatar {
 	margin-right: 10px;
 	width: 28px;
 	height: 28px;
+	border: 0;
+	background: none;
 }
 
 .status {
@@ -325,3 +347,9 @@ table.table .avatar {
 		font-family: 'Varela Round', sans-serif;
 		font-size: 13px;
 }
+img.middle { 
+	vertical-align: middle !important;
+	margin-right: 10px;
+	width: 28px;
+	height: 28px;
+ }

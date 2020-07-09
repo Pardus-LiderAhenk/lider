@@ -14,7 +14,7 @@ public interface PolicyRepository extends BaseJpaRepository<PolicyImpl, Long>{
 			+ "FROM CommandImpl c "
 			+ "INNER JOIN c.commandExecutions ce "
 			+ "INNER JOIN c.policy pol "
-			+ "WHERE ce.dn =?1 "
+			+ "WHERE c.deleted = false  AND ce.dn =?1 "
 			+ "AND c.policy IS NOT NULL "
 			+ "AND pol.active = true "
 			+ "AND pol.deleted = false "

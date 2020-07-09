@@ -20,7 +20,7 @@ var dnlist = [];
 var tableInsPackages;
 var pluginTask_PackageManagement = null;
 $('#sendTaskDeletePackageBtn').hide();
-
+$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı.</td></tr>');
 var ref_package_management=connection.addHandler(getPackagesListener, null, 'message', null, null,  null);
 
 if(selectedEntries){
@@ -134,6 +134,7 @@ function getPackagesListener(msg) {
 				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
 					$.notify(responseMessage, "error");
 					$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
+					$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı.</td></tr>');
 				}
 			}
 			if (xmppResponse.commandClsId == "PACKAGE_MANAGEMENT") {
@@ -156,6 +157,7 @@ function getPackagesListener(msg) {
 				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
 					$.notify(responseMessage, "error");
 					$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
+					$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı.</td></tr>');
 				}
 			}
 		}
@@ -165,21 +167,18 @@ function getPackagesListener(msg) {
 }
 
 function createInstalledPackagesTable() {
+	if ($("#packageManagementBodyEmptyInfo").length > 0) {
+		$("#packageManagementBodyEmptyInfo").remove();
+	}
+	
 	tableInsPackages = $('#installedPackagesTable').DataTable( {
 		"scrollY": "500px",
 		"paging": false,
 		"scrollCollapse": true,
 		"oLanguage": {
-			"sLengthMenu": 'Görüntüle <select>'+
-			'<option value="20">20</option>'+
-			'<option value="30">30</option>'+
-			'<option value="40">40</option>'+
-			'<option value="50">50</option>'+
-			'<option value="-1">Tümü</option>'+
-			'</select> kayıtları',
 			"sSearch": "Paket Ara:",
 			"sInfo": "Toplam paket sayısı: _TOTAL_",
-			"sInfoEmpty": "Gösterilen paket sayısı: 0",
+			"sInfoEmpty": "Paket sayısı: 0",
 			"sZeroRecords" : "Paket bulunamadı",
 			"sInfoFiltered": " - _MAX_ paket arasından",
 		},
@@ -354,4 +353,3 @@ $('#sendTaskDeletePackageBtn').click(function(e){
 		$.notify("Lütfen silmek istediğiniz paketi/leri seçerek Sil butonuna tıklayınız.", "warn");
 	}
 });
-

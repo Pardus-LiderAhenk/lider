@@ -7,6 +7,9 @@
 .table tbody tr.selectpolicytable td {
   background-color: #85C1E9;
 }
+.active-policy.table tr:hover td {
+    background: #70C1F9 !important;
+}
 .allow-scroll {
     height: 300px;
     overflow-y: auto;
@@ -142,7 +145,7 @@
 										<div class="card-body">
 											<div class="allow-scroll">
 												<div> 
-													<table class="mb-0 table table-bordered" id="activePolicyTable">
+													<table class="mb-0 table table-bordered active-policy" id="activePolicyTable">
 														<thead>
 															<tr>
 																<th style="width: 10%">#</th>

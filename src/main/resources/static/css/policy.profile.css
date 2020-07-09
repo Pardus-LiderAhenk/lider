@@ -3,6 +3,12 @@
 .table tbody tr.policysettings td {
 	background-color: #70C1F9;
 }
+.policy table tr:hover td {
+    background: #70C1F9 !important;
+}
+.profile table tr:hover td {
+    background: #70C1F9 !important;
+}
 
 .policy {
 	height: 250px;
@@ -32,6 +38,9 @@
 
 .script-scroll table tr {
 	line-height: 10px;
+}
+.script-scroll table tr:hover td {
+    background: #70C1F9 !important;
 }
 
 .browser {

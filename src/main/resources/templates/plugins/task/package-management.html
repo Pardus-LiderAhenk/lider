@@ -19,25 +19,22 @@
 			</div>
 		</div>
 		<div class="card-body">
-			<div class="login-form-1">
-				<div class="login-group">
-					<div class="form-group">
-						<table class="table table-striped table-bordered display"
-							id="installedPackagesTable" border="1">
-							<thead>
-								<tr>
-									<th style="width: 10%">#</th>
-									<th style="width: 45%">Paket Adı</th>
-									<th style="width: 45%">Paket Versiyonu</th>
-								</tr>
-							</thead>
-							<tbody></tbody>
-						</table>
-						<small id="packageManagementHelp" class="text-muted">İstemcide kurulu olan paketleri listelemek için Paketleri Listele butonuna tıklayınız.</small>
-						<div id="plugin-result-package-management"></div>
-					</div>
+			<div class="login-group">
+				<div class="form-group">
+					<table class="table table-striped table-bordered" style="width:100%" id="installedPackagesTable">
+						<thead>
+							<tr>
+								<th style="width: 10%">#</th>
+								<th style="width: 45%">Paket Adı</th>
+								<th style="width: 45%">Paket Versiyonu</th>
+							</tr>
+						</thead>
+						<tbody id="packageManagementBody"></tbody>
+					</table>
+					<small id="packageManagementHelp" class="text-muted">İstemcide kurulu olan paketleri listelemek için Paketleri Listele butonuna tıklayınız.</small>
+					<div id="plugin-result-package-management"></div>
 				</div>
-			</div>		
+			</div>
 		</div>
 		</div>
 		<div id="progressPackageManager"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">

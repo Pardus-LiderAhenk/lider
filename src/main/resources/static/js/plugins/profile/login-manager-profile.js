@@ -89,9 +89,10 @@ $('#loginManagerProfileTable').on('click', 'tbody tr', function(event) {
 function showDetailSelectedLoginManagerProfile() {
 	for (var i = 0; i < loginManagerProfileList.length; i++) {
 		if (selectedLoginManagerProfileId == loginManagerProfileList[i].id) {
+			var lastDate = loginManagerProfileList[i].profileData['last-date'];
 			$('#loginManagerProfileNameForm').val(loginManagerProfileList[i].label);
 			$('#loginManagerProfileDescriptionForm').val(loginManagerProfileList[i].description);
-			$("#lastAvailabilityDate").val(loginManagerProfileList[i].profileData['last-date']);
+			$("#lastAvailabilityDate").val(setLastDateForSelectedProfile(lastDate));
 			$("#loginManagerStartTime").val(loginManagerProfileList[i].profileData['start-time']);
 			$("#loginManagerEndTime").val(loginManagerProfileList[i].profileData['end-time']);
 			$('#notifyBeforeLogout').val(loginManagerProfileList[i].profileData.duration).change();
@@ -100,6 +101,15 @@ function showDetailSelectedLoginManagerProfile() {
 		}
 	}
 } 
+
+function setLastDateForSelectedProfile(date) {
+	var date = date.split("/");
+	var day = date[0];
+	var month = date[1];
+	var year = date[2];
+	var lastDate = year + "-" + month + "-" + day;
+	return lastDate;
+}
 
 function setDaysOfProfile(days) {
 	var currentDaysIdList = ["mondayCb", "tuesdayCb", "wednesdayCb", "thursdayCb", "fridayCb", "saturdayCb", "sundayCb"];
@@ -192,16 +202,26 @@ function createLoginManagerProfileTable() {
 	}
 }
 
+function changeDateFormat(date) {
+	var date = date.split("-");
+	var day = date[2];
+	var month = date[1];
+	var year = date[0];
+	var lastDate = day + "/" + month + "/" + year;
+	return lastDate;
+}
+
 //save login manager profile
 $("#loginManagerProfileSave").click(function(e){
 	var label = $('#loginManagerProfileNameForm').val();
 	var description = $('#loginManagerProfileDescriptionForm').val();
+	var lastDate = $("#lastAvailabilityDate").val();
 
 	var profileData = {
 			"days": days,
 			"start-time": $("#loginManagerStartTime").val(),
 			"end-time": $("#loginManagerEndTime").val(),
-			"last-date": $("#lastAvailabilityDate").val(),
+			"last-date": changeDateFormat(lastDate),
 			"duration": $("#notifyBeforeLogout").val()
 	};
 
@@ -313,11 +333,12 @@ $("#loginManagerProfileUpdate").click(function(e){
 			existLabel = loginManagerProfileList[i].label;
 		}
 	}
+	var lastDate = $("#lastAvailabilityDate").val();
 	var profileData = {
 			"days": days,
 			"start-time": $("#loginManagerStartTime").val(),
 			"end-time": $("#loginManagerEndTime").val(),
-			"last-date": $("#lastAvailabilityDate").val(),
+			"last-date": changeDateFormat(lastDate),
 			"duration": $("#notifyBeforeLogout").val()
 	};
 

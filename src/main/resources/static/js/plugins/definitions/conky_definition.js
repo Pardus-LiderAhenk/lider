@@ -98,31 +98,33 @@ function createConkyTable() {
 }
 
 $('#conkyTableTemp tbody').on( 'click', 'tr', function () {
-	if ( $(this).hasClass('selected') ) {
-		$(this).removeClass('selected');
-		$("#conkyNameTemp").val("");
-		$('#conkyContentTemp').val("#Your text will come here");
-		$("#conkySettingTemp").val(defaultSettings);
-		$("#conkySaveBtn").html("Kaydet");
-		$("#conkyDelBtn").hide();
-		$("#conkyCleanBtn").hide();
-		cId = null;
+	if (conkyTempList.length > 0) {
+		if ( $(this).hasClass('selected') ) {
+			$(this).removeClass('selected');
+			$("#conkyNameTemp").val("");
+			$('#conkyContentTemp').val("#Your text will come here");
+			$("#conkySettingTemp").val(defaultSettings);
+			$("#conkySaveBtn").html("Kaydet");
+			$("#conkyDelBtn").hide();
+			$("#conkyCleanBtn").hide();
+			cId = null;
 
-	}
-	else {
-		table.$('tr.selected').removeClass('selected');
-		$(this).addClass('selected');
-		cId = $(this).attr('id');
-		$("#conkySaveBtn").html("Güncelle");
-		var rowData = table.rows('.selected').data()[0];
-		$("#conkyNameTemp").val(rowData[0]);
-		$("#conkyDelBtn").show();
-		$("#conkyCleanBtn").show();
+		}
+		else {
+			table.$('tr.selected').removeClass('selected');
+			$(this).addClass('selected');
+			cId = $(this).attr('id');
+			$("#conkySaveBtn").html("Güncelle");
+			var rowData = table.rows('.selected').data()[0];
+			$("#conkyNameTemp").val(rowData[0]);
+			$("#conkyDelBtn").show();
+			$("#conkyCleanBtn").show();
 
-		for (var i = 0; i < conkyTempList.length; i++) {
-			if (conkyTempList[i]['id'] == cId) {
-				$("#conkyContentTemp").val(conkyTempList[i]['contents']);
-				$("#conkySettingTemp").val(conkyTempList[i]['settings']);
+			for (var i = 0; i < conkyTempList.length; i++) {
+				if (conkyTempList[i]['id'] == cId) {
+					$("#conkyContentTemp").val(conkyTempList[i]['contents']);
+					$("#conkySettingTemp").val(conkyTempList[i]['settings']);
+				}
 			}
 		}
 	}

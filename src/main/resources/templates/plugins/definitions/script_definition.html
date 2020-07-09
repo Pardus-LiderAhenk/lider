@@ -1,5 +1,11 @@
-<script type="text/javascript"
-	src="js/plugins/definitions/script_definition.js"></script>
+<script type="text/javascript" src="js/plugins/definitions/script_definition.js"></script>
+<style>
+<!--
+.script table tr:hover td {
+    background: #B8B5CF !important;
+}
+-->
+</style>
 <div class="main-card mb-3 card" style="margin: 10px;">
 	<div class="card-body">
 		<h4>Betik Tanımlama</h4>
@@ -19,19 +25,20 @@
 					<button id=scriptDelBtn type="button"
 							class="btn-shadow btn btn-info pull-right">Sil</button>
 					</div>
-					<table class="table table-striped table-bordered display table-hover"
-						id="scriptTableTemp" border="1">
-						<tbody>
-						<thead>
-							<tr>
-								<th style="width: 35%">Adı</th>
-								<th style="width: 15%">Türü</th>
-								<th style="width: 25%">Oluşturma Tarihi</th>
-								<th style="width: 25%">Düzenleme Tarihi</th>
-							</tr>
-						</thead>
-						</tbody>
-					</table>
+					<div class="script">
+						<table class="table table-striped table-bordered" style="width:100%"
+							id="scriptTableTemp">
+							<thead>
+								<tr>
+									<th style="width: 35%">Adı</th>
+									<th style="width: 15%">Türü</th>
+									<th style="width: 25%">Oluşturma Tarihi</th>
+									<th style="width: 25%">Düzenleme Tarihi</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -153,6 +153,8 @@
 
     $('#registration_date_filter').on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
+        registrationStartDate = "";
+        registrationEndDate = "";
     });
   });
   

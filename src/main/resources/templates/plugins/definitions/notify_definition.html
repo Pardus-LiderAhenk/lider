@@ -1,4 +1,11 @@
 <script type="text/javascript" src="js/plugins/definitions/notify_definition.js"></script>
+<style>
+<!--
+.notify table tr:hover td {
+    background: #B8B5CF !important;
+}
+-->
+</style>
 <div class="main-card mb-3 card" style="margin: 10px;">
 	<div class="card-body">
 		<h4>Etkileşimli Tahta Mesajı Tanımlama</h4>
@@ -12,15 +19,14 @@
 			<div class="main-card mb-3 card">
 				<div class="card-header text-left">
 					<div class="col-md-6"><h6>Mesaj Listesi </h6></div>
-					<div class="col-md-6">
+					<div class="col-md-6 text-right">
 						<button id=notifyDelBtn type="button"
 							class="btn-shadow btn btn-info">Sil</button>
 					</div>
 				</div>
-				<div class="card-body">
-					<table class="table table-striped table-bordered display table-hover"
-						id="notifyTableTemp" border="1">
-						<tbody>
+				<div class="card-body notify">
+					<table class="table table-striped table-bordered" style="width:100%"
+						id="notifyTableTemp">
 						<thead>
 							<tr>
 								<th style="width: 35%">Adı</th>
@@ -29,7 +35,7 @@
 								<th style="width: 25%">Düzenleme Tarihi</th>
 							</tr>
 						</thead>
-						</tbody>
+						<tbody></tbody>
 					</table>
 				</div>
 			</div>

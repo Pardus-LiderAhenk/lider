@@ -23,13 +23,18 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.directory.api.ldap.model.cursor.SearchCursor;
 import org.apache.directory.api.ldap.model.entry.Attribute;
 import org.apache.directory.api.ldap.model.entry.DefaultEntry;
+import org.apache.directory.api.ldap.model.entry.DefaultModification;
 import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.entry.Modification;
+import org.apache.directory.api.ldap.model.entry.ModificationOperation;
 import org.apache.directory.api.ldap.model.entry.Value;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.AddRequest;
 import org.apache.directory.api.ldap.model.message.AddRequestImpl;
 import org.apache.directory.api.ldap.model.message.AddResponse;
 import org.apache.directory.api.ldap.model.message.LdapResult;
+import org.apache.directory.api.ldap.model.message.ModifyRequest;
+import org.apache.directory.api.ldap.model.message.ModifyRequestImpl;
 import org.apache.directory.api.ldap.model.message.Response;
 import org.apache.directory.api.ldap.model.message.ResultCodeEnum;
 import org.apache.directory.api.ldap.model.message.SearchRequest;
@@ -186,33 +191,150 @@ public class AdService implements ILDAPService{
 
 	@Override
 	public void updateEntry(String entryDn, String attribute, String value) throws LdapException {
-		// TODO Auto-generated method stub
-		
+
+		logger.info("Replacing attribute " + attribute + " value " + value);
+		LdapConnection connection = null;
+
+		connection = getConnection();
+		Entry entry = null;
+		try {
+			entry = connection.lookup(entryDn);
+			if (entry != null) {
+				if (entry.get(attribute) != null) {
+					Value<?> oldValue = entry.get(attribute).get();
+					entry.remove(attribute, oldValue);
+				}
+				entry.add(attribute, value);
+				connection.modify(entry, ModificationOperation.REPLACE_ATTRIBUTE);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+	
 	}
 
 	@Override
 	public void updateEntryAddAtribute(String entryDn, String attribute, String value) throws LdapException {
-		// TODO Auto-generated method stub
-		
+
+		logger.info("Adding attribute " + attribute + " value " + value);
+		LdapConnection connection = null;
+
+		connection = getConnection();
+		Entry entry = null;
+		try {
+			entry = connection.lookup(entryDn);
+			if (entry != null) {
+				entry.put(attribute, value);
+
+				ModifyRequest mr = new ModifyRequestImpl();
+				mr.setName(new Dn(entryDn));
+				mr.add(attribute, value);
+
+				connection.modify(mr);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+	
 	}
 
 	@Override
 	public void updateEntryRemoveAttribute(String entryDn, String attribute) throws LdapException {
-		// TODO Auto-generated method stub
-		
+
+		logger.info("Removing attribute: {}", attribute);
+		LdapConnection connection = null;
+		List<Modification> modificationListForRemove = new ArrayList<Modification>();
+		connection = getConnection();
+		Entry entry = null;
+		try {
+			entry = connection.lookup(entryDn);
+			if (entry != null) {
+				boolean isAttributeExist=false;
+				for (Attribute a : entry.getAttributes()) {
+					if (a.getId().contains(attribute) || a.getUpId().contains(attribute) || ( a.getAttributeType()!=null && a.getAttributeType().getName().equalsIgnoreCase(attribute))) {
+						isAttributeExist=true;
+						Iterator<Value<?>> iter = entry.get(a.getId()).iterator();
+						while (iter.hasNext()) {
+							String value = iter.next().getValue().toString();
+							modificationListForRemove.add(new DefaultModification( ModificationOperation.REMOVE_ATTRIBUTE, a.getId(), value ));
+						}
+					}
+				}
+				if(isAttributeExist) {
+					Modification[] modifications = new Modification[modificationListForRemove.size()];
+					for (int i = 0; i < modificationListForRemove.size(); i++) {
+						modifications[i] = modificationListForRemove.get(i);
+					}
+					connection.modify(entryDn, modifications);
+				}
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+	
 	}
 
 	@Override
 	public void updateEntryRemoveAttributeWithValue(String entryDn, String attribute, String value)
 			throws LdapException {
-		// TODO Auto-generated method stub
-		
+
+
+		logger.info("Removing attribute: {}", attribute);
+		LdapConnection connection = null;
+
+		connection = getConnection();
+		Entry entry = null;
+		try {
+			entry = connection.lookup(entryDn);
+			if (entry != null) {
+
+				for (Attribute a : entry.getAttributes()) {
+					if (a.contains(value)) {
+						a.remove(value);
+					}
+				}
+
+
+				//				if (entry.get(attribute) != null) {
+				//					Value<?> oldValue = entry.get(attribute).get();
+				//					entry.remove(attribute, oldValue);
+				//				}
+				//				entry.add(attribute, value);
+
+				connection.modify(entry, ModificationOperation.REPLACE_ATTRIBUTE);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+
+	
 	}
 
 	@Override
 	public Entry getRootDSE() throws LdapException {
-		// TODO Auto-generated method stub
-		return null;
+		LdapConnection connection = getConnection();
+		Entry entry = null;
+		try {
+			entry = connection.getRootDse();
+		} catch (org.apache.directory.api.ldap.model.exception.LdapException e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+		return entry;
 	}
 
 	@Override

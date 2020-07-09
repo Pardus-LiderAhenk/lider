@@ -77,30 +77,32 @@ function createNotifyTable() {
 }
 
 $('#notifyTableTemp tbody').on( 'click', 'tr', function () {
-	if ( $(this).hasClass('selected') ) {
-		$(this).removeClass('selected');
-		$("#notifyNameTemp").val("");
-		$('#notifyTime').val("");
-		$('#notifyContentTemp').val("");
-		$("#notifySaveBtn").html("Kaydet");
-		$("#notifyDelBtn").hide();
-		$("#notifyCleanBtn").hide();
-		nId = null;
+	if (notifyTempList.length > 0) {
+		if ( $(this).hasClass('selected') ) {
+			$(this).removeClass('selected');
+			$("#notifyNameTemp").val("");
+			$('#notifyTime').val("");
+			$('#notifyContentTemp').val("");
+			$("#notifySaveBtn").html("Kaydet");
+			$("#notifyDelBtn").hide();
+			$("#notifyCleanBtn").hide();
+			nId = null;
 
-	}
-	else {
-		table.$('tr.selected').removeClass('selected');
-		$(this).addClass('selected');
-		nId = $(this).attr('id');
-		$("#notifySaveBtn").html("Güncelle");
-		var rowData = table.rows('.selected').data()[0];
-		$("#notifyNameTemp").val(rowData[0]);
-		$("#notifyDelBtn").show();
-		$("#notifyCleanBtn").show();
-		$('#notifyTime').val(rowData[1]);
-		for (var i = 0; i < notifyTempList.length; i++) {
-			if (notifyTempList[i]['id'] == nId) {
-				$("#notifyContentTemp").val(notifyTempList[i]['contents']);
+		}
+		else {
+			table.$('tr.selected').removeClass('selected');
+			$(this).addClass('selected');
+			nId = $(this).attr('id');
+			$("#notifySaveBtn").html("Güncelle");
+			var rowData = table.rows('.selected').data()[0];
+			$("#notifyNameTemp").val(rowData[0]);
+			$("#notifyDelBtn").show();
+			$("#notifyCleanBtn").show();
+			$('#notifyTime').val(rowData[1]);
+			for (var i = 0; i < notifyTempList.length; i++) {
+				if (notifyTempList[i]['id'] == nId) {
+					$("#notifyContentTemp").val(notifyTempList[i]['contents']);
+				}
 			}
 		}
 	}

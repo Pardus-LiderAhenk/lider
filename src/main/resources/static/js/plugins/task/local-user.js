@@ -33,6 +33,7 @@ $("#sendTaskEditLocalUser").hide();
 $("#sendTaskDeleteLocalUser").hide();
 $("#sendTaskAddLocalUser").hide();
 $("#localUserForm").hide();
+$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="100%" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
 
 createGroupsSelectBox();
 
@@ -94,6 +95,7 @@ function localUserListener(msg) {
 				else {
 					$.notify(responseMessage, "error");
 					$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
+					$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="100%" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
 				}
 			}
 			if (xmppResponse.commandClsId == "EDIT_USER" || xmppResponse.commandClsId == "ADD_USER" || xmppResponse.commandClsId == "DELETE_USER") {
@@ -115,6 +117,7 @@ function localUserListener(msg) {
 				}else {
 					$.notify(responseMessage, "error");
 					$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
+					$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="100%" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
 				}
 			}
 		}
@@ -167,7 +170,7 @@ function sendLocalUserTask(params) {
 	if (scheduledParamLocalUser != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamLocalUser;
 	}
-	
+
 	progress("divLocalUser","progressLocalUser",'show')
 	$.ajax({
 		type: "POST",
@@ -245,10 +248,14 @@ function createGroupsSelectBox() {
 }
 
 function createLocalUsersTable() {
+	if ($("#localUserBodyEmptyInfo").length > 0) {
+		$("#localUserBodyEmptyInfo").remove();
+	}
 	tableLocalUser = $('#localUsersTable').DataTable( {
 		"scrollY": "500px",
 		"paging": false,
 		"scrollCollapse": true,
+		"footer": false,
 		"oLanguage": {
 			"sLengthMenu": 'Görüntüle <select>'+
 			'<option value="20">20</option>'+
@@ -258,7 +265,7 @@ function createLocalUsersTable() {
 			'<option value="-1">Tümü</option>'+
 			'</select> kayıtları',
 			"sSearch": "Kullanıcı Ara:",
-			"sInfo": "Toplam Kullanıcı sayısı: _TOTAL_",
+			"sInfo": "Kullanıcı sayısı: _TOTAL_",
 			"sInfoEmpty": "Gösterilen Kullanıcı sayısı: 0",
 			"sZeroRecords" : "Kullanıcı bulunamadı",
 			"sInfoFiltered": " - _MAX_ kullanıcı arasından",
@@ -282,48 +289,50 @@ function defaultSettings() {
 }
 
 $('#localUsersTable tbody').on( 'click', 'tr', function () {
-	if ( $(this).hasClass('selected') ) {
-		$(this).removeClass('selected');
-		defaultSettings();
-	}else {
-		$('#localUserOfGroups').multiselect("deselectAll", false).multiselect("refresh");
-		$("#sendTaskAddLocalUser").hide();
-		$("#sendTaskEditLocalUser").show();
-		$("#sendTaskDeleteLocalUser").show();
-		tableLocalUser.$('tr.selected').removeClass('selected');
-		$(this).addClass('selected');
-		var rowData = tableLocalUser.rows('.selected').data()[0];
-		var selUserName = $(this).attr('id');
-		selectUserName = selUserName;
+	if (users.length > 0) {
+		if ( $(this).hasClass('selected') ) {
+			$(this).removeClass('selected');
+			defaultSettings();
+		}else {
+			$('#localUserOfGroups').multiselect("deselectAll", false).multiselect("refresh");
+			$("#sendTaskAddLocalUser").hide();
+			$("#sendTaskEditLocalUser").show();
+			$("#sendTaskDeleteLocalUser").show();
+			tableLocalUser.$('tr.selected').removeClass('selected');
+			$(this).addClass('selected');
+			var rowData = tableLocalUser.rows('.selected').data()[0];
+			var selUserName = $(this).attr('id');
+			selectUserName = selUserName;
 
-		for (var i = 0; i < users.length; i++) {
-			if (users[i]["user"] == selUserName) {
-				$("#localUserName").val(users[i]["user"]);
-				$("#localUserHomeDirectory").val(users[i]["home"]);
-				var groupList = users[i]["groups"];
-				userOfGroup=groupList.split(", ");
+			for (var i = 0; i < users.length; i++) {
+				if (users[i]["user"] == selUserName) {
+					$("#localUserName").val(users[i]["user"]);
+					$("#localUserHomeDirectory").val(users[i]["home"]);
+					var groupList = users[i]["groups"];
+					userOfGroup=groupList.split(", ");
 
-				for (var j = 0; j < userOfGroup.length; j++) {
-					$('#localUserOfGroups').multiselect('select', [""+ userOfGroup[j] +""], true);
-				}
-				$("#localUserOfGroups").multiselect("refresh");
+					for (var j = 0; j < userOfGroup.length; j++) {
+						$('#localUserOfGroups').multiselect('select', [""+ userOfGroup[j] +""], true);
+					}
+					$("#localUserOfGroups").multiselect("refresh");
 
-				if (users[i]["is_active"] == "true") {
-					$('#localUserActiveSb').val("true").change();
-				}else {
-					$('#localUserActiveSb').val("false").change();
-				}
+					if (users[i]["is_active"] == "true") {
+						$('#localUserActiveSb').val("true").change();
+					}else {
+						$('#localUserActiveSb').val("false").change();
+					}
 
-				if (users[i]["is_desktop_write_permission_exists"] == "true") {
-					$("#desktopWritePermissionCb").prop( "checked", true );
-				}else {
-					$("#desktopWritePermissionCb").prop( "checked", false );
-				}
+					if (users[i]["is_desktop_write_permission_exists"] == "true") {
+						$("#desktopWritePermissionCb").prop( "checked", true );
+					}else {
+						$("#desktopWritePermissionCb").prop( "checked", false );
+					}
 
-				if (users[i]["is_kiosk_mode_on"] == "true") {
-					$("#kioskModeCb").prop( "checked", true );
-				}else {
-					$("#kioskModeCb").prop( "checked", false );
+					if (users[i]["is_kiosk_mode_on"] == "true") {
+						$("#kioskModeCb").prop( "checked", true );
+					}else {
+						$("#kioskModeCb").prop( "checked", false );
+					}
 				}
 			}
 		}

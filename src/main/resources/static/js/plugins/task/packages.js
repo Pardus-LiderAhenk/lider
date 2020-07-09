@@ -15,13 +15,15 @@ var scheduledParamPackages = null;
 var scheduledModalPackagesOpened = false;
 var packages_data = [];
 var packageInfoList = [];
+var dnlist=[];
 var tablePackages;
 var pluginTask_Packages = null;
 var ref_packages=connection.addHandler(packagesListener, null, 'message', null, null,  null);
 $('#sendTaskPackages').hide();
 $('#sendTaskCronPackages').hide();
+var packages_list_table = [];
+$('#packageBody').html('<tr id="packagesBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı. Paket Listele Butonuna Tıklayınız.</td></tr>');
 
-var dnlist=[];
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
 }
@@ -57,9 +59,8 @@ function getPackagesList(params){
 		dataType: "json",
 		success: function(data) {
 			packages_data = data;
-			var packages_list_table = [];
+			progress("divPackages","progressPackages",'hide')
 			if (data != null) {
-				progress("divPackages","progressPackages",'hide')
 				for (var i = 0; i < data.length; i++) {
 					var name = data[i]["packageName"];
 					var version =  data[i]["version"];
@@ -87,35 +88,7 @@ function getPackagesList(params){
 				packages_list_table.push( [ null, null, null, null, null, null] );
 			}
 			$("#plugin-result-packages").html("");
-			tablePackages = $('#packagesListTableId').DataTable( {
-				data:           packages_list_table,
-				deferRender:    true,
-				paging: true,
-				pageLength: 10,
-				scrollCollapse: true,
-				"oLanguage": {
-					"sLengthMenu": 'Görüntüle <select>'+
-					'<option value="10">10</option>'+
-					'<option value="20">20</option>'+
-					'<option value="30">30</option>'+
-					'<option value="40">40</option>'+
-					'<option value="50">50</option>'+
-//					'<option value="-1">Tümü</option>'+
-					'</select> kayıtları',
-					"sSearch": "Paket Ara:",
-					"sInfo": "Toplam kayıt sayısı: _TOTAL_",
-					"sInfoEmpty": "Gösterilen kayıt sayısı: 0",
-					"sInfoFiltered": " - _MAX_ kayıt arasından",
-//					"sEmptyTable": "Paket bulunamadı",
-					"sZeroRecords" : "Paket bulunamadı",
-					"oPaginate": {
-						"sFirst": "İlk Sayfa", // This is the link to the first page
-						"sPrevious": "Önceki", // This is the link to the previous page
-						"sNext": "Sonraki", // This is the link to the next page
-						"sLast": "Son Sayfa", // This is the link to the last page
-					},
-				},
-			} );
+			createdPackagesTable();
 			$('#sendTaskPackages').show();
 			$('#sendTaskCronPackages').show();
 			$('#packagesHelp').html("Kurmak ya da Kaldırmak istediğiniz paket/leri seçerek Çalıştır butonuna tıklayınız. ")
@@ -123,8 +96,48 @@ function getPackagesList(params){
 		error: function(data){
 			$.notify("Paketler listelenirken hata oluştu", "error");
 			$("#plugin-result-packages").html("Paketler listelenirken hata oluştu");
+			progress("divPackages","progressPackages",'hide')
+			$('#packageBody').html('<tr id="packagesBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı.</td></tr>');
 		},
 	});
+}
+
+function createdPackagesTable() {
+	
+	if ($("#packagesBodyEmptyInfo").length > 0) {
+		$("#packagesBodyEmptyInfo").remove();
+	}
+	
+	tablePackages = $('#packagesListTableId').DataTable( {
+		data:           packages_list_table,
+		deferRender:    true,
+		paging: true,
+		pageLength: 10,
+		scrollCollapse: true,
+		"oLanguage": {
+			"sLengthMenu": 'Görüntüle <select>'+
+			'<option value="10">10</option>'+
+			'<option value="20">20</option>'+
+			'<option value="30">30</option>'+
+			'<option value="40">40</option>'+
+			'<option value="50">50</option>'+
+//			'<option value="-1">Tümü</option>'+
+			'</select> kayıtları',
+			"sSearch": "Paket Ara:",
+			"sInfo": "Toplam kayıt sayısı: _TOTAL_",
+			"sInfoEmpty": "Gösterilen kayıt sayısı: 0",
+			"sInfoFiltered": " - _MAX_ kayıt arasından",
+//			"sEmptyTable": "Paket bulunamadı",
+			"sZeroRecords" : "Paket bulunamadı",
+			"oPaginate": {
+				"sFirst": "İlk Sayfa", // This is the link to the first page
+				"sPrevious": "Önceki", // This is the link to the previous page
+				"sNext": "Sonraki", // This is the link to the next page
+				"sLast": "Son Sayfa", // This is the link to the last page
+			},
+		},
+	} );
+	
 }
 
 function packagesListener(msg) {

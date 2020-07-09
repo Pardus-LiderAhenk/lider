@@ -78,42 +78,44 @@ function createScriptTable() {
 }
 
 $('#scriptTableTemp tbody').on( 'click', 'tr', function () {
-	if ( $(this).hasClass('selected') ) {
-		$(this).removeClass('selected');
-		$("#scriptNameTemp").val("");
-		$('#scriptType').val("bash").change();
-		$("#scriptSaveBtn").html("Kaydet");
-		$("#scriptDelBtn").hide();
-		$("#scriptCleanBtn").hide();
-		sId = null;
-	}
-	else {
-		table.$('tr.selected').removeClass('selected');
-		$(this).addClass('selected');
-		$("#scriptSaveBtn").html("Güncelle");
-		var rowData = table.rows('.selected').data()[0];
-		sId = $(this).attr('id');
-		$("#scriptNameTemp").val(rowData[0]);
-		$("#scriptDelBtn").show();
-		$("#scriptCleanBtn").show();
-		var sType = null;
+	if (scriptTempList.length > 0) {
+		if ( $(this).hasClass('selected') ) {
+			$(this).removeClass('selected');
+			$("#scriptNameTemp").val("");
+			$('#scriptType').val("bash").change();
+			$("#scriptSaveBtn").html("Kaydet");
+			$("#scriptDelBtn").hide();
+			$("#scriptCleanBtn").hide();
+			sId = null;
+		}
+		else {
+			table.$('tr.selected').removeClass('selected');
+			$(this).addClass('selected');
+			$("#scriptSaveBtn").html("Güncelle");
+			var rowData = table.rows('.selected').data()[0];
+			sId = $(this).attr('id');
+			$("#scriptNameTemp").val(rowData[0]);
+			$("#scriptDelBtn").show();
+			$("#scriptCleanBtn").show();
+			var sType = null;
 
-		if (rowData[1] == "BASH" || rowData[1] == "Bash" || rowData[1] == "bash") {
-			sType = "bash";
-		}
-		else if (rowData[1] == "PYTHON" || rowData[1] == "Python" || rowData[1] == "python") {
-			sType = "python";
-		}
-		else if (rowData[1] == "PERL" || rowData[1] == "Perl" || rowData[1] == "perl") {
-			sType = "perl";
-		}
-		else if (rowData[1] == "RUBY" || rowData[1] == "Ruby" || rowData[1] == "ruby") {
-			sType = "ruby";
-		}
-		$('#scriptType').val(sType).change();
-		for (var i = 0; i < scriptTempList.length; i++) {
-			if (scriptTempList[i]['id'] == sId) {
-				$("#scriptContentTemp").val(scriptTempList[i]['contents']);
+			if (rowData[1] == "BASH" || rowData[1] == "Bash" || rowData[1] == "bash") {
+				sType = "bash";
+			}
+			else if (rowData[1] == "PYTHON" || rowData[1] == "Python" || rowData[1] == "python") {
+				sType = "python";
+			}
+			else if (rowData[1] == "PERL" || rowData[1] == "Perl" || rowData[1] == "perl") {
+				sType = "perl";
+			}
+			else if (rowData[1] == "RUBY" || rowData[1] == "Ruby" || rowData[1] == "ruby") {
+				sType = "ruby";
+			}
+			$('#scriptType').val(sType).change();
+			for (var i = 0; i < scriptTempList.length; i++) {
+				if (scriptTempList[i]['id'] == sId) {
+					$("#scriptContentTemp").val(scriptTempList[i]['contents']);
+				}
 			}
 		}
 	}

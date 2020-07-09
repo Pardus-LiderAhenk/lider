@@ -21,6 +21,7 @@ var pluginTask_Repositories = null;
 var ref_repositories=connection.addHandler(repositoryListener, null, 'message', null, null,  null);
 $('#sendTaskRepositories').hide();
 $('#repoAddressDefinition').hide();
+$('#repositoriesBody').html('<tr id="repositoriesBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Deposu Bulunamadı.</td></tr>');
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -147,6 +148,7 @@ function repositoryListener(msg) {
 				createRepositorieTable();
 				$("#plugin-result-repositories").html(("HATA:" + responseMessage).fontcolor("red"));
 				$.notify(responseMessage, "error");
+				$('#repositoriesBody').html('<tr id="repositoriesBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Deposu Bulunamadı.</td></tr>');
 			}
 		}
 		// we must return true to keep the handler alive. returning false would remove it after it finishes.
@@ -155,6 +157,11 @@ function repositoryListener(msg) {
 }
 
 function createRepositorieTable() {
+	
+	if ($("#repositoriesBodyEmptyInfo").length > 0) {
+		$("#repositoriesBodyEmptyInfo").remove();
+	}
+	
 	tableRepositories = $('#repositoriesListTable').DataTable( {
 		"scrollY": "500px",
 		"paging": false,
@@ -172,7 +179,7 @@ function createRepositorieTable() {
 			"sSearch": "Depo Ara:",
 			"sInfo": "Toplam depo sayısı: _TOTAL_",
 			"sInfoEmpty": "Gösterilen depo sayısı: 0",
-			"sZeroRecords" : "Depo bulunamadı",
+			"sZeroRecords" : "Paket Deposu Bulunamadı",
 			"sInfoFiltered": " - _MAX_ depo arasından",
 		},
 	} );
@@ -188,7 +195,7 @@ function addRepoAddr(repoAddr){
 	var newRow = $("<tr>");
 	var cols = "";
 	cols += '<td class="repoAdrr">' + repoAddr +'</td>';
-	cols += '<td class="text-center"><button id="' + repoAddr +'" type="button" onclick="removeRepoAddedItems(this)" title="Kaldır" value="' + repoAddr +'" class="btn-shadow btn btn-info"><i class="fa fa-trash-alt"></i></button></td>';
+	cols += '<td class="text-center"><button id="' + repoAddr +'" type="button" onclick="removeRepoAddedItems(this)" title="Kaldır" value="' + repoAddr +'" class="btn btn-sm btn-outline-danger"><i class="pe-7s-trash"></i></button></td>';
 	newRow.append(cols);
 	$("#repositoriesListTable").append(newRow);
 	addedItems.push(repoAddr);

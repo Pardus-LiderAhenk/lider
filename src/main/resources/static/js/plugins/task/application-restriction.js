@@ -22,6 +22,8 @@ var tableApp = null;
 var pluginTask_ApplicationRestriction = null;
 var ref_app_restriction=connection.addHandler(getApplicationListener, null, 'message', null, null,  null);
 $('#sendTaskRestAppBtn').hide();
+$('#applicationsBody').html('<tr id="applicationsBodyEmptyInfo"><td colspan="100%" class="text-center">Uygulama Bulunamadı.</td></tr>');
+
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
 		dnlist.push(selectedEntries[i].distinguishedName);
@@ -152,6 +154,7 @@ function getApplicationListener(msg) {
 						error: function(result) {
 							$.notify(result, "error");
 							$("#plugin-result-app-restriction").html(("HATA: " + responseMessage).fontcolor("red"));
+							$('#applicationsBody').html('<tr id="applicationsBodyEmptyInfo"><td colspan="100%" class="text-center">Uygulama Bulunamadı.</td></tr>');
 						}
 					});
 				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
@@ -192,6 +195,10 @@ function getApplicationListener(msg) {
 }
 
 function createApplicationTable() {
+	
+	if ($("#applicationsBodyEmptyInfo").length > 0) {
+		$("#applicationsBodyEmptyInfo").remove();
+	}
 	tableApp = $('#applicationsTable').DataTable( {
 		"scrollY": "500px",
 		"paging": false,
@@ -206,7 +213,7 @@ function createApplicationTable() {
 			'</select> kayıtları',
 			"sSearch": "Uygulama Ara:",
 			"sInfo": "Toplam uygulama sayısı: _TOTAL_",
-			"sInfoEmpty": "Gösterilen uygulama sayısı: 0",
+			"sInfoEmpty": "Uygulama sayısı: 0",
 			"sZeroRecords" : "Uygulama bulunamadı",
 			"sInfoFiltered": " - _MAX_ uygulama arasından",
 		},

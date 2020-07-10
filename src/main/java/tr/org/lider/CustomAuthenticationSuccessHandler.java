@@ -48,7 +48,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		try {
 			LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) authentication.getPrincipal();
 			String preferredLanguage = ldapService.getPreferredLanguage(userDetails.getLiderUser().getDn());
-			Locale locale = new Locale(preferredLanguage);
+			Locale locale = new Locale(preferredLanguage.equals("") ? "tr" : preferredLanguage);
 			WebUtils.setSessionAttribute(request,SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME,locale);
 		} catch (LdapException e) {
 			e.printStackTrace();

@@ -32,8 +32,9 @@ $(document).ready(function(){
 
 function changeLanguage(language) {
 	var params = {
-		    "lang_a1799b6a-c276-11ea-b3de-0242ac130004": language
+		    "langa1799b6ac27611eab3de0242ac130004": language
 	};
+	alert(language);
 	$.ajax({
 		type : 'POST',
 		url : 'changeLanguage',
@@ -45,7 +46,7 @@ function changeLanguage(language) {
 			console.log("Error occured while changing language.")
 		},
 		complete: function() {
-			location.reload();
+			//location.reload();
 		}
 	});
 }

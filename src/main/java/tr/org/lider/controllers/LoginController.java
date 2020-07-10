@@ -69,10 +69,10 @@ public class LoginController {
 	
 	@RequestMapping(value = "/changeLanguage", method = {RequestMethod.POST})
 	@ResponseBody
-	public Boolean changeLanguage(@RequestParam String lang, Model model, Authentication authentication) throws LdapException {
+	public Boolean changeLanguage(@RequestParam String langa1799b6ac27611eab3de0242ac130004, Model model, Authentication authentication) throws LdapException {
 		LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) authentication.getPrincipal();
 		ldapService.updateEntryRemoveAttribute(userDetails.getLiderUser().getDn(), "preferredLanguage");
-		ldapService.updateEntryAddAtribute(userDetails.getLiderUser().getDn(), "preferredLanguage", lang);
+		ldapService.updateEntryAddAtribute(userDetails.getLiderUser().getDn(), "preferredLanguage", langa1799b6ac27611eab3de0242ac130004);
 		return true;
 	}
 }

@@ -32,7 +32,7 @@ $(document).ready(function(){
 
 function changeLanguage(language) {
 	var params = {
-		    "lang": language
+		    "lang_a1799b6a-c276-11ea-b3de-0242ac130004": language
 	};
 	$.ajax({
 		type : 'POST',

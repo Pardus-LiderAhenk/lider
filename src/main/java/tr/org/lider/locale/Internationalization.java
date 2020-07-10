@@ -23,7 +23,7 @@ public class Internationalization implements WebMvcConfigurer {
 	@Bean
 	public LocaleChangeInterceptor localeChangeInterceptor() {
 		LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
-		localeChangeInterceptor.setParamName("lang");
+		localeChangeInterceptor.setParamName("lang_a1799b6a-c276-11ea-b3de-0242ac130004");
 		return localeChangeInterceptor;
 	}
 	@Override

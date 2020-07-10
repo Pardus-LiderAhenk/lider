@@ -46,7 +46,7 @@ function changeLanguage(language) {
 			console.log("Error occured while changing language.")
 		},
 		complete: function() {
-			//location.reload();
+			location.reload();
 		}
 	});
 }

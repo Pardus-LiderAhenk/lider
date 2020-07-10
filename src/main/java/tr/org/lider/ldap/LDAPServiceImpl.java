@@ -941,7 +941,6 @@ public class LDAPServiceImpl implements ILDAPService {
 					String value=attr.get().getString();
 
 					if(attrName.equals("preferredLanguage")) {
-						System.err.println(value);
 						preferredLanguage = value;
 					}
 				}

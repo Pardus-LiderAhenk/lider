@@ -6,6 +6,7 @@ import java.util.Locale;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.util.WebUtils;
@@ -53,6 +55,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 			Locale locale = new Locale("tr");
 			WebUtils.setSessionAttribute(request,SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME,locale);
 		}
-		response.sendRedirect("/");
+		HttpSession session = request.getSession();
+	    SavedRequest savedRequest = (SavedRequest) session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
+
+	    if(savedRequest != null) {
+	        response.sendRedirect(savedRequest.getRedirectUrl());
+	    } else {
+	    	response.sendRedirect("/");
+	    }
+		
 	}
 }

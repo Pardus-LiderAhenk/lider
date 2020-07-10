@@ -34,7 +34,6 @@ function changeLanguage(language) {
 	var params = {
 		    "langa1799b6ac27611eab3de0242ac130004": language
 	};
-	alert(language);
 	$.ajax({
 		type : 'POST',
 		url : 'changeLanguage',

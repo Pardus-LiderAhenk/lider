@@ -94,6 +94,7 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 		this.priviliges=priviliges;
 		setAttributesToFields(attributes);
 		
+		if(attributesMultiValues!=null) {
 		String[] objectClasses= getAttributesMultiValues().get("objectClass");
 		
 		for (int i = 0; i < objectClasses.length; i++) {
@@ -109,6 +110,7 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 			}
 			else if(objClass.equals("organizationalPerson")) { setType(DNType.USER);  }
 			else if(objClass.equals("organizationalUnit")) { setType(DNType.ORGANIZATIONAL_UNIT);  }
+		}
 		}
 		String dateStr= get("createTimestamp");
 		if(dateStr!=null) {

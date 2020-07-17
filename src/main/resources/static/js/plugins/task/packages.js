@@ -103,11 +103,11 @@ function getPackagesList(params){
 }
 
 function createdPackagesTable() {
-	
+
 	if ($("#packagesBodyEmptyInfo").length > 0) {
 		$("#packagesBodyEmptyInfo").remove();
 	}
-	
+
 	tablePackages = $('#packagesListTableId').DataTable( {
 		data:           packages_list_table,
 		deferRender:    true,
@@ -137,7 +137,7 @@ function createdPackagesTable() {
 			},
 		},
 	} );
-	
+
 }
 
 function packagesListener(msg) {
@@ -152,13 +152,15 @@ function packagesListener(msg) {
 		var xmppResponse=JSON.parse(data);
 //		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		if(xmppResponse.commandClsId == "PACKAGES"){
-			progress("divPackages","progressPackages",'hide')
-			if (xmppResponse.result.responseCode != "TASK_ERROR") {
-				$("#plugin-result-packages").html("");
-				$.notify(xmppResponse.result.responseMessage, "success");
-			} else {
-				$("#plugin-result-packages").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
-				$.notify(xmppResponse.result.responseMessage, "error");
+			if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+				progress("divPackages","progressPackages",'hide');
+				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+					$("#plugin-result-packages").html("");
+					$.notify(xmppResponse.result.responseMessage, "success");
+				} else {
+					$("#plugin-result-packages").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
+					$.notify(xmppResponse.result.responseMessage, "error");
+				}
 			}
 		}
 	}
@@ -291,7 +293,7 @@ function sendPackagesTask(params) {
 	if (scheduledParamPackages != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamPackages;
 	}
-
+	progress("divPackages","progressPackages",'show')
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",

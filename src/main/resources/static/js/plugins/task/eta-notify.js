@@ -51,11 +51,6 @@ function getNotifyTemp() {
 						name: data[i]["time"]
 					}));
 				}
-			}else {
-				$('#notifySelectBox').append($('<option>', {
-					text: "...",
-					selected: true
-				}));
 			}
 		},
 		error: function(result) {

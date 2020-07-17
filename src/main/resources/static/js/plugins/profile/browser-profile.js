@@ -168,6 +168,9 @@ function loadPreference() {
 		if (browserPreferences.openNewWindow == itemList[j].preferenceName && itemList[j].value == "3") {
 			$("#openNewWindow").prop("checked", true);
 		}
+		if (browserPreferences.restoreOnDemand == itemList[j].preferenceName && itemList[j].value == "true") {
+			$("#restoreOnDemand").prop("checked", true);
+		}
 		if (browserPreferences.proxyType == itemList[j].preferenceName) {
 			$('#proxyType').val(itemList[j].value).change();
 		}
@@ -251,7 +254,7 @@ function defaultBrowserSetting() {
 	$("#downloadRadioBtn2").prop("checked", true);
 	$(".proxy-settings").prop("disabled", true);
 	$(".proxy-settings").val("");
-	$('#socksVersion').val("4").change();
+	$('#socksVersion').val("5").change();
 	$('#proxyType').val("0").change();
 	$('#noProxyOn').val("localhost, 127.0.0.1");
 	$("#acceptThirdPartyCookies").prop("disabled", true);
@@ -297,7 +300,7 @@ function getBrowserProfileData() {
 	$("#openNewWindow").is(':checked') ? addToPreferences(browserPreferences.openNewWindow, "3") : addToPreferences(browserPreferences.openNewWindow, "2");
 	$("#warnOnClose").is(':checked') ? addToPreferences(browserPreferences.warnOnClose, "true") : addToPreferences(browserPreferences.warnOnClose, "false");
 	$("#warnOnOpen").is(':checked') ? addToPreferences(browserPreferences.warnOnOpen, "true") : addToPreferences(browserPreferences.warnOnOpen, "false");
-	$("#restoreOnDemond").is(':checked') ? addToPreferences(browserPreferences.restoreOnDemand, "true") : addToPreferences(browserPreferences.restoreOnDemand, "false");
+	$("#restoreOnDemand").is(':checked') ? addToPreferences(browserPreferences.restoreOnDemand, "true") : addToPreferences(browserPreferences.restoreOnDemand, "false");
 	$("#loadInBackground").is(':checked') ? addToPreferences(browserPreferences.loadInBackground, "false") : addToPreferences(browserPreferences.loadInBackground, "true");
 	$("#enableXpInstall").is(':checked') ? addToPreferences(browserPreferences.enableXpInstall, "false") : addToPreferences(browserPreferences.enableXpInstall, "true");
 
@@ -305,40 +308,36 @@ function getBrowserProfileData() {
 	var type = $('#proxyType').val();
 	addToPreferences(browserPreferences.proxyType, type);
 	$("#useThisServerForAllProtocols").is(':checked') ? addToPreferences(browserPreferences.useThisServerForAllProtocols, "true") : addToPreferences(browserPreferences.useThisServerForAllProtocols, "false");
-	if (type != "0") {
-		$("#dontPromptForAuth").is(':checked') ? addToPreferences(browserPreferences.dontPromptForAuth, "true") : addToPreferences(browserPreferences.dontPromptForAuth, "false");
-		$("#remoteDns").is(':checked') ? addToPreferences(browserPreferences.remoteDns, "true") : addToPreferences(browserPreferences.remoteDns, "false");
+	$("#dontPromptForAuth").is(':checked') ? addToPreferences(browserPreferences.dontPromptForAuth, "true") : addToPreferences(browserPreferences.dontPromptForAuth, "false");
+	$("#remoteDns").is(':checked') ? addToPreferences(browserPreferences.remoteDns, "true") : addToPreferences(browserPreferences.remoteDns, "false");
+	if ($('#httpProxy').val() != "" && $('#httpProxy').val() != null) {
+		addToPreferences(browserPreferences.httpProxy, $('#httpProxy').val());
 	}
-	if (type == "1") {
-		if ($('#httpProxy').val() != "" && $('#httpProxy').val() != null) {
-			addToPreferences(browserPreferences.httpProxy, $('#httpProxy').val());
-		}
-		if ($('#httpPort').val() != "" && $('#httpPort').val() != null) {
-			addToPreferences(browserPreferences.httpPort, $('#httpPort').val());
-		}
-		if ($('#sslProxy').val() != "" && $('#sslProxy').val() != null) {
-			addToPreferences(browserPreferences.sslProxy, $('#sslProxy').val());
-		}
-		if ($('#sslPort').val() != "" && $('#sslPort').val() != null) {
-			addToPreferences(browserPreferences.sslPort, $('#sslPort').val());
-		}
-		if ($('#ftpProxy').val() != "" && $('#ftpProxy').val() != null) {
-			addToPreferences(browserPreferences.ftpProxy, $('#ftpProxy').val());
-		}
-		if ($('#ftpPort').val() != "" && $('#ftpPort').val() != null) {
-			addToPreferences(browserPreferences.ftpPort, $('#ftpPort').val());
-		}
-		if ($('#socksProxy').val() != "" && $('#socksProxy').val() != null) {
-			addToPreferences(socksProxy, $('#socksProxy').val());
-		}
-		if ($('#socksPort').val() != "" && $('#socksPort').val() != null) {
-			addToPreferences(browserPreferences.socksPort, $('#socksPort').val());
-		}
-		addToPreferences(browserPreferences.socksVersion, $('#socksVersion :selected').val());
-		$("#remoteDns").is(':checked') ? addToPreferences(browserPreferences.remoteDns, "true") : addToPreferences(browserPreferences.remoteDns, "false");
-		if ($('#noProxyOn').val() != "" && $('#noProxyOn').val() != null) {
-			addToPreferences(browserPreferences.noProxyOn, $('#noProxyOn').val());
-		}
+	if ($('#httpPort').val() != "" && $('#httpPort').val() != null) {
+		addToPreferences(browserPreferences.httpPort, $('#httpPort').val());
+	}
+	if ($('#sslProxy').val() != "" && $('#sslProxy').val() != null) {
+		addToPreferences(browserPreferences.sslProxy, $('#sslProxy').val());
+	}
+	if ($('#sslPort').val() != "" && $('#sslPort').val() != null) {
+		addToPreferences(browserPreferences.sslPort, $('#sslPort').val());
+	}
+	if ($('#ftpProxy').val() != "" && $('#ftpProxy').val() != null) {
+		addToPreferences(browserPreferences.ftpProxy, $('#ftpProxy').val());
+	}
+	if ($('#ftpPort').val() != "" && $('#ftpPort').val() != null) {
+		addToPreferences(browserPreferences.ftpPort, $('#ftpPort').val());
+	}
+	if ($('#socksProxy').val() != "" && $('#socksProxy').val() != null) {
+		addToPreferences(socksProxy, $('#socksProxy').val());
+	}
+	if ($('#socksPort').val() != "" && $('#socksPort').val() != null) {
+		addToPreferences(browserPreferences.socksPort, $('#socksPort').val());
+	}
+	addToPreferences(browserPreferences.socksVersion, $('#socksVersion :selected').val());
+	$("#remoteDns").is(':checked') ? addToPreferences(browserPreferences.remoteDns, "true") : addToPreferences(browserPreferences.remoteDns, "false");
+	if ($('#noProxyOn').val() != "" && $('#noProxyOn').val() != null) {
+		addToPreferences(browserPreferences.noProxyOn, $('#noProxyOn').val());
 	}
 	if (type == "2") {
 		if ($('#autoProxyConfigUrl').val() != "" && $('#autoProxyConfigUrl').val() != null) {
@@ -397,6 +396,7 @@ $("#proxyType").change(function(){
 		$("#noProxyOn").prop("disabled", true);
 		$("#autoProxyConfigUrl").prop("disabled", true);
 		$("#dontPromptForAuth").prop("disabled", true);
+		$('#noProxyOn').val("localhost, 127.0.0.1");
 	} else if (type == "1") {
 		$("#httpProxy").prop("disabled", false);
 		$("#httpPort").prop("disabled", false);

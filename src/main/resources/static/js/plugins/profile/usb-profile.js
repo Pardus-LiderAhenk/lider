@@ -157,12 +157,11 @@ function hideAndShowUsbProfileButton() {
 $("#usbAdd").click(function(e){
 	var usb = [];
 	if ($('#usbVendor').val() != "" || $('#usbModel').val() != "" || $('#usbSerialNumber').val() != "") {
-		var usbId = Math.random().toString(36).substring(7);
 		var item = {
 				"vendor": $('#usbVendor').val(),
 				"serialNumber": $('#usbSerialNumber').val(),
 				"model": $('#usbModel').val(),
-				"id": usbId
+				"id": createGuid()
 		};
 
 		usbItemList.push(item);
@@ -174,6 +173,13 @@ $("#usbAdd").click(function(e){
 		$.notify("Üretici firma, model ya da seri numarası özelliklerinden az bir tanesi girilmelidir.", "warn");
 	}
 });
+
+//function to create a GUID
+function createGuid() {
+    var char = (((1+Math.random())*0x10000)|0).toString(16).substring(1); 
+    var guid = (char + char + char + "4" + char.substr(0,3) + char + char + char + char).toLowerCase();
+    return guid;
+}
 
 //created white or black list table
 function createWhiteBlackListTable() {
@@ -242,17 +248,18 @@ function getProfileData() {
 
 	if (usbItemList.length > 0) {
 		profileData.type = $("input[type='radio'][name='whiteListBtn']:checked").val();
-		var usbList = [];
+//		var usbList = [];
 
-		for (var i = 0; i < usbItemList.length; i++) {
-			var usb = {
-					"vendor": usbItemList[i].vendor,
-					"serialNumber": usbItemList[i].serialNumber,
-					"model": usbItemList[i].model,
-			};
-			usbList.push(usb);
-		}
-		profileData.items = usbList;
+//		for (var i = 0; i < usbItemList.length; i++) {
+//			var usb = {
+//					"vendor": usbItemList[i].vendor,
+//					"serialNumber": usbItemList[i].serialNumber,
+//					"model": usbItemList[i].model,
+//					"id": usbItemList[i].id
+//			};
+//			usbList.push(usb);
+//		}
+		profileData.items = usbItemList;
 	}
 	return profileData;
 }
@@ -411,7 +418,7 @@ $("#usbProfileUpdate").click(function(e){
 					selectedUsbProfileId = null;
 					selectUsbProfile = false;
 					createUsbProfileTable();
-				} 
+				}
 			},
 			error: function (data, errorThrown) {
 				$.notify("USB ayarı güncellenirken hata oluştu.", "error");

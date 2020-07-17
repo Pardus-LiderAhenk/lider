@@ -41,7 +41,7 @@ function sendPackageManagementTask(params){
 	if (scheduledParamPackageManagement != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamPackageManagement;
 	}
-	progress("divPackageManager","progressPackageManager",'show')
+	progress("divPackageManager","progressPackageManager",'show');
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -79,7 +79,6 @@ function getPackagesListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			progress("divPackageManager","progressPackageManager",'hide')
 			if (xmppResponse.commandClsId == "INSTALLED_PACKAGES") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED" && xmppResponse.result.contentType =="TEXT_PLAIN") {
 					var params = {
@@ -93,6 +92,7 @@ function getPackagesListener(msg) {
 						success: function(data) {
 							if(data != null) {
 								if(data.responseDataStr != null) {
+									progress("divPackageManager","progressPackageManager",'hide');
 									var packages = data.responseDataStr.split("\n");
 									var parser_packages = [];
 									for (var i = 0; i < packages.length; i++) {
@@ -132,12 +132,14 @@ function getPackagesListener(msg) {
 						}
 					});
 				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
+					progress("divPackageManager","progressPackageManager",'hide');
 					$.notify(responseMessage, "error");
 					$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
 					$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı.</td></tr>');
 				}
 			}
 			if (xmppResponse.commandClsId == "PACKAGE_MANAGEMENT") {
+				progress("divPackageManager","progressPackageManager",'hide');
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 
 					$.notify(responseMessage, "success");

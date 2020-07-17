@@ -42,6 +42,7 @@ function sendApplicationRestrictionTask(params){
 	if (scheduledParamAppRestriction != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamAppRestriction;
 	}
+	progress("divApplicationRestriction","progressApplicationRestriction",'show');
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -92,6 +93,7 @@ function getApplicationListener(msg) {
 						success: function(data) {
 							if(data != null) {
 								if(data.responseDataStr != null) {
+									progress("divApplicationRestriction","progressApplicationRestriction",'hide');
 									var applications = data.responseDataStr.split("\n");
 									var parser_applications = [];
 									for (var i = 0; i < applications.length; i++) {
@@ -152,6 +154,7 @@ function getApplicationListener(msg) {
 							}
 						},
 						error: function(result) {
+							progress("divApplicationRestriction","progressApplicationRestriction",'hide');
 							$.notify(result, "error");
 							$("#plugin-result-app-restriction").html(("HATA: " + responseMessage).fontcolor("red"));
 							$('#applicationsBody').html('<tr id="applicationsBodyEmptyInfo"><td colspan="100%" class="text-center">Uygulama Bulunamadı.</td></tr>');
@@ -164,7 +167,7 @@ function getApplicationListener(msg) {
 			}
 			if (xmppResponse.commandClsId == "APPLICATION_RESTRICTION") {
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-
+					progress("divApplicationRestriction","progressApplicationRestriction",'hide');
 					$.notify(responseMessage, "success");
 					$("#plugin-result-app-restriction").html("");
 					if (tableApp) {

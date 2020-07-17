@@ -2,21 +2,31 @@
 <script type="text/javascript" src="js/computers/computerTreeManager.js"></script>
 <script type="text/javascript" src="js/computers/computers.js"></script>
 
+	
 		<div class="col-lg-3" >
-		<!-- 			<div style="margin-top: 15px; margin-left: 15px"> -->
-		<!-- 				<button id="btnAddAgents" type="button"	class=" btn btn-info" title="İstemcileri Ekle"> Ekle </button> -->
-		<!-- 				<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle"> Çevrimiçi </button> -->
-		<!--  			<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle">  <i class="pe-7s-folder"> </i> </button> -->
-		<!-- 			</div> -->
-<!-- 			<hr> -->
-			<br>
-			<div id="computerTreeDiv" ></div>
-			<div id="computerTreeOnlineInfo">
-				<button  class="btn btn-link btn-sm " id="btnTotalAgent" style="color: white; font-weight: bold;">  </button> <br>
-				<button  class="btn btn-link btn-sm " id="btnOnlineAgent" style="color: white; font-weight: bold;">   </button>
+			<div id="computerTreeDivMain"> 
+				<!-- 			<div style="margin-top: 15px; margin-left: 15px"> -->
+				<!-- 				<button id="btnAddAgents" type="button"	class=" btn btn-info" title="İstemcileri Ekle"> Ekle </button> -->
+				<!-- 				<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle"> Çevrimiçi </button> -->
+				<!--  			<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle">  <i class="pe-7s-folder"> </i> </button> -->
+				<!-- 			</div> -->
+				<!-- 			<hr> -->
+				<br>
+				<div id="computerTreeDiv" ></div>
+				<div id="computerTreeOnlineInfo">
+					<button  class="btn btn-link btn-sm " id="btnTotalAgent" style="color: white; font-weight: bold;">  </button> 
+					<button  class="btn btn-link btn-sm " id="btnTotalAgentRefresh" style="color: white; font-weight: bold;"> <i class="fas fa-sync primary" ></i> </button> 
+					<br>
+					<button  class="btn btn-link btn-sm " id="btnOnlineAgent" style="color: white; font-weight: bold;">   </button>
+				</div>
+				<div id="progressComputerTree"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+			    	<div style="position:absolute; ; top: 5%; left: 30%;"> 
+			    		<img src="img/LoadingPage.gif" width="50" height="50"  /> <span> <b> Lütfen Bekleyiniz... </b> </span> 
+			    	</div>
+		  	</div>
 			</div>
+			 
 		</div>
-		
 		<div class="col-lg-9 green">
 			<div>
 				<div class="row" style="margin-top: 15px;">

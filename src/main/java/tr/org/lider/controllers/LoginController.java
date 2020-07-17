@@ -36,7 +36,7 @@ public class LoginController {
 	public String getMainPage(Model model, Authentication authentication) {
 		try {
 			LiderSecurityUserDetails userDetails = (LiderSecurityUserDetails) authentication.getPrincipal();
-			logger.info("User logged as " + userDetails.getUsername());
+			logger.info("User logged as ldap dn " + userDetails.getLiderUser().getDn());
 			logger.info("User has authorities: " + userDetails.getAuthorities());
 			model.addAttribute("user", userDetails);
 			model.addAttribute("userName", userDetails.getLiderUser().getName());

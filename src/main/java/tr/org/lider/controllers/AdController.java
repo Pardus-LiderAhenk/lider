@@ -1,5 +1,6 @@
 package tr.org.lider.controllers;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,8 @@ import java.util.Map;
 
 import javax.naming.directory.Attribute;
 import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
@@ -127,23 +130,33 @@ public class AdController {
 		 attributes.put("name", new String[] {selectedEntry.getCn()});
 		 attributes.put("sn", new String[] {selectedEntry.getSn()});
 		 attributes.put("userpassword", new String[] {selectedEntry.getUserPassword()});
+		 String newQuotedPassword = "\"" + selectedEntry.getUserPassword() + "\"";
+//		 try {
+//				byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
+//				attributes.put("unicodePwd", new String[] {new String(newUnicodePassword)});
+//		 } 
+//		 catch (UnsupportedEncodingException e1) {
+//				e1.printStackTrace();
+//		}
+
+		 //mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd", newUnicodePassword));
 		 
 		// some useful constants from lmaccess.h
-	        int UF_ACCOUNTDISABLE = 0x0002;
-	        int UF_PASSWD_NOTREQD = 0x0020;
-	        int UF_PASSWD_CANT_CHANGE = 0x0040;
+		 int UF_ACCOUNTENABLE = 0x0001;   
+		 int UF_ACCOUNTDISABLE = 0x0002;
+	     int UF_PASSWD_NOTREQD = 0x0020;
+	       int UF_PASSWD_CANT_CHANGE = 0x0040;
 	        int UF_NORMAL_ACCOUNT = 0x0200;
 	        int UF_DONT_EXPIRE_PASSWD = 0x10000;
 	        int UF_PASSWORD_EXPIRED = 0x800000;
 	        
-	     String uacStr=   Integer.toString(UF_NORMAL_ACCOUNT + UF_PASSWD_NOTREQD
-                 + UF_PASSWORD_EXPIRED);
+	     String uacStr=   Integer.toString(UF_NORMAL_ACCOUNT + UF_PASSWD_NOTREQD + UF_DONT_EXPIRE_PASSWD + UF_ACCOUNTENABLE);
 	     attributes.put("userAccountControl", new String[] {uacStr});
-		 
 		 try {
 			 
 			String rdn="CN="+selectedEntry.getCn()+","+selectedEntry.getParentName();
 			service.addEntry(rdn, attributes);
+			
 		} catch (LdapException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

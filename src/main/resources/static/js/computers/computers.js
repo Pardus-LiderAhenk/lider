@@ -160,6 +160,9 @@ $('#btnSSHConnect').click(function() {
 	SHHConnect()
 });
 
+$('#btnTotalAgentRefresh').click(function(e){
+	getAllAgents();
+});
 
 $('#btnCheckSsh').click(function() {
 	var host=$('#ahenkIp4Install').val();
@@ -1306,11 +1309,13 @@ function setShhLog(message){
 }
 
 function getAllAgents() {
+	progress("computerTreeOnlineInfo","progressComputerTree",'show')
 	$.ajax({
 		type: 'POST', 
 		url: "/lider/computer/getAgentList",
 		success: function(data) {
 			console.log(data)
+			progress("computerTreeOnlineInfo","progressComputerTree",'hide')
 			$('#btnTotalAgent').append("")
 			$('#btnOnlineAgent').append("")
 			$('#btnTotalAgent').html("Toplam Istemci Sayısı :"+data.agentListSize)
@@ -1331,6 +1336,8 @@ function getAllAgents() {
  * @returns
  */
 getAllAgents();
+
+
 
 //function addRoster() {
 //	$.ajax({

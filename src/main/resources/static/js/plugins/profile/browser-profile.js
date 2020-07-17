@@ -12,6 +12,7 @@ var selectBrowserProfile = false;
 var browserPluginImpl = null;
 var selectedBrowserProfileId = null;
 var itemList = [];
+var otherItemList = [];
 var preferencesList = {};
 
 //---->>> START <<<--- Browser Preference Names
@@ -143,11 +144,33 @@ function showDetailSelectedBrowserProfile() {
 			$('#browserProfileDescriptionForm').val(browserProfileList[i].description);
 			if (browserProfileList[i].profileData.preferences) {
 				itemList = browserProfileList[i].profileData.preferences;
-				createBrowserPreferenceTable();
+				loadBrowserPreferenceTable();
+//				createBrowserPreferenceTable();
 				loadPreference();
 			}
 		}
 	}
+}
+
+
+function loadBrowserPreferenceTable() {
+	for (var i = 0; i < itemList.length; i++) {
+		if (isExistBrowserPreferences(itemList[i].preferenceName) == false) {
+			addToOtherPreferences(itemList[i].preferenceName, itemList[i].value);
+			createBrowserPreferenceTable();	
+		}
+	}
+}
+function isExistBrowserPreferences(preferenceName) {
+	var isExist = false;
+	var prefList = Object.keys(browserPreferences);
+	for (var i = 0; i < prefList.length; i++) {
+		var key = prefList[i];
+		if(browserPreferences[key] == preferenceName){
+			isExist = true;
+		}
+	}
+	return isExist;
 }
 
 function loadPreference() {
@@ -262,6 +285,7 @@ function defaultBrowserSetting() {
 	$('#acceptThirdPartyCookies').val("2").change();
 	$('#keepCookiesUntil').val("0").change();
 	itemList = [];
+	otherItemList = [];
 	preferencesList = {};
 	createBrowserPreferenceTable();
 }
@@ -355,7 +379,10 @@ function getBrowserProfileData() {
 	$("#suggestHistory").is(':checked') ? addToPreferences(browserPreferences.suggestHistory, "true") : addToPreferences(browserPreferences.suggestHistory, "false");
 	$("#suggestBookmarks").is(':checked') ? addToPreferences(browserPreferences.suggestBookmarks, "true") : addToPreferences(browserPreferences.suggestBookmarks, "false");
 	$("#suggestOpenTabs").is(':checked') ? addToPreferences(browserPreferences.suggestOpenTabs, "true") : addToPreferences(browserPreferences.suggestOpenTabs, "false");
-
+	
+	for (var i = 0; i < otherItemList.length; i++) {
+		addToPreferences(otherItemList[i].preferenceName, otherItemList[i].value)
+	}
 	preferencesList.preferences = itemList;
 	return preferencesList;
 }
@@ -474,7 +501,8 @@ $("#addPreferenceBtn").click(function(e){
 	var preferenceName = $('#preferenceName').val();
 	var preferenceValue = $('#preferenceValue').val();
 	if (preferenceName != "" && preferenceValue != "") {
-		addToPreferences(preferenceName, preferenceValue);
+//		addToPreferences(preferenceName, preferenceValue);
+		addToOtherPreferences(preferenceName, preferenceValue);
 		createBrowserPreferenceTable();
 		$('#preferenceName').val("");
 		$('#preferenceValue').val("");
@@ -483,18 +511,26 @@ $("#addPreferenceBtn").click(function(e){
 	}
 });
 
+function addToOtherPreferences(name, value) {
+	var preference = {
+			"preferenceName" : name,
+			"value" : value
+	};
+	otherItemList.push(preference);
+}
+
 //created preference table
 function createBrowserPreferenceTable() {
 
 	if ($("#browserPreferenceBodyEmptyInfo").length > 0) {
 		$("#browserPreferenceBodyEmptyInfo").remove();
 	}
-	if(itemList != null && itemList.length > 0) {
+	if(otherItemList != null && otherItemList.length > 0) {
 		var html = "";
-		for (var i = 0; i < itemList.length; i++) {
-			var prefName = itemList[i].preferenceName;
-			var prefValue = itemList[i].value;
-			var id = itemList[i].preferenceName;
+		for (var i = 0; i < otherItemList.length; i++) {
+			var prefName = otherItemList[i].preferenceName;
+			var prefValue = otherItemList[i].value;
+			var id = otherItemList[i].preferenceName;
 
 			html += '<tr>';
 			html += '<td>'+ prefName +'</td>';
@@ -513,15 +549,15 @@ function deletePreference(select) {
 	var i = select.parentNode.parentNode.rowIndex;
 	document.getElementById("browserPreferenceTable").deleteRow(i);
 	var index = -1;
-	for (var i = 0; i < itemList.length; i++) {
-		if (itemList[i].preferenceName == select.id) {
+	for (var i = 0; i < otherItemList.length; i++) {
+		if (otherItemList[i].preferenceName == select.id) {
 			index = i;
 			if (index > -1) {
-				itemList.splice(index, 1);
+				otherItemList.splice(index, 1);
 			}
 		}
 	}
-	if(itemList == null || itemList.length == 0) {
+	if(otherItemList == null || otherItemList.length == 0) {
 		$('#browserPreferenceBody').html('<tr id="browserPreferenceBodyEmptyInfo"><td colspan="3" class="text-center">Firefox özellikleri bulunamadı</td></tr>');
 	}
 }

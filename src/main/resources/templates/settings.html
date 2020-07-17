@@ -104,19 +104,23 @@
 			</div>
 			<div class="tab-pane" id="tab-ldap-access-rules" role="tabpanel">
 				<div class="col-md-12">
-					<h6>LDAP Erişim Kısıtı Ayarları</h6>
 					<div class="form-row">
 						<div class="col-md-3">
+							<h6>LDAP Erişim Kısıtı Ayarları</h6>
 							<div id="treeGridUserGroupsDiv" class="pr-4 pt-2">
 								<div id="treeGridUserGroups"></div>
 							</div>
 						</div>
+
 						<div class="col-md-9">
 							<div class="row">
 								<div class="col-12 text-center">
 									<label id="labelSelectOneUserGroupAlert">LDAP Erişim kısıtı eklemek, düzenlemek ya da silmek için bir kullanıcı grubu seçiniz</label>
 								</div>
-								<div class="col-12" id="operationDropDownDiv">
+								<div class="col-3"  id="groupMembersHeaderDiv">
+									<h6>Grup Üyeleri</h6>
+								</div>
+								<div class="col-9" id="operationDropDownDiv">
 									<div class="d-block dropdown">
 										<button type="button" data-toggle="dropdown" aria-haspopup="true"
 											aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info pull-right mb-2">
@@ -138,7 +142,20 @@
 										</div>
 									</div>
 								</div>
-								<div class="col-12" id="olcRulesTableDiv">
+								<div class="col-4" id="groupMembersDiv"> 
+									<table class="mb-0 table table-bordered" >
+										<thead>
+											<tr>
+												<th style="width: 15%" class="text-center">#</th>
+												<th style="width: 85%">Üye DN</th>
+											</tr>
+										</thead>
+										<tbody id="bodyMembers">
+											<tr><td colspan="100%" class="text-center">Üye bulunamadı</td></tr>
+										</tbody>
+									</table>
+								</div>
+								<div class="col-8" id="olcRulesTableDiv">
 									<table class="table table-bordered table-hover table-sm">
 										<thead>
 											<tr>

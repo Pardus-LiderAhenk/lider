@@ -27,6 +27,8 @@ $(document).ready(function () {
 	$('#labelSelectOneUserGroupAlert').hide();
 	$('#operationDropDownDiv').hide();
 	$('#olcRulesTableDiv').hide();
+	$('#groupMembersHeaderDiv').hide();
+	$('#groupMembersDiv').hide();
 	
 	$('#cbShowADSettings').change(function() {
         if($(this).is(":checked")) {
@@ -253,11 +255,35 @@ function createMainTree() {
 			$('#labelSelectOneUserGroupAlert').hide();
 			$('#operationDropDownDiv').show();
 			$('#olcRulesTableDiv').show();
+			$('#groupMembersHeaderDiv').show();
+			$('#groupMembersDiv').show();
+			var members = "";
+			//to print members at different tab
+			for (var key in row.attributesMultiValues) {
+				if (row.attributesMultiValues.hasOwnProperty(key) && key == "member") {
+					if(row.attributesMultiValues[key].length > 1) {
+						for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
+							members += '<tr>';
+							members += '<td class="text-center">' + (i + 1) + '</td>';
+							members += '<td>' + row.attributesMultiValues[key][i] + '</td>';
+							members += '</tr>';
+						}
+					} else {
+						members += '<tr>';
+						members += '<td class="text-center">1</td>';
+						members += '<td>' + row.attributesMultiValues[key] + '</td>';
+						members += '</tr>';
+					}
+				}
+			}
+			$('#bodyMembers').html(members);
 			getLDAPAccessRules();
 		} else {
 			$('#labelSelectOneUserGroupAlert').show();
 			$('#operationDropDownDiv').hide();
 			$('#olcRulesTableDiv').hide();
+			$('#groupMembersHeaderDiv').hide();
+			$('#groupMembersDiv').hide();
 		}
 
 	});

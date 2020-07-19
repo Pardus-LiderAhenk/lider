@@ -379,9 +379,11 @@ function getBrowserProfileData() {
 	$("#suggestHistory").is(':checked') ? addToPreferences(browserPreferences.suggestHistory, "true") : addToPreferences(browserPreferences.suggestHistory, "false");
 	$("#suggestBookmarks").is(':checked') ? addToPreferences(browserPreferences.suggestBookmarks, "true") : addToPreferences(browserPreferences.suggestBookmarks, "false");
 	$("#suggestOpenTabs").is(':checked') ? addToPreferences(browserPreferences.suggestOpenTabs, "true") : addToPreferences(browserPreferences.suggestOpenTabs, "false");
-	
-	for (var i = 0; i < otherItemList.length; i++) {
-		addToPreferences(otherItemList[i].preferenceName, otherItemList[i].value)
+
+	if(otherItemList != null && otherItemList.length > 0) {
+		for (var i = 0; i < otherItemList.length; i++) {
+			addToPreferences(otherItemList[i].preferenceName, otherItemList[i].value)
+		}
 	}
 	preferencesList.preferences = itemList;
 	return preferencesList;

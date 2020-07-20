@@ -29,6 +29,9 @@ $(document).ready(function () {
 	$('#olcRulesTableDiv').hide();
 	$('#groupMembersHeaderDiv').hide();
 	$('#groupMembersDiv').hide();
+	$('#saveLDAPServerSettingsBtnDiv').hide();
+	$('#saveFileServerSettingsBtnDiv').hide();
+	$('#saveXMPPServerSettingsBtnDiv').hide();
 	
 	$('#cbShowADSettings').change(function() {
         if($(this).is(":checked")) {
@@ -39,7 +42,265 @@ $(document).ready(function () {
     });
 	tabConsoleSettingsClicked();
 	
+	$('#fileServerForm').validate({
+	    rules: {
+	      fileServerAddress: {
+	        required: true,
+	      },
+	      fileServerPort: {
+		    required: true,
+		  },
+		  fileServerUserName: {
+		    required: true,
+		  },
+		  fileServerUserPassword: {
+		    required: true,
+		  },
+		  fileServerAgentFilePath: {
+		    required: true,
+		  },
+	      
+	    },
+	    messages: {
+	      fileServerAddress: {
+	        required: "Lütfen dosya sunucu adresi giriniz.",
+	      },
+	      fileServerPort: {
+	        required: "Lütfen sunucu portunu giriniz.",
+	      },
+	      fileServerUserName: {
+	        required: "Lütfen sunucu kullanıcı adını giriniz.",
+	      },
+	      fileServerUserPassword: {
+	        required: "Lütfen sunucu şifresini giriniz.",
+	      },
+	      fileServerAgentFilePath: {
+	        required: "Lütfen ajan dizinini giriniz.",
+	      },
+	    },
+	    errorElement: 'span',
+	    errorPlacement: function (error, element) {
+	      error.addClass('invalid-feedback');
+	      element.closest('.form-error-message').append(error);
+	    },
+	    highlight: function (element, errorClass, validClass) {
+	      $(element).addClass('is-invalid');
+	    },
+	    unhighlight: function (element, errorClass, validClass) {
+	      $(element).removeClass('is-invalid');
+	    },
+	    submitHandler: function() { 
+	    	saveChanges('fileServer');
+	    }
+	  });
+	
+	$('#XMPPServerForm').validate({
+	    rules: {
+	      XMPPServerAddress: {
+	        required: true,
+	      },
+	      XMPPServerPort: {
+		    required: true,
+		  },
+		  XMPPUserName: {
+		    required: true,
+		  },
+		  XMPPUserPassword: {
+		    required: true,
+		  },
+		  XMPPResourceName: {
+		    required: true,
+		  },
+		  
+		  XMPPRetryConnectionCount: {
+		    required: true,
+		  },
+		  XMPPPacketReplayTimeout: {
+		    required: true,
+		  },
+		  XMPPPingTimeout: {
+		    required: true,
+		  },
+	      
+	    },
+	    messages: {
+	      XMPPServerAddress: {
+	        required: "Lütfen XMPP sunucu adresi giriniz.",
+	      },
+	      XMPPServerPort: {
+	        required: "Lütfen XMPP portunu giriniz.",
+	      },
+	      XMPPUserName: {
+	        required: "Lütfen XMPP kullanıcı adını giriniz.",
+	      },
+	      XMPPUserPassword: {
+	        required: "Lütfen XMPP şifresini giriniz.",
+	      },
+	      XMPPResourceName: {
+	        required: "Lütfen XMPP kaynak adını giriniz.",
+	      },
+	      
+	      XMPPRetryConnectionCount: {
+	        required: "Lütfen XMPP tekrar bağlantı sayısını giriniz.",
+	      },
+	      XMPPPacketReplayTimeout: {
+	        required: "Lütfen XMPP tekrarlama zaman aşımını giriniz",
+	      },
+	      XMPPPingTimeout: {
+	        required: "Lütfen XMPP ping zaman aşımını giriniz",
+	      },
+	    },
+	    errorElement: 'span',
+	    errorPlacement: function (error, element) {
+	      error.addClass('invalid-feedback');
+	      element.closest('.form-error-message').append(error);
+	    },
+	    highlight: function (element, errorClass, validClass) {
+	      $(element).addClass('is-invalid');
+	    },
+	    unhighlight: function (element, errorClass, validClass) {
+	      $(element).removeClass('is-invalid');
+	    },
+	    submitHandler: function() { 
+	    	saveChanges('xmpp');
+	    }
+	  });
 
+	$('#ldapServerForm').validate({
+	    rules: {
+	      ldapServerAddress: {
+	        required: true,
+	      },
+	      ldapServerPort: {
+		    required: true,
+		  },
+		  ldapRootDN: {
+		    required: true,
+		  },
+		  ldapUserDN: {
+		    required: true,
+		  },
+		  ldapUserPassword: {
+		    required: true,
+		  },
+		  agentDN: {
+		    required: true,
+		  },
+		  peopleDN: {
+		    required: true,
+		  },
+		  groupDN: {
+		    required: true,
+		  },
+		  computerGroupDN: {
+	        required: true,
+	      },
+	      userGroupDN: {
+		    required: true,
+		  },
+		  sudoGroupDN: {
+		    required: true,
+		  },
+		  cbShowADSettings: {
+		    required: false,
+		  },
+		  
+		  adIpAddress: {
+		    required: "#cbShowADSettings:checked",
+		  },
+		  adPort: {
+		    required: "#cbShowADSettings:checked",
+		  },
+		  adDomainName: {
+		    required: "#cbShowADSettings:checked",
+		  },
+		  adAdminUserName: {
+		    required: "#cbShowADSettings:checked",
+		  },
+		  adAdminUserFullDN: {
+		    required: "#cbShowADSettings:checked",
+		  },
+		  adAdminPassword: {
+		    required: "#cbShowADSettings:checked",
+		  },
+		  adHostName: {
+		    required: "#cbShowADSettings:checked",
+		  },
+
+	      
+	    },
+	    messages: {
+	      ldapServerAddress: {
+	        required: "Lütfen LDAP sunucu adresi giriniz.",
+	      },
+	      ldapServerPort: {
+	        required: "Lütfen LDAP portunu giriniz.",
+	      },
+	      ldapRootDN: {
+	        required: "Lütfen domain adını giriniz.",
+	      },
+	      ldapUserDN: {
+	        required: "Lütfen LDAP kullanıcı DN'ini giriniz.",
+	      },
+	      ldapUserPassword: {
+	        required: "Lütfen LDAP kullanıcı şifresini giriniz.",
+	      },
+	      agentDN: {
+	        required: "Lütfen LDAP ahenk klasörünü giriniz.",
+	      },
+	      peopleDN: {
+	        required: "Lütfen LDAP kullanıcı klasörünü giriniz",
+	      },
+	      groupDN: {
+	        required: "Lütfen LDAP grup klasörünü giriniz",
+	      },
+	      computerGroupDN: {
+	        required: "Lütfen LDAP ahenk grubu klasörünü giriniz.",
+	      },
+	      userGroupDN: {
+	        required: "Lütfen LDAP kullanıcı grubu klasörünü giriniz",
+	      },
+	      sudoGroupDN: {
+	        required: "Lütfen LDAP yetki(Sudo) grubu klasörünü giriniz",
+	      },
+	      
+	      adIpAddress: {
+	        required: "Lütfen sunucu adresi giriniz",
+	      },
+	      adPort: {
+	        required: "Lütfen sunucu portunu giriniz",
+	      },
+	      adDomainName: {
+	        required: "Lütfen domain adınıgiriniz",
+	      },
+	      adAdminUserName: {
+	        required: "Lütfen yönetici adını giriniz",
+	      },
+	      adAdminUserFullDN: {
+	        required: "Lütfen yönetici tam DN'inin giriniz",
+	      },
+	      adAdminPassword: {
+	        required: "Lütfen yönetici şifresini giriniz",
+	      },
+	      adHostName: {
+	        required: "Lütfen host adresini giriniz",
+	      },
+	    },
+	    errorElement: 'span',
+	    errorPlacement: function (error, element) {
+	      error.addClass('invalid-feedback');
+	      element.closest('.form-error-message').append(error);
+	    },
+	    highlight: function (element, errorClass, validClass) {
+	      $(element).addClass('is-invalid');
+	    },
+	    unhighlight: function (element, errorClass, validClass) {
+	      $(element).removeClass('is-invalid');
+	    },
+	    submitHandler: function() { 
+	    	saveChanges('ldap');
+	    }
+	  });
 });
 
 function tabConsoleSettingsClicked() {
@@ -897,18 +1158,21 @@ function removeDisableClass(type) {
 		//change button name and onClick event to save
 		 $("#editLDAPAttributes").html("Değişiklikleri Kaydet");
 		 $("#editLDAPAttributes").attr("onclick","saveChanges('ldap')");
+		 
+		$('#editLDAPServerSettingsBtnDiv').hide();
+		$('#saveLDAPServerSettingsBtnDiv').show();
 	} else if(type == 'xmpp') {
 		//remove disabled attribute from editableXMPP class
 		$('.editableXMPP').prop('disabled', false);
 		//change button name and onClick event to save
-		 $("#editXMPPAttributes").html("Değişiklikleri Kaydet");
-		 $("#editXMPPAttributes").attr("onclick","saveChanges('xmpp')");
+		$('#editXMPPServerSettingsBtnDiv').hide();
+		$('#saveXMPPServerSettingsBtnDiv').show();
 	} else if(type == 'fileServer') {
 		//remove disabled attribute from editableFileServer class
 		$('.editableFileServer').prop('disabled', false);
 		//change button name and onClick event to save
-		 $("#editFileServerAttributes").html("Değişiklikleri Kaydet");
-		 $("#editFileServerAttributes").attr("onclick","saveChanges('fileServer')");
+		$('#editFileServerSettingsBtnDiv').hide();
+		$('#saveFileServerSettingsBtnDiv').show();
 	}  else if(type == 'otherSettings') {
 		//remove disabled attribute from editableFileServer class
 		$('.editableOtherSettings').prop('disabled', false);

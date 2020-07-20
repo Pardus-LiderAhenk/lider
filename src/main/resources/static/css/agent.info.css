@@ -45,8 +45,10 @@
 
 .table-title .btn i {
 	float: left;
-	font-size: 21px;
-	margin-right: 5px;
+	font-size: 15px;
+	text-align: center;
+	margin-top: 3px;
+	margin-right: 8px;
 }
 
 .table-title .btn span {

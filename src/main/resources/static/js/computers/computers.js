@@ -1069,7 +1069,7 @@ function taskHistory() {
 								+ '\'' + command.commandExecutions[0].commandExecutionResults[0].id + '\')" data-id="' 
 								+ command.commandExecutions[0].commandExecutionResults[0].id
 								+ '" data-toggle="modal" data-target="#executedTaskDetail">'
-								+ '<i class="pe-7s-info"></i>'
+								+ '<i class="fa fa-info-circle fa-lg" style="	border: 0 !important; background: none !important; outline: none !important;" aria-hidden="true"></i>'
 								+ '</a></td></tr>';
 						} else {
 							trElement += '<td></td></tr>';

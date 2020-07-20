@@ -1035,12 +1035,7 @@ function taskHistory() {
 						trElement += '<td>' + command.task.plugin.name + '</td>';
 						if(command.commandExecutions[0].commandExecutionResults.length > 0) {
 							executionResult = command.commandExecutions[0].commandExecutionResults[0].responseCode;
-							var rawEndDate = command.commandExecutions[0].commandExecutionResults[0].createDate;
-							var year = rawEndDate.substring(0,4);
-							var month = rawEndDate.substring(5,7);
-							var day = rawEndDate.substring(8,10);
-							var time = rawEndDate.substring(11,19);
-							executionTime = day + '.' + month + '.' + year + ' ' + time;
+							executionTime = command.commandExecutions[0].commandExecutionResults[0].createDate;
 
 							if(executionResult == "TASK_PROCESSED") {
 								trElement += '<td>' + '<div class="badge badge-success">Başarılı</div>' + '</td>';
@@ -1053,11 +1048,7 @@ function taskHistory() {
 
 						trElement += '<td>' + command.commandOwnerUid  + '</td>';
 
-						var year = command.commandExecutions[0].createDate.substring(0,4);
-						var month = command.commandExecutions[0].createDate.substring(5,7);
-						var day = command.commandExecutions[0].createDate.substring(8,10);
-						var time = command.commandExecutions[0].createDate.substring(11,19);
-						var createDate = day + '.' + month + '.' + year + ' ' + time;
+						var createDate = command.commandExecutions[0].createDate;
 
 						trElement += '<td>' + createDate + '</td>';
 						trElement += '<td>' + executionTime + '</td>';
@@ -1069,7 +1060,7 @@ function taskHistory() {
 								+ '\'' + command.commandExecutions[0].commandExecutionResults[0].id + '\')" data-id="' 
 								+ command.commandExecutions[0].commandExecutionResults[0].id
 								+ '" data-toggle="modal" data-target="#executedTaskDetail">'
-								+ '<i class="fa fa-info-circle fa-lg" style="	border: 0 !important; background: none !important; outline: none !important;" aria-hidden="true"></i>'
+								+ '<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>'
 								+ '</a></td></tr>';
 						} else {
 							trElement += '<td></td></tr>';

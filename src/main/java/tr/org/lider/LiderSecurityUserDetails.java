@@ -1,5 +1,6 @@
 package tr.org.lider;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,8 +14,10 @@ import tr.org.lider.models.LiderUser;
 
 
 @Service
-public class LiderSecurityUserDetails implements UserDetails {
+public class LiderSecurityUserDetails implements UserDetails, Serializable {
 
+	private static final long serialVersionUID = 5704341073597281390L;
+	
 	private LiderUser liderUser;
 	
 	public LiderSecurityUserDetails(LiderUser liderUser) {

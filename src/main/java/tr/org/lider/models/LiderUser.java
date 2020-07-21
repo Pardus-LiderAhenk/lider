@@ -1,5 +1,6 @@
 package tr.org.lider.models;
 
+import java.io.Serializable;
 import java.util.List;
 
 //import tr.org.liderahenk.lider.ldap.IReportPrivilege;
@@ -9,7 +10,9 @@ import java.util.List;
  * Default implementation for {@link IUser}
  * 
  */
-public class LiderUser {
+public class LiderUser implements Serializable {
+	
+	private static final long serialVersionUID = -1008402513173476422L;
 	
 	private String username;
 	private String password;

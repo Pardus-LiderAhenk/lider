@@ -89,7 +89,7 @@
 						</div>
 						<div class="filter-group"  id="date-range-picker">
 							<label>Kayıt Tarihi</label>
-		                    <input type="text" class="form-control dtpicker" id="registration_date_filter" onkeydown="return false">
+		                    <input type="text" class="form-control dtpicker" id="registration_date_filter" onkeydown="return false" autocomplete="off">
 						</div>
 						<span class="filter-icon"><i class="fa fa-filter"></i></span>
 						
@@ -132,7 +132,7 @@
 <script src="js/daterangepicker/tempusdominus-bootstrap-4.min.js"></script>
 <script src="js/daterangepicker/daterangepicker.js"></script>
 <script>
-  $(document).ready(function(){
+  $(function() {
     //Date range picker
     $('#registration_date_filter').daterangepicker( {
     	 autoUpdateInput: false,
@@ -141,7 +141,6 @@
              applyLabel: 'Uygula'
          },
     	language: 'tr',
-    	
     });
 
     $('#registration_date_filter').on('apply.daterangepicker', function(ev, picker) {
@@ -158,3 +157,4 @@
   });
   
 </script>
+

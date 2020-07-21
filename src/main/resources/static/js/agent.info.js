@@ -21,6 +21,8 @@ var selectedOUDN = "";
 
 var registrationStartDate = "";
 var registrationEndDate = "";
+var selectedRegistrationStartDate = "";
+var selectedRegistrationEndDate = "";
 $(document).ready(function(){
 	$("#dropdownButton").hide();
 	
@@ -111,7 +113,10 @@ function agentDetailClicked(agentID) {
 						createDate = day + '.' + month + '.' + year + ' ' + time;
 						
 						tableElement += '<tr><td>' + element.username + '</td>';
-						tableElement += '<td>' + element.sessionEvent + '</td>';
+						if(element.sessionEvent == "LOGIN")
+							tableElement += '<td>' + 'Oturum Açıldı' + '</td>';
+						if(element.sessionEvent == "LOGOUT")
+							tableElement += '<td>' + 'Oturum Kapatıldı' + '</td>';
 						tableElement += '<td>' + createDate + '</td></tr>';
 			        });
 					$('#userSessionsTable').append(tableElement);
@@ -301,10 +306,10 @@ function reloadTable(pNumber, pSize, field, text) {
 		params['field'] = field;
 		params['text'] = text;
 	}
-	
-	if(registrationStartDate != "" && registrationEndDate != "") {
-		params['registrationStartDate'] = registrationStartDate;
-		params['registrationEndDate'] = registrationEndDate;
+
+	if(selectedRegistrationStartDate != "" && selectedRegistrationEndDate != "") {
+		params['registrationStartDate'] = selectedRegistrationStartDate;
+		params['registrationEndDate'] = selectedRegistrationEndDate;
 	}
 	$.ajax({ 
 	    type: 'POST',
@@ -409,6 +414,11 @@ function search() {
 	status = $("#searchByStatus option:selected").val();
 	var field = $("#searchByAgentProperty option:selected").val();
 	var text = $("#searchText").val();
+	if(registrationStartDate != "")
+		selectedRegistrationStartDate = registrationStartDate;
+	if(registrationEndDate != "")
+		selectedRegistrationEndDate = registrationEndDate;
+	
 	searchText = text;
 	reloadTable(1, selectedPageSize, field, text);
 }

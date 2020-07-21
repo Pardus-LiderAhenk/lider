@@ -205,7 +205,7 @@ function exportToExcel () {
     
     wb.SheetNames.push("Agent Detail");
     var wsData = [];
-	var header = ['ID' , 'DN', 'Hostname', 'IP Adresleri', 'MAC Adresleri',
+	var header = ['ID' , 'DN', 'Bilgisayar Adı', 'IP Adresleri', 'MAC Adresleri',
 		  'İşletim Sistemi', 'İşletim Sistemi Versiyonu', 'Marka',
 		  'Model', 'Bellek(MB)', 'Disk(MB)', 'Faz', 'Oluşturulma Tarihi'];
 	//give character number size for column width

@@ -1012,7 +1012,7 @@ function showSelectedEntries() {
 					if (element.propertyName == "phase") {
 						var phase = "Faz bilgisi alınamadı"
 						if (element.propertyValue){
-							phase = property.propertyValue;
+							phase = element.propertyValue;
 							$("#agentPhase").html(phase);
 						}
 					}

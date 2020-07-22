@@ -302,8 +302,6 @@ public class AdService implements ILDAPService{
 						a.remove(value);
 					}
 				}
-
-
 				//				if (entry.get(attribute) != null) {
 				//					Value<?> oldValue = entry.get(attribute).get();
 				//					entry.remove(attribute, oldValue);
@@ -318,8 +316,6 @@ public class AdService implements ILDAPService{
 		} finally {
 			releaseConnection(connection);
 		}
-
-	
 	}
 
 	@Override

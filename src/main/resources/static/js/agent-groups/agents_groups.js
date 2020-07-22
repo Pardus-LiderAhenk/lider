@@ -116,6 +116,8 @@ $(document).ready(function(){
 					//uncheck action
 					function(unCheckedRows, row){
 						rowCheckAndUncheckOperationToAddMembersToExistingGroup(unCheckedRows);
+					},
+					function(rootComputer , treeGridId){
 					}
 			);
 		});
@@ -457,7 +459,6 @@ function btnAddMemberClicked() {
 		    success: function (data) { 
 				$.notify("Seçilen istemciler gruba başarıyla eklendi.", "success");
 				//get selected data and update it with new data result from service call
-				console.log(data)
 				var selectedData=selectedRow;
 				console.log(selectedData)
 				selectedData.attributesMultiValues = data.attributesMultiValues;

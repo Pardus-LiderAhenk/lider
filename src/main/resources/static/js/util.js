@@ -8,6 +8,8 @@ function renameAndOrderAttributeList(attributeList) {
 	var newAttributeList = [];
 	var addedAttributes = [];
 	var orderedList = {
+			"objectClass" : "Nesne Sınıfı",
+			"memberOf" : "Üye Grubu",
 			"cn" : "Ad",
 			"ou" : "Grup Adı",
 			"sn" : "Soyad",

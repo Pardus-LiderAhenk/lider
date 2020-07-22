@@ -191,7 +191,6 @@ function createAgentsGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckB
 					      }
 					 }); 
 					
-					
 					 postTreeCreatedAction(rootComputer , treeGridId)
 		}
 	});

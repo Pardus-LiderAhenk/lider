@@ -6,7 +6,7 @@
  * @param callback
  * @returns
  */
-function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
+function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction,postTreeCreatedAction) {
 	
 	var rootComputer = null;
 	var treeGridId=treeHolderDiv+"Grid";
@@ -99,6 +99,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 				 // create jqxTreeGrid.
 				 $('#'+treeGridId).jqxTreeGrid({
 					 width: '100%',
+					 height: 590,
 					 source: dataAdapter,
 //					 theme : 'fresh',
 //				     altRows: true,
@@ -112,7 +113,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 				     filterMode: "simple",
 				     selectionMode: "singleRow",
 				     localization: getLocalization(),
-				     pageSize: 15,
+				     pageSize: 500,
 				     pagerMode: "default",
 				     pageSizeOptions: ['15', '20', '50'],
 				     icons: function (rowKey, dataRow) {
@@ -137,7 +138,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 				     rendered: function () {
 				   	 },
 				     columns: [
-				    	 { text: "Bilgisayarlar", align: "center", dataField: "name", cellclassname: cellclass ,  
+				    	 { text: "İstemciler", align: "center", dataField: "name", cellclassname: cellclass ,  
 				             width: '100%'}
 				    ]
 				 });
@@ -223,6 +224,8 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 								});  
 					      }
 					 }); 
+					
+					postTreeCreatedAction(rootComputer , treeGridId)
 		}
 	});
 }
@@ -241,19 +244,28 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 							searchHtml +='<option  value="uid"> ID </option> '+
 									'<option selected value="cn"> Ad </option> '+ 
 									'<option value="ou"> Klasör </option>';
+							searchHtml +='</select> '+
+							'    </div> '+ 
+							'    <input placeholder="" id='+srcInputId+' type="text" class="form-control"> '+ 
+							'    <div class="input-group-append"> '+ 
+							'        <button class="btn btn-info" id="'+srcBtnId+'" > Ara </button> '+ 
+							' <button class="btn btn-success" id="'+srcBtnOnlineClients+'" > <i class="fas fa-plug"></i> Çevrimiçi </button> '+
+							'    </div> '+ 
+							'    </div> '+ 
+						' </div> ';
 						}
 						else if(showOnlyFolder==true){
 							searchHtml +='<option selected value="ou"> Klasör </option> ';
-									}
-						searchHtml +='</select> '+
-						'    </div> '+ 
-						'    <input placeholder="" id='+srcInputId+' type="text" class="form-control"> '+ 
-						'    <div class="input-group-append"> '+ 
-						'        <button class="btn btn-info" id="'+srcBtnId+'" > Ara </button> '+ 
-						' <button class="btn btn-success" id="'+srcBtnOnlineClients+'" > <i class="fas fa-plug"></i> Çevrimiçi </button> '+
-						'    </div> '+ 
-						'    </div> '+ 
-					' </div> ';
+							searchHtml +='</select> '+
+							'    </div> '+ 
+							'    <input placeholder="" id='+srcInputId+' type="text" class="form-control"> '+ 
+							'    <div class="input-group-append"> '+ 
+							'        <button class="btn btn-info" id="'+srcBtnId+'" > Ara </button> '+ 
+//							' <button class="btn btn-success" id="'+srcBtnOnlineClients+'" > <i class="fas fa-plug"></i> Çevrimiçi </button> '+
+							'    </div> '+ 
+							'    </div> '+ 
+						' </div> ';
+						}
 		
 	$('#'+treeHolderDiv).append(searchHtml)
 	
@@ -275,12 +287,14 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 					"value": value
 			};
 			
+			progress("computerTreeDiv","progressComputerTree",'show')
 			$.ajax({
 				type : 'POST',
 				url : 'lider/ldap/searchEntry',
 				data : params,
 				dataType: "json",
 				success : function(ldapResult) {
+					progress("computerTreeDiv","progressComputerTree",'hide')
 					console.log(ldapResult)
 					if(ldapResult.length==0){
 						$.notify("Sonuç Bulunamadı", "warn");
@@ -317,14 +331,14 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 			var params = {
 					"searchDn" : selection[0].distinguishedName
 			};
-			
+			progress("computerTreeDiv","progressComputerTree",'show')
 			$.ajax({
 				type : 'POST',
 				url : 'lider/computer/searchOnlineEntries',
 				data : params,
 				dataType: "json",
 				success : function(ldapResult) {
-					
+					progress("computerTreeDiv","progressComputerTree",'hide')
 					if(ldapResult.length==0){
 						$.notify("Sonuç Bulunamadı", "warn");
 						return;

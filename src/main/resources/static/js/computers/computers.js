@@ -42,8 +42,7 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 			selectedRow=row;
 			baseRootDnComputer=rootDnComputer;
 			addSelectedEntryToTable(selectedRow)
-			$("#selectedAgentDN").text(selectedRow.distinguishedName);
-			$("#selectedAgentDNSSH").text("DN : "+selectedRow.distinguishedName);
+			
 		},
 		//check action
 		function(checkedRows, row){
@@ -52,6 +51,11 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 		//uncheck action
 		function(unCheckedRows, row){
 		
+		},
+		// post tree created
+		function(rootComputer , treeGridId){
+			$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
+			$('#'+ treeGridId).jqxTreeGrid('expandRow', rootComputer);
 		}
 );
 
@@ -145,9 +149,46 @@ $('#btn-taskHistory').click(function() {
 $('#btn-installAhenk').click(function() {
 	setInstallAhenkPage();
 });
+
 $('#btnOnlineAgent').click(function() {
 
 });
+
+$('#selectedAgentInfo').click(function(e){
+	console.log(selectedRow)
+	$('#entryLdapInfoDN').html(selectedRow.name)
+	var html = '<table class="table table-striped table-bordered " id="attrTable">';
+	html += '<thead>';
+	html += '<tr>';
+	html += '<th style="width: 40%">Öznitelik</th>';
+	html += '<th style="width: 60%">Değer</th>';
+	html += '</tr>';
+	html += '</thead>';
+	renamedList = renameAndOrderAttributeList(selectedRow.attributesMultiValues);
+	for (var key in renamedList) {
+		if (renamedList.hasOwnProperty(key)) {
+			if(renamedList[key].length > 1) {
+				for(var i = 0; i< renamedList[key].length; i++) {
+					html += '<tr>';
+					html += '<td>' + key + '</td>';
+					html += '<td>' + renamedList[key][i] + '</td>'; 
+					html += '</tr>';
+				}
+			} else {
+				html += '<tr>';
+				html += '<td>' + key + '</td>';
+				html += '<td>' + renamedList[key] + '</td>';
+				html += '</tr>';
+			}
+		}
+	}
+
+	html += '</table>';
+	console.log(html)
+	
+	$('#entryLdapInfoHolder').html(html);
+});
+
 
 /**
  * open page buttons end
@@ -851,7 +892,14 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		selectedEntries=[]
 		selectedEntries.push(data);
 		showSelectedEntries();
+		$("#selectedAgentDN").text(selectedRow.distinguishedName);
+		$("#selectedAgentDNSSH").text("DN : "+selectedRow.distinguishedName);
 	}
+//	else if(row.type=="ORGANIZATIONAL_UNIT"){
+//		
+//		$("#agentDn").html(getEntryFolderName(selectedRow.distinguishedName));
+//		
+//	}
 	else{
 		selectedEntries=[]
 		$("#selectedAgentInfo").html("Lütfen İstemci Seçiniz."); 
@@ -867,6 +915,12 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#agentPhase").html("");
 		$("#userDomain").html("");
 		$("#agentDn").html("");
+		$("#selectedAgentDN").text("");
+		$("#selectedAgentDNSSH").text("");
+		$("#selectedAgentDNSSHIP").text("");
+		$("#agentDn").html(getEntryFolderName(selectedRow.distinguishedName));
+				
+		
 	}
 }
 
@@ -967,28 +1021,7 @@ function showSelectedEntries() {
 				$("#agentMac").html(data.macAddresses);
 				$("#agentCreateDate").html(createDate);
 				$("#userDomain").html(data.userDirectoryDomain);
-				
-				var dnArr=selDn.split(",");
-				
-				var ous=""
-				for(i=0; i<dnArr.length; i++){
-					var dn=dnArr[i];
-					
-					if(dn.startsWith("ou")){
-						console.log(arr)
-						var arr= dn.split("=");
-						console.log(arr)
-						if(arr.length>0){
-							if(arr[1] != 'Ahenkler'){
-								ous += arr[1]
-								if(i < dnArr.length){
-									ous +=" "
-								}
-							}
-						}
-					}
-				}
-				$('#agentDn').html(ous);
+				$('#agentDn').html(getEntryFolderName(selDn));
 				
 			} else {
 				$("#agentHostname").html("");
@@ -1228,7 +1261,6 @@ function displaySSHConnection() {
     	        guac.sendKeyEvent(0, keysym);
     	    };
     });
-   
 }
 
 function executeRemoteSshCommand(host,user, password,command, callback) {
@@ -1300,17 +1332,17 @@ function setShhLog(message){
 }
 
 function getAllAgents() {
-	progress("computerTreeOnlineInfo","progressComputerTree",'show')
+	progress("computerTreeOnlineInfo","progressComputerTreeInfo",'show')
 	$.ajax({
 		type: 'POST', 
 		url: "/lider/computer/getAgentList",
 		success: function(data) {
 			console.log(data)
-			progress("computerTreeOnlineInfo","progressComputerTree",'hide')
+			progress("computerTreeOnlineInfo","progressComputerTreeInfo",'hide')
 			$('#btnTotalAgent').append("")
 			$('#btnOnlineAgent').append("")
-			$('#btnTotalAgent').html("Toplam Istemci Sayısı :"+data.agentListSize)
-			$('#btnOnlineAgent').html("Online Istemci Sayısı :"+data.onlineAgentList.length)
+			$('#btnTotalAgent').html("Toplam İstemci Sayısı :"+data.agentListSize)
+			$('#btnOnlineAgent').html("Çevrimiçi İstemci Sayısı :"+data.onlineAgentList.length)
 			
 		},
 		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
@@ -1328,6 +1360,25 @@ function getAllAgents() {
  */
 getAllAgents();
 
+function getEntryFolderName(selDn) {
+	var dnArr=selDn.split(",");
+	var ous=""
+	for(i=0; i<dnArr.length; i++){
+		var dn=dnArr[i];
+		if(dn.startsWith("ou")){
+			var arr= dn.split("=");
+			if(arr.length>0){
+				if(arr[1] != 'Ahenkler'){
+					ous += arr[1]
+					if(i < dnArr.length){
+						ous +=" "
+					}
+				}
+			}
+		}
+	}
+	return ous;
+}
 
 
 //function addRoster() {

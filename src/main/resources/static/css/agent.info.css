@@ -21,7 +21,16 @@
 	border-radius: 3px;
 	border: none;
 	outline: none !important;
+	
+}
+
+#searchButton {
 	margin-left: 10px;
+}
+
+#btnSelectDNFromTree {
+	background: #02a9f4;
+	color: #fff;
 }
 
 .table-wrapper .btn:hover {
@@ -109,6 +118,10 @@
 	width: 230px;
 	display: inline-block;
 	font-size: 13px;
+}
+
+#inputDiv {
+	width: 270px;
 }
 
 .filter-group select.filter {

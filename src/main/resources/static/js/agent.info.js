@@ -23,6 +23,9 @@ var registrationStartDate = "";
 var registrationEndDate = "";
 var selectedRegistrationStartDate = "";
 var selectedRegistrationEndDate = "";
+
+var selectedRowForSearchDN;
+
 $(document).ready(function(){
 	$("#dropdownButton").hide();
 	
@@ -43,11 +46,62 @@ $(document).ready(function(){
 		}
 	});
 	
+	$("#searchByAgentProperty").change(function(){
+		if($("#searchByAgentProperty option:selected").val() == "dn") {
+			$("#btnSelectDNFromTree").show();
+		} else {
+			$("#btnSelectDNFromTree").hide();
+		}
+		
+	});
 	$("#selectAll").change(function () {
 	    $("input:checkbox").prop('checked', $(this).prop("checked"));
 	    checkedAgentListChange();
 	});
 });
+
+
+/*
+ * function for opening modal for dn selection to search
+ */
+function btnSelectDNFromTreeClicked() {
+	getModalContent("modals/agent_info/select_ou", function content(data){
+		$('#genericModalHeader').html("Arama için bi klasör seçiniz");
+		$('#genericModalBodyRender').html(data);
+		generateTreeForOUSelection();
+	});
+}
+
+/*
+ * create user tree select, check and uncheck action functions can be implemented if required
+ * params div, onlyFolder, use Checkbox, select action , check action, uncheck action
+ */
+function generateTreeForOUSelection() {
+	createComputerTree('lider/computer/getComputers','treeGridHolderDiv', true, false,
+		// row select
+		function(row, rootDnComputer){
+			selectedRowForSearchDN = row
+			if(row.type == "ORGANIZATIONAL_UNIT")
+				$('#btnSelectOUForSearch').prop("disabled", false); 
+			else 
+				$('#btnSelectOUForSearch').prop("disabled", true); 
+		},
+		//check action
+		function(checkedRows, row){
+		
+		},
+		//uncheck action
+		function(unCheckedRows, row){
+		
+		}
+	);
+}
+
+function btnUseSelectedOUClicked() {
+	$('#searchText').val(selectedRowForSearchDN.distinguishedName);
+	$('#genericModal').trigger('click');
+}
+
 
 function agentDetailClicked(agentID) {
 	//first tab and its content will be opened default

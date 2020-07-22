@@ -73,12 +73,11 @@ public class ComputerController {
 	public List<LdapEntry> getOu(LdapEntry selectedEntry) {
 		List<LdapEntry> subEntries = null;
 		try {
-			subEntries = ldapService.findSubEntries(selectedEntry.getUid(), "(&(objectclass=organizationalUnit)(objectclass=pardusLider))",
+			subEntries = ldapService.findSubEntries(selectedEntry.getUid(), "(&(objectclass=organizationalUnit))",
 					new String[] { "*" }, SearchScope.ONELEVEL);
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
-		selectedEntry.setChildEntries(subEntries);
 		return subEntries;
 	}
 	

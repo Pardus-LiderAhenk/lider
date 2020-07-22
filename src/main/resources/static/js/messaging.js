@@ -47,22 +47,22 @@ function onConnect(status)
 	if (status == Strophe.Status.CONNECTING) {
 		/* log('Strophe is connecting.'); */
 		log('Mesajlaşma Servisine bağlanıyor...',"INFO");
-		$.notify("Mesajlaşma Servisine bağlanıyor..",{className: 'success',position:"right top"}  );
+//		$.notify("Sunucuya bağlanıyor..",{className: 'success',position:"right top"}  );
 	} 
 	else if (status == Strophe.Status.CONNFAIL) {
 		log('Mesajlaşma Servisine bağlanırken hata oluştu.',"ERROR");
-		$.notify("Mesajlaşma Sunucusuna Bağlanırken Hata Oluştu. Lütfen XMPP Bağlantı bilgilerini kontrol ediniz.","error");
+		$.notify("Sunucuya Bağlanırken Hata Oluştu. Lütfen Bağlantı bilgilerini kontrol ediniz.","error");
 		//$('#connect').get(0).value = 'connect';
 		logout()
 	} 
 	else if (status == Strophe.Status.DISCONNECTING) {
 		log('Mesajlaşma Servisi bağlantısı koparılmaktadır.',"INFO");
-		$.notify("Mesajlaşma Servisi bağlantısı koparılmaktadır.","warn");
+//		$.notify("Mesajlaşma Servisi bağlantısı koparılmaktadır.","warn");
 	} 
 	else if (status == Strophe.Status.DISCONNECTED) {
 		log('Mesajlaşma Servisi bağlantısı koparıldı.',"INFO");
 		//$('#connect').get(0).value = 'connect';
-		$.notify("Mesajlaşma Sunucusuna Bağlanırken Hata Oluştu. Lütfen XMPP Sunucusunu kontrol ediniz.","error");
+		$.notify("Sunucuya Bağlanırken Hata Oluştu. Lütfen Bağlantı bilgilerini kontrol ediniz.","error");
 		logout()
 	} 
 	else if (status == Strophe.Status.CONNECTED) {
@@ -78,7 +78,7 @@ function onConnect(status)
 	}
 	else{
 		log('Sunucuya ulaşılamıyor.');
-		$.notify("Mesajlaşma Sunucusuna Ulaşılmıyor Lütfen XMPP Bağlantı bilgilerini kontrol ediniz.","error");
+		$.notify("Sunucuya Bağlanırken Hata Oluştu. Lütfen Bağlantı bilgilerini kontrol ediniz.","error");
 	}
 	
 //	if(connection.connected == false){

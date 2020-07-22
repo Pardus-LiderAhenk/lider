@@ -63,7 +63,7 @@ public class FileCopyUtils {
 			System.out.println("Unexpected error occurred during execution: " + errorMessage);
 			return null;
 		}
-		logger.debug("Created target directory");
+		logger.info("Created target directory");
 
 		// Copy file
 		String[] cmd = new String[] { "/usr/bin/rsync", "-az",
@@ -71,6 +71,7 @@ public class FileCopyUtils {
 						+ " -oUserKnownHostsFile=/dev/null -oPubkeyAuthentication=no -oStrictHostKeyChecking=no -l "
 						+ username,
 				username + "@" + host + ":" + filePath, destPath };
+		logger.info(cmd.toString());
 		builder = new ProcessBuilder(cmd);
 		process = builder.start();
 
@@ -124,10 +125,9 @@ public class FileCopyUtils {
 
 		logger.info("destPath: " + destPath);
 		// Copy file
-		String[] cmd = new String[] { "/usr/bin/rsync", "-az",
-				"--rsh=/usr/bin/sshpass -p " + password + " /usr/bin/ssh -p " + (port != null ? port : DEFAULT_PORT)
+		String[] cmd = new String[] {"/usr/bin/rsync", "-az","--rsh=/usr/bin/sshpass -p " + password + " /usr/bin/ssh -p " + (port != null ? port : DEFAULT_PORT)
 						+ " -oUserKnownHostsFile=/dev/null -oPubkeyAuthentication=no -oStrictHostKeyChecking=no -l "
-						+ username,
+						+ username ,
 				file.getAbsolutePath(), username + "@" + host + ":" + destPath };
 
 		// Create directory if not exists

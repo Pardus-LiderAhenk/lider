@@ -129,15 +129,17 @@ public class AdController {
 		 attributes.put("displayName", new String[] {selectedEntry.getCn()});
 		 attributes.put("name", new String[] {selectedEntry.getCn()});
 		 attributes.put("sn", new String[] {selectedEntry.getSn()});
-		 attributes.put("userpassword", new String[] {selectedEntry.getUserPassword()});
+//		 attributes.put("userpassword", new String[] {selectedEntry.getUserPassword()});
 		 String newQuotedPassword = "\"" + selectedEntry.getUserPassword() + "\"";
-//		 try {
-//				byte[] newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
-//				attributes.put("unicodePwd", new String[] {new String(newUnicodePassword)});
-//		 } 
-//		 catch (UnsupportedEncodingException e1) {
-//				e1.printStackTrace();
-//		}
+		 
+		 byte[] newUnicodePassword =null;
+		 try {
+			 newUnicodePassword	= newQuotedPassword.getBytes("UTF-16LE");
+				attributes.put("unicodePwd", new String[] {new String(newUnicodePassword)});
+		 } 
+		 catch (UnsupportedEncodingException e1) {
+				e1.printStackTrace();
+		}
 
 		 //mods[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, new BasicAttribute("unicodePwd", newUnicodePassword));
 		 
@@ -152,10 +154,13 @@ public class AdController {
 	        
 	     String uacStr=   Integer.toString(UF_NORMAL_ACCOUNT + UF_PASSWD_NOTREQD + UF_DONT_EXPIRE_PASSWD + UF_ACCOUNTENABLE);
 	     attributes.put("userAccountControl", new String[] {uacStr});
+	     attributes.put("userpassword", new String[] {uacStr});
 		 try {
 			 
 			String rdn="CN="+selectedEntry.getCn()+","+selectedEntry.getParentName();
 			service.addEntry(rdn, attributes);
+			
+//			service.updateEntry(rdn, "unicodePwd",new String(newUnicodePassword) );
 			
 		} catch (LdapException e) {
 			// TODO Auto-generated catch block

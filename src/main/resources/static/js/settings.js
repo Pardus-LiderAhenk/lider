@@ -1131,12 +1131,18 @@ function setAttributes(data) {
 		$('#cbDisableLocalUser').prop("checked", false);
 	}
 	
-	if(data.domainType == "LDAP") {
+	if(data.domainType == null) {
 		$("#domainTypeLDAP").prop("checked", true);
-	} else if(data.domainType == "ACTIVE_DIRECTORY") {
-		$("#domainTypeAD").prop("checked", true);
-	} else if(data.domainType == "NONE") {
-		$("#domainTypeNone").prop("checked", true);
+	} else {
+		if(data.domainType == "LDAP") {
+			$("#domainTypeLDAP").prop("checked", true);
+		} else if(data.domainType == "ACTIVE_DIRECTORY") {
+			$("#domainTypeAD").prop("checked", true);
+		} else if(data.domainType == "NONE") {
+			$("#domainTypeNone").prop("checked", true);
+		} else {
+			$("#domainTypeLDAP").prop("checked", true);
+		}
 	}
 }
 

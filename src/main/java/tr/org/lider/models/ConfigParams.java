@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import tr.org.lider.messaging.enums.DomainType;
 import tr.org.lider.messaging.enums.Protocol;
 import tr.org.lider.messaging.messages.FileServerConf;
 
@@ -127,6 +128,7 @@ public class ConfigParams {
 	
 	//other settings
 	private Boolean disableLocalUser;
+	private DomainType domainType;
 	
 	public ConfigParams() {
 		super();
@@ -153,7 +155,7 @@ public class ConfigParams {
 			Boolean mailSendOnPolicyCompletion, Long mailCheckPolicyCompletionPeriod, String hotDeploymentPath,
 			String cronTaskList, Integer entrySizeLimit, Integer cronIntervalEntrySize, String adDomainName,
 			String adHostName, String adIpAddress, String adAdminUserName, String adAdminUserFullDN,
-			String adAdminPassword, String adPort, Boolean disableLocalUser) {
+			String adAdminPassword, String adPort, Boolean disableLocalUser, DomainType domainType) {
 		super();
 		this.liderLocale = liderLocale;
 		this.ldapServer = ldapServer;
@@ -232,6 +234,7 @@ public class ConfigParams {
 		this.adAdminPassword = adAdminPassword;
 		this.adPort = adPort;
 		this.disableLocalUser = disableLocalUser;
+		this.domainType = domainType;
 	}
 
 	public void setDefaultParams() {
@@ -279,6 +282,7 @@ public class ConfigParams {
 		
 		//other settings
 		this.disableLocalUser = false;
+		this.domainType = DomainType.LDAP;
 	}
 
 	public String getLiderLocale() {
@@ -895,6 +899,14 @@ public class ConfigParams {
 
 	public void setAdAdminUserFullDN(String adAdminUserFullDN) {
 		this.adAdminUserFullDN = adAdminUserFullDN;
+	}
+
+	public DomainType getDomainType() {
+		return domainType;
+	}
+
+	public void setDomainType(DomainType domainType) {
+		this.domainType = domainType;
 	}
 
 	public FileServerConf getFileServerConf(String jid) {

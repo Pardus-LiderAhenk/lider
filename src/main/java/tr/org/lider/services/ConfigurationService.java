@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tr.org.lider.entities.ConfigImpl;
+import tr.org.lider.messaging.enums.DomainType;
 import tr.org.lider.messaging.enums.Protocol;
 import tr.org.lider.messaging.messages.FileServerConf;
 import tr.org.lider.models.ConfigParams;
@@ -431,6 +432,10 @@ public class ConfigurationService {
 	
 	public Boolean getDisableLocalUser() {
 		return getConfigParams().getDisableLocalUser();
+	}
+	
+	public DomainType getDomainType() {
+		return getConfigParams().getDomainType();
 	}
 	
 	public FileServerConf getFileServerConf(String jid) {

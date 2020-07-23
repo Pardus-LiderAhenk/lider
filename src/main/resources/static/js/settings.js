@@ -1130,6 +1130,14 @@ function setAttributes(data) {
 	} else {
 		$('#cbDisableLocalUser').prop("checked", false);
 	}
+	
+	if(data.domainType == "LDAP") {
+		$("#domainTypeLDAP").prop("checked", true);
+	} else if(data.domainType == "ACTIVE_DIRECTORY") {
+		$("#domainTypeAD").prop("checked", true);
+	} else if(data.domainType == "NONE") {
+		$("#domainTypeNone").prop("checked", true);
+	}
 }
 
 function setRolesTable() {
@@ -1281,7 +1289,8 @@ function saveChanges(type) {
 		});
 	} else if(type == 'otherSettings') {
 		var params = {
-				"disableLocalUser": $('#cbDisableLocalUser').is(':checked')
+				"disableLocalUser": $('#cbDisableLocalUser').is(':checked'),
+				"domainType": $("input[name='domainType']:checked").val()
 			};
 		$.ajax({ 
 		    type: 'POST', 

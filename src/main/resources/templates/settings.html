@@ -673,7 +673,7 @@
 					<h5>Diğer Ayarlar</h5>
 					<!-- row 1 -->
 					<div class="form-row">
-						<div class="col-md-5">
+						<div class="col-md-12">
 							<div class="position-relative form-group">
 								<div class="custom-control custom-switch">
 									<input type="checkbox"
@@ -682,6 +682,32 @@
 										class="custom-control-label" for="cbDisableLocalUser">
 										Bilgisayarlar domaine alındığında yerel kullanıcıları pasif
 										hale getir </label>
+								</div>
+							</div>
+							<div class="position-relative form-group">
+								<h6>İstemcilerin hangi etki alanına alınacağını seçiniz</h6>
+								<div>
+								    <div class="custom-radio custom-control">
+								    	<input type="radio" id="domainTypeLDAP" name="domainType" value="LDAP" 
+								    		class="custom-control-input editableOtherSettings" disabled>
+								    	<label class="custom-control-label" for="domainTypeLDAP">
+								    		LDAP
+								        </label>
+								    </div>
+								    <div class="custom-radio custom-control">
+								    	<input type="radio" id="domainTypeAD" name="domainType" value="ACTIVE_DIRECTORY"
+								    		class="custom-control-input editableOtherSettings" disabled>
+								    	<label class="custom-control-label" for="domainTypeAD">
+								    		Aktif Dizin
+								        </label>
+								    </div>
+								    <div class="custom-radio custom-control">
+								    	<input type="radio" id="domainTypeNone" value="NONE" 
+								    		name="domainType" class="custom-control-input editableOtherSettings" disabled>
+								    	<label class="custom-control-label" for="domainTypeNone">
+								    		Hiçbiri (Bu seçenek seçildiğinde istemci etki alanına dahil edilmeyecektir. İstemciye yerel kullanıcı ile giriş yapılabilir)
+								        </label>
+								    </div>
 								</div>
 							</div>
 						</div>

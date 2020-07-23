@@ -23,6 +23,7 @@ import tr.org.lider.entities.RoleImpl;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.OLCAccessRule;
+import tr.org.lider.messaging.enums.DomainType;
 import tr.org.lider.messaging.enums.Protocol;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.models.ConfigParams;
@@ -152,9 +153,11 @@ public class SettingsController {
 	}
 
 	@RequestMapping(method=RequestMethod.POST, value = "/update/otherSettings", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ConfigParams updateOtherSettings(@RequestParam (value = "disableLocalUser", required = true) Boolean disableLocalUser) {
+	public ConfigParams updateOtherSettings(@RequestParam (value = "disableLocalUser", required = true) Boolean disableLocalUser,
+			@RequestParam (value = "domainType", required = true) DomainType domainType) {
 		ConfigParams configParams = configurationService.getConfigParams();
 		configParams.setDisableLocalUser(disableLocalUser);
+		configParams.setDomainType(domainType);
 		return configurationService.updateConfigParams(configParams);
 	}
 

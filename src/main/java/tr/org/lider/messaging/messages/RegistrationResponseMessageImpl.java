@@ -64,6 +64,8 @@ public class RegistrationResponseMessageImpl implements IRegistrationResponseMes
 
 	private String adAdminUserName;
 
+	private String directoryServer;
+
 	private Boolean disableLocalUser;
 
 	public RegistrationResponseMessageImpl(StatusCode status, String message, String agentDn, String recipient,
@@ -210,6 +212,14 @@ public class RegistrationResponseMessageImpl implements IRegistrationResponseMes
 
 	public void setDisableLocalUser(Boolean disableLocalUser) {
 		this.disableLocalUser = disableLocalUser;
+	}
+
+	public String getDirectoryServer() {
+		return directoryServer;
+	}
+
+	public void setDirectoryServer(String directoryServer) {
+		this.directoryServer = directoryServer;
 	}
 
 }

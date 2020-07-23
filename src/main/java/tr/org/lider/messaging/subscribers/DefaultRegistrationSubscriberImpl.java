@@ -91,11 +91,10 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 	@Autowired
 	private AgentRepository agentDao;
 	
-	
 	private String LDAP_VERSION = "3";
 	
 	private static String DIRECTORY_SERVER_LDAP="LDAP";
-	private static String DIRECTORY_SERVER_AD="AD";
+	private static String DIRECTORY_SERVER_AD="ACTIVE_DIRECTORY";
 
 	/**
 	 * Check if agent defined in the received message is already registered, if
@@ -115,14 +114,14 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			
 			String userName = message.getUserName();
 			String userPassword = message.getUserPassword();
-			String directoryServer = message.getDirectoryServer();
+//			String directoryServer = message.getDirectoryServer();
+			String directoryServer ="LDAP";
+			
+			if( configurationService.getDomainType()!=null) {
+				directoryServer= configurationService.getDomainType().name();
+			}
 			
 			LdapEntry ldapUserEntry= getUserFromLdap(userName, userPassword);
-			
-			if(directoryServer==null) {
-				
-				DIRECTORY_SERVER_LDAP="LDAP";
-			}
 			
 			if(ldapUserEntry==null) {
 				
@@ -239,6 +238,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			}
 			
 			respMessage.setDisableLocalUser(configurationService.getDisableLocalUser());
+			respMessage.setDirectoryServer(directoryServer);
 			
 			if(directoryServer.equals(DIRECTORY_SERVER_LDAP)) {
 				respMessage.setLdapServer(configurationService.getLdapServer());
@@ -273,7 +273,6 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 						);
 			}
 			
-			
 			return respMessage;
 			
 		} else if (AgentMessageType.UNREGISTER == message.getType()) {
@@ -282,6 +281,12 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			logger.info("Unregister message UserName: "+message.getUserName());
 			String userName = message.getUserName();
 			String userPassword = message.getUserPassword();
+			
+			String directoryServer ="LDAP";
+			
+			if( configurationService.getDomainType()!=null) {
+				directoryServer= configurationService.getDomainType().name();
+			}
 			
 			LdapEntry ldapUserEntry= getUserFromLdap(userName, userPassword);
 			
@@ -311,9 +316,12 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			if (agent != null) {
 				agentDao.delete(agent);
 			}
+			
+			IRegistrationResponseMessage respMessage= new RegistrationResponseMessageImpl(StatusCode.UNREGISTERED,dn + " and its related database record unregistered successfully!", dn, null, new Date());
 
-			return new RegistrationResponseMessageImpl(StatusCode.UNREGISTERED,
-					dn + " and its related database record unregistered successfully!", dn, null, new Date());
+			respMessage.setDirectoryServer(directoryServer);
+			return respMessage;
+			
 		} else if (AgentMessageType.REGISTER_LDAP == message.getType()) {
 			logger.info("REGISTER_LDAP");
 			return null;

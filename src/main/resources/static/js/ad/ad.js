@@ -16,7 +16,6 @@ createTree(treeGridHolderDiv, false, false,
 			selectedRow=row;
 			console.log(row)
 			if(row.type=="USER"){
-				alert("sd")
 				var childs=[]
 				childs.push(row)
 				setChildsToTable(childs)

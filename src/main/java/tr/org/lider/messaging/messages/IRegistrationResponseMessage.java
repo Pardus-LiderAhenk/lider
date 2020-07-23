@@ -84,5 +84,9 @@ public interface IRegistrationResponseMessage extends ILiderMessage {
 	public Boolean getDisableLocalUser();
 
 	public void setDisableLocalUser(Boolean disableLocalUser);
+	
+	public String getDirectoryServer();
+	
+	public void setDirectoryServer(String directoryServer);
 
 }

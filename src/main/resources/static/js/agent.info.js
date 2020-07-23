@@ -120,19 +120,9 @@ function agentDetailClicked(agentID) {
 	    dataType: 'json',
 	    success: function (data) {
 	    	if(data.properties.length > 0) {
-	        	var year = data.createDate.substring(0,4);
-	        	var month = data.createDate.substring(5,7);
-	        	var day = data.createDate.substring(8,10);
-	        	var time = data.createDate.substring(11,16);
-				var createDate = day + '.' + month + '.' + year + ' ' + time;
-				
 				var modifyDate = "";
 				if(data.modifyDate != null) {
-		        	year = data.modifyDate.substring(0,4);
-		        	month = data.modifyDate.substring(5,7);
-		        	day = data.modifyDate.substring(8,10);
-		        	time = data.modifyDate.substring(11,16);
-					modifyDate = day + '.' + month + '.' + year + ' ' + time;
+					modifyDate = data.modifyDate;
 				}
 
 				var os = "";
@@ -147,7 +137,7 @@ function agentDetailClicked(agentID) {
 				tableElement += '<tr><th>DN</th><td>' + data.dn + '</td></tr>';
 				tableElement += '<tr><th>IP Adresleri</th><td>' + data.ipAddresses + '</td></tr>'
 				tableElement += '<tr><th>MAC Adresleri</th><td>' + data.macAddresses + '</td></tr>';
-				tableElement += '<tr><th>Oluşturulma Tarihi</th><td>' + createDate + '</td></tr>';
+				tableElement += '<tr><th>Oluşturulma Tarihi</th><td>' + data.createDate + '</td></tr>';
 				tableElement += '<tr><th>Düzenlenme Tarihi</th><td>' + modifyDate + '</td></tr>';
 				
 				$.each(data.properties, function(index, element) {
@@ -160,18 +150,12 @@ function agentDetailClicked(agentID) {
 				tableElement = "";
 				if(data.sessions.length > 0) {
 					$.each(data.sessions, function(index, element) {
-			        	year = element.createDate.substring(0,4);
-			        	month = element.createDate.substring(5,7);
-			        	day = element.createDate.substring(8,10);
-			        	time = element.createDate.substring(11,19);
-						createDate = day + '.' + month + '.' + year + ' ' + time;
-						
 						tableElement += '<tr><td>' + element.username + '</td>';
 						if(element.sessionEvent == "LOGIN")
 							tableElement += '<td>' + 'Oturum Açıldı' + '</td>';
 						if(element.sessionEvent == "LOGOUT")
 							tableElement += '<td>' + 'Oturum Kapatıldı' + '</td>';
-						tableElement += '<td>' + createDate + '</td></tr>';
+						tableElement += '<td>' + element.createDate + '</td></tr>';
 			        });
 					$('#userSessionsTable').append(tableElement);
 					
@@ -270,11 +254,6 @@ function exportToExcel () {
 	wsData[0] = header;
 	var agent = [];
 	$.each(agentList, function(index, element) {
-    	year = element.createDate.substring(0,4);
-    	month = element.createDate.substring(5,7);
-    	day = element.createDate.substring(8,10);
-    	time = element.createDate.substring(11,16);
-		createDate = day + '.' + month + '.' + year + ' ' + time;
 		phase="-";
 		$.each(element.properties, function(index, property) {
 			if(property.propertyName == "os.distributionName") {
@@ -301,7 +280,7 @@ function exportToExcel () {
 			}
 		});
     	agent = [element.id, element.dn, element.hostname, element.ipAddresses, element.macAddresses, os, osDistributionVersion,
-    			 brand, model, memory, disk, phase, createDate];
+    			 brand, model, memory, disk, phase, element.createDate];
     	
     	//if column element character length is bigger than before update it
     	for (var i = 0; i < agent.length; i++) {
@@ -378,12 +357,6 @@ function reloadTable(pNumber, pSize, field, text) {
 		    	selectedPage = pNumber;
 		    	$("#agentsTable").empty();
 		        $.each(data.content, function(index, element) {
-		        	var year = element.createDate.substring(0,4);
-		        	var month = element.createDate.substring(5,7);
-		        	var day = element.createDate.substring(8,10);
-		        	var time = element.createDate.substring(11,16);
-					var createDate = day + '.' + month + '.' + year + ' ' + time;
-					
 					var os = "";
 					var brand = "";
 					var memory = 0;
@@ -436,7 +409,7 @@ function reloadTable(pNumber, pSize, field, text) {
 		        			  + '<td>' + brand + '</td>'
 		        			  + '<td>' + os + '</td>'
 		        			  + '<td>' + osDistributionVersion + '</td>'
-		        			  + '<td>' + createDate + '</td>'
+		        			  + '<td>' + element.createDate + '</td>'
 		        			  + '<td class="text-center"><a href="#agentDetailModal" class="edit" data-toggle="modal" onclick="agentDetailClicked(' + element.id + ')" data-id="' + element.id
 		        			  + '" data-toggle="modal" data-target="#agentDetailModal">'
 		        			  //+ '<i class="material-icons primary" data-toggle="tooltip" title="Detaylar">&#xe88f;</i></a></td>'

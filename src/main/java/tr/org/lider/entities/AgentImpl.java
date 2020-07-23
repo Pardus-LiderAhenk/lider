@@ -17,6 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -64,10 +65,12 @@ public class AgentImpl implements Serializable{
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "CREATE_DATE", nullable = false)
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Europe/Istanbul")
 	private Date createDate;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "MODIFY_DATE")
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Europe/Istanbul")
 	private Date modifyDate;
 	
 	@Transient

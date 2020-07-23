@@ -989,11 +989,6 @@ function showSelectedEntries() {
 			
 			$("#selectedAgentDNSSHIP").val(ipAddress);
 			if(data.properties.length > 0) {
-				var year = data.createDate.substring(0,4);
-				var month = data.createDate.substring(5,7);
-				var day = data.createDate.substring(8,10);
-				var time = data.createDate.substring(11,16);
-				var createDate = day + '.' + month + '.' + year + ' ' + time;
 
 				$.each(data.properties, function(index, element) {
 
@@ -1020,7 +1015,7 @@ function showSelectedEntries() {
 				$("#agentHostname").html(data.hostname);
 				$("#agentIpAddr").html(data.ipAddresses);
 				$("#agentMac").html(data.macAddresses);
-				$("#agentCreateDate").html(createDate);
+				$("#agentCreateDate").html(data.createDate);
 				$("#userDomain").html(data.userDirectoryDomain);
 				$('#agentDn').html(getEntryFolderName(selDn));
 				

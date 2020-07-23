@@ -435,7 +435,10 @@ public class ConfigurationService {
 	}
 	
 	public DomainType getDomainType() {
-		return getConfigParams().getDomainType();
+		if(getConfigParams().getDomainType() == null)
+			return DomainType.LDAP;
+		else
+			return getConfigParams().getDomainType();
 	}
 	
 	public FileServerConf getFileServerConf(String jid) {

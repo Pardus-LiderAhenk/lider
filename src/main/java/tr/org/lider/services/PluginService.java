@@ -88,9 +88,9 @@ public class PluginService {
 		pluginTaskList.add(new PluginTask("Paket Kur veya Kaldır", "packages", "İstenilen paket deposundan istemciye paket kurar", "PACKAGES", true, findPluginIdByName("package-manager"), 1));
 		pluginTaskList.add(new PluginTask("Servis Yönetimi", "service-list", "İstemciye bulunan servisleri listeler ve yönetir", "SERVIS_LIST", false, findPluginIdByName("service"), 1));
 		pluginTaskList.add(new PluginTask("Betik Çalıştır", "execute-script", "İstemcide betik çalıştırı", "EXECUTE_SCRIPT", true, findPluginIdByName("script"), 1));
-		pluginTaskList.add(new PluginTask("ETA Mesaj Gönder", "eta-notify", "ETA mesaj gönderir", "ETA_NOTIFY", true, findPluginIdByName("notify"), 1));
+		pluginTaskList.add(new PluginTask("ETA Mesaj Gönder", "eta-notify", "ETA mesaj gönderir", "ETA_NOTIFY", true, findPluginIdByName("notify"), 0));
 		pluginTaskList.add(new PluginTask("Dosya Yönetimi", "file-management", "İstemciye bulunan dosya içeriğini getirir ve düzenler veya istemcide istenilen dosyayı oluşturur", "GET_FILE_CONTENT", false, findPluginIdByName("file-management"), 1));
-		pluginTaskList.add(new PluginTask("Uygulama Sınırlı Erişim Yönetimi", "application-restriction", "ETA uygulama kısıtlama", "APPLICATION_RESTRICTION", false, findPluginIdByName("system-restriction"), 1));
+		pluginTaskList.add(new PluginTask("Uygulama Sınırlı Erişim Yönetimi", "application-restriction", "ETA uygulama kısıtlama", "APPLICATION_RESTRICTION", false, findPluginIdByName("system-restriction"), 0));
 		pluginTaskList.add(new PluginTask("Yerel Kullanıcı Yönetimi", "local-user", "İstemciye bulunan yerel kullanıcıları listeler ve yönetir", "GET_USERS", false, findPluginIdByName("local-user"), 1));
 		pluginTaskList.add(new PluginTask("İstemci Oturum Açma Ayarları", "ldap-login", "İstemcinin oturum açma ayarlarını yönetir", "EXECUTE_LDAP_LOGIN", true, findPluginIdByName("ldap-login"), 1));
 		pluginTaskList.add(new PluginTask("Ağ Yönetimi", "network-manager", "İstemcinin ağ ayarlarını yönetir", "GET_NETWORK_INFORMATION", false, findPluginIdByName("network-manager"), 1));

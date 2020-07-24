@@ -16,6 +16,10 @@ $(document).ready(function(){
 				}
 				else{
 					$('#mainArea').html(data);
+					if(page != "agent_info") {
+						// to remove apply and clear button of datetimepicker
+						$('.daterangepicker.ltr.show-calendar.opensright').remove();
+					}
 				}
 			},
 			error : function(data, errorThrown) {

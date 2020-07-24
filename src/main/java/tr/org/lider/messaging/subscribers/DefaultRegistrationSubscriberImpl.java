@@ -39,6 +39,7 @@ import tr.org.lider.entities.AgentImpl;
 import tr.org.lider.entities.AgentPropertyImpl;
 import tr.org.lider.entities.UserSessionImpl;
 import tr.org.lider.ldap.ILDAPService;
+import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
@@ -49,6 +50,7 @@ import tr.org.lider.messaging.messages.IRegistrationResponseMessage;
 import tr.org.lider.messaging.messages.RegistrationMessageImpl;
 import tr.org.lider.messaging.messages.RegistrationResponseMessageImpl;
 import tr.org.lider.repositories.AgentRepository;
+import tr.org.lider.services.AdService;
 import tr.org.lider.services.ConfigurationService;
 
 
@@ -83,7 +85,10 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 	private static Logger logger = LoggerFactory.getLogger(DefaultRegistrationSubscriberImpl.class);
 
 	@Autowired
-	private ILDAPService ldapService;
+	private LDAPServiceImpl ldapService;
+	
+	@Autowired
+	private AdService adService;
 	
 	@Autowired
 	private ConfigurationService configurationService;
@@ -95,6 +100,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 	
 	private static String DIRECTORY_SERVER_LDAP="LDAP";
 	private static String DIRECTORY_SERVER_AD="ACTIVE_DIRECTORY";
+	private static String DIRECTORY_SERVER_NONE="NONE";
 
 	/**
 	 * Check if agent defined in the received message is already registered, if
@@ -115,7 +121,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			String userName = message.getUserName();
 			String userPassword = message.getUserPassword();
 //			String directoryServer = message.getDirectoryServer();
-			String directoryServer ="LDAP";
+			String directoryServer =DIRECTORY_SERVER_LDAP;
 			
 			if( configurationService.getDomainType()!=null) {
 				directoryServer= configurationService.getDomainType().name();
@@ -387,6 +393,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 		}
 		return user;
 	}
+	
 	
 	
 }

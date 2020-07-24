@@ -291,7 +291,7 @@ public class XMPPClientImpl {
 				// 'smack'
 				if (configurationService.getXmppResource() != null
 						&& !configurationService.getXmppResource().isEmpty()) {
-					connection.login(username, password, "Smack99");
+					connection.login(username, password, configurationService.getXmppResource());
 				} else {
 					connection.login(username, password);
 				}

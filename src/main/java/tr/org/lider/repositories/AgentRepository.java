@@ -2,7 +2,11 @@ package tr.org.lider.repositories;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import tr.org.lider.entities.AgentImpl;
 
@@ -40,6 +44,13 @@ public interface AgentRepository extends BaseJpaRepository<AgentImpl, Long>{
 	
 	@Query(value = "SELECT a FROM AgentImpl a LEFT JOIN a.sessions s WHERE s.username = ?1")
 	List<AgentImpl> findBySessionUsername(String username);
+	
+	@Transactional
+	@Modifying(clearAutomatically = true)
+    @Query("UPDATE AgentImpl agent SET agent.dn = :newDN WHERE agent.dn = :currentDN")
+    int updateAgentDN(@Param("currentDN") String currentDN, @Param("newDN") String newDN);
+	
+	void deleteByDn(String Dn);
 	
 }
 

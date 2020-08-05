@@ -153,7 +153,7 @@
                         </li>
                        
                         <li  class="nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTERS')}">
-                            <a class="nav-link dizin " href="#" data-page="computers"  >
+                            <a class="nav-link dizin " id="menuBtnComputers" href="#" data-page="computers"  >
                                 <i class="nav-link-icon fas fa-laptop-code"> </i>
                                 <span th:text="#{computer.management}"></span>
                             </a>

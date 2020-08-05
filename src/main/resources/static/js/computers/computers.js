@@ -18,6 +18,8 @@ var computerTreeCreated=false;
 var pluginTaskList=null;
 var systemSettings=null;
 
+var selectedRowForMovingEntry;
+
 // when page loading getting system page info package and service management page hide
 setSystemPluginPage();
 $("#systemPage").show();
@@ -31,6 +33,9 @@ $("#selectedAgentList").hide();
 
 $("#domainUserName").val(user_name);
 $("#domainUserPassword").val(password);
+
+$("#moveAgent").hide();
+$("#deleteAgent").hide();
 
 /*
  * create user tree select, check and uncheck action functions can be implemented if required
@@ -155,7 +160,6 @@ $('#btnOnlineAgent').click(function() {
 });
 
 $('#selectedAgentInfo').click(function(e){
-	console.log(selectedRow)
 	$('#entryLdapInfoDN').html(selectedRow.name)
 	var html = '<table class="table table-striped table-bordered " id="attrTable">';
 	html += '<thead>';
@@ -184,7 +188,6 @@ $('#selectedAgentInfo').click(function(e){
 	}
 
 	html += '</table>';
-	console.log(html)
 	
 	$('#entryLdapInfoHolder').html(html);
 });
@@ -894,6 +897,8 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		showSelectedEntries();
 		$("#selectedAgentDN").text(selectedRow.distinguishedName);
 		$("#selectedAgentDNSSH").text("DN : "+selectedRow.distinguishedName);
+		$("#moveAgent").show();
+		$("#deleteAgent").show();
 	}
 //	else if(row.type=="ORGANIZATIONAL_UNIT"){
 //		
@@ -901,6 +906,8 @@ function addSelectedEntryToTable(row,rootDnComputer){
 //		
 //	}
 	else{
+		$("#moveAgent").hide();
+		$("#deleteAgent").hide();
 		selectedEntries=[]
 		$("#selectedAgentInfo").html("Lütfen İstemci Seçiniz."); 
 		$("#agentOnlineStatus").hide()
@@ -1150,13 +1157,10 @@ function SHHConnect(){
 		url: "/sendremote",
 		data: params,
 		success: function(data) {
-			console.log(data)
 			displaySSHConnection();
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
-			 console.log(jqXHR)
-			 console.log(textStatus)
-			 console.log(errorThrown)
+
 		}
 	});
 }
@@ -1176,7 +1180,6 @@ function displaySSHConnection() {
     
     // Error handler
     guac.onerror = function(error) {
-    	console.log(error)
     	$.notify("Uzak Masaüstü sunucusunda hata oluştu", "warn");
     };
     // Connect
@@ -1271,15 +1274,10 @@ function executeRemoteSshCommand(host,user, password,command, callback) {
 		url: "/remoteSsh/executeSshCommand",
 		data: params,
 		success: function(data) {
-			console.log(data)
-			
 			setShhLog(data)
 			callback("OK")
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
-			 console.log(jqXHR)
-			 console.log(textStatus)
-			 console.log(errorThrown)
 		}
 	});
 }
@@ -1305,9 +1303,6 @@ function checkSshConnection(host,user, password) {
 			}
 		},
 		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
-			console.log(jqXHR)
-			console.log(textStatus)
-			console.log(errorThrown)
 		}
 	});
 }
@@ -1333,7 +1328,6 @@ function getAllAgents() {
 		type: 'POST', 
 		url: "/lider/computer/getAgentList",
 		success: function(data) {
-			console.log(data)
 			progress("computerTreeOnlineInfo","progressComputerTreeInfo",'hide')
 			$('#btnTotalAgent').append("")
 			$('#btnOnlineAgent').append("")
@@ -1342,9 +1336,6 @@ function getAllAgents() {
 			
 		},
 		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
-			console.log(jqXHR)
-			console.log(textStatus)
-			console.log(errorThrown)
 		}
 	});
 }
@@ -1376,7 +1367,109 @@ function getEntryFolderName(selDn) {
 	return ous;
 }
 
+/*
+ * function for opening modal for dn selection to search
+ */
+function btnSelectDNFromTreeClicked() {
+	getModalContent("modals/agent_info/select_ou", function content(data){
+		$('#genericModalHeader').html("Arama için bi klasör seçiniz");
+		$('#genericModalBodyRender').html(data);
+		generateTreeForOUSelection();
+	});
+}
 
+/*
+ * create user tree select, check and uncheck action functions can be implemented if required
+ * params div, onlyFolder, use Checkbox, select action , check action, uncheck action
+ */
+function generateTreeForOUSelection() {
+	createComputerTree('lider/computer/getComputers','treeGridHolderDiv', true, false,
+		// row select
+		function(row, rootDnComputer){
+			selectedRowForMovingEntry = row
+			if(row.type == "ORGANIZATIONAL_UNIT")
+				$('#btnSelectOUForSearch').prop("disabled", false); 
+			else 
+				$('#btnSelectOUForSearch').prop("disabled", true); 
+		},
+		//check action
+		function(checkedRows, row){
+		
+		},
+		//uncheck action
+		function(unCheckedRows, row){
+		
+		}
+	);
+}
+
+function btnUseSelectedOUClicked() {
+	if( selectedRow.parent.distinguishedName == selectedRowForMovingEntry.distinguishedName ) {
+		$.notify("Kayıt aynı yere taşınamaz.", "error");
+	} else {
+		var params = {
+				"sourceDN" : selectedRow.distinguishedName,
+				"sourceCN": selectedRow.cn,
+				"destinationDN": selectedRowForMovingEntry.distinguishedName
+		};
+		$.ajax({ 
+			type: 'POST', 
+			url: '/lider/computer/move/agent',
+			dataType: 'json',
+			data: params,
+			success: function (data) {
+				$.notify("Kayıt taşındı.", "success");
+				$('#genericModal').trigger('click');
+				$('#menuBtnComputers').trigger('click');
+			},
+			error: function (data, errorThrown) {
+				$.notify("Kayıt taşınırken hata oluştu.", "error");
+			}
+		});
+	}	
+}
+
+$('#deleteAgent').click(function(e){
+	if(selectedEntries.length ==0 ){
+		$.notify("Lütfen İstemci Seçiniz", "error");
+		return;
+	}
+
+	var content = "Bu istemciyi silmek istediğinizden emin misiniz ? <br> Silme işlemi geri alınamaz ve " +
+			"bu işlem sonucunda veritabanında ve LDAP'ta bu istemciye ait tüm bilgiler silinecektir. Ayrıca istemci domainden çıkarılacaktır.";
+	$.confirm({
+		title: 'Uyarı!',
+		content: content,
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+				deleteAgent();
+			},
+			Hayır: function () {
+			}
+		}
+	});
+});
+
+function deleteAgent() {
+	var params = {
+			"agentDN" : selectedRow.distinguishedName,
+			"agentUID" : selectedRow.cn
+	};
+	$.ajax({ 
+		type: 'POST', 
+		url: '/lider/computer/delete/agent',
+		dataType: 'json',
+		data: params,
+		success: function (data) {
+			$.notify("Kayıt silindi.", "success");
+			$('#menuBtnComputers').trigger('click');
+		},
+		error: function (data, errorThrown) {
+			$.notify("Kayıt silinirken hata oluştu.", "error");
+		}
+	});
+}
 //function addRoster() {
 //	$.ajax({
 //		type: 'POST', 
@@ -1385,9 +1478,6 @@ function getEntryFolderName(selDn) {
 //			console.log(data)
 //		},
 //		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
-//			console.log(jqXHR)
-//			console.log(textStatus)
-//			console.log(errorThrown)
 //		}
 //	});
 //	

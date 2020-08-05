@@ -19,6 +19,7 @@
 */
 package tr.org.lider.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -42,9 +43,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({ "agent" })
 @Entity
 @Table(name = "C_AGENT_USER_SESSION")
-public class UserSessionImpl{
+public class UserSessionImpl implements Serializable{
 
-	private static final long serialVersionUID = -9102362700808969139L;
+	private static final long serialVersionUID = 8656281647459005125L;
 
 	@Id
 	@GeneratedValue

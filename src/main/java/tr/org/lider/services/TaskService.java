@@ -2,7 +2,6 @@ package tr.org.lider.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -21,12 +20,10 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.entities.CommandExecutionImpl;
 import tr.org.lider.entities.CommandImpl;
-import tr.org.lider.entities.PluginImpl;
 import tr.org.lider.entities.PluginTask;
 import tr.org.lider.entities.TaskImpl;
 import tr.org.lider.ldap.DNType;
@@ -35,14 +32,9 @@ import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.messaging.messages.ExecuteTaskMessageImpl;
 import tr.org.lider.messaging.messages.FileServerConf;
 import tr.org.lider.messaging.messages.ILiderMessage;
-import tr.org.lider.messaging.messages.ITaskStatusMessage;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
-import tr.org.lider.messaging.subscribers.ITaskStatusSubscriber;
-import tr.org.lider.models.TaskRequestImpl;
 import tr.org.lider.repositories.TaskRepository;
-import tr.org.lider.utils.CommandResultImpl;
 import tr.org.lider.utils.IRestResponse;
-import tr.org.lider.utils.ITaskRequest;
 import tr.org.lider.utils.ResponseFactoryService;
 import tr.org.lider.utils.RestResponseStatus;
 

@@ -58,10 +58,6 @@ import tr.org.lider.ldap.DNType;
 @Table(name = "C_COMMAND", uniqueConstraints = @UniqueConstraint(columnNames = { "POLICY_ID", "TASK_ID" }))
 public class CommandImpl implements Serializable{
 
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4548613741066158807L;
 
 	@Id

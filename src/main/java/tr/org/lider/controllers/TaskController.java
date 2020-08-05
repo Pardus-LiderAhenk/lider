@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tr.org.lider.entities.PluginTask;
 import tr.org.lider.services.TaskService;
-import tr.org.lider.utils.ControllerUtils;
 import tr.org.lider.utils.IRestResponse;
 
 
@@ -38,15 +37,9 @@ public class TaskController {
 	public IRestResponse executeTask(@RequestBody PluginTask requestBody, HttpServletRequest request)
 			throws UnsupportedEncodingException {
 		
-		System.out.println(requestBody);
-//		String requestBodyDecoded = ControllerUtils.decodeRequestBody(requestBody);
-		
 		logger.info("Request received. URL: '/lider/task/execute' Body: {}", requestBody);
-		
 		IRestResponse restResponse = taskService.execute(requestBody);
-		
 		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
-		
 		return restResponse;
 	}
 	

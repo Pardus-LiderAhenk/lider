@@ -2,7 +2,11 @@ package tr.org.lider.repositories;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import tr.org.lider.entities.CommandExecutionImpl;
 
@@ -18,4 +22,10 @@ public interface CommandExecutionRepository extends BaseJpaRepository<CommandExe
 	
 	List<CommandExecutionImpl> findCommandExecutionByCommandId(Long commandId);
 	
+	@Transactional
+	@Modifying(clearAutomatically = true)
+    @Query("UPDATE CommandExecutionImpl cex SET cex.dn = :newDN WHERE cex.dn = :currentDN")
+    int updateAgentDN(@Param("currentDN") String currentDN, @Param("newDN") String newDN);
+	
+	void deleteByDn(String dn);
 }

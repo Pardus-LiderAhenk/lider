@@ -150,4 +150,13 @@ public class AgentService {
 		}
 		return listOfAgentsCB;
 	}
+	
+	public void updateAgentDN(String currentDN, String newDN) {
+		agentRepository.updateAgentDN(currentDN, newDN);
+	}
+	
+	public void deleteAgent(String dn) {
+		List<AgentImpl> agentList = agentRepository.findByDn(dn);
+		agentRepository.deleteById(agentList.get(0).getId());
+	}
 }

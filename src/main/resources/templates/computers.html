@@ -67,7 +67,17 @@
 								<div class="main-card mb-3 card">
 									<div class="card-header">
 										<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-										<div>İSTEMCİ BİLGİLERİ</div>
+										<div class="col-lg-6 text-left">İSTEMCİ BİLGİLERİ</div>
+										<div class="col-lg-6 text-right">
+											<button id="moveAgent" type="button" title="Kaydı Taşı" onclick="btnSelectDNFromTreeClicked()" 
+												data-toggle="modal" data-target="#genericModal"
+												class="btn-sm btn-shadow btn btn-info">
+												<i class="fa fa-random"></i> Taşı
+											</button>
+											<button id="deleteAgent" type="button" title="Kaydı Sil" class="btn-sm btn-shadow btn btn-danger">
+												<i class="fa fa-trash"></i> Sil
+											</button>
+										</div>
 									</div>
 									<div class="card-body">
 										<table class="table table-striped table-hover table-bordered" style="line-height: 1">

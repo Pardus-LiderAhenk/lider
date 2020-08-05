@@ -22,7 +22,6 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 		url : searchPath,
 		dataType : 'json',
 		success : function(data) {
-			console.log(data)
 			rootComputer = null;
 			 var source =
 			  {
@@ -197,7 +196,6 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 									dataType : 'text',
 									success : function(ldapResult) {
 										var childs = jQuery.parseJSON(ldapResult);
-										console.log(childs)
 										var onlineCount=0;
 										for (var m = 0; m < childs.length; m++) {
 											 	// get a row.
@@ -295,7 +293,6 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 				dataType: "json",
 				success : function(ldapResult) {
 					progress("computerTreeDiv","progressComputerTree",'hide')
-					console.log(ldapResult)
 					if(ldapResult.length==0){
 						$.notify("Sonuç Bulunamadı", "warn");
 						return;

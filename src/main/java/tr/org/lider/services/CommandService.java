@@ -3,21 +3,28 @@ package tr.org.lider.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tr.org.lider.entities.CommandExecutionImpl;
 import tr.org.lider.entities.CommandExecutionResultImpl;
 import tr.org.lider.entities.CommandImpl;
-import tr.org.lider.entities.PolicyImpl;
 import tr.org.lider.entities.TaskImpl;
-import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.repositories.CommandExecutionRepository;
 import tr.org.lider.repositories.CommandExecutionResultRepository;
 import tr.org.lider.repositories.CommandRepository;
 
 @Service
 public class CommandService {
+	
+	Logger logger = LoggerFactory.getLogger(CommandService.class);
 	
 	@Autowired
 	private CommandRepository commandRepository;	
@@ -114,5 +121,46 @@ public class CommandService {
 	
 	public CommandExecutionResultImpl getCommandExecutionResultByID(Long id) {
 		return commandExecutionResultRepository.findOne(id);
+	}
+	
+	public void updateAgentDN(String currentDN, String newDN) {
+		commandExecutionRepository.updateAgentDN(currentDN, newDN);
+		
+		List<CommandImpl> listOfCommand = commandRepository.findAllByDnListJsonStringContaining(currentDN);
+		for (CommandImpl commandImpl : listOfCommand) {
+			String updatedDNList = commandImpl.getDnListJsonString().replace(currentDN, newDN);
+			
+			commandRepository.updateAgentDN(commandImpl.getId(), updatedDNList);
+		}
+	}
+	
+	@Transactional
+	public void deleteAgentCommands(String dn, String uid) {
+		String uidListJsonString = "[\"" + uid + "\"]";
+		commandRepository.deleteByUidListJsonString(uidListJsonString);
+		ObjectMapper mapper = new ObjectMapper();
+		List<CommandImpl> commandList = commandRepository.findByUidListJsonStringContaining("\"" + uid + "\"");
+		for (CommandImpl command : commandList) {
+			List<String> uidList = command.getUidList();
+			for (int i = 0; i < uidList.size(); i++) {
+				if(uidList.get(i).equals(uid)) {
+					uidList.remove(i);
+				}
+			}
+			
+			try {
+				command.setUidListJsonString(uidList != null ? mapper.writeValueAsString(uidList) : null);
+				for (int i = 0; i < command.getCommandExecutions().size(); i++) {
+					if(command.getCommandExecutions().get(i).getDn().equals(dn)) {
+						command.getCommandExecutions().remove(i);
+					}
+				}
+				commandRepository.save(command);
+			} catch (JsonProcessingException e) {
+				logger.error("Error occured while updating UID list of CommandImpl for deleting agent");
+			}
+			
+			commandExecutionRepository.deleteByDn(dn);
+		}
 	}
 }

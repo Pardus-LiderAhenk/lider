@@ -1,69 +1,161 @@
-<script type="text/javascript" src="js/plugins/profile/execute-script-profile.js"></script>
-<!-- <script type="text/javascript" src="js/policy/policy.js"></script> -->
+<script type="text/javascript" src="js/plugins/profile/rsyslog-profile.js"></script>
+<link rel="stylesheet" href="css/policy.profile.css" />
+
+<style>  
+input[name=log-quantity]::-webkit-inner-spin-button {
+    opacity: 1
+}
+</style>
+
 <div class="login-form-1">
-	<div class="row">
-		<div class="col-lg-6">
-			<div class="main-card mb-3 card">
-				<div class="card-header">
-					<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-					<div>BETİK LİSTESİ</div>
-				</div>
-				<div class="card-body">
-					<table class="table table-striped table-bordered display table-hover"
-						id="scriptTableTemp" border="1">
-						<thead>
-							<tr>
-								<th style="width: 50%">Adı</th>
-								<th style="width: 25%">Türü</th>
-		<!-- 						<th style="width: 25%">Oluşturma Tarihi</th> -->
-							</tr>
-						</thead>
-						<tbody></tbody>
-					</table>
-				</div>
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">RSYSLOG Ayarları</div>
+			<div class="col-lg-6 text-right">
+				<button id="rsyslogProfileSave" type="button" class="btn-shadow btn btn-info" title="Kaydet"><i class="fa fa-save"></i></button>
+				<button id="rsyslogProfileDel" type="button" class="btn-shadow btn btn-info" title="Sil"><i class="fa fa-trash-alt"></i></button>
+				<button id="rsyslogProfileUpdate" type="button" class="btn-shadow btn btn-info" title="Güncelle"><i class="fa fa-sync-alt"></i></button>
+				<button id="rsyslogProfileAddToPolicy" type="button" class="btn-shadow btn btn-info" title="Politikaya Ekle"><i class="fa fa-layer-group"></i></button>
 			</div>
 		</div>
-		<div class="col-lg-6">
-			<div class="main-card mb-3 card">
-				<div class="card-header">
-					<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-					<div class="col-lg-6 text-left">Betik Profil Listesi</div>
-					<div class="col-lg-6 text-right">
-						<button id="scriptProfileSave" type="button" class="btn-shadow btn btn-info" title="Profil Kaydet"><i class="fa fa-save"></i></button>
-						<button id="scriptProfileDel" type="button" class="btn-shadow btn btn-info" title="Profil Sil"><i class="fa fa-trash-alt"></i></button>
-						<button id="scriptProfileUpdate" type="button" class="btn-shadow btn btn-info" title="Profil Güncelle"><i class="fa fa-sync-alt"></i></button>
-						<button id="scriptProfileAddToPolicy" type="button" class="btn-shadow btn btn-info" title="Politikaya Ekle"><i class="fa fa-layer-group"></i></button>
+		<div class="card-body">
+			<div class="form-row">
+				<div class="col-md-5">
+					<div class="position-relative form-group">
+						<label for="rsyslogProfileNameForm" class="control-label">Ayar Adı</label>
+						<input type="text" class="form-control form-control-sm" id="rsyslogProfileNameForm" placeholder="Ayar adı giriniz...">
 					</div>
 				</div>
-				<div class="card-body">
-					<div class="form-row">
-						<div class="col-md-5">
-							<div class="position-relative form-group">
-								<label for="scriptProfileNameForm" class="control-label">Profil Adı</label>
-								<input type="text" class="form-control form-control-sm" id="scriptProfileNameForm" placeholder="Profil adı giriniz...">
-							</div>
-						</div>
-						<div class="col-md-7">
-							<div class="position-relative form-group">
-								<label for="scriptProfileDescriptionForm" class="control-label">Profil Açıklaması</label>
-								<input type="text" class="form-control form-control-sm" id="scriptProfileDescriptionForm" placeholder="Açıklama giriniz...">
-							</div>
-						</div>
+				<div class="col-md-7">
+					<div class="position-relative form-group">
+						<label for="rsyslogProfileDescriptionForm" class="control-label">Ayar Açıklaması</label>
+						<input type="text" class="form-control form-control-sm" id="rsyslogProfileDescriptionForm" placeholder="Açıklama giriniz...">
 					</div>
-					<small class="text-muted">Yeni bir profil oluşturmak için betik seçiniz. Daha sonra profil adı ve açıklama girerek Profil Ekle butonuna tıklayınız. </small>
-					<br>
-					<table class="table table-striped table-bordered display table-hover" id="scriptProfileTable" border="1">
-						<thead>
-							<tr>
-								<th style="width: 25%">Profil Adı</th>
-								<th style="width: 50%">Açıklama</th>
-								<th style="width: 25%">Oluşturma Tarihi</th>
-							</tr>
-						</thead>
-						<tbody></tbody>
-					</table>
-					<small class="text-muted">Listeden bir profil seçerek silebilir, gücelleyebilirsiniz.. Politikada kullanmak için Politikaya Ekle butonuna tıklayınız</small>
 				</div>
+			</div>
+			<div class="profile">
+				<table class="table table-striped table-bordered" id="rsyslogProfileTable" border="1">
+					<thead>
+						<tr>
+							<th style="width: 25%">Profil Adı</th>
+							<th style="width: 50%">Açıklama</th>
+							<th style="width: 25%">Oluşturma Tarihi</th>
+						</tr>
+					</thead>
+					<tbody id="rsyslogProfileBody"></tbody>
+				</table>
+			</div>
+			<small class="text-muted">Listeden bir ayar seçerek silebilir veya gücelleyebilirsiniz. Politikada kullanmak için Politikaya Ekle butonuna tıklayınız</small>
+		</div>
+	</div>
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="text-left"><h6 class="card-subtitle mb-2 text-muted" style="text-transform: none;">Rsyslog Ayarı Oluştur</h6></div>
+		</div>
+		<div class="card-body">
+			<form>
+				<p style="font-weight: bold;">Log Rotasyonu</p>
+				<div class="form-group row">
+				    <label for="cmbRotationFrequency" class="col-sm-6 col-form-label">Rotasyon sıklığı</label>
+			    	<select class="form-control form-control-sm col-sm-2" id="cmbRotationFrequency">
+						<option value="DAILY">Günlük</option>
+						<option value="WEEKLY">Haftalık</option>
+						<option value="MONTHLY">Aylık</option>
+						<option value="YEARLY">Yıllık</option>
+					</select>
+				</div>
+				<div class="form-group row">
+				    <label for="spinnerLogRotationCount" class="col-sm-6 col-form-label">Şu kadar eski logu tut</label>
+				    <input type="number" class="log-spinner col-sm-2 form-control form-control-sm" id="spinnerLogRotationCount"  value="1" name="log-quantity" min="1" max="99999">
+				</div>
+				<div class="form-group row">
+				    <label for="lblLogFileSize" class="col-sm-6 col-form-label">Log dosyası şu boyuttan büyük olduğunda rotasyona git(MB)</label>
+				    <input type="text" class="col-sm-2 form-control form-control-sm" id="lblLogFileSize">
+				</div>
+				<div class="custom-control custom-switch">
+					<div>
+						<input type="checkbox" class="custom-control-input" id="btnCheckNewLogFileAfterRotation">
+				  		<label class="custom-control-label" for="btnCheckNewLogFileAfterRotation">Rotasyondan sonra yeni log dosyası oluştur</label>
+				  	</div>
+				</div>
+				<div class="custom-control custom-switch">
+					<div>
+						<input type="checkbox" class="custom-control-input" id="btnCheckCompressOldLogFiles">
+				  		<label class="custom-control-label" for="btnCheckCompressOldLogFiles">Eski log dosyalarını sıkıştır</label>
+				  	</div>
+				</div>
+				<div class="custom-control custom-switch">
+					<div>
+						<input type="checkbox" class="custom-control-input" id="btnCheckSkipWithoutError">
+				  		<label class="custom-control-label" for="btnCheckSkipWithoutError">Log dosyası yoksa hata vermeden diğerine geç</label>
+				  	</div>
+				</div>
+				<br>
+				<p style="font-weight: bold;">Logların Yedekleneceği Uzak Sunucu</p>
+				<div class="form-row">
+					<div class="position-relative form-group col-md-5">
+						<label for="lblRemoteServerAddress" class="control-label">Adres</label>
+						<input type="text" class="form-control form-control-sm" id="lblRemoteServerAddress" placeholder="192.168.*.*">
+					</div>
+					<div class="position-relative form-group col-md-4">
+						<label for="lblLogPort" class="control-label">Port</label>
+						<input type="text" class="form-control form-control-sm" id="lblLogPort" placeholder="514">
+					</div>
+					<div class="position-relative form-group col-md-3">
+						<label for="cmbProtocol" class="control-label">Protokol</label>
+						<select class="form-control form-control-sm" id="cmbProtocol">
+							<option value="UDP">UDP</option>
+							<option value="TCP">TCP</option>
+						</select>
+					</div>
+				</div>
+			</form>
+			<br>
+			<p style="font-weight: bold;">Yönetilecek Loglar</p>
+			<div class="form-row">
+				<div class="position-relative form-group col-md-2">
+					<label for="cmbIsLocal" class="control-label">Yerel Kayıt</label>
+					<select class="form-control form-control-sm" id="cmbIsLocal">
+						<option value="NA">...</option>
+						<option value="YES">Evet</option>
+						<option value="NO">Hayır</option>
+					</select>
+				</div>
+				<div class="position-relative form-group col-md-4">
+					<label for="cmbRecordDescription" class="control-label">Kayıt Adı</label>
+					<select class="form-control form-control-sm" id="cmbRecordDescription">
+						<option value="0" selected="selected">Kayıt adı giriniz veya seçiniz</option>
+						<option value="1">*.*;auth,authpriv.none</option>
+						<option value="2">auth,authpriv.*</option>
+						<option value="3">daemon.*</option>
+						<option value="4">cron.*</option>
+						<option value="5">kern.*</option>
+						<option value="6">user.*</option>
+					</select>
+				</div>
+				<div class="position-relative form-group col-md-5">
+					<label for="txtLogFilePath" class="control-label">Log Kayıt Yolu</label>
+					<input type="text" class="form-control form-control-sm" id="txtLogFilePath" placeholder="/var/log/syslog">
+				</div>
+				<div class="position-relative form-group col-md-1">
+					<label for="btnAddLog" class="control-label">İşlem</label>
+					<button id="btnAddLog" type="button" class="form-control form-control-sm btn-shadow btn btn-sm btn-info"><i class="fa"></i>Ekle</button>
+				</div>
+			</div>
+			<div>
+				<table class="table table-sm table-striped table-bordered" id="manageLogsTable" style="line-height: 10px;">
+					<thead>
+						<tr>
+							<th style="width: 20%">Yerel Kayıt</th>
+							<th style="width: 40%">Kayıt Adı</th>
+							<th style="width: 40%">Log Kayıt Yolu</th>
+							<th style="width: 10%">#</th>
+						</tr>
+					</thead>
+					<tbody id="manageLogsTableBody"></tbody>
+				</table>
 			</div>
 		</div>
 	</div>

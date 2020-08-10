@@ -308,7 +308,8 @@ $('#btnRegisterAhenk').click(function() {
 		return;
 	}
 	
-	var cmdRegisterAhenk= 'sudo /usr/bin/python3 /usr/share/ahenk/ahenkd.py start '+ systemSettings.xmppHost + ' '+ domainUserName + ' ' + domainUserPassword + ' ' + domainName;
+	//var cmdRegisterAhenk= 'sudo /usr/bin/python3 /usr/share/ahenk/ahenkd.py start '+ systemSettings.xmppHost + ' '+ domainUserName + ' ' + domainUserPassword + ' ' + domainName;
+	var cmdRegisterAhenk= 'sudo /usr/bin/python3 /usr/share/ahenk/ahenkd.py start '+ systemSettings.xmppHost + ' '+ domainUserName + ' ' + domainUserPassword;
 
 	function cbResultRegister(result){
 		$.notify("Kayıt başarı ile gerçekleşti.", "success");

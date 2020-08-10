@@ -117,7 +117,7 @@ public class PluginService {
 		pluginProfileList.add(new PluginProfile("Oturum Yönetimi Profili", "login-manager-profile", "Oturum yönetimi politika profili", "MANAGE", findPluginIdByName("login-manager"), 1));
 		pluginProfileList.add(new PluginProfile("Rsyslog Profili", "rsyslog-profile", "Rsyslog politika profili", "CONFIGURE_RSYSLOG", findPluginIdByName("rsyslog"), 1));
 		pluginProfileList.add(new PluginProfile("USB Profili", "usb-profile", "USB politika profili", "MANAGE-USB", findPluginIdByName("usb"), 1));
-		pluginProfileList.add(new PluginProfile("Kullanıcı Ayrıcalıkları Profili", "user-privilege-profile", "Disk kota politika profili", "USER-PRIVILEGE", findPluginIdByName("user-privilege"), 1));
+		pluginProfileList.add(new PluginProfile("Kullanıcı Ayrıcalıkları Profili", "user-privilege-profile", "Kullanıcı Ayrıcalıkları Profili", "USER-PRIVILEGE", findPluginIdByName("user-privilege"), 1));
 		
 		for (int i = 0; i < pluginProfileList.size(); i++) {
 			if (findPluginProfileByPage(pluginProfileList.get(i).getPage()).isEmpty()) {

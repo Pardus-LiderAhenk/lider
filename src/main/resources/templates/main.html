@@ -286,8 +286,11 @@
 				                               <span th:text="#{server.settings}"></span>
 				                            </a>	
 				                            <div class="dropdown-divider"></div>
-								          		
-				                            <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}" 
+								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')}" 
+								          		class="nav-link dizin " href="#" data-page="plugins/definitions/conky_definition">
+								          		<span th:text="#{conky.definitions}"></span>
+								          	</a>
+								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}" 
 								          		class="nav-link dizin" href="#" data-page="plugins/definitions/script_definition">
 								          		<span th:text="#{script.definitions}"></span>
 								          	</a>
@@ -295,10 +298,7 @@
 								          		class="nav-link dizin " href="#" data-page="plugins/definitions/notify_definition">
 								          		<span th:text="#{eta.message.definitions}"></span>
 								          	</a>
-								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')}" 
-								          		class="nav-link dizin " href="#" data-page="plugins/definitions/conky_definition">
-								          		<span th:text="#{conky.definitions}"></span>
-								          	</a>
+								          	<div class="dropdown-divider"></div>
 								           	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}" 
 								           		class="nav-link dizin " href="#" data-page="plugins/definitions/registration_template">
 								           		<span th:text="#{registration.templates}"></span>

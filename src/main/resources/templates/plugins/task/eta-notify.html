@@ -13,8 +13,8 @@
 				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
 				<div class="col-lg-6 text-left">ETA BİLGİLENDİRME MESAJI</div>
 				<div class="col-lg-6 text-right">
-					<button id="sendTaskCronEtaNotify" type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
-					<button id="sendTaskEtaNotify" type="button" title="Mesaj Gönder" class="btn-shadow btn btn-info"><i class="fas fa-share-square"></i></button>
+					<button id="sendTaskCronEtaNotify" type="button" class="btn-shadow btn btn-info btn-sm" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+					<button id="sendTaskEtaNotify" type="button" title="Mesaj Gönder" class="btn-shadow btn btn-info btn-sm"><i class="fas fa-share-square"></i></button>
 				</div>
 			</div>
 			<div class="card-body">
@@ -27,12 +27,12 @@
 									<select	class="form-control" id="notifySelectBox">
 										<option value="NA" selected>Mesaj seçiniz...</option>
 									</select>
-									<small class="form-text text-muted">Gönderilmek istenilen mesaj seçilerek Mesaj Gönder butonuna tıklanır.</small>
+<!-- 									<small class="form-text text-muted">Gönderilmek istenilen mesaj seçilerek Mesaj Gönder butonuna tıklanır.</small> -->
 								</div>
-								<div class="col-lg-3">
-									<label for="notifyTime">Mesaj Süresi(sn)</label> <input type="text" class="form-control" id="notifyTime">
+								<div class="col-lg-2">
+									<label for="notifyTime">Süre(sn)</label> <input type="text" class="form-control" id="notifyTime">
 								</div>
-								<div class="col-lg-3">
+								<div class="col-lg-4">
 									<label for="notifySize">Mesaj Boyutu</label>
 									<select class="form-control" id="notifySize">
 										<option value="full" selected>Tam Ekran</option>

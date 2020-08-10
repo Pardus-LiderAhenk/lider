@@ -11,7 +11,7 @@ $(document).ready(function(){
 			data : 'innerPage=' + page,
 			dataType : 'text',
 			success : function(data) {
-				if(page=="logout"){
+				if(page == "logout"){
 					$('#mainHtmlContent').html(data);
 				}
 				else{
@@ -22,14 +22,15 @@ $(document).ready(function(){
 					}
 				}
 			},
-			error : function(data, errorThrown) {
-				console.log(data);
+			error: function (jqXHR, textStatus, errorThrown) {
+				if(jqXHR.status == 401) {
+					window.location.replace("/");
+				}
 			}
 		});
 	
 	});
 	$('#clearLogBtn').on('click', function(e) {	
-		
 		$('#logger').html("")
 	});
 });
@@ -46,7 +47,7 @@ function changeLanguage(language) {
 		success : function(data) {
 		},
 		error : function(data, errorThrown) {
-			console.log("Error occured while changing language.")
+			$.notify("Dil değiştirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
 		},
 		complete: function() {
 			location.reload();

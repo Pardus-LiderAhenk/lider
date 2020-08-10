@@ -40,11 +40,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		.csrf().disable()
 		.authorizeRequests()
 		.antMatchers(
+				"/lider/pages/**",
+				"/webfonts/**",
 				"/resources/**",
                 "/css/**",
                 "/js/**",
                 "/assets/**",
                 "/img/**",
+                "/images/**",
                 "/jqwidgets/**",
                 "/lider/config/**").permitAll()
 		.antMatchers("/").hasAnyRole("USER")

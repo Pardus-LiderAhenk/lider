@@ -63,6 +63,7 @@ public class PluginService {
 		pluginList.add(new PluginImpl("rsyslog", "1.0.0", "Log yönetimi", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("sudoers", "1.0.0", "Uygulama kurma yetkilendirme", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("user-privilege", "1.0.0", "Kullanıcı yetkilendierme ve kısıtlaması", true, false, true, true, true, true, false, false));
+		pluginList.add(new PluginImpl("ldap", "1.0.0", "Ahenk silme ve taşıma işlemleri", true, false, true, true, false, true, false, false));
 		
 		
 		for (int i = 0; i < pluginList.size(); i++) {

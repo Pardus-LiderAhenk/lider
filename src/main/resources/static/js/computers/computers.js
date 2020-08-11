@@ -252,8 +252,8 @@ $('#btnInstallAhenk').click(function() {
 		return;
 	}
 	
-	var cmdGetKeyring='sudo wget http://'+repoAddr+'/lider/liderahenk-archive-keyring.asc && sudo apt-key add liderahenk-archive-keyring.asc &&  sudo rm liderahenk-archive-keyring.asc '
-	var cmdSetSourcesListPardus= 'sudo printf "\ndeb http://'+repoAddr+'/pardus ondokuz main contrib non-free \ndeb http://'+repoAddr+'/guvenlik ondokuz main contrib non-free \ndeb [arch=amd64] http://'+repoAddr+'/liderahenk-test testing main" | sudo tee -a /etc/apt/sources.list'
+	var cmdGetKeyring='sudo wget http://'+repoAddr+'/liderahenk-archive-keyring.asc && sudo apt-key add liderahenk-archive-keyring.asc &&  sudo rm liderahenk-archive-keyring.asc '
+	var cmdSetSourcesListPardus= 'sudo printf "\ndeb [arch=amd64] http://'+repoAddr+'/liderahenk-test testing main" | sudo tee -a /etc/apt/sources.list'
 	var cmdUpdate= 'sudo apt update'
 	var cmdInstallAhenk= 'sudo apt install -y ahenk'
 	

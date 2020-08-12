@@ -48,6 +48,7 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 			baseRootDnComputer=rootDnComputer;
 			addSelectedEntryToTable(selectedRow)
 			
+			
 		},
 		//check action
 		function(checkedRows, row){
@@ -205,7 +206,7 @@ $('#btnSSHConnect').click(function() {
 });
 
 $('#btnTotalAgentRefresh').click(function(e){
-	getAllAgents();
+	getAllAndOnlineAgents(selectedRow.distinguishedName)
 });
 
 $('#btnCheckSsh').click(function() {
@@ -927,8 +928,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#selectedAgentDNSSH").text("");
 		$("#selectedAgentDNSSHIP").text("");
 		$("#agentDn").html(getEntryFolderName(selectedRow.distinguishedName));
-				
-		
+		getAllAndOnlineAgents(selectedRow.distinguishedName)
 	}
 }
 
@@ -1323,11 +1323,17 @@ function setShhLog(message){
 	$('#installAhenkLog').append("---------------------------------------------------------")
 }
 
-function getAllAgents() {
+function getAllAndOnlineAgents(searchDn) {
 	progress("computerTreeOnlineInfo","progressComputerTreeInfo",'show')
+	
+	var params = {
+				"searchDn" : searchDn,
+		};
 	$.ajax({
 		type: 'POST', 
 		url: "/lider/computer/getAgentList",
+		dataType: 'json',
+		data: params,
 		success: function(data) {
 			progress("computerTreeOnlineInfo","progressComputerTreeInfo",'hide')
 			$('#btnTotalAgent').append("")
@@ -1341,12 +1347,12 @@ function getAllAgents() {
 	});
 }
 
-/**
- * getting all agent size and online agent list for show on page
- * @param presence
- * @returns
- */
-getAllAgents();
+///**
+// * getting all agent size and online agent list for show on page
+// * @param presence
+// * @returns
+// */
+//getAllAgents();
 
 function getEntryFolderName(selDn) {
 	var dnArr=selDn.split(",");

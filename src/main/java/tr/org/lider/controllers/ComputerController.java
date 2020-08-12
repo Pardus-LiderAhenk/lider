@@ -269,13 +269,14 @@ public class ComputerController {
 	}
 	
 	@RequestMapping(value = "/getAgentList")
-	public LdapEntry getAgentList() {
+	public LdapEntry getAgentList(@RequestParam(value="searchDn") String searchDn) {
 		LdapEntry returnLdapEntry=null;
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		List<LdapEntry> onlineRetList = new ArrayList<LdapEntry>();
 		try {
+			
 			returnLdapEntry=new LdapEntry();
-			retList=ldapService.findSubEntries(configurationService.getLdapRootDn(), "(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
+			retList=ldapService.findSubEntries(searchDn, "(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
 			
 			for (LdapEntry ldapEntry : retList) {
 				if(ldapEntry.isOnline()) {

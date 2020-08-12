@@ -22,7 +22,7 @@ var ref_packages=connection.addHandler(packagesListener, null, 'message', null, 
 $('#sendTaskPackages').hide();
 $('#sendTaskCronPackages').hide();
 var packages_list_table = [];
-$('#packageBody').html('<tr id="packagesBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı. Paket Listele Butonuna Tıklayınız.</td></tr>');
+$('#packageBody').html('<tr id="packagesBodyEmptyInfo"><td colspan="6" class="text-center">Paket Bulunamadı. Paket Listele Butonuna Tıklayınız.</td></tr>');
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -97,7 +97,7 @@ function getPackagesList(params){
 			$.notify("Paketler listelenirken hata oluştu", "error");
 			$("#plugin-result-packages").html("Paketler listelenirken hata oluştu");
 			progress("divPackages","progressPackages",'hide')
-			$('#packageBody').html('<tr id="packagesBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı.</td></tr>');
+			$('#packageBody').html('<tr id="packagesBodyEmptyInfo"><td colspan="6" class="text-center">Paket Bulunamadı.</td></tr>');
 		},
 	});
 }

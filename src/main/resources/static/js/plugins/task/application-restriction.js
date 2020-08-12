@@ -22,7 +22,7 @@ var tableApp = null;
 var pluginTask_ApplicationRestriction = null;
 var ref_app_restriction=connection.addHandler(getApplicationListener, null, 'message', null, null,  null);
 $('#sendTaskRestAppBtn').hide();
-$('#applicationsBody').html('<tr id="applicationsBodyEmptyInfo"><td colspan="100%" class="text-center">Uygulama Bulunamadı.</td></tr>');
+$('#applicationsBody').html('<tr id="applicationsBodyEmptyInfo"><td colspan="4" class="text-center">Uygulama Bulunamadı.</td></tr>');
 
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
@@ -157,7 +157,7 @@ function getApplicationListener(msg) {
 							progress("divApplicationRestriction","progressApplicationRestriction",'hide');
 							$.notify(result, "error");
 							$("#plugin-result-app-restriction").html(("HATA: " + responseMessage).fontcolor("red"));
-							$('#applicationsBody').html('<tr id="applicationsBodyEmptyInfo"><td colspan="100%" class="text-center">Uygulama Bulunamadı.</td></tr>');
+							$('#applicationsBody').html('<tr id="applicationsBodyEmptyInfo"><td colspan="4" class="text-center">Uygulama Bulunamadı.</td></tr>');
 						}
 					});
 				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {

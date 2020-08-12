@@ -96,15 +96,15 @@ input[name=log-quantity]::-webkit-inner-spin-button {
 				<p style="font-weight: bold;">Logların Yedekleneceği Uzak Sunucu</p>
 				<div class="form-row">
 					<div class="position-relative form-group col-md-5">
-						<label for="lblRemoteServerAddress" class="control-label">Adres</label>
+						<label class="control-label">Adres</label>
 						<input type="text" class="form-control form-control-sm" id="lblRemoteServerAddress" placeholder="192.168.*.*">
 					</div>
 					<div class="position-relative form-group col-md-4">
-						<label for="lblLogPort" class="control-label">Port</label>
+						<label class="control-label">Port</label>
 						<input type="text" class="form-control form-control-sm" id="lblLogPort" placeholder="514">
 					</div>
 					<div class="position-relative form-group col-md-3">
-						<label for="cmbProtocol" class="control-label">Protokol</label>
+						<label class="control-label">Protokol</label>
 						<select class="form-control form-control-sm" id="cmbProtocol">
 							<option value="UDP">UDP</option>
 							<option value="TCP">TCP</option>
@@ -124,7 +124,7 @@ input[name=log-quantity]::-webkit-inner-spin-button {
 					</select>
 				</div>
 				<div class="position-relative form-group col-md-4">
-					<label for="cmbRecordDescription" class="control-label">Kayıt Adı</label>
+					<label class="control-label">Kayıt Adı</label>
 					<select class="form-control form-control-sm" id="cmbRecordDescription">
 						<option value="0" selected="selected">Kayıt adı giriniz veya seçiniz</option>
 						<option value="1">*.*;auth,authpriv.none</option>
@@ -136,11 +136,11 @@ input[name=log-quantity]::-webkit-inner-spin-button {
 					</select>
 				</div>
 				<div class="position-relative form-group col-md-5">
-					<label for="txtLogFilePath" class="control-label">Log Kayıt Yolu</label>
+					<label class="control-label">Log Kayıt Yolu</label>
 					<input type="text" class="form-control form-control-sm" id="txtLogFilePath" placeholder="/var/log/syslog">
 				</div>
 				<div class="position-relative form-group col-md-1">
-					<label for="btnAddLog" class="control-label">İşlem</label>
+					<label><br></label>
 					<button id="btnAddLog" type="button" class="form-control form-control-sm btn-shadow btn btn-sm btn-info"><i class="fa"></i>Ekle</button>
 				</div>
 			</div>

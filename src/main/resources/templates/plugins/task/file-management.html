@@ -20,23 +20,28 @@
 				<div class="login-form-1">
 					<div class="form-group">
 						<div class="form-row">
-							<div class="form-group col-lg-5">
-								<select class="form-control" id="favUsedFileSelectBox">
-									<option value="NA" selected>Sık kullanılan dosyalar...</option>
-									<option value="/etc/ahenk/ahenk.conf">ahenk.conf</option>
-									<option value="/etc/ssh/sshd_config">sshd_conf</option>
-									<option value="/etc/hosts">hosts</option>
-									<option value="/etc/resolv.conf">resolv.conf</option>
-									<option value="/etc/apt/sources.list">sources.list</option>
-									<option value="/etc/sssd/sssd.conf">sssd.conf</option>
-								</select>
-							</div>
-							<div class="input-group mb-3 col-lg-7">
-								<div class="input-group-prepend">
-									<span class="input-group-text">Dosya Yolu</span>
+							<div class="col-lg-5">
+								<label>Sık Kullanılan Dosyalar</label>
+								<div class="form-group ">
+									<select class="form-control" id="favUsedFileSelectBox">
+										<option value="NA" selected>...</option>
+										<option value="/etc/ahenk/ahenk.conf">ahenk.conf</option>
+										<option value="/etc/ssh/sshd_config">sshd_conf</option>
+										<option value="/etc/hosts">hosts</option>
+										<option value="/etc/resolv.conf">resolv.conf</option>
+										<option value="/etc/apt/sources.list">sources.list</option>
+										<option value="/etc/sssd/sssd.conf">sssd.conf</option>
+									</select>
 								</div>
-								<input type="text" id="filePath" class="form-control" placeholder="/tmp/example.txt" aria-describedby="fileManagementHelp">
-								<button id=getFileBtn type="button"	class="btn-shadow btn btn-info" title="Dosya Ara"><i class="fa fa-search"></i></button>
+							</div>
+							<div class="col-lg-7">
+								<label>Dosya Yolu</label>
+								<div class="input-group mb-3">
+									<input type="text" id="filePath" class="form-control" placeholder="/tmp/example.txt" aria-describedby="fileManagementHelp">
+									<div class="input-group-append">
+										<button id=getFileBtn type="button"	class="btn btn-info" title="Dosya Ara"><i class="fa fa-search"></i></button>
+									</div>
+								</div>
 							</div>
 						</div>
 						<small id="fileManagementHelp" class="form-text text-muted">İstemcideki bir dosyayı düzenlemek için Sık kullanılanlardan dosya yolu seçilirek ya da Dosya Yolu girilirek Dosya Ara butonu ile içerik görüntülenir. Düzenleme işleminden sonra Kaydet butonu ile değişiklikler kaydedilir. İstemcide yeni bir dosya oluşturmak için Dosya Yolu ve İçerik girilerek Kaydet butonuna tıklanır. </small>

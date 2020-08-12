@@ -33,7 +33,7 @@ $("#sendTaskEditLocalUser").hide();
 $("#sendTaskDeleteLocalUser").hide();
 $("#sendTaskAddLocalUser").hide();
 $("#localUserForm").hide();
-$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="100%" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
+$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
 
 createGroupsSelectBox();
 
@@ -95,7 +95,7 @@ function localUserListener(msg) {
 				else {
 					$.notify(responseMessage, "error");
 					$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
-					$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="100%" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
+					$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
 				}
 			}
 			if (xmppResponse.commandClsId == "EDIT_USER" || xmppResponse.commandClsId == "ADD_USER" || xmppResponse.commandClsId == "DELETE_USER") {
@@ -117,7 +117,7 @@ function localUserListener(msg) {
 				}else {
 					$.notify(responseMessage, "error");
 					$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
-					$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="100%" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
+					$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
 				}
 			}
 		}

@@ -1451,8 +1451,8 @@ function createMemberList(row) {
 
 function clearAndHide() {
 	$('#userGroupName').html("Lütfen Kullanıcı Grubu Seçiniz");
-	$('#bodyMembers').html('<tr><td colspan="100%" class="text-center">Lütfen Kullanıcı Grubu Seçiniz.</td></tr>');
-	$('#bodyExecutedPolicies').html('<tr id="bodyExecutedPoliciesRow"><td colspan="100%" class="text-center">Lütfen Kullanıcı Grubu Seçiniz.</td></tr>');
+	$('#bodyMembers').html('<tr><td colspan="3" class="text-center">Lütfen Kullanıcı Grubu Seçiniz.</td></tr>');
+	$('#bodyExecutedPolicies').html('<tr id="bodyExecutedPoliciesRow"><td colspan="5" class="text-center">Lütfen Kullanıcı Grubu Seçiniz.</td></tr>');
 	$('#userGroupButtonActions').hide()
 	$('#ouOperations').show();
 	policyOfSelectedGroup = null;
@@ -1605,7 +1605,7 @@ function getPolicyListForSelectedGroup(selectedGroup) {
 				$("#bodyExecutedPolicies").html(html);
 			} else {
 				if (selectedRow.type == "GROUP" ) {
-					$('#bodyExecutedPolicies').html('<tr id="bodyExecutedPoliciesRow"><td colspan="100%" class="text-center">Atanmış Politika Bulunamadı.</td></tr>');
+					$('#bodyExecutedPolicies').html('<tr id="bodyExecutedPoliciesRow"><td colspan="5" class="text-center">Atanmış Politika Bulunamadı.</td></tr>');
 					policyOfSelectedGroup = null;
 				}
 			}

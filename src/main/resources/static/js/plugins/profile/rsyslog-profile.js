@@ -102,7 +102,7 @@ function createRsyslogProfileTable() {
 		}
 		$('#rsyslogProfileBody').html(profile);
 	} else {
-		$('#rsyslogProfileBody').html('<tr id="rsyslogProfileBodyEmptyInfo"><td colspan="100%" class="text-center">Rsyslog ayarı bulunamadı.</td></tr>');
+		$('#rsyslogProfileBody').html('<tr id="rsyslogProfileBodyEmptyInfo"><td colspan="3" class="text-center">Rsyslog ayarı bulunamadı.</td></tr>');
 	}
 }
 
@@ -249,7 +249,7 @@ function createManageLogsTable() {
 		}
 		$('#manageLogsTableBody').html(html);
 	} else {
-		$('#manageLogsTableBody').html('<tr id="manageLogsTableBodyEmptyInfo"><td colspan="100%" class="text-center">Yönetilecek log bulunamadı</td></tr>');
+		$('#manageLogsTableBody').html('<tr id="manageLogsTableBodyEmptyInfo"><td colspan="4" class="text-center">Yönetilecek log bulunamadı</td></tr>');
 	}
 }
 
@@ -267,7 +267,7 @@ function deleteLogFromManageLogTable(select) {
 		}
 	}
 	if(logItemList == null || logItemList.length == 0) {
-		$('#manageLogsTableBody').html('<tr id="manageLogsTableBodyEmptyInfo"><td colspan="100%" class="text-center">Yönetilecek log bulunamadı</td></tr>');
+		$('#manageLogsTableBody').html('<tr id="manageLogsTableBodyEmptyInfo"><td colspan="4" class="text-center">Yönetilecek log bulunamadı</td></tr>');
 	}
 }
 

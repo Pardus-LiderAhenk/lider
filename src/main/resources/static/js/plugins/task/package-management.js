@@ -20,7 +20,7 @@ var dnlist = [];
 var tableInsPackages;
 var pluginTask_PackageManagement = null;
 $('#sendTaskDeletePackageBtn').hide();
-$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı.</td></tr>');
+$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="3" class="text-center">Paket Bulunamadı.</td></tr>');
 var ref_package_management=connection.addHandler(getPackagesListener, null, 'message', null, null,  null);
 
 if(selectedEntries){
@@ -135,7 +135,7 @@ function getPackagesListener(msg) {
 					progress("divPackageManager","progressPackageManager",'hide');
 					$.notify(responseMessage, "error");
 					$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
-					$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı.</td></tr>');
+					$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="3" class="text-center">Paket Bulunamadı.</td></tr>');
 				}
 			}
 			if (xmppResponse.commandClsId == "PACKAGE_MANAGEMENT") {
@@ -159,7 +159,7 @@ function getPackagesListener(msg) {
 				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
 					$.notify(responseMessage, "error");
 					$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
-					$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Bulunamadı.</td></tr>');
+					$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="3" class="text-center">Paket Bulunamadı.</td></tr>');
 				}
 			}
 		}

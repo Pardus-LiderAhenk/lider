@@ -21,7 +21,7 @@ var pluginTask_Repositories = null;
 var ref_repositories=connection.addHandler(repositoryListener, null, 'message', null, null,  null);
 $('#sendTaskRepositories').hide();
 $('#repoAddressDefinition').hide();
-$('#repositoriesBody').html('<tr id="repositoriesBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Deposu Bulunamadı.</td></tr>');
+$('#repositoriesBody').html('<tr id="repositoriesBodyEmptyInfo"><td colspan="2" class="text-center">Paket Deposu Bulunamadı.</td></tr>');
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -148,7 +148,7 @@ function repositoryListener(msg) {
 				createRepositorieTable();
 				$("#plugin-result-repositories").html(("HATA:" + responseMessage).fontcolor("red"));
 				$.notify(responseMessage, "error");
-				$('#repositoriesBody').html('<tr id="repositoriesBodyEmptyInfo"><td colspan="100%" class="text-center">Paket Deposu Bulunamadı.</td></tr>');
+				$('#repositoriesBody').html('<tr id="repositoriesBodyEmptyInfo"><td colspan="2" class="text-center">Paket Deposu Bulunamadı.</td></tr>');
 			}
 		}
 		// we must return true to keep the handler alive. returning false would remove it after it finishes.

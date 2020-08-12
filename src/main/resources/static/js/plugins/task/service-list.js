@@ -20,7 +20,7 @@ var pluginTask_ServiceList = null;
 var ref_service_list=connection.addHandler(getServiceListener, null, 'message', null, null,  null);
 $('#sendTaskServiceManagement').hide();
 $('#serviceListExportPdf').hide();
-$('#serviceListBody').html('<tr id="serviceListBodyEmptyInfo"><td colspan="100%" class="text-center">Servis Bulunamadı.</td></tr>');
+$('#serviceListBody').html('<tr id="serviceListBodyEmptyInfo"><td colspan="6" class="text-center">Servis Bulunamadı.</td></tr>');
 
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
@@ -201,7 +201,7 @@ function getServiceListener(msg) {
 							},
 							error: function(result) {
 								$.notify(result, "error");
-								$('#serviceListBody').html('<tr id="serviceListBodyEmptyInfo"><td colspan="100%" class="text-center">Servis Bulunamadı.</td></tr>');
+								$('#serviceListBody').html('<tr id="serviceListBodyEmptyInfo"><td colspan="6" class="text-center">Servis Bulunamadı.</td></tr>');
 							}
 						});
 					}

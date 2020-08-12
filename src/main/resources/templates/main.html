@@ -159,16 +159,23 @@
                                 <span th:text="#{computer.management}"></span>
                             </a>
                         </li>
-                        <li class="dropdown nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}">
+                        <li class="dropdown nav-item liderMenuItem" 
+                        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+                        			or ${#lists.contains(roleNames, 'ROLE_USERS')} 
+                        			or ${#lists.contains(roleNames, 'ROLE_AD_SYNC')}">
                             <a class="nav-link dropdown-toggle " href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
                                <i class="nav-link-icon fa fa-users-cog"></i>
                                 <span th:text="#{user.management}"></span>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-						        <a class="nav-link dizin" href="#" data-page="users" >
+						        <a class="nav-link dizin" 
+						        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}" 
+						        	href="#" data-page="users" >
 	                                <span th:text="#{user.operations}"></span>
 	                            </a>
-	                            <a class="nav-link dizin" href="#" data-page="ad_user" >
+	                            <a class="nav-link dizin" 
+	                            	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AD_SYNC')}" 
+	                            	href="#" data-page="ad_user" >
 		                            <span th:text="#{ad.synchronization}"></span>
 		                        </a>
 					        </div>
@@ -177,7 +184,8 @@
                         th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
                         		or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')} 
                         		or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')} 
-                        		or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}">
+                        		or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}
+                        		or ${#lists.contains(roleNames, 'ROLE_POLICY')}">
                             <a class="nav-link dropdown-toggle " href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
                                 <i class="nav-link-icon fa fa-chalkboard-teacher"></i>
                                 <span th:text="#{group.management}"></span>
@@ -195,7 +203,7 @@
 					          	class="nav-link  dizin " href="#" data-page="sudo_groups">
 					          		<span th:text="#{group.management.role}"></span>
 					          	</a>
-					          <a class="nav-link  dizin" href="#" data-page="policy" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')}" >
+					          <a class="nav-link  dizin" href="#" data-page="policy" th:if="${#lists.contains(roleNames, 'ROLE_POLICY')}" >
                                 <span th:text="#{policy.management}"></span>
                               </a>
 					          	
@@ -272,7 +280,13 @@
 	                                        </a>
                                         </div>
                                     </div>
-									<div class="btn-group">
+									<div class="btn-group"
+										th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+			                        		or ${#lists.contains(roleNames, 'ROLE_SERVER_SETTINGS')} 
+			                        		or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')} 
+			                        		or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}
+			                        		or ${#lists.contains(roleNames, 'ROLE_ETA_MESSAGE_DEFINITION')}
+			                        		or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}">
 										<a data-toggle="dropdown" aria-haspopup="true"
 											aria-expanded="false" class="p-0 btn" style="margin-top: 7px;"> <img width="22"
 											class="" src="img/settings.jpeg"
@@ -281,11 +295,16 @@
 										
 										<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
 											 
-											 <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SETTINGS')}" 
+											 <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SERVER_SETTINGS')}" 
 											 	class="nav-link dizin" href="#" data-page="settings" >
 				                               <span th:text="#{server.settings}"></span>
 				                            </a>	
-				                            <div class="dropdown-divider"></div>
+				                            <div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+					                        		or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')} 
+					                        		or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}
+					                        		or ${#lists.contains(roleNames, 'ROLE_ETA_MESSAGE_DEFINITION')}"
+				                            	class="dropdown-divider"></div>
+								          	
 								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')}" 
 								          		class="nav-link dizin " href="#" data-page="plugins/definitions/conky_definition">
 								          		<span th:text="#{conky.definitions}"></span>
@@ -294,11 +313,12 @@
 								          		class="nav-link dizin" href="#" data-page="plugins/definitions/script_definition">
 								          		<span th:text="#{script.definitions}"></span>
 								          	</a>
-								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_NOTIFY_DEFINITION')}" 
+								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_ETA_MESSAGE_DEFINITION')}" 
 								          		class="nav-link dizin " href="#" data-page="plugins/definitions/notify_definition">
 								          		<span th:text="#{eta.message.definitions}"></span>
 								          	</a>
-								          	<div class="dropdown-divider"></div>
+								          	<div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}"
+								          		class="dropdown-divider"></div>
 								           	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}" 
 								           		class="nav-link dizin " href="#" data-page="plugins/definitions/registration_template">
 								           		<span th:text="#{registration.templates}"></span>

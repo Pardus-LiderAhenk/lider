@@ -174,7 +174,7 @@ public class SettingsController {
 					String[] priviliges = entry.getAttributesMultiValues().get("liderPrivilege");
 					for (int i = 0; i < priviliges.length; i++) {
 						if(priviliges[i].startsWith("ROLE_")) {
-							ldapService.updateEntryRemoveAttributeWithValue(dn, "liderPrivilege", priviliges[i]);
+							ldapService.updateEntryRemoveAttribute(dn, "liderPrivilege");
 						}
 					}
 					for (int i = 0; i < roles.length; i++) {

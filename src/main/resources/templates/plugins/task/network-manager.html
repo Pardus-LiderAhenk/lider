@@ -41,9 +41,9 @@
 					<div class="form-group">
 						<ul id="conkyTabsTask" class="nav nav-tabs">
 							<li class="nav-item"><a role="tab" id="currentConfTabBtn" class="nav-link active" data-toggle="tab" href="#currentConfigurationTabTask"><span><i class="fa fa-file-code"></i> Mevcut Konfigürasyon</span></a></li>
-							<li class="nav-item"><a role="tab" id="dnsTabBtn" class="nav-link" data-toggle="tab" href="#dnsSettingsTabTask"> <span><i class="fa fa-globe"></i> DNS Ayarları</span></a></li>
+							<li class="nav-item"><a role="tab" id="dnsTabBtn" class="nav-link" data-toggle="tab" href="#dnsSettingsTabTask"> <span><i class="fa fa-globe"></i> DNS</span></a></li>
 							<li class="nav-item"><a role="tab" id="hostsTabBtn" class="nav-link" data-toggle="tab" href="#hostsSettingsTabTask"> <span><i class="fa fa-server"></i> Sunucular</span></a></li>
-							<li class="nav-item"><a role="tab" id="networkTabBtn" class="nav-link" data-toggle="tab" href="#networkSettingsTabTask"> <span><i class="fa fa-network-wired"></i> Ağ Ayarları</span></a></li>
+							<li class="nav-item"><a role="tab" id="networkTabBtn" class="nav-link" data-toggle="tab" href="#networkSettingsTabTask"> <span><i class="fa fa-network-wired"></i> Ağ</span></a></li>
 							<li class="nav-item"><a role="tab" id="portTabBtn" class="nav-link" data-toggle="tab" href="#portSettingsTabTask"> <span><i class="fa fa-compress-arrows-alt"></i> Portlar</span></a></li>
 						</ul>
 						<div class="tab-content">
@@ -51,9 +51,9 @@
 								<div class="row">
 									<div class="input-group mb-3 col-lg-6 text-left">
 									    <div class="input-group-prepend">
-									      	<span class="input-group-text"><i class="fa fa-laptop-code"></i></span>
+									      	<span class="input-group-text form-control-sm"><i class="fa fa-laptop-code"></i></span>
 									    </div>
-									    <input type="text" class="form-control" id="machineHostname" placeholder="İstemci Adı..">
+									    <input type="text" class="form-control form-control-sm" id="machineHostname" placeholder="İstemci Adı..">
 									</div>
 								</div>
 								<div class="row">
@@ -74,12 +74,12 @@
 								<div class="form-group row">
 									<div class="input-group mb-3 col-sm-6">
 									    <div class="input-group-prepend">
-									      	<span class="input-group-text"><i class="fa fa-globe"></i></span>
+									      	<span class="input-group-text form-control-sm"><i class="fa fa-globe"></i></span>
 									    </div>
-									    <input type="text" class="form-control" id="definitionDnsForm" placeholder="İP Adresi (192.168.*.*)">
+									    <input type="text" class="form-control form-control-sm" id="definitionDnsForm" placeholder="İP Adresi (192.168.*.*)">
 									</div>
 									<div class="col-sm-2">
-										<select class="form-control" id="addDnsTypeSelect">
+										<select class="form-control custom-select custom-select-sm" id="addDnsTypeSelect">
 											<option value="nameserver" selected>İP</option>
 											<option value="search">Alan Adı</option>
 										</select>
@@ -105,15 +105,15 @@
 								<div class="form-group row">
 									<div class="input-group mb-3 col-sm-5">
 									    <div class="input-group-prepend">
-									      	<span class="input-group-text"><i class="fa fa-network-wired"></i></span>
+									      	<span class="input-group-text form-control-sm"><i class="fa fa-network-wired"></i></span>
 									    </div>
-									    <input type="text" class="form-control" id="definitionHostIpForm" placeholder="İP Adresi (192.168.*.*)">
+									    <input type="text" class="form-control form-control-sm" id="definitionHostIpForm" placeholder="İP Adresi (192.168.*.*)">
 									</div>
 									<div class="input-group mb-3 col-sm-5">
 									    <div class="input-group-prepend">
-									      	<span class="input-group-text"><i class="fas fa-server"></i></span>
+									      	<span class="input-group-text form-control-sm"><i class="fas fa-server"></i></span>
 									    </div>
-									    <input type="text" class="form-control" id="definitionHostServerForm" placeholder="Sunucu Adı (liderahenk.org)">
+									    <input type="text" class="form-control form-control-sm" id="definitionHostServerForm" placeholder="Sunucu Adı (liderahenk.org)">
 									</div>
 								 </div>
 								 <div class="network-manager">
@@ -150,7 +150,7 @@
 									<div class="form-group row">
 										<label for="colFormLabel" class="col-sm-2 col-form-label"><i class="fa fa-wifi"></i> Tip</label>
 										<div class="col-sm-3">
-											<select class="form-control" id="networkType">
+											<select class="form-control custom-select custom-select-sm" id="networkType">
 												<option value="STATIC">STATIC</option>
 												<option value="LOOPBACK">LOOPBACK</option>
 												<option value="DHCP">DHCP</option>
@@ -166,25 +166,25 @@
 									<div class="form-group row" id="networkNameGrp">
 									    <label for="colFormLabel" class="col-sm-2 col-form-label"><i class="fa fa-ethernet"></i> Ağ Adı</label>
 									    <div class="col-sm-10">
-									      	<input type="text" class="form-control" id="networkName" placeholder="enp0s3">
+									      	<input type="text" class="form-control form-control-sm" id="networkName" placeholder="enp0s3">
 									    </div>
 									</div>
 									<div class="form-group row" id="networkAddressGrp">
 									    <label for="colFormLabel" class="col-sm-2 col-form-label"><i class="fa fa-network-wired"></i> İP Adresi</label>
 									    <div class="col-sm-10">
-									    	<input type="text" class="form-control" id="networkAddress" placeholder="192.168.*.*">
+									    	<input type="text" class="form-control form-control-sm" id="networkAddress" placeholder="192.168.*.*">
 									    </div>
 									</div>
 									<div class="form-group row" id="networkNetmaskGrp">
 									    <label for="colFormLabel" class="col-sm-2 col-form-label"><i class="fa fa-theater-masks"></i> Netmask</label>
 									    <div class="col-sm-10">
-									      <input type="text" class="form-control" id="networkNetmask" placeholder="255.255.*.*">
+									      <input type="text" class="form-control form-control-sm" id="networkNetmask" placeholder="255.255.*.*">
 									    </div>
 									</div>
 									<div class="form-group row" id="networkGatewayGrp">
 									    <label for="colFormLabel" class="col-sm-2 col-form-label"><i class="fa fa-dungeon"></i> Gateway</label>
 									    <div class="col-sm-10">
-									      <input type="text" class="form-control" id="networkGateway" placeholder="192.168.*.*">
+									      <input type="text" class="form-control form-control-sm" id="networkGateway" placeholder="192.168.*.*">
 									    </div>
 									</div>
 								</div>

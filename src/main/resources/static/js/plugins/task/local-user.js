@@ -27,8 +27,6 @@ var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 var digits = "0123456789";
 var splChars = "+=.@*!";
 
-
-//$("#localUserForm").hide();
 $("#sendTaskEditLocalUser").hide();
 $("#sendTaskDeleteLocalUser").hide();
 $("#sendTaskAddLocalUser").hide();

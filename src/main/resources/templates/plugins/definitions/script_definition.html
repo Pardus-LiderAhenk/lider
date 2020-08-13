@@ -24,7 +24,7 @@
 					<div class="col-md-6" style="text-transform: none;"><h6>Betik Listesi </h6></div>
 					<div class="col-md-6">
 					<button id=scriptDelBtn type="button"
-							class="btn-shadow btn btn-info pull-right">Sil</button>
+							class="btn-shadow btn btn-info btn-sm pull-right">Sil</button>
 					</div>
 				</div>
 				<div class="card-body">
@@ -53,20 +53,20 @@
 					<div class="col-md-8"></div>
 					<div class="col-md-4">
 						<button id=scriptCleanBtn type="button"
-							class="btn-shadow btn btn-info">Temizle</button>
+							class="btn-shadow btn btn-info btn-sm">Temizle</button>
 						<button id=scriptSaveBtn type="button"
-							class="btn-shadow btn btn-info">Kaydet</button>
+							class="btn-shadow btn btn-info btn-sm">Kaydet</button>
 					</div>
 				</div>
 				<div class="card-body">
 					<div class="row">
 						<div class="form-group col-lg-9">
 							<label for="scriptNameTemp">Betik Adı</label> <input type="text"
-								class="form-control" id="scriptNameTemp">
+								class="form-control form-control-sm" id="scriptNameTemp">
 						</div>
 						<div class="form-group col-lg-3">
-							<label for="scriptType" onclick="scriptTypeChange()">Betik
-								Türü</label> <select class="form-control" id="scriptType">
+							<label for="scriptType" onclick="scriptTypeChange()">Betik Türü</label>
+							<select class="form-control custom-select custom-select-sm " id="scriptType">
 								<option value="bash">Bash</option>
 								<option value="python">Python</option>
 								<option value="perl">Perl</option>

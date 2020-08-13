@@ -203,7 +203,8 @@
 					          	class="nav-link  dizin " href="#" data-page="sudo_groups">
 					          		<span th:text="#{group.management.role}"></span>
 					          	</a>
-					          <a class="nav-link  dizin" href="#" data-page="policy" th:if="${#lists.contains(roleNames, 'ROLE_POLICY')}" >
+					          <a class="nav-link  dizin" href="#" data-page="policy" 
+					          	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_POLICY')}" >
                                 <span th:text="#{policy.management}"></span>
                               </a>
 					          	

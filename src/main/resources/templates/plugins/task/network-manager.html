@@ -23,6 +23,8 @@
 			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
 			<div class="col-lg-6 text-left">AĞ YÖNETİMİ</div>
 			<div class="col-lg-6 text-right">
+				<button id="sendTaskCronNetworkManager" type="button" class="btn-shadow btn btn-info btn-sm" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+				<button id="getNetworkSettingsBtn" type="button" title="Ağ Ayarları Listele" class="btn-shadow btn btn-info btn-sm"><i class="fas fa-list-ul"></i></button>
 				<button id="updateMachineHostnameBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Bilgisayar Adını Güncelle"><i class="fas fa-sync"></i></button>
 				<button id="addDnsBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="DNS Ekle"><i class="fa fa-plus"></i></button>
 				<button id="deleteDnsBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="DNS Sil"><i class="fa fa-trash-alt"></i></button>
@@ -32,8 +34,6 @@
 				<button id="deleteNetworkSettingBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Ağ Ayarı Sil"><i class="fa fa-trash-alt"></i></button>
 				<button id="allowPortBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="İzin Ver"><i class="fa fa-check-square"></i></button>
 				<button id="blockPortBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Engelle"><i class="fas fa-ban"></i></button>
-				<button id="sendTaskCronNetworkManager" type="button" class="btn-shadow btn btn-info btn-sm" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
-				<button id="getNetworkSettingsBtn" type="button" title="Ağ Ayarları Listele" class="btn-shadow btn btn-info btn-sm"><i class="fas fa-list-ul"></i></button>
 			</div>
 		</div>
 		<div class="card-body">
@@ -103,13 +103,13 @@
 <!-- 				HOSTS settings -->
 							<div class="tab-pane fade" id="hostsSettingsTabTask">
 								<div class="form-group row">
-									<div class="input-group mb-3 col-sm-5">
+									<div class="input-group mb-3 col-sm-6">
 									    <div class="input-group-prepend">
 									      	<span class="input-group-text form-control-sm"><i class="fa fa-network-wired"></i></span>
 									    </div>
 									    <input type="text" class="form-control form-control-sm" id="definitionHostIpForm" placeholder="İP Adresi (192.168.*.*)">
 									</div>
-									<div class="input-group mb-3 col-sm-5">
+									<div class="input-group mb-3 col-sm-6">
 									    <div class="input-group-prepend">
 									      	<span class="input-group-text form-control-sm"><i class="fas fa-server"></i></span>
 									    </div>

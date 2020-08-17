@@ -36,6 +36,7 @@ var ref_network_manager = connection.addHandler(networkManagerListener, null, 'm
 
 $('#currentConfigurationTabTask').tab('show');
 networkSettingsHideBtn();
+setEnableOrDisableNerworkManagerForm(true);
 
 function networkSettingsHideBtn() {
 	$("#updateMachineHostnameBtn").hide();
@@ -48,6 +49,14 @@ function networkSettingsHideBtn() {
 	$('#allowPortBtn').hide();
 	$('#blockPortBtn').hide();
 	$('#addNetworkForm').hide();
+}
+
+function setEnableOrDisableNerworkManagerForm(disabled) {
+	$("#machineHostname").prop("disabled", disabled);
+	$("#definitionDnsForm").prop("disabled", disabled);
+	$("#addDnsTypeSelect").prop("disabled", disabled);
+	$("#definitionHostIpForm").prop("disabled", disabled);
+	$("#definitionHostServerForm").prop("disabled", disabled);
 }
 
 if(selectedEntries){
@@ -160,6 +169,7 @@ function networkManagerListener(msg) {
 				|| clsId == "DELETE_HOST" || clsId == "DELETE_DNS" || clsId == "DELETE_NETWORK" || clsId == "ADD_HOST") {
 				progress("divNetworkManager","progressNetworkManager",'hide')
 				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+					setEnableOrDisableNerworkManagerForm(false);
 					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 					$('#networkManagerHelp').html("");
 					$('#updateHostnameHelp').html("Bilgisayar adını değiştirmek için Bilgisayar Adını Güncelle butonuna tıklayınız.");

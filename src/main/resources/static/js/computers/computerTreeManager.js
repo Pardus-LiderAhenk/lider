@@ -117,8 +117,12 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 				     pageSizeOptions: ['15', '20', '50'],
 				     icons: function (rowKey, dataRow) {
 				    	    var level = dataRow.level;
+
 				    	    if(dataRow.type == "AHENK"){
-				    	    	return "img/linux.png";
+				    	    	if(dataRow.attributes['liderDeviceOSType'] == 'Windows')
+				    	    		return "img/windows.png";
+				    	    	else
+				    	    		return "img/linux.png";
 				    	    }
 				    	    else if(dataRow.type =="ORGANIZATIONAL_UNIT")
 				    	    	{return "img/folder.png";}

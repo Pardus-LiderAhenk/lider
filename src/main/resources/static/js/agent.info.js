@@ -373,7 +373,7 @@ function reloadTable(pNumber, pSize, field, text) {
 						else if(property.propertyName == "hardware.disk.total") {
 							disk = property.propertyValue;
 						}
-						else if(property.propertyName == "os.distributionName") {
+						else if(property.propertyName == "os.name") {
 							os = property.propertyValue;
 						}
 						else if(property.propertyName == "os.distributionVersion") {
@@ -392,7 +392,7 @@ function reloadTable(pNumber, pSize, field, text) {
 		        				  + '<td  class="text-center">' + order + '</td>';
 		        	order++;
 		        	if(os == "Windows") {
-		        		trElement +=  '<td><img src="img/windows.png" class="avatar" alt="Avatar"><span>' + element.hostname + '</span></td>';
+		        		trElement +=  '<td><img src="img/windows.png" class="middle" alt="Avatar"><span>' + element.hostname + '</span></td>';
 		        	}
 		        	else {
 		        		trElement += '<td><img src="img/pardus.png" class="middle" alt="Avatar"><span >' + element.hostname + '</span></td>';

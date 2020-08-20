@@ -31,14 +31,12 @@ import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import tr.org.lider.entities.AgentImpl;
 import tr.org.lider.entities.AgentPropertyImpl;
 import tr.org.lider.entities.UserSessionImpl;
-import tr.org.lider.ldap.ILDAPService;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
@@ -155,6 +153,14 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 				// Create new agent LDAP entry.
 				ldapService.addEntry(dn, computeAttributes(jid, message.getPassword()));
 				logger.info("Agent LDAP entry {} created successfully!", dn);
+				//add liderOSType to agent LDAP node
+				String osType = "Linux";
+				if(message.getData().get("os.name") != null) {
+					if(message.getData().get("os.name").equals("Windows")) {
+						osType = "Windows";
+					}
+				}
+				ldapService.updateEntryAddAtribute(dn, "liderDeviceOSType", osType);
 			}
 
 			// Try to find related agent database record

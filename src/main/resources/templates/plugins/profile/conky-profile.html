@@ -1,61 +1,75 @@
-<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<script type="text/javascript" src="js/plugins/task/conky.js"></script>
-<!-- <script type="text/javascript" src="js/policy/policy.js"></script> -->
-</head>
-<body>
+<script type="text/javascript" src="js/plugins/profile/conky-profile.js"></script>
+<link rel="stylesheet" href="css/policy.profile.css" />
+
+<div class="login-form-1">
 	<div class="main-card mb-3 card">
 		<div class="card-header">
 			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
-			<div class="col-lg-6 text-left">CONKY MESAJ YÖNETİMİ</div>
+			<div class="col-lg-6 text-left">Sistem Gözlemcisi Ayar Listesi</div>
 			<div class="col-lg-6 text-right">
-				<button id="sendTaskCronConky" type="button" class="btn-shadow btn btn-info" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
-				<button id="sendTaskConky" type="button" title="Mesaj Gönder" class="btn-shadow btn btn-info"><i class="fas fa-share-square"></i></button>
+				<button id="conkyProfileSave" type="button" class="btn-shadow btn btn-info btn-sm" title="Kaydet"><i class="fa fa-save"></i></button>
+				<button id="conkyProfileDel" type="button" class="btn-shadow btn btn-info btn-sm" title="Sil"><i class="fa fa-trash-alt"></i></button>
+				<button id="conkyProfileUpdate" type="button" class="btn-shadow btn btn-info btn-sm" title="Güncelle"><i class="fa fa-redo-alt"></i></button>
+				<button id="conkyProfileAddToPolicy" type="button" class="btn-shadow btn btn-info btn-sm" title="Politikaya Ekle"><i class="fas fa-tasks"></i></button>
 			</div>
 		</div>
 		<div class="card-body">
-				<div class="login-form-1">
-					<div class="form-group">
-						<div class="row">
-							<div class="col-lg-8">
-	<!-- 							<label for="conkySelectBox">Conky Adı</label> -->
-								 <select
-									class="form-control" id="conkySelectBox">
-									<option value="NA" selected>Conky seçiniz...</option>
-								</select>
-							</div>
-							<div class="col-lg-4">
-								<div class="custom-control custom-switch">
-									<div>
-										<input type="checkbox" class="custom-control-input" id="removeConkyMessageBtn">
-								  		<label class="custom-control-label" for="removeConkyMessageBtn">Conky Mesajını Kaldır</label>
-								  	</div>
-							  		<small class="text-muted"> İstemci/lerde var olan Conky mesajını kaldırır. </small>
-								</div>
-							</div>
-						</div>
-						<br>
-						<ul id="conkyTabsTask" class="nav nav-tabs">
-							<li class="nav-item"><a role="tab" class="nav-link active" data-toggle="tab" href="#conkyContentTabTask"><span><i class="fa fa-comments"></i> Conky İçeriği</span></a>
-							</li>
-							<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#conkySettingsTabTask"> <span><i class="fa fa-cog"></i> Conky Ayarları</span></a>
-							</li>
-						</ul>
-						<div class="tab-content">
-							<div class="tab-pane fade" id="conkyContentTabTask">
-								<textarea class="form-control" id="conkyContentTemp" rows="15"></textarea>
-							</div>
-							<div class="tab-pane fade" id="conkySettingsTabTask">
-								<textarea class="form-control" id="conkySettingTemp" rows="15"></textarea>
-							</div>
-	             		</div>
-					<div id="plugin-result-conky"></div>
+			<div class="form-row">
+				<div class="col-md-5">
+					<div class="position-relative form-group">
+						<label for="conkyProfileNameForm" class="control-label">Ayar Adı</label>
+						<input type="text" class="form-control form-control-sm" id="conkyProfileNameForm" placeholder="Ayar adı giriniz...">
+					</div>
+				</div>
+				<div class="col-md-7">
+					<div class="position-relative form-group">
+						<label for="conkyProfileDescriptionForm" class="control-label">Açıklaması</label>
+						<input type="text" class="form-control form-control-sm" id="conkyProfileDescriptionForm" placeholder="Açıklama giriniz...">
+					</div>
 				</div>
 			</div>
+			<div class="profile">
+				<table class="table table-striped table-bordered" id="conkyProfileTable">
+					<thead>
+						<tr>
+							<th style="width: 20%">Ayar Adı</th>
+							<th style="width: 60%">Açıklama</th>
+							<th style="width: 20%">Oluşturma Tarihi</th>
+						</tr>
+					</thead>
+					<tbody id="conkyProfileBody"></tbody>
+				</table>
+			</div>
+			<small class="text-muted">Listeden bir ayar seçerek silebilir veya gücelleyebilirsiniz Politikada kullanmak için Politikaya Ekle butonuna tıklayınız</small>
 		</div>
 	</div>
-</body>
-</html>
+	<div class="main-card mb-3 card">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="text-left"><h6 class="card-subtitle mb-2 text-muted" style="text-transform: none;">Kayıtlı Sistem Gözlemci Şablonları</h6></div>
+		</div>
+		<div class="card-body">
+			<div>
+				<select	class="form-control form-control-sm" id="conkyTempSelectBox">
+					<option value="NA" selected>Gözlemci Şablonu Seçiniz...</option>
+				</select>
+			</div>
+			<br>
+			<ul id="conkyTabsProfile" class="nav nav-tabs">
+				<li class="nav-item"><a role="tab" class="nav-link active" data-toggle="tab" href="#conkyContentTabProfile"><span><i class="fa fa-comments"></i> Şablon İçeriği</span></a>
+				</li>
+				<li class="nav-item"><a role="tab" class="nav-link" data-toggle="tab" href="#conkySettingsTabProfile"> <span><i class="fa fa-cog"></i> Şablon Ayarları</span></a>
+				</li>
+			</ul>
+			<div class="tab-content" id="conkyContentEditForm">
+				<div class="tab-pane fade" id="conkyContentTabProfile">
+					<textarea class="form-control" id="conkyContentTempProfile" rows="15"></textarea>
+				</div>
+				<div class="tab-pane fade" id="conkySettingsTabProfile">
+					<textarea class="form-control" id="conkySettingsProfile" rows="15"></textarea>
+				</div>
+	        </div>
+			<small class="text-muted">Kayıtlı Sistem Gözlemci Şablonlarından, şablon seçilerek sistem göszlemicisi ayarı oluşturulur.</small>
+		</div>
+	</div>
+</div>

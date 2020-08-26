@@ -164,131 +164,136 @@ function networkManagerListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		var clsId = xmppResponse.commandClsId;
+		var responseDn = xmppResponse.commandExecution.dn;
+		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 			if (clsId == "GET_NETWORK_INFORMATION" || clsId == "ADD_DNS" || clsId == "ADD_DOMAIN" || clsId == "ADD_NETWORK" || clsId == "ALLOW_PORT" || clsId == "BLOCK_PORT" || clsId == "CHANGE_HOSTNAME" || clsId == "DELETE_DOMAIN"
 				|| clsId == "DELETE_HOST" || clsId == "DELETE_DNS" || clsId == "DELETE_NETWORK" || clsId == "ADD_HOST") {
 				progress("divNetworkManager","progressNetworkManager",'hide')
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					setEnableOrDisableNerworkManagerForm(false);
-					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-					$('#networkManagerHelp').html("");
-					$('#updateHostnameHelp').html("Bilgisayar adını değiştirmek için Bilgisayar Adını Güncelle butonuna tıklayınız.");
-					$('#dnsSettingHelp').html("Silmek istediğiniz DNS kaydını seçerek DNS Sil butonuna ya da yeni bir DNS kaydı eklemek için formu doldurarak DNS Ekle butonuna tıklayınız.");
-					$('#hostSettingHelp').html("Silmek istediğiniz Sunucu(Host) kaydını seçerek Sunucu Sil butonuna ya da yeni bir sunucu(host) eklemek için formu doldurarak Sunucu Ekle butonuna tıklayınız.");
-					$('#deleteNetworkSettingHelp').html("Silmek istediğiniz ağ ayarını seçerek Ağ Ayarı Sil butonuna ya da yeni ağ ayarı eklemek için formu doldurarak Yeni Ağ Ayarı Ekle butonuna tıklayınız.");
-					$('#portsHelp').html("İzin Vermek / Engellemek istediğiniz portu seçerek İzin Ver / Engelle butonuna tıklayınız.");
+				if (responseDn == selectedDn) {
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						setEnableOrDisableNerworkManagerForm(false);
+						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+						$('#networkManagerHelp').html("");
+						$('#updateHostnameHelp').html("Bilgisayar adını değiştirmek için Bilgisayar Adını Güncelle butonuna tıklayınız.");
+						$('#dnsSettingHelp').html("Silmek istediğiniz DNS kaydını seçerek DNS Sil butonuna ya da yeni bir DNS kaydı eklemek için formu doldurarak DNS Ekle butonuna tıklayınız.");
+						$('#hostSettingHelp').html("Silmek istediğiniz Sunucu(Host) kaydını seçerek Sunucu Sil butonuna ya da yeni bir sunucu(host) eklemek için formu doldurarak Sunucu Ekle butonuna tıklayınız.");
+						$('#deleteNetworkSettingHelp').html("Silmek istediğiniz ağ ayarını seçerek Ağ Ayarı Sil butonuna ya da yeni ağ ayarı eklemek için formu doldurarak Yeni Ağ Ayarı Ekle butonuna tıklayınız.");
+						$('#portsHelp').html("İzin Vermek / Engellemek istediğiniz portu seçerek İzin Ver / Engelle butonuna tıklayınız.");
 
-					if (clsId == "GET_NETWORK_INFORMATION") {
-						networkSettingsHideBtn();
-						clearNetworkData();
-						$("#currentNetworkInterfaces").html(arrg.interfaces);
-						$("#currentHosts").html(arrg.hosts);
-						$("#machineHostname").val(arrg.machine_hostname);
-						hostManagement(arrg);
-						dnsManagement(arrg);
-						interfacesManagement(arrg);
-						portManagement(arrg);
-						getSettingSuccess = true;
-						showTab();
+						if (clsId == "GET_NETWORK_INFORMATION") {
+							networkSettingsHideBtn();
+							clearNetworkData();
+							$("#currentNetworkInterfaces").html(arrg.interfaces);
+							$("#currentHosts").html(arrg.hosts);
+							$("#machineHostname").val(arrg.machine_hostname);
+							hostManagement(arrg);
+							dnsManagement(arrg);
+							interfacesManagement(arrg);
+							portManagement(arrg);
+							getSettingSuccess = true;
+							showTab();
 
-					} else if (clsId == "ADD_DNS" || clsId == "ADD_DOMAIN") {
-						if (newIsActive == true) {
-							newIsActive = "Evet";
-						}else {
-							newIsActive = "Hayır";
+						} else if (clsId == "ADD_DNS" || clsId == "ADD_DOMAIN") {
+							if (newIsActive == true) {
+								newIsActive = "Evet";
+							}else {
+								newIsActive = "Hayır";
+							}
+
+							var html = '<tr>';
+							html += '<td>' + newDns + '</td>';
+							html += '<td>' + newDnsType + '</td>';
+							html += '<td>' + newIsActive + '</td>';
+							html += '</tr>';
+
+							$("#dnsSettingsBody").append(html);
+							$("#definitionDnsForm").val("");
+							newIsActive = true;
+							newDns = null;
+							newDnsType = null;
+
+						} else if (clsId == "DELETE_DNS" || clsId == "DELETE_DOMAIN") {
+							selectDnsRow.remove();
+							selectDnsRow = null;
+
+						} else if (clsId == "ADD_HOST") {
+							if (newIsActive == true) {
+								newIsActive = "Evet";
+							}else {
+								newIsActive = "Hayır";
+							}
+
+							var html = '<tr>';
+							html += '<td>' + newHostIp + '</td>';
+							html += '<td>' + newServerName + '</td>';
+							html += '<td>' + newIsActive + '</td>';
+							html += '</tr>';
+
+							$("#hostsSettingsBody").append(html);
+							$("#definitionHostServerForm").val("");
+							$("#definitionHostIpForm").val("");
+							newIsActive = true;
+							newHostIp = null;
+							newServerName = null;
+
+						} else if (clsId == "DELETE_HOST") {
+							selectHostRow.remove();
+							selectHostRow = null;
+
+						} else if (clsId == "ADD_NETWORK") {
+							if (newIsActive == true) {
+								newIsActive = "Evet";
+							}else {
+								newIsActive = "Hayır";
+							}
+							var html = '<tr>';
+							html += '<td>' + newNetName + '</td>';
+							html += '<td>' + newNetAddress + '</td>';
+							html += '<td>' + newNetworkType + '</td>';
+							html += '<td>' + newIsActive + '</td>';
+							html += '</tr>';
+							$("#networkSettingsBody").append(html);
+							newNetworkType = null;
+							newNetAddress = null;
+							newNetName = null;
+							newIsActive = true;
+							$("#networkAddress").val("");
+							$("#networkName").val("");
+							$("#networkNetmask").val("");
+							$("#networkGateway").val("");
+
+						} else if (clsId == "DELETE_NETWORK") {
+							selectNetSettingsRow.remove();
+							selectNetSettingsRow = null;
+
+						} else if (clsId == "ALLOW_PORT") {
+							var rowIndex = selectPortRow.index();
+							$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(3)').text("Açık");
+							$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(4)').text("Açık");
+							selectPortRow.removeClass('networksettingsselect');
+							$('#portButtonGrp').hide();
+							selectPortRow = null;
+
+						} else if (clsId == "BLOCK_PORT") {
+							var input = selectPortRow.closest("tr")[0].children[3];
+							var output = selectPortRow.closest("tr")[0].children[4].textContent;
+							var rowIndex = selectPortRow.index();
+							$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(3)').text("Kapalı");
+							$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(4)').text("Kapalı");
+							selectPortRow.removeClass('networksettingsselect');
+							$('#portButtonGrp').hide();
+							selectPortRow = null;
 						}
+						$.notify(responseMessage, "success");
+						$("#plugin-result-network-manager").html("");
 
-						var html = '<tr>';
-						html += '<td>' + newDns + '</td>';
-						html += '<td>' + newDnsType + '</td>';
-						html += '<td>' + newIsActive + '</td>';
-						html += '</tr>';
-
-						$("#dnsSettingsBody").append(html);
-						$("#definitionDnsForm").val("");
-						newIsActive = true;
-						newDns = null;
-						newDnsType = null;
-
-					} else if (clsId == "DELETE_DNS" || clsId == "DELETE_DOMAIN") {
-						selectDnsRow.remove();
-						selectDnsRow = null;
-
-					} else if (clsId == "ADD_HOST") {
-						if (newIsActive == true) {
-							newIsActive = "Evet";
-						}else {
-							newIsActive = "Hayır";
-						}
-
-						var html = '<tr>';
-						html += '<td>' + newHostIp + '</td>';
-						html += '<td>' + newServerName + '</td>';
-						html += '<td>' + newIsActive + '</td>';
-						html += '</tr>';
-
-						$("#hostsSettingsBody").append(html);
-						$("#definitionHostServerForm").val("");
-						$("#definitionHostIpForm").val("");
-						newIsActive = true;
-						newHostIp = null;
-						newServerName = null;
-
-					} else if (clsId == "DELETE_HOST") {
-						selectHostRow.remove();
-						selectHostRow = null;
-
-					} else if (clsId == "ADD_NETWORK") {
-						if (newIsActive == true) {
-							newIsActive = "Evet";
-						}else {
-							newIsActive = "Hayır";
-						}
-						var html = '<tr>';
-						html += '<td>' + newNetName + '</td>';
-						html += '<td>' + newNetAddress + '</td>';
-						html += '<td>' + newNetworkType + '</td>';
-						html += '<td>' + newIsActive + '</td>';
-						html += '</tr>';
-						$("#networkSettingsBody").append(html);
-						newNetworkType = null;
-						newNetAddress = null;
-						newNetName = null;
-						newIsActive = true;
-						$("#networkAddress").val("");
-						$("#networkName").val("");
-						$("#networkNetmask").val("");
-						$("#networkGateway").val("");
-
-					} else if (clsId == "DELETE_NETWORK") {
-						selectNetSettingsRow.remove();
-						selectNetSettingsRow = null;
-
-					} else if (clsId == "ALLOW_PORT") {
-						var rowIndex = selectPortRow.index();
-						$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(3)').text("Açık");
-						$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(4)').text("Açık");
-						selectPortRow.removeClass('networksettingsselect');
-						$('#portButtonGrp').hide();
-						selectPortRow = null;
-
-					} else if (clsId == "BLOCK_PORT") {
-						var input = selectPortRow.closest("tr")[0].children[3];
-						var output = selectPortRow.closest("tr")[0].children[4].textContent;
-						var rowIndex = selectPortRow.index();
-						$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(3)').text("Kapalı");
-						$('#portSettingsBody tr:eq('+ rowIndex +') td:eq(4)').text("Kapalı");
-						selectPortRow.removeClass('networksettingsselect');
-						$('#portButtonGrp').hide();
-						selectPortRow = null;
+					}else {
+						$.notify(responseMessage, "error");
+						$("#plugin-result-network-manager").html(("HATA: " + responseMessage).fontcolor("red"));
 					}
-
-					$.notify(responseMessage, "success");
+				} else {
 					$("#plugin-result-network-manager").html("");
-
-				}else {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-network-manager").html(("HATA: " + responseMessage).fontcolor("red"));
 				}
 			}
 		}
@@ -297,7 +302,7 @@ function networkManagerListener(msg) {
 	return true;
 }
 
-// show button by active tab
+//show button by active tab
 function showTab() {
 	if ($('#currentConfigurationTabTask').hasClass('active')) {
 		networkSettingsHideBtn();

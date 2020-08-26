@@ -115,28 +115,34 @@ function fileManagementListener(msg) {
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
+		var responseDn = xmppResponse.commandExecution.dn;
+		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 			progress("fileManagementContent","waitFileManagement",'hide')
-			if (xmppResponse.commandClsId == "GET_FILE_CONTENT") {
-				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$.notify(responseMessage, "success");
-					$("#plugin-result-file-management").html("");
-					$("#fileContent").val(arrg.file_content);
+			if (responseDn == selectedDn) {
+				if (xmppResponse.commandClsId == "GET_FILE_CONTENT") {
+					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$.notify(responseMessage, "success");
+						$("#plugin-result-file-management").html("");
+						$("#fileContent").val(arrg.file_content);
+					}
+					else {
+						$.notify(responseMessage, "error");
+						$("#plugin-result-file-management").html(("HATA: " + responseMessage).fontcolor("red"));
+					}
+				}else if (xmppResponse.commandClsId == "WRITE_TO_FILE") {
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$.notify(responseMessage, "success");
+						$("#plugin-result-file-management").html("");
+					}
+					else {
+						$.notify(responseMessage, "error");
+						$("#plugin-result-file-management").html(("HATA: " + responseMessage).fontcolor("red"));
+					}
 				}
-				else {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-file-management").html(("HATA: " + responseMessage).fontcolor("red"));
-				}
-			}else if (xmppResponse.commandClsId == "WRITE_TO_FILE") {
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$.notify(responseMessage, "success");
-					$("#plugin-result-file-management").html("");
-				}
-				else {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-file-management").html(("HATA: " + responseMessage).fontcolor("red"));
-				}
+			} else {
+				$("#plugin-result-file-management").html("");
 			}
 		}
 	}

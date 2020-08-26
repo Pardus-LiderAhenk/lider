@@ -78,89 +78,100 @@ function getPackagesListener(msg) {
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
+		var responseDn = xmppResponse.commandExecution.dn;
+		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			if (xmppResponse.commandClsId == "INSTALLED_PACKAGES") {
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED" && xmppResponse.result.contentType =="TEXT_PLAIN") {
-					var params = {
-							"id" : xmppResponse.result.id
-					};
-					$.ajax({
-						type: 'POST', 
-						url: "/command/commandexecutionresult",
-						dataType: 'json',
-						data: params,
-						success: function(data) {
-							if(data != null) {
-								if(data.responseDataStr != null) {
-									progress("divPackageManager","progressPackageManager",'hide');
-									var packages = data.responseDataStr.split("\n");
-									var parser_packages = [];
-									for (var i = 0; i < packages.length; i++) {
-										parser_packages.push(packages[i].split(","));
+			if (responseDn == selectedDn) {
+				if (xmppResponse.commandClsId == "INSTALLED_PACKAGES") {
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED" && xmppResponse.result.contentType =="TEXT_PLAIN") {
+						var params = {
+								"id" : xmppResponse.result.id
+						};
+						$.ajax({
+							type: 'POST', 
+							url: "/command/commandexecutionresult",
+							dataType: 'json',
+							data: params,
+							success: function(data) {
+								if(data != null) {
+									if(data.responseDataStr != null) {
+										progress("divPackageManager","progressPackageManager",'hide');
+										var packages = data.responseDataStr.split("\n");
+										var parser_packages = [];
+										for (var i = 0; i < packages.length; i++) {
+											parser_packages.push(packages[i].split(","));
+										}
+										for (var j = 0; j < parser_packages.length; j++) {
+											var packageName = parser_packages[j][1];
+											var packageVersion = parser_packages[j][2];
+
+											var newRow = $("<tr>");
+											var html = '<td class="text-center"><span class="cb-package-name">'
+												+ '<input class="text-center" type="checkbox" onclick="onclickPackageChecked(this)" name="packageName" id="'+ packageVersion +'" value="' + packageName +'">'
+												+ '<label for="checkbox1"></label>'
+												+ '</span>'
+												+ '</td>';
+											html += '<td>'+ packageName +'</td>';
+											html += '<td>'+ packageVersion +'</td>';
+
+											newRow.append(html);
+											$("#installedPackagesTable").append(newRow);
+										}
+
+										var parser_packages = [];
+										createInstalledPackagesTable();
+										$("#plugin-result-package-management").html("");
+										$.notify(responseMessage, "success");
+										$('#packageManagementHelp').html('Silmek istediğiniz paket/leri seçerek Sil butonuna tıklayınız.');
+										$('#sendTaskDeletePackageBtn').show();
 									}
-									for (var j = 0; j < parser_packages.length; j++) {
-										var packageName = parser_packages[j][1];
-										var packageVersion = parser_packages[j][2];
-
-										var newRow = $("<tr>");
-										var html = '<td class="text-center"><span class="cb-package-name">'
-											+ '<input class="text-center" type="checkbox" onclick="onclickPackageChecked(this)" name="packageName" id="'+ packageVersion +'" value="' + packageName +'">'
-											+ '<label for="checkbox1"></label>'
-											+ '</span>'
-											+ '</td>';
-										html += '<td>'+ packageName +'</td>';
-										html += '<td>'+ packageVersion +'</td>';
-
-										newRow.append(html);
-										$("#installedPackagesTable").append(newRow);
-									}
-
-									var parser_packages = [];
+								}else {
 									createInstalledPackagesTable();
-									$("#plugin-result-package-management").html("");
-									$.notify(responseMessage, "success");
-									$('#packageManagementHelp').html('Silmek istediğiniz paket/leri seçerek Sil butonuna tıklayınız.');
-									$('#sendTaskDeletePackageBtn').show();
 								}
-							}else {
-								createInstalledPackagesTable();
+							},
+							error: function(result) {
+								$.notify(result, "error");
+								$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
 							}
-						},
-						error: function(result) {
-							$.notify(result, "error");
-							$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
-						}
-					});
-				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
+						});
+					}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
+						progress("divPackageManager","progressPackageManager",'hide');
+						$.notify(responseMessage, "error");
+						$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
+						$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="3" class="text-center">Paket Bulunamadı.</td></tr>');
+					}
+				}
+				if (xmppResponse.commandClsId == "PACKAGE_MANAGEMENT") {
 					progress("divPackageManager","progressPackageManager",'hide');
-					$.notify(responseMessage, "error");
-					$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
-					$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="3" class="text-center">Paket Bulunamadı.</td></tr>');
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+
+						$.notify(responseMessage, "success");
+						$("#plugin-result-package-management").html("");
+//						return send task "INSTALLED_PACKAGES" for updated installed packages list after task uninstalled packages 
+						pluginTask_PackageManagement.dnList=dnlist;
+						pluginTask_PackageManagement.parameterMap={};
+						pluginTask_PackageManagement.entryList=selectedEntries;
+						pluginTask_PackageManagement.dnType="AHENK";
+						pluginTask_PackageManagement.commandId = "INSTALLED_PACKAGES";
+						pluginTask_PackageManagement.cronExpression = null;
+						var params = JSON.stringify(pluginTask_PackageManagement);
+						tableInsPackages.clear().draw();
+						tableInsPackages.destroy();
+						sendPackageManagementTask(params);
+
+					}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
+						$.notify(responseMessage, "error");
+						$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
+						$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="3" class="text-center">Paket Bulunamadı.</td></tr>');
+					}
 				}
-			}
-			if (xmppResponse.commandClsId == "PACKAGE_MANAGEMENT") {
+			} else {
+				$("#plugin-result-package-management").html("");
+				$('#packageManagementHelp').html('İstemcide kurulu olan paketleri listelemek için Paketleri Listele butonuna tıklayınız.');
 				progress("divPackageManager","progressPackageManager",'hide');
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-
-					$.notify(responseMessage, "success");
-					$("#plugin-result-package-management").html("");
-//					return send task "INSTALLED_PACKAGES" for updated installed packages list after task uninstalled packages 
-					pluginTask_PackageManagement.dnList=dnlist;
-					pluginTask_PackageManagement.parameterMap={};
-					pluginTask_PackageManagement.entryList=selectedEntries;
-					pluginTask_PackageManagement.dnType="AHENK";
-					pluginTask_PackageManagement.commandId = "INSTALLED_PACKAGES";
-					pluginTask_PackageManagement.cronExpression = null;
-					var params = JSON.stringify(pluginTask_PackageManagement);
-					tableInsPackages.clear().draw();
-					tableInsPackages.destroy();
-					sendPackageManagementTask(params);
-
-				}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-package-management").html(("HATA: " + responseMessage).fontcolor("red"));
-					$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="3" class="text-center">Paket Bulunamadı.</td></tr>');
-				}
+				$('#sendTaskDeletePackageBtn').hide();
+				tableInsPackages.clear().draw();
+				tableInsPackages.destroy();
 			}
 		}
 	}

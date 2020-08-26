@@ -33,7 +33,6 @@ for (var n = 0; n < pluginTaskList.length; n++) {
 		pluginTask_ResourceUsage = pluginTask;
 	}
 }
-
 createCharts();
 
 function getResourceUsage(){
@@ -43,14 +42,12 @@ function getResourceUsage(){
 
 	if(pluginTask_ResourceUsage){
 		pluginTask_ResourceUsage.commandId='RESOURCE_INFO_FETCHER'
-			pluginTask_ResourceUsage.dnList=dnlist;
+		pluginTask_ResourceUsage.dnList=dnlist;
 		pluginTask_ResourceUsage.parameterMap={};
 		pluginTask_ResourceUsage.entryList=selectedEntries;
 		pluginTask_ResourceUsage.dnType="AHENK";
 		pluginTask_ResourceUsage.cronExpression = scheduledParamResUsage;
-
 		var params = JSON.stringify(pluginTask_ResourceUsage);
-
 		var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 		if (scheduledParamResUsage != null) {
 			message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri: "+ scheduledParamResUsage;
@@ -83,7 +80,7 @@ function getResourceUsage(){
 }
 
 $('#sendTask-resource-usage').click(function(e){
-	if(selectedEntries.length ==0 ){
+	if(selectedEntries.length == 0 ){
 		$.notify("Lütfen İstemci Seçiniz", "error");
 		return;
 	}
@@ -114,14 +111,12 @@ $('#sendTaskCron-resource-usage').click(function(e){
 });
 
 $("#scheduledTasksModal").on('hidden.bs.modal', function(){
-	
 	if (scheduledModalResUsageOpened) {
 		scheduledParamResUsage = scheduledParam;
 	}
 	scheduledModalResUsageOpened = false;
 	defaultScheduleSelection();
 });
-
 
 function resourceUsageListener(msg) {
 	var to = msg.getAttribute('to');
@@ -133,51 +128,55 @@ function resourceUsageListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
+		var responseDn = xmppResponse.commandExecution.dn;
+		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		if(xmppResponse.commandClsId == "RESOURCE_INFO_FETCHER"){
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 				progress("resouceUsageDiv","progressResourceUsage",'hide')
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-					var phase = "";
-					if(arrg["Phase"]){
-						phase = arrg["Phase"]
+				if (responseDn == selectedDn) {
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+						var phase = "";
+						if(arrg["Phase"]){
+							phase = arrg["Phase"]
+						}
+						else {
+							phase = "Faz Bilgisi Alınamadı"
+						}
+						$("#system").html(arrg["System"]);
+						$("#release").html(arrg["Release"]);
+						$("#version").html(arrg["Version"]);
+						$("#machine").html(arrg["Machine"]);
+						$("#processor").html(arrg["Processor"]);
+						$("#phase").html(phase);
+						$("#physical_core_count").html(arrg["CPU Physical Core Count"]);
+						$("#logical_core_count").html(arrg["CPU Logical Core Count"]);
+						$("#cpu_advertised").html(arrg["CPU Advertised Hz"]);
+						$("#cpu_actual").html(arrg["CPU Actual Hz"]);
+						$("#total_memory").html(arrg["Total Memory"]+" MB");
+						$("#usage_memory").html(arrg["Usage"]+" MB");
+						$("#device").html(arrg["Device"]);
+						$("#total_disk").html(arrg["Total Disc"]+" MB");
+						$("#usage_disk").html(arrg["Usage Disc"]+" MB");
+						$("#plugin-result-resource-usage").html("");
+						$.notify(xmppResponse.result.responseMessage, "success");
+
+						usageMemory = (arrg["Usage"]/arrg["Total Memory"]*100).toFixed(2);
+						freeMemory = (100 - usageMemory).toFixed(2);
+						usageDisk = (arrg["Usage Disc"]/arrg["Total Disc"]*100).toFixed(2);
+						freeDisk = (100 - usageDisk).toFixed(2);
+//						cpu_actual = arrg["CPU Actual Hz"];
+//						cpu_advertised = arrg["CPU Advertised Hz"];
+						systemChart1.destroy();
+						systemChart2.destroy();
+//						systemChart3.destroy();
+						createCharts();
+					} else {
+						$("#plugin-result-resource-usage").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
+						$.notify(xmppResponse.result.responseMessage, "error");
 					}
-					else {
-						phase = "Faz Bilgisi Alınamadı"
-					}
-					$("#system").html(arrg["System"]);
-					$("#release").html(arrg["Release"]);
-					$("#version").html(arrg["Version"]);
-					$("#machine").html(arrg["Machine"]);
-					$("#processor").html(arrg["Processor"]);
-					$("#phase").html(phase);
-					$("#physical_core_count").html(arrg["CPU Physical Core Count"]);
-					$("#logical_core_count").html(arrg["CPU Logical Core Count"]);
-					$("#cpu_advertised").html(arrg["CPU Advertised Hz"]);
-					$("#cpu_actual").html(arrg["CPU Actual Hz"]);
-					$("#total_memory").html(arrg["Total Memory"]+" MB");
-					$("#usage_memory").html(arrg["Usage"]+" MB");
-					$("#device").html(arrg["Device"]);
-					$("#total_disk").html(arrg["Total Disc"]+" MB");
-					$("#usage_disk").html(arrg["Usage Disc"]+" MB");
-					$("#plugin-result-resource-usage").html("");
-					$.notify(xmppResponse.result.responseMessage, "success");
-
-					usageMemory = (arrg["Usage"]/arrg["Total Memory"]*100).toFixed(2);
-					freeMemory = (100 - usageMemory).toFixed(2);
-					usageDisk = (arrg["Usage Disc"]/arrg["Total Disc"]*100).toFixed(2);
-					freeDisk = (100 - usageDisk).toFixed(2);
-//					cpu_actual = arrg["CPU Actual Hz"];
-//					cpu_advertised = arrg["CPU Advertised Hz"];
-					systemChart1.destroy();
-					systemChart2.destroy();
-//					systemChart3.destroy();
-
-					createCharts();
-
 				} else {
-					$("#plugin-result-resource-usage").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
-					$.notify(xmppResponse.result.responseMessage, "error");
+					$("#plugin-result-resource-usage").html("");
 				}
 			}
 		}						 

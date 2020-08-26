@@ -72,19 +72,25 @@ function remoteAccessListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
+		var responseDn = xmppResponse.commandExecution.dn;
+		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		
 		if(xmppResponse.commandClsId == "SETUP-VNC-SERVER") {
 			progress("remoteAccessDiv","progressRemoteAccess",'hide')
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$("#plugin-result-remote-access").html("");
-					progress("resourceUsageContent","progressDivResourceUsage",'hide')
-					$.notify(xmppResponse.result.responseMessage, "success");
-					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-					startRemoteAccess(arrg);
+				progress("resourceUsageContent","progressDivResourceUsage",'hide');
+				if (responseDn == selectedDn) {
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$("#plugin-result-remote-access").html("");
+						$.notify(xmppResponse.result.responseMessage, "success");
+						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+						startRemoteAccess(arrg);
+					} else {
+						$("#plugin-result-remote-access").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
+						$.notify(xmppResponse.result.responseMessage, "error");
+					}
 				} else {
-					$("#plugin-result-remote-access").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
-					$.notify(xmppResponse.result.responseMessage, "error");
+					$("#plugin-result-remote-access").html("");
 				}
 			}
 		}
@@ -107,7 +113,6 @@ function startRemoteAccess(data) {
 		url: "/sendremote",
 		data: params,
 		success: function(data) {
-			console.log(data)
 			$('#btnSendVNCReuqest').show();
 		},
 		 error: function (jqXHR, textStatus, errorThrown) {

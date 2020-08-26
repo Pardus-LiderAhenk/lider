@@ -59,64 +59,73 @@ function localUserListener(msg) {
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
+		var responseDn = xmppResponse.commandExecution.dn;
+		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 			progress("divLocalUser","progressLocalUser",'hide')
-			if (xmppResponse.commandClsId == "GET_USERS") {
-				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					users = arrg.users;
-					allGroups = arrg["all_groups"];
-					for (var j = 0; j < users.length; j++) {
-						var username = users[j]["user"];
-						var home = users[j]["home"];
-						var groups = users[j]["groups"];
-						var isActive = '<td><i class="fa fa-user-times"></i> Pasif</td>';
-						if (users[j]["is_active"] == "true") {
-							isActive = '<td><i class="fa fa-user-check"></i> Aktif</td>';
+			if (responseDn == selectedDn) {
+				if (xmppResponse.commandClsId == "GET_USERS") {
+					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						users = arrg.users;
+						allGroups = arrg["all_groups"];
+						for (var j = 0; j < users.length; j++) {
+							var username = users[j]["user"];
+							var home = users[j]["home"];
+							var groups = users[j]["groups"];
+							var isActive = '<td><i class="fa fa-user-times"></i> Pasif</td>';
+							if (users[j]["is_active"] == "true") {
+								isActive = '<td><i class="fa fa-user-check"></i> Aktif</td>';
+							}
+							var newRow = $("<tr id="+ username +">");
+							var html = '<td>'+ username +'</td>';
+							html += isActive;
+							html += '<td>'+ home +'</td>';
+							newRow.append(html);
+							$("#localUsersTable").append(newRow);
 						}
-						var newRow = $("<tr id="+ username +">");
-						var html = '<td>'+ username +'</td>';
-						html += isActive;
-						html += '<td>'+ home +'</td>';
-						newRow.append(html);
-						$("#localUsersTable").append(newRow);
+						createLocalUsersTable();
+						defaultAllGroups();
+						defaultSettings();
+						$("#localUserForm").show();
+						$("#sendTaskAddLocalUser").show();
+						$.notify(responseMessage, "success");
+						$("#plugin-result-local-user").html("");
+						$("#localUserHelp").html("Listeden seçilen kullanıcıyı silmek için Kullanıcı Sil butonuna, düzenlemek için ise aşağıdaki formda seçilen kullanıcıyı düzenleyerek Kullanıcı Güncelle butonuna tıklayınız. Yeni kullanıcı eklemek için aşağıdaki formda kullanıcı bilgileri girilerek Yeni Kullanıcı Ekle butonuna tıklayınız.");
 					}
-					createLocalUsersTable();
-					defaultAllGroups();
-					defaultSettings();
-					$("#localUserForm").show();
-					$("#sendTaskAddLocalUser").show();
-					$.notify(responseMessage, "success");
-					$("#plugin-result-local-user").html("");
-					$("#localUserHelp").html("Listeden seçilen kullanıcıyı silmek için Kullanıcı Sil butonuna, düzenlemek için ise aşağıdaki formda seçilen kullanıcıyı düzenleyerek Kullanıcı Güncelle butonuna tıklayınız. Yeni kullanıcı eklemek için aşağıdaki formda kullanıcı bilgileri girilerek Yeni Kullanıcı Ekle butonuna tıklayınız.");
-				}
-				else {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
-					$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
-				}
-			}
-			if (xmppResponse.commandClsId == "EDIT_USER" || xmppResponse.commandClsId == "ADD_USER" || xmppResponse.commandClsId == "DELETE_USER") {
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$.notify(responseMessage, "success");
-					$("#plugin-result-local-user").html("");
-					if (tableLocalUser) {
-						tableLocalUser.clear().draw();
-						tableLocalUser.destroy();
-//						$("#localUserForm").hide();
+					else {
+						$.notify(responseMessage, "error");
+						$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
+						$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
 					}
-					allGroups = [];
-					$("#localUserOfGroups").multiselect('destroy');
-					$("#localUserOfGroups option").remove();
-					createGroupsSelectBox();
-					defaultSettings();
-					sendLocalUserTask(getUsers());
-
-				}else {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
-					$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
 				}
+				if (xmppResponse.commandClsId == "EDIT_USER" || xmppResponse.commandClsId == "ADD_USER" || xmppResponse.commandClsId == "DELETE_USER") {
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$.notify(responseMessage, "success");
+						$("#plugin-result-local-user").html("");
+						if (tableLocalUser) {
+							tableLocalUser.clear().draw();
+							tableLocalUser.destroy();
+							tableLocalUser = null;
+//							$("#localUserForm").hide();
+						}
+						allGroups = [];
+						$("#localUserOfGroups").multiselect('destroy');
+						$("#localUserOfGroups option").remove();
+						createGroupsSelectBox();
+						defaultSettings();
+						sendLocalUserTask(getUsers());
+					}else {
+						$.notify(responseMessage, "error");
+						$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
+						$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
+					}
+				}
+			} else {
+				$("#plugin-result-local-user").html("");
+				$("#localUserHelp").html("İstemcideki yerel kullanıcıları listelemek için Kullanıcı Listele butonuna tıklayınız.")
+				defaultSettings();
+				$("#localUserForm").hide();
 			}
 		}
 	}
@@ -149,6 +158,7 @@ function sendLocalUserTaskConfirm(commandId, parameterMap) {
 					if (tableLocalUser) {
 						tableLocalUser.clear().draw();
 						tableLocalUser.destroy();
+						tableLocalUser = null;
 						allGroups = [];
 //						$("#localUserForm").hide();
 					}

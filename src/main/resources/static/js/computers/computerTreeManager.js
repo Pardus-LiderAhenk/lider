@@ -237,7 +237,7 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 	var srcBtnId= treeHolderDiv+"srcBtn";
 	var srcBtnOnlineClients= treeHolderDiv+"srcOnlineUsers";
 	var srcSelectId= treeHolderDiv+"srcSelect";
-	var searchHtml= ' <div class="col-md-12">'+	 
+	var searchHtml= ' <div>'+	 
 						'  <div class="input-group"> '+
 						'    <div class="input-group-prepend">  '+
 						'       <select class="form-control " style="font-family: cursive; font-size: 12px;" id="'+srcSelectId+'" > ';

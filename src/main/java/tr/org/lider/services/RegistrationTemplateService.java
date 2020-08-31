@@ -19,6 +19,10 @@ public class RegistrationTemplateService {
         return registrationTemplateRepository.findAll();
 	}
 	
+	public List<RegistrationTemplateImpl> findAllOrderByUnitLength() {
+        return registrationTemplateRepository.findAllOrderByUnitIdLength();
+	}
+	
 	public Optional<RegistrationTemplateImpl> findRegistrationTemplateByID(Long id) {
         return registrationTemplateRepository.findById(id);
 	}

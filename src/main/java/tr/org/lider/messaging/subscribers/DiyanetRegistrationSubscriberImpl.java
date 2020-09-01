@@ -373,9 +373,11 @@ public class DiyanetRegistrationSubscriberImpl implements IRegistrationSubscribe
 	private void createOrganizationalUnit(String dn) {
 		try {
 			LdapName dnList = new LdapName(dn);
+			String ouName = dnList.get(dnList.size()-1).split("=")[1];
 			Map<String, String[]> attributes = new HashMap<String,String[]>();
 			attributes.put("objectClass", new String[] {"organizationalUnit", "top", "pardusLider"} );
-			attributes.put("ou", new String[] { dnList.get(0) });
+			
+			attributes.put("ou", new String[] { ouName });
 			ldapService.addEntry(dn, attributes);
 			logger.info("OU created successfully RDN ="+dn);
 		} catch (LdapException e) {

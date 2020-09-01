@@ -41,17 +41,15 @@
 						<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
 						<div class="col-md-6 text-left">BETİK TANIMI</div>
 						<div class="col-md-6 text-right">
-							
+							<button id="sendTaskCronExecuteScript" type="button" class="btn-shadow btn btn-info btn-sm" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>							
 							<button id="scriptSaveBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Kaydet"><i class="fa fa-save"></i></button>
-							<button id="sendTaskCronExecuteScript" type="button" class="btn-shadow btn btn-info btn-sm" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
 							<button id="sendTaskExecuteScript" type="button" title="Betik Çalıştır" class="btn-shadow btn btn-info btn-sm"><i class="fa fa-play"></i></button>
 						</div>
 					</div>
 				<div class="card-body">
 					<div class="row">
 						<div class="form-group col-lg-9">
-<!-- 							<label for="scriptNameTemp">Betik Adı</label> <input type="text" -->
-<!-- 								class="form-control" id="scriptNameTemp"> -->
+<!-- 							<label>Betik Adı</label> -->
 							<div class="input-group mb-3">
 								<div class="input-group-prepend">
 									<span class="input-group-text form-control-sm">Betik Adı</span>
@@ -60,11 +58,13 @@
 							</div>
 						</div>
 						<div class="form-group col-lg-3">
+<!-- 							<label>Betik Türü</label> -->
 							<select class="form-control custom-select custom-select-sm" id="scriptType">
 								<option value="bash">Bash</option>
 								<option value="python">Python</option>
 								<option value="perl">Perl</option>
 								<option value="ruby">Ruby</option>
+								<option value="powershell">PowerShell</option>
 							</select>
 						</div>
 					</div>
@@ -76,7 +76,7 @@
 					</div>
 					<div class="form-group">
 						<label for="scriptContentTemp">Betik İçeriği</label>
-						<textarea class="form-control form-control-sm" id="scriptContentTemp" rows="20"></textarea>
+						<textarea class="form-control form-control-sm" id="scriptContentTemp" rows="22"></textarea>
 					</div>
 					<div id="plugin-result-execute-script"></div>
 					</div>

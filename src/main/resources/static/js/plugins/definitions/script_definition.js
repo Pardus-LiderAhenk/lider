@@ -111,6 +111,9 @@ $('#scriptTableTemp tbody').on( 'click', 'tr', function () {
 			else if (rowData[1] == "RUBY" || rowData[1] == "Ruby" || rowData[1] == "ruby") {
 				sType = "ruby";
 			}
+			else if (rowData[1] == "POWERSHELL" || rowData[1] == "Powershell" || rowData[1] == "powershell") {
+				sType = "powershell";
+			}
 			$('#scriptType').val(sType).change();
 			for (var i = 0; i < scriptTempList.length; i++) {
 				if (scriptTempList[i]['id'] == sId) {
@@ -137,6 +140,9 @@ $("#scriptType").on("change", function() {
 		else if (scriptType == "ruby") {
 			$("#scriptContentTemp").val("#!/usr/bin/env ruby");
 		}
+		else if (scriptType == "powershell") {
+			$("#scriptContentTemp").val("PS C:\Windows\system32>");
+		}
 	}
 });
 
@@ -155,6 +161,9 @@ $('#scriptSaveBtn').click(function(e){
 	}
 	else if (type == "ruby") {
 		sType = 3;
+	}
+	else if (type == "powershell") {
+		sType = 4;
 	}
 	var sContent = $("#scriptContentTemp").val();
 	var sName = $("#scriptNameTemp").val();

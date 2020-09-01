@@ -135,6 +135,9 @@ $('#scriptTableTemp tbody').on( 'click', 'tr', function () {
 		else if (rowData[1] == "RUBY" || rowData[1] == "Ruby" || rowData[1] == "ruby") {
 			sType = "ruby";
 		}
+		else if (rowData[1] == "POWERSHELL" || rowData[1] == "Powershell" || rowData[1] == "powershell") {
+			sType = "powershell";
+		}
 		$('#scriptType').val(sType).change();
 		for (var i = 0; i < scriptTempList.length; i++) {
 			if (scriptTempList[i]['id'] == sId) {
@@ -160,6 +163,9 @@ $("#scriptType").on("change", function() {
 		else if (scriptType == "ruby") {
 			$("#scriptContentTemp").val("#!/usr/bin/env ruby");
 		}
+		else if (scriptType == "powershell") {
+			$("#scriptContentTemp").val("PS C:\Windows\system32>");
+		}
 	}
 });
 
@@ -178,6 +184,9 @@ $('#scriptSaveBtn').click(function(e){
 	}
 	else if (type == "ruby") {
 		sType = 3;
+	}
+	else if (type == "powershell") {
+		sType = 4;
 	}
 	var sContent = $("#scriptContentTemp").val();
 	var sName = $("#scriptNameTemp").val();
@@ -452,7 +461,31 @@ $('#sendTaskExecuteScript').click(function(e){
 		$.notify("Lütfen istemci seçiniz.", "error");
 		return;
 	}
+	var scriptType = $('#scriptType :selected').val();
+	
+	if (selectedEntries[0].type == "AHENK" && selectedEntries[0].attributes.liderDeviceOSType == "Windows") {
+		if (scriptType != "powershell") {
+			$.notify("Lütfen betik türü olarak PowerShell seçiniz.", "warn");
+			return;
+		}
+	}
+	
+	if (selectedEntries[0].type == "AHENK" && selectedEntries[0].attributes.liderDeviceOSType == "Pardus") {
+		if (scriptType == "powershell") {
+			$.notify("Lütfen betik türü olarak Bash, Python, Perl ve Ruby seçiniz.", "warn");
+			return;
+		}
+	}
 
+	// TODO execute script by os type for groups
+//	
+//	if (selectedEntries[0].type == "GROUP" && selectedEntries[0].attributesMultiValues.liderDeviceOSType == "Windows") {
+//		if (scriptType != "powershell") {
+//			$.notify("Lütfen betik türü olarak PowerShell seçiniz.", "warn");
+//			return;
+//		}
+//	}
+	
 
 	if(pluginTask_ExecuteScript){
 		pluginTask_ExecuteScript.dnList=dnlist;
@@ -460,7 +493,7 @@ $('#sendTaskExecuteScript').click(function(e){
 		pluginTask_ExecuteScript.dnType="AHENK";
 		pluginTask_ExecuteScript.parameterMap={
 				"SCRIPT_FILE_ID": sId,
-				"SCRIPT_TYPE": $('#scriptType :selected').val(),
+				"SCRIPT_TYPE": scriptType,
 				"SCRIPT_CONTENTS": $("#scriptContentTemp").val(),
 				"SCRIPT_PARAMS": $("#scriptParameters").val()
 		};

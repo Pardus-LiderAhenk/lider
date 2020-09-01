@@ -7,7 +7,7 @@ package tr.org.lider.entities;
  */
 public enum ScriptType {
 
-	BASH(1), PYTHON(2), PERL(3), RUBY(4);
+	BASH(1), PYTHON(2), PERL(3), RUBY(4), POWERSHELL(5);
 
 	private int id;
 

@@ -130,7 +130,7 @@ function ldapLoginListener(msg) {
 				$("#plugin-result-ldap-login").html("");
 				$.notify(xmppResponse.result.responseMessage, "success");
 			} else {
-				$("#plugin-result-ldap-login").html(xmppResponse.result.responseMessage);
+				$("#plugin-result-ldap-login").html(("HATA: " + responseMessage).fontcolor("red"));
 				$.notify(xmppResponse.result.responseMessage, "error");
 			}
 		}						 

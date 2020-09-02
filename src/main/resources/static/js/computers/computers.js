@@ -464,6 +464,17 @@ function setSystemPluginPage() {
 						}
 					});
 				}
+//				if(pluginTask.page == 'screenshot'){
+//					$.ajax({
+//						type : 'POST',
+//						url : 'getPluginTaskHtmlPage',
+//						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+//						dataType : 'text',
+//						success : function(res1) {
+//							$('#screenshot').html(res1);
+//						}
+//					});
+//				}
 			}
 		}
 	});
@@ -1012,19 +1023,23 @@ function showSelectedEntries() {
 					if (element.propertyName == "os.name") {
 						$("#agentOsName").html(element.propertyValue);
 					}
-					if (element.propertyName == "phase") {
-						var phase = "Faz bilgisi alınamadı"
-						if (element.propertyValue){
-							phase = element.propertyValue;
-							$("#agentPhase").html(phase);
-						}
-					}
+//					if (element.propertyName == "phase") {
+//						var phase = "Faz bilgisi alınamadı"
+//						if (element.propertyValue){
+//							phase = element.propertyValue;
+//							$("#agentPhase").html(phase);
+//						}
+//					}
 				});
+				userDomain = data.userDirectoryDomain;
+				if (userDomain == "NONE") {
+					userDomain = "Bilinmiyor";
+				}
 				$("#agentHostname").html(data.hostname);
 				$("#agentIpAddr").html(data.ipAddresses);
 				$("#agentMac").html(data.macAddresses);
 				$("#agentCreateDate").html(data.createDate);
-				$("#userDomain").html(data.userDirectoryDomain);
+				$("#userDomain").html(userDomain);
 				$('#agentDn').html(getEntryFolderName(selDn));
 				
 			} else {

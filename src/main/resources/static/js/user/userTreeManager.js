@@ -137,7 +137,7 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 					     var args = event.args;
 					     var row = args.row;
 					     if(row.expandedUser=="FALSE") {
-						     
+					    	 progress("treeGridUserHolderDiv","progressUserTree",'show')
 						      var nameList=[];
 						      
 						      for (var m = 0; m < row.records.length; m++) {
@@ -176,6 +176,7 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 										           $('#'+treeGridId).jqxTreeGrid('collapseRow', childRow.name);
 									      } 
 										 row.expandedUser="TRUE"
+										 progress("treeGridUserHolderDiv","progressUserTree",'hide')
 									}
 								});  
 					      }

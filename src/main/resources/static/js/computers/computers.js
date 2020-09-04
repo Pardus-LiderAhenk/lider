@@ -1564,7 +1564,7 @@ function deleteUserOu(row) {
 		contentType: "application/json",
 		success : function(ldapResult) {
 			if(ldapResult){
-				$.notify("Klasör ve bulunan istemciler başarı ile silindi.",{className: 'success',position:"right top"}  );
+				$.notify("Klasör başarı ile silindi.",{className: 'success',position:"right top"}  );
 				$('#genericModal').trigger('click');
 				$('#menuBtnComputers').trigger('click');
 			}

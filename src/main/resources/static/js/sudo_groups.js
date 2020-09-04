@@ -134,7 +134,8 @@ function createMainTree() {
 
 			// create jqxTreeGrid.
 			$("#treeGridSudoGroups").jqxTreeGrid({
-				width: '100%',
+				 width: '100%',
+				 height: 590,
 				source: dataAdapter,
 				altRows: true,
 				sortable: true,

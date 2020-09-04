@@ -118,6 +118,7 @@ $(document).ready(function(){
 						rowCheckAndUncheckOperationToAddMembersToExistingGroup(unCheckedRows);
 					},
 					function(rootComputer , treeGridId){
+						
 					}
 			);
 		});
@@ -952,6 +953,7 @@ function cretaeAgentGroupTree() {
 			// post tree created
 			function(rootDn , treeGridId){
 				$('#'+ treeGridId).jqxTreeGrid('selectRow', rootDn);
+				$('#'+ treeGridId).jqxTreeGrid('expandRow', rootDn);
 			}
 	);
 }

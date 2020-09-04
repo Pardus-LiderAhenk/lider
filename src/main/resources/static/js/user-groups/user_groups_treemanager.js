@@ -67,6 +67,7 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 				 // create jqxTreeGrid.
 				 $('#'+treeGridId).jqxTreeGrid({
 					 width: '100%',
+					 height: 590,
 					 source: dataAdapter,
 //					 theme : 'fresh',
 //				     altRows: true,

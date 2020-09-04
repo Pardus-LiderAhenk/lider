@@ -1361,6 +1361,7 @@ function createUserGroupsTree() {
 	// post tree created
 	function(rootComputer , treeGridId){
 		$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
+		$('#'+ treeGridId).jqxTreeGrid('expandRow', rootComputer);
 	}
 	);
 }

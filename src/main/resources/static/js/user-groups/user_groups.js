@@ -1402,7 +1402,7 @@ function createMemberList(row) {
 				if(row.attributesMultiValues[key].length > 1) {
 					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
 						members += '<tr>';
-						members += '<td class="text-center">' + (i + 1) + '</td>';
+						members += '<td>' + (i + 1) + '</td>';
 						members += '<td>' + row.attributesMultiValues[key][i] + '</td>';
 						members += '<td class="text-center">' 
 							+ '<button onclick="deleteMemberFromTabList(\'' + row.attributesMultiValues[key][i] + '\')"' 
@@ -1413,7 +1413,7 @@ function createMemberList(row) {
 					}
 				} else {
 					members += '<tr>';
-					members += '<td class="text-center">1</td>';
+					members += '<td>1</td>';
 					members += '<td>' + row.attributesMultiValues[key] + '</td>';
 					members += '<td class="text-center">' 
 						+ '<button onclick="deleteMemberFromTabList(\'' + row.attributesMultiValues[key] + '\')"' 

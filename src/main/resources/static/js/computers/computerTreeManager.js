@@ -172,7 +172,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 					     var args = event.args;
 					     var row = args.row;
 					     if(row.expandedUser=="FALSE") {
-						     
+					    	  progress("computerTreeDiv","progressComputerTree",'show')
 						      var nameList=[];
 						      
 						      for (var m = 0; m < row.records.length; m++) {
@@ -222,6 +222,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 											newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
 										 }
 										 $('#'+treeGridId).jqxTreeGrid('updateRow',row.entryUUID, {name:newName });
+										 progress("computerTreeDiv","progressComputerTree",'hide')
 									}
 								});  
 					      }

@@ -40,8 +40,9 @@ createTree(treeGridHolderDiv, false, false,
 				$.notify("Lütfen AD bağlantı ayarlarınızı kontrol ediniz.", "error");
 				$('#treeMenu').hide();
 			}else{
-				$('#'+ treeGridId).jqxTreeGrid('selectRow', firstRow.uid);
 				getChildEntries(firstRow)
+				$('#'+ treeGridId).jqxTreeGrid('selectRow', firstRow.uid);
+				$('#'+ treeGridId).jqxTreeGrid('expandRow', firstRow.uid);
 			}
 		}
 );

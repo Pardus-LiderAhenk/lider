@@ -59,6 +59,7 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 			 // create jqxTreeGrid.
 			 $('#'+treeGridId).jqxTreeGrid({
 				 width: '100%',
+				 height: 590,
 				 source: dataAdapter,
 			     altRows: true,
 			     sortable: true,
@@ -164,6 +165,8 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 					     var args = event.args;
 					     var row = args.row;
 					     if(row.expandedUser=="FALSE") {
+					    	 
+					    	 progress("treeGridAdUserHolderDiv","progressAdTree",'show')
 						     
 						      var nameList=[];
 						      
@@ -196,6 +199,7 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 										           $('#'+treeGridId).jqxTreeGrid('collapseRow', childRow.uid);
 									      } 
 										 row.expandedUser="TRUE"
+										 progress("treeGridAdUserHolderDiv","progressAdTree",'hide')
 									}
 								});  
 					      }

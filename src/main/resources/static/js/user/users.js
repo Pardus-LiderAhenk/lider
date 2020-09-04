@@ -44,6 +44,11 @@ $(document).ready(function(){
 			//uncheck action
 			function(unCheckedRows, row){
 				
+			},
+			// post tree created
+			function(root , treeGridId){
+				$('#'+ treeGridId).jqxTreeGrid('selectRow', root);
+				$('#'+ treeGridId).jqxTreeGrid('expandRow', root);
 			}
 	);
 	

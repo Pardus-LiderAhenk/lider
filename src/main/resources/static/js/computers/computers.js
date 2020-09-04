@@ -36,6 +36,8 @@ $("#domainUserPassword").val(password);
 
 $("#moveAgent").hide();
 $("#deleteAgent").hide();
+$("#btnAddOu").hide();
+$("#btnDeleteOu").hide();
 
 /*
  * create user tree select, check and uncheck action functions can be implemented if required
@@ -47,8 +49,6 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 			selectedRow=row;
 			baseRootDnComputer=rootDnComputer;
 			addSelectedEntryToTable(selectedRow)
-			
-			
 		},
 		//check action
 		function(checkedRows, row){
@@ -106,7 +106,7 @@ function onPresence2(presence)
 				var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
 				row.online=false;
 				$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name});
-				$("#agentOnlineStatus").attr("class","btn btn-danger");
+				$("#agentOnlineStatus").attr("class","badge badge-danger");
 				$("#agentOnlineStatus").html("Çevrimdışı");
 				
 			}
@@ -115,7 +115,7 @@ function onPresence2(presence)
 				var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
 				row.online=true;
 				$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name}); 
-				$("#agentOnlineStatus").attr("class","btn btn-success");
+				$("#agentOnlineStatus").attr("class","badge badge-success");
 				$("#agentOnlineStatus").html("Çevrimiçi");
 			}
 		}
@@ -912,6 +912,9 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#selectedAgentDNSSH").text("DN : "+selectedRow.distinguishedName);
 		$("#moveAgent").show();
 		$("#deleteAgent").show();
+		$("#systemInfoCardHeader").html(selectedRow.name); 
+		$("#btnAddOu").hide();
+		$("#btnDeleteOu").hide();
 	}
 //	else if(row.type=="ORGANIZATIONAL_UNIT"){
 //		
@@ -923,6 +926,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#deleteAgent").hide();
 		selectedEntries=[]
 		$("#selectedAgentInfo").html("Lütfen İstemci Seçiniz."); 
+		$("#systemInfoCardHeader").html(selectedRow.ou); 
 		$("#agentOnlineStatus").hide()
 		$("#agentHostname").html("");
 		$("#agentIpAddr").html("");
@@ -939,7 +943,9 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#selectedAgentDNSSH").text("");
 		$("#selectedAgentDNSSHIP").text("");
 		$("#agentDn").html(getEntryFolderName(selectedRow.distinguishedName));
-		getAllAndOnlineAgents(selectedRow.distinguishedName)
+		getAllAndOnlineAgents(selectedRow.distinguishedName);
+		$("#btnAddOu").show();
+		$("#btnDeleteOu").show();
 	}
 }
 
@@ -971,11 +977,11 @@ function showSelectedEntries() {
 	$("#agentOnlineStatus").show()
 	if(selectedEntries[0].online)
 	{
-		$("#agentOnlineStatus").attr("class","btn btn-success");
+		$("#agentOnlineStatus").attr("class","badge badge-success");
 		$("#agentOnlineStatus").html("Çevrimiçi");
 	}
 	else{
-		$("#agentOnlineStatus").attr("class","btn btn-danger");
+		$("#agentOnlineStatus").attr("class","badge badge-danger");
 		$("#agentOnlineStatus").html("Çevrimdışı");
 	}
 	
@@ -1495,6 +1501,79 @@ function deleteAgent() {
 		}
 	});
 }
+
+
+$('#btnAddOu').on('click',function(event) {
+	if(selectedRow==null){
+		$.notify("Lütfen Klasör Seçiniz","warn");
+	}
+	else{
+		getModalContent("modals/computer/addOuModal", function content(data){
+				$('#genericModalHeader').html("Klasör Yönetimi")
+				$('#genericModalBodyRender').html(data);
+				$('#ouInfo').html(selectedRow.ou +"/");
+				$('#addOu').on('click', function (event) {
+						var parentDn=selectedRow.distinguishedName; 
+						var parentName= selectedRow.ou;
+						var parentEntryUUID= selectedRow.entryUUID;
+						var ouName= $('#ouName').val();
+						$.ajax({
+							type : 'POST',
+							url : 'lider/user/addOu',
+							data: 'parentName='+parentDn +'&ou='+ouName,
+							dataType : 'json',
+							success : function(data) {
+								$.notify("Klasör Başarı İle Eklendi.", "success");
+								$('#genericModal').trigger('click');
+								$('#menuBtnComputers').trigger('click');
+							}
+						});
+				});
+			} 
+		);
+	}
+});
+
+//Create ou for selected parent node. Ou modal will be open for all releated pages..
+$('#btnDeleteOu').on('click',function(event) {
+	getModalContent("modals/computer/deleteOuModal", function content(data){
+		$('#genericModalHeader').html("Klasör Sil")
+		$('#genericModalBodyRender').html(data);
+		
+		$('#deleteOuBtn').on('click', function (event) {
+			deleteUserOu(selectedRow)
+		});
+	} 
+	);
+});
+
+function deleteUserOu(row) {
+	var dnList = [];
+	dnList.push({
+			distinguishedName :row.distinguishedName, 
+			entryUUID: row.entryUUID, 
+			name: row.name,
+			type: row.type,
+			uid: row.uid
+		});
+    $.ajax({
+		type : 'POST',
+		url : 'lider/user/deleteUserOu',
+		data : JSON.stringify(dnList),
+		dataType: "json",
+		contentType: "application/json",
+		success : function(ldapResult) {
+			$.notify("Klasör ve bulunan istemciler başarı ile silindi.",{className: 'success',position:"right top"}  );
+			$('#genericModal').trigger('click');
+			$('#menuBtnComputers').trigger('click');
+		},
+	    error: function (data, errorThrown) {
+			$.notify("Silme İşleminde Hata Oluştu.", "error");
+		}
+	});  
+}
+
+
 //function addRoster() {
 //	$.ajax({
 //		type: 'POST', 
@@ -1507,5 +1586,4 @@ function deleteAgent() {
 //	});
 //	
 //}
-	
 

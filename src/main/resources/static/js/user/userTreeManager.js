@@ -7,7 +7,7 @@
  * @returns
  */
 
-function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction) {
+function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction, postTreeCreatedAction) {
 	var rootDNUser = null;
 	var treeGridId=treeHolderDiv+"Grid";
 	/**
@@ -23,6 +23,7 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 		dataType : 'json',
 		success : function(data) {
 			rootDNUser = null;
+			
 			 var source =
 			  {
 			      dataType: "json",
@@ -68,6 +69,7 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 				 // create jqxTreeGrid.
 				 $('#'+treeGridId).jqxTreeGrid({
 					 width: '100%',
+					 height: 590,
 					 source: dataAdapter,
 				     altRows: true,
 				     sortable: true,
@@ -178,6 +180,8 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 								});  
 					      }
 					 }); 
+					
+					postTreeCreatedAction(rootDNUser , treeGridId)
 		}
 	});
 }

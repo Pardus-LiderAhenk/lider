@@ -112,7 +112,7 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 			     rendered: function () {
 			   	 },
 			     columns: [
-			       { text: "Acitve Directory", align: "center", dataField: "name", width: '100%' }
+			       { text: "", align: "center", dataField: "name", width: '100%' }
 			     ]
 			 });
 				 

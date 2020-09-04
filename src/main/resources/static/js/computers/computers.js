@@ -912,7 +912,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#selectedAgentDNSSH").text("DN : "+selectedRow.distinguishedName);
 		$("#moveAgent").show();
 		$("#deleteAgent").show();
-		$("#systemInfoCardHeader").html(selectedRow.name); 
+		$("#selectedAgentInfo").html(selectedRow.name); 
 		$("#btnAddOu").hide();
 		$("#btnDeleteOu").hide();
 	}
@@ -926,7 +926,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#deleteAgent").hide();
 		selectedEntries=[]
 		$("#selectedAgentInfo").html("Lütfen İstemci Seçiniz."); 
-		$("#systemInfoCardHeader").html(selectedRow.ou); 
+		$("#selectedAgentInfo").html(selectedRow.ou); 
 		$("#agentOnlineStatus").hide()
 		$("#agentHostname").html("");
 		$("#agentIpAddr").html("");

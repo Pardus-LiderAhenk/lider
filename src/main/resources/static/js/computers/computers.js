@@ -1558,14 +1558,21 @@ function deleteUserOu(row) {
 		});
     $.ajax({
 		type : 'POST',
-		url : 'lider/user/deleteUserOu',
+		url : 'lider/computer/deleteComputerOu',
 		data : JSON.stringify(dnList),
 		dataType: "json",
 		contentType: "application/json",
 		success : function(ldapResult) {
-			$.notify("Klasör ve bulunan istemciler başarı ile silindi.",{className: 'success',position:"right top"}  );
-			$('#genericModal').trigger('click');
-			$('#menuBtnComputers').trigger('click');
+			if(ldapResult){
+				$.notify("Klasör ve bulunan istemciler başarı ile silindi.",{className: 'success',position:"right top"}  );
+				$('#genericModal').trigger('click');
+				$('#menuBtnComputers').trigger('click');
+			}
+			else{
+				$.notify("Seçilen klasörün alt klasör veya istemcileri bulunamkatdır. Silme işlemi için klasör boş olmalıdır.",{className: 'warn',position:"right top"}  );
+				$('#genericModal').trigger('click');
+			}
+			
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Silme İşleminde Hata Oluştu.", "error");

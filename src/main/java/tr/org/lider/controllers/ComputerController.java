@@ -386,4 +386,34 @@ public class ComputerController {
 		return true;
 		
 	}
+	
+	/**
+	 * delete user ous
+	 * @param selectedEntryArr
+	 * @return
+	 */
+	
+	@RequestMapping(method=RequestMethod.POST, value = "/deleteComputerOu")
+	@ResponseBody
+	public Boolean deleteComputerOu(@RequestBody LdapEntry[] selectedEntryArr) {
+		try {
+			for (LdapEntry ldapEntry : selectedEntryArr) {
+				if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
+//					ldapService.updateOLCAccessRulesAfterEntryDelete(ldapEntry.getDistinguishedName());
+					LdapEntry entry= ldapService.getOuAndOuSubTreeDetail(ldapEntry.getDistinguishedName());
+					if(entry.getChildEntries().size()>0) {
+						return false;
+					}
+					else {
+						ldapService.deleteNodes(entry);
+						return true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return null;
+	}
 }

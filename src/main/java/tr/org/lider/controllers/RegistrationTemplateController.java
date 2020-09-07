@@ -119,5 +119,11 @@ public class RegistrationTemplateController {
 		retList.add(ldapService.getLdapUserTree());
 		return retList;
 	}
-
+	
+	@RequestMapping(value = "/getGroups")
+	public List<LdapEntry> getGroups() {
+		List<LdapEntry> retList = new ArrayList<LdapEntry>();
+		retList.add(ldapService.getLdapUsersGroupTree());
+		return retList;
+	}
 }

@@ -107,7 +107,7 @@ function btnCreateRegistrationTemplateClicked() {
  */
 function btnCreateTreeForAuthSelectionClicked() {
 	getModalContent("modals/definitions/registration_template/select_auth_group", function content(data){
-		$('#genericModalHeader').html("Kullanıcı veya Kullanıcı Grubu Seç");
+		$('#genericModalHeader').html("Kullanıcı Grubu Seç");
 		$('#genericModalBodyRender').html(data);
 		createTreeModalForAuthGroupSelection();
 	});
@@ -118,7 +118,7 @@ function createTreeModalForAuthGroupSelection(){
 	//so new created groups can be under root user groups
 	$.ajax({
 		type : 'POST',
-		url : '/lider/registration_template/getUsers',
+		url : '/lider/registration_template/getGroups',
 		dataType : 'json',
 		success : function(data) {
 			 var source =

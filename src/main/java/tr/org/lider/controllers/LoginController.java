@@ -1,6 +1,9 @@
 package tr.org.lider.controllers;
 
+import java.util.List;
+
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.constant.LiderConstants;
 import tr.org.lider.ldap.LDAPServiceImpl;
+import tr.org.lider.ldap.LdapEntry;
+import tr.org.lider.services.AgentService;
+import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
 
 /**
@@ -30,7 +36,13 @@ public class LoginController {
 	private ConfigurationService configurationService;
 	
 	@Autowired
-	LDAPServiceImpl ldapService;
+	private AgentService agentService;
+	
+	@Autowired
+	private LDAPServiceImpl ldapService;
+	
+	@Autowired
+	private CommandService commandService;
 	
 	@RequestMapping(value = "/",method = {RequestMethod.GET, RequestMethod.POST})
 	public String getMainPage(Model model, Authentication authentication) {
@@ -50,6 +62,20 @@ public class LoginController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		model.addAttribute("totalComputerNumber", agentService.count());
+		//get count of users
+		int countOfLDAPUsers = 0;
+		try {
+			List<LdapEntry> retList=ldapService.findSubEntries(configurationService.getLdapRootDn(), "(objectclass=pardusAccount)", new String[] { "*" }, SearchScope.SUBTREE);
+			countOfLDAPUsers = retList.size();
+		} catch (LdapException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		model.addAttribute("totalUserNumber", countOfLDAPUsers);
+		//sent task total number
+		
+		model.addAttribute("totalSentTaskNumber", commandService.getTotalCountOfSentTasks());
 		return LiderConstants.Pages.MAIN_PAGE;
 	}
 	

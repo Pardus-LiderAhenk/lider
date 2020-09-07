@@ -119,6 +119,10 @@ public class CommandService {
 		}
 	}
 	
+	public Long getTotalCountOfSentTasks() {
+		return commandExecutionRepository.count();
+	}
+	
 	public CommandExecutionResultImpl getCommandExecutionResultByID(Long id) {
 		return commandExecutionResultRepository.findOne(id);
 	}

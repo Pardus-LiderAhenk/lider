@@ -29,6 +29,10 @@ public class AgentService {
         return agentRepository.findAll();
 	}
 	
+	public Long count() {
+        return agentRepository.count();
+	}
+	
 	public Optional<AgentImpl> findAgentByID(Long agentID) {
         return agentRepository.findById(agentID);
 	}

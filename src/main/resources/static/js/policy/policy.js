@@ -396,6 +396,7 @@ $("#policyUpdateBtn").click(function(e){
 				policyList.push(data);
 				createPolicyTable();
 				EmptyProfileTableOfPolicy();
+				hideAndShowPolicyButton(false);
 			} 
 		},
 		error: function (data, errorThrown) {

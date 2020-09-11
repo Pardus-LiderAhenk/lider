@@ -16,6 +16,8 @@ public interface AgentRepository extends BaseJpaRepository<AgentImpl, Long>{
 
 	List<AgentImpl> findByJid(String jid);
 	
+	List<AgentImpl> findByHostname(String hostname);
+	
 	List<AgentImpl> findByDn(String dn);
 	
 //	Page<AgentImpl> findAllByJidIn(List<String> jidList, Pageable pageable);
@@ -49,6 +51,14 @@ public interface AgentRepository extends BaseJpaRepository<AgentImpl, Long>{
 	@Modifying(clearAutomatically = true)
     @Query("UPDATE AgentImpl agent SET agent.dn = :newDN WHERE agent.dn = :currentDN")
     int updateAgentDN(@Param("currentDN") String currentDN, @Param("newDN") String newDN);
+	
+	@Transactional
+	@Modifying(clearAutomatically = true)
+    @Query("UPDATE AgentImpl agent SET agent.dn = :newDN, "
+    		+ "agent.hostname = :newHostname, "
+    		+ "agent.jid = :newHostname "
+    		+ "WHERE agent.dn = :currentDN")
+    int updateHostname(@Param("currentDN") String currentDN, @Param("newDN") String newDN, @Param("newHostname") String newHostname);
 	
 	void deleteByDn(String Dn);
 	

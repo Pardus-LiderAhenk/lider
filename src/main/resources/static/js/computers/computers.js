@@ -30,7 +30,7 @@ $("#securityAndNetworkManagementPage").hide();
 $("#dropdownButton").hide();
 $("#agentOnlineStatus").hide()
 $("#selectedAgentList").hide();
-
+$("#btnRenameAgent").hide();
 $("#domainUserName").val(user_name);
 $("#domainUserPassword").val(password);
 
@@ -912,6 +912,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#selectedAgentDNSSH").text("DN : "+selectedRow.distinguishedName);
 		$("#moveAgent").show();
 		$("#deleteAgent").show();
+		$("#btnRenameAgent").show();
 		$("#selectedAgentInfo").html(selectedRow.name); 
 		$("#btnAddOu").hide();
 		$("#btnDeleteOu").hide();
@@ -922,6 +923,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 //		
 //	}
 	else{
+		$("#btnRenameAgent").hide();
 		$("#moveAgent").hide();
 		$("#deleteAgent").hide();
 		selectedEntries=[]
@@ -1432,6 +1434,48 @@ function generateTreeForOUSelection() {
 		
 		}
 	);
+}
+
+/*
+ * function for opening modal for renaming computer(hostname)
+ */
+function btnRenameAgentClicked() {
+	getModalContent("modals/computer/renameComputer", function content(data){
+		$('#genericModalHeader').html("İstemci adını değiştirme");
+		$('#genericModalBodyRender').html(data);
+	});
+}
+
+/*
+* update hostname on Lider database and send task to change it on ahenk
+*/
+function btnSaveRenameEntryClicked() {
+	if( $('#newHostname').val() == "" ) {
+		$.notify("Yeni istemci adı boş bırakılamaz", "error");
+	}
+	var params = {
+			"agentDN" : selectedRow.distinguishedName,
+			"cn": selectedRow.cn,
+			"newHostname": $('#newHostname').val()
+	};
+	$.ajax({ 
+		type: 'POST', 
+		url: '/lider/computer/rename/agent',
+		dataType: 'json',
+		data: params,
+		success: function (data) {
+			$.notify("İstemci adı başarıyla değiştirildi.", "success");
+			$('#genericModal').trigger('click');
+			$('#menuBtnComputers').trigger('click');
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			if(jqXHR.status == 409) {
+				$.notify("Aynı isme sahip başka istemci bulunmaktadır. Lütfen başka isim seçiniz.", "error");
+			} else {
+				$.notify("İstemci adı değiştirilirken hata oluştu.", "error");
+			}
+		}
+	});
 }
 
 function btnUseSelectedOUClicked() {

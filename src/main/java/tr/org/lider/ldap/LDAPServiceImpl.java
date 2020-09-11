@@ -22,6 +22,9 @@ import java.util.regex.Pattern;
 
 import javax.annotation.PreDestroy;
 import javax.naming.InvalidNameException;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
 import javax.naming.ldap.LdapName;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
@@ -43,6 +46,7 @@ import org.apache.directory.api.ldap.model.message.AddRequest;
 import org.apache.directory.api.ldap.model.message.AddRequestImpl;
 import org.apache.directory.api.ldap.model.message.AddResponse;
 import org.apache.directory.api.ldap.model.message.LdapResult;
+import org.apache.directory.api.ldap.model.message.ModifyDnRequest;
 import org.apache.directory.api.ldap.model.message.ModifyRequest;
 import org.apache.directory.api.ldap.model.message.ModifyRequestImpl;
 import org.apache.directory.api.ldap.model.message.Response;
@@ -370,6 +374,29 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 	}
 
+
+	public void renameHostname(String attribute, String newHostname, String entryDn) throws LdapException {
+		logger.info("Updating attribute " + attribute + " with value " + newHostname);
+		LdapConnection connection = null;
+
+		connection = getConnection();
+		Entry entry = null;
+		try {
+			entry = connection.lookup(entryDn);
+			if (entry != null) {
+				ModifyRequest mr = new ModifyRequestImpl();
+				mr.setName(new Dn(entryDn));
+				mr.replace(attribute, newHostname);
+				connection.modify(mr);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+	}
+	
 	@Override
 	public void updateEntryAddAtribute(String entryDn, String attribute, String value) throws LdapException {
 		logger.info("Adding attribute " + attribute + " value " + value);
@@ -2353,6 +2380,7 @@ public class LDAPServiceImpl implements ILDAPService {
 		else 
 			return false;
 	}
+
 
 }
 

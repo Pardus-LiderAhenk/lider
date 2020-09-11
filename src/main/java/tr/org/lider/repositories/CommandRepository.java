@@ -18,6 +18,7 @@ public interface CommandRepository extends BaseJpaRepository<CommandImpl, Long>{
 
 	List<CommandImpl> findByTask(TaskImpl task );
 	List<CommandImpl> findAllByDnListJsonStringContaining(String dnListJsonString);
+	List<CommandImpl> findAllByUidListJsonStringContaining(String uidListJsonString);
 
 	@Query("SELECT c.task, ce, c.commandOwnerUid, c.id "
 			+ "FROM CommandImpl c "

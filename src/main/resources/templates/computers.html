@@ -67,18 +67,23 @@
 								<div class="col-lg-5">
 								<div class="main-card mb-3 card">
 									<div class="card-header">
-										<div class="col-lg-6 text-left">  <button class="btn btn-link agent-offline btn-sm " id="selectedAgentInfo" data-target="#entryLdapInfoModal" data-toggle="modal"></button> </div>
-										<div class="col-lg-6 text-right pull-right">
+										<div class="col-lg-5 text-left">  <button class="btn btn-link agent-offline btn-sm " id="selectedAgentInfo" data-target="#entryLdapInfoModal" data-toggle="modal"></button> </div>
+										<div class="col-lg-7 text-right pull-right">
 											<button id="moveAgent" type="button" title="Kaydı Taşı" onclick="btnSelectDNFromTreeClicked()" 
 												data-toggle="modal" data-target="#genericModal"
 												class="btn-sm btn-shadow btn btn-info btn-sm">
 												<i class="fa fa-random"></i> Taşı
 											</button>
-											<button id="deleteAgent" type="button" title="Kaydı Sil" class="btn-sm btn-shadow btn btn-danger btn-sm">
-												<i class="fa fa-trash"></i> Sil
-											</button>
 											<button id="btnAddOu" type="button" title="Alt Klasör Ekle"  data-target="#genericModal" data-toggle="modal" class="btn-sm btn-shadow btn btn-info btn-sm">
 												<i class="fa fa-folder-open"></i> Alt Klasör Oluştur
+											</button>
+											<button id="btnRenameAgent" type="button" title="Yeniden adlandır."  data-target="#genericModal"
+												 onclick="btnRenameAgentClicked()"
+												data-toggle="modal" class="btn-sm btn-shadow btn btn-info btn-sm">
+												<i class="fa fa-edit"></i> Yeniden Adlandır
+											</button>
+											<button id="deleteAgent" type="button" title="Kaydı Sil" class="btn-sm btn-shadow btn btn-danger btn-sm">
+												<i class="fa fa-trash"></i> Sil
 											</button>
 											<button id="btnDeleteOu" type="button" title="Klasör Sil"  data-target="#genericModal" data-toggle="modal" class="btn-sm btn-danger btn btn-info btn-sm">
 												<i class="fa fa-trash"></i> Sil

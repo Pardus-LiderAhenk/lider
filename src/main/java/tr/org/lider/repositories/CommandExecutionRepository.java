@@ -27,5 +27,10 @@ public interface CommandExecutionRepository extends BaseJpaRepository<CommandExe
     @Query("UPDATE CommandExecutionImpl cex SET cex.dn = :newDN WHERE cex.dn = :currentDN")
     int updateAgentDN(@Param("currentDN") String currentDN, @Param("newDN") String newDN);
 	
+	@Transactional
+	@Modifying(clearAutomatically = true)
+    @Query("UPDATE CommandExecutionImpl cex SET cex.dn = :newDN, cex.uid = :newHostname WHERE cex.dn = :currentDN")
+    int updateAgentDNAndUID(@Param("currentDN") String currentDN, @Param("newDN") String newDN ,@Param("newHostname") String newHostname);
+	
 	void deleteByDn(String dn);
 }

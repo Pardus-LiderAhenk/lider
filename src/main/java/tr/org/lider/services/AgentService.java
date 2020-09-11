@@ -41,6 +41,10 @@ public class AgentService {
         return agentRepository.findByJid(agentJid);
 	}
 	
+	public List<AgentImpl> findAgentByHostname(String hostname) {
+        return agentRepository.findByHostname(hostname);
+	}
+	
 	public List<AgentImpl> findAgentByDn(String agentDn) {
         return agentRepository.findByDn(agentDn);
 	}
@@ -157,6 +161,10 @@ public class AgentService {
 	
 	public void updateAgentDN(String currentDN, String newDN) {
 		agentRepository.updateAgentDN(currentDN, newDN);
+	}
+	
+	public void updateHostname(String currentDN, String newDN, String newHostname) {
+		agentRepository.updateHostname(currentDN, newDN, newHostname);
 	}
 	
 	public void deleteAgent(String dn) {

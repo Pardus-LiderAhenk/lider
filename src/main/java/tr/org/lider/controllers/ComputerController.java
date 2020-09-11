@@ -11,7 +11,9 @@ import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,37 +46,37 @@ import tr.org.lider.utils.IRestResponse;
 @RestController()
 @RequestMapping("/lider/computer")
 public class ComputerController {
-	
+
 	Logger logger = LoggerFactory.getLogger(ComputerController.class);
-	
+
 	@Autowired
 	private LDAPServiceImpl ldapService;
-	
+
 	@Autowired
 	private ConfigurationService configurationService;
-	
+
 	@Autowired
 	private XMPPClientImpl messagingService;
-	
+
 	@Autowired
 	private AgentService agentService;
-	
+
 	@Autowired
 	private CommandService commandService;
-	
+
 	@Autowired
 	private PluginService pluginService;
-	
+
 	@Autowired
 	private TaskService taskService;
-	
+
 	@RequestMapping(value = "/getComputers")
 	public List<LdapEntry> getComputers() {
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		retList.add(ldapService.getLdapComputersTree());
 		return retList;
 	}
-	
+
 	@RequestMapping(value = "/getOuDetails")
 	public List<LdapEntry> task(LdapEntry selectedEntry) {
 		List<LdapEntry> subEntries = null;
@@ -88,7 +90,7 @@ public class ComputerController {
 		selectedEntry.setChildEntries(subEntries);
 		return subEntries;
 	}
-	
+
 	@RequestMapping(value = "/getOu")
 	public List<LdapEntry> getOu(LdapEntry selectedEntry) {
 		List<LdapEntry> subEntries = null;
@@ -100,7 +102,7 @@ public class ComputerController {
 		}
 		return subEntries;
 	}
-	
+
 	/**
 	 * 
 	 * @param key
@@ -112,7 +114,7 @@ public class ComputerController {
 			@RequestParam(value="searchDn", required=true) String searchDn,
 			@RequestParam(value="key", required=true) String key, 
 			@RequestParam(value="value", required=true) String value) {
-		
+
 		List<LdapEntry> results=null;
 		try {
 			if(searchDn.equals("")) {
@@ -126,7 +128,7 @@ public class ComputerController {
 		}
 		return results ;
 	}
-	
+
 	@RequestMapping(value = "/getOnlineAhenks", method = { RequestMethod.POST })
 	public String getOnlyOnlineAhenks(@RequestBody LdapEntry[] selectedEntryArr) {
 		List<LdapEntry> ahenkList=new ArrayList<>();
@@ -161,7 +163,7 @@ public class ComputerController {
 		}
 		return ret;
 	}
-	
+
 	//add new group and add selected agents
 	@RequestMapping(method=RequestMethod.POST ,value = "/createNewAgentGroup", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
@@ -204,7 +206,7 @@ public class ComputerController {
 		}
 		return entry;
 	}
-	
+
 	//add agents to existing group
 	@RequestMapping(method=RequestMethod.POST ,value = "/group/existing", produces = MediaType.APPLICATION_JSON_VALUE)
 	public LdapEntry addAgentsToExistingGroup(@RequestParam(value="groupDN") String groupDN,
@@ -237,7 +239,7 @@ public class ComputerController {
 		return entry;
 	}
 
-	
+
 	/**
 	 * 
 	 * @param key
@@ -247,14 +249,14 @@ public class ComputerController {
 	@RequestMapping(method=RequestMethod.POST ,value = "/searchOnlineEntries", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<LdapEntry> searchOnlineEntries(
 			@RequestParam(value="searchDn", required=true) String searchDn) {
-		
+
 		List<LdapEntry> results=null;
 		try {
 			if(searchDn.equals("")) {
 				searchDn=configurationService.getLdapRootDn();
 			}
-//			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
-//			filterAttributes.add(new LdapSearchFilterAttribute(key, value, SearchFilterEnum.EQ));
+			//			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+			//			filterAttributes.add(new LdapSearchFilterAttribute(key, value, SearchFilterEnum.EQ));
 			List<LdapEntry> res = ldapService.findSubEntries(searchDn, "(objectclass=pardusDevice)",new String[] { "*" }, SearchScope.SUBTREE);
 			results= new ArrayList<>();
 			for (LdapEntry ldapEntry : res) {
@@ -267,23 +269,23 @@ public class ComputerController {
 		}
 		return results ;
 	}
-	
+
 	@RequestMapping(value = "/getAgentList")
 	public LdapEntry getAgentList(@RequestParam(value="searchDn") String searchDn) {
 		LdapEntry returnLdapEntry=null;
 		List<LdapEntry> retList = new ArrayList<LdapEntry>();
 		List<LdapEntry> onlineRetList = new ArrayList<LdapEntry>();
 		try {
-			
+
 			returnLdapEntry=new LdapEntry();
 			retList=ldapService.findSubEntries(searchDn, "(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
-			
+
 			for (LdapEntry ldapEntry : retList) {
 				if(ldapEntry.isOnline()) {
 					onlineRetList.add(ldapEntry);
 				}
 			}
-			
+
 			returnLdapEntry.setOnlineAgentList(onlineRetList);
 			returnLdapEntry.setAgentListSize(retList.size());
 		} catch (LdapException e) {
@@ -291,7 +293,7 @@ public class ComputerController {
 		}
 		return returnLdapEntry;
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST ,value = "/move/agent", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Boolean moveEntry(@RequestParam(value="sourceDN", required=true) String sourceDN,
 			@RequestParam(value="sourceCN", required=true) String sourceCN,
@@ -303,17 +305,17 @@ public class ComputerController {
 			ldapService.moveEntry(sourceDN, destinationDN);
 			List<LdapEntry> subEntries = ldapService.search("member", sourceDN, new String[] {"*"});
 			for (LdapEntry ldapEntry : subEntries) {
-				
+
 				ldapService.updateEntryAddAtribute(ldapEntry.getDistinguishedName(), "member", newAgentDN);
 				ldapService.updateEntryRemoveAttributeWithValue(ldapEntry.getDistinguishedName(), "member", sourceDN);
 			}
-			
+
 			//update C_AGENT table
 			agentService.updateAgentDN(sourceDN, newAgentDN);
-			
+
 			//update C_COMMAND and C_COMMAND_EXECUTION table
 			commandService.updateAgentDN(sourceDN, newAgentDN);
-			
+
 			//send task to Ahenk to change DN with new DN
 			Map<String, Object> parameterMap = new  HashMap<>();
 			parameterMap.put("dn", sourceDN);
@@ -321,7 +323,7 @@ public class ComputerController {
 			parameterMap.put("directory_server", configurationService.getDomainType());
 			List<String> dnList = new ArrayList<>();
 			dnList.add(sourceCN);
-			
+
 			PluginImpl plugin = new PluginImpl();
 			plugin = pluginService.findPluginIdByName("ldap");
 			PluginTask requestBody = new PluginTask();
@@ -335,18 +337,18 @@ public class ComputerController {
 			List<LdapEntry> entryList = new  ArrayList<LdapEntry>();
 			LdapEntry ldapEntry = ldapService.getEntryDetail(newAgentDN);
 			entryList.add(ldapEntry);
-			
+
 			requestBody.setEntryList(entryList);
 			IRestResponse restResponse = taskService.execute(requestBody);
 			logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
-			 
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
-	
+
 	@RequestMapping(method=RequestMethod.POST ,value = "/delete/agent", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Boolean deleteAgent(@RequestParam(value="agentDN", required=true) String agentDN,
 			@RequestParam(value="agentUID", required=true) String agentUID) {
@@ -357,7 +359,7 @@ public class ComputerController {
 		parameterMap.put("directory_server", configurationService.getDomainType());
 		List<String> dnList = new ArrayList<>();
 		dnList.add(agentDN);
-		
+
 		PluginImpl plugin = new PluginImpl();
 		plugin = pluginService.findPluginIdByName("ldap");
 		PluginTask requestBody = new PluginTask();
@@ -371,7 +373,7 @@ public class ComputerController {
 		List<LdapEntry> entryList = new  ArrayList<LdapEntry>();
 		LdapEntry ldapEntry = ldapService.getEntryDetail(agentDN);
 		entryList.add(ldapEntry);
-		
+
 		requestBody.setEntryList(entryList);
 		IRestResponse restResponse = taskService.execute(requestBody);
 		agentService.deleteAgent(agentDN);
@@ -381,25 +383,86 @@ public class ComputerController {
 			e.printStackTrace();
 		}
 		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
-		
+
 		commandService.deleteAgentCommands(agentDN, agentUID);
 		return true;
-		
 	}
-	
+
+	@RequestMapping(method=RequestMethod.POST ,value = "/rename/agent", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> renameAgent(
+			@RequestParam(value="agentDN", required=true) String agentDN,
+			@RequestParam(value="cn", required=true) String cn,
+			@RequestParam(value="newHostname", required=true) String newHostname) {
+		logger.info("Agent rename request has been receieved. DN: " + agentDN);
+		String newAgentDN = agentDN.replace("cn=" + cn, "cn=" + newHostname);
+		
+		List<LdapEntry> entryList = new  ArrayList<LdapEntry>();
+		LdapEntry ldapEntryForTask = ldapService.getEntryDetail(agentDN);
+		entryList.add(ldapEntryForTask);
+		
+		if(agentService.findAgentByHostname(newHostname).size() > 0) {
+			return new ResponseEntity<Boolean>(false, HttpStatus.CONFLICT);
+		}
+		try {
+			//update uid attribute
+			ldapService.renameHostname("uid", newHostname, agentDN);
+
+			//check memberships and if membership exists in any group update DN info
+			ldapService.renameEntry(agentDN, "cn=" + newHostname);
+			List<LdapEntry> subEntries = ldapService.search("member", agentDN, new String[] {"*"});
+			for (LdapEntry ldapEntry : subEntries) {
+				ldapService.updateEntryAddAtribute(ldapEntry.getDistinguishedName(), "member", newAgentDN);
+				ldapService.updateEntryRemoveAttributeWithValue(ldapEntry.getDistinguishedName(), "member", agentDN);
+			}
+		} catch (LdapException e) {
+			logger.error("Error occured while renaming the agent. Message: " + e.getMessage());
+		}
+		
+		//send task to Ahenk to change DN with new DN
+		Map<String, Object> parameterMap = new  HashMap<>();
+		parameterMap.put("dn", agentDN);
+		parameterMap.put("old_cn", cn);
+		parameterMap.put("new_cn", newHostname);
+		parameterMap.put("directory_server", configurationService.getDomainType());
+		List<String> dnList = new ArrayList<>();
+		dnList.add(agentDN);
+
+		PluginImpl plugin = new PluginImpl();
+		plugin = pluginService.findPluginIdByName("ldap");
+		PluginTask requestBody = new PluginTask();
+		requestBody.setCommandId("RENAME_ENTRY");
+		requestBody.setPlugin(plugin);
+
+		requestBody.setParameterMap(parameterMap);
+		requestBody.setDnType(DNType.AHENK);
+		requestBody.setState(1);
+		requestBody.setDnList(dnList);
+
+
+		requestBody.setEntryList(entryList);
+		IRestResponse restResponse = taskService.execute(requestBody);
+		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		//update C_AGENT table
+		agentService.updateHostname(agentDN, newAgentDN, newHostname);
+
+		//update C_COMMAND and C_COMMAND_EXECUTION table
+		commandService.updateAgentHostname(agentDN, newAgentDN, cn, newHostname);
+		return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+	}
+
 	/**
 	 * delete user ous
 	 * @param selectedEntryArr
 	 * @return
 	 */
-	
+
 	@RequestMapping(method=RequestMethod.POST, value = "/deleteComputerOu")
 	@ResponseBody
 	public Boolean deleteComputerOu(@RequestBody LdapEntry[] selectedEntryArr) {
 		try {
 			for (LdapEntry ldapEntry : selectedEntryArr) {
 				if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
-//					ldapService.updateOLCAccessRulesAfterEntryDelete(ldapEntry.getDistinguishedName());
+					//					ldapService.updateOLCAccessRulesAfterEntryDelete(ldapEntry.getDistinguishedName());
 					LdapEntry entry= ldapService.getOuAndOuSubTreeDetail(ldapEntry.getDistinguishedName());
 					if(entry.getChildEntries().size()>0) {
 						return false;

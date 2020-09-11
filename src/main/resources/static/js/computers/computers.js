@@ -17,6 +17,7 @@ var treeGridHolderDiv= "computerTreeDiv";
 var computerTreeCreated=false;
 var pluginTaskList=null;
 var systemSettings=null;
+var historyData = null;
 
 var selectedRowForMovingEntry;
 
@@ -614,59 +615,90 @@ function setInstallAhenkPage() {
 	showPageAndHideOthers('installAhenkPage')
 }
 
-function executedTaskDetailClicked(executionDate, pluginName, commandExecutionResultID) {
-
-	var params = {
-			"id" : commandExecutionResultID
-	};
-	$.ajax({ 
-		type: 'POST', 
-		url: "/command/commandexecutionresult",
-		dataType: 'json',
-		data: params,
-		success: function (data) { 
-			if(data != null) {
-				if(data.responseDataStr != null) {
-					var tableContent = '<tr><th style="width: 35%">Görev Adı</th><td style="width: 65%">' + pluginName + '</td></tr>';
-					if(data.responseCode == "TASK_PROCESSED" || data.responseCode == "TASK_ERROR") {
-						if(data.responseCode == "TASK_PROCESSED") {
-							tableContent += '<tr><th>Çalıştırma Sonucu</th><td>' + 'Başarılı' + '</td></tr>';
-						} else if(data.responseCode == "TASK_ERROR") {
-							tableContent += '<tr><th>Çalıştırma Sonucu</th><td>' + 'Hata Oluştu' + '</td></tr>';
-						}
-
-						var rawEndDate = data.createDate;
-						var year = rawEndDate.substring(0,4);
-						var month = rawEndDate.substring(5,7);
-						var day = rawEndDate.substring(8,10);
-						var time = rawEndDate.substring(11,19);
-						executionTime = day + '.' + month + '.' + year + ' ' + time;
-						tableContent += '<tr><th>Oluşturulma Tarihi</th><td>' + executionDate + '</td></tr>';
-						tableContent += '<tr><th>Çalıştırılma Tarihi</th><td>' + executionTime + '</td></tr>';
-						if(data.responseDataStr != null && data.responseDataStr != "" && data.responseDataStr != "?") {
-							tableContent += '<tr><th colspan="100%"><h6>Görev Çalıştırılması Sonucunda Kaydedilen Veriler</h6></th></tr>';
-							$.each(jQuery.parseJSON( data.responseDataStr ), function(key, value){
-								tableContent += '<tr><th>' + key + '</th><td>' + value + '</td></tr>';
-							});
-						}
-					} else {
-						tableContent += '<tr><th>Çalıştırma Sonucu</th><td>' + 'Gönderildi' + '</td></tr>';
-						tableContent += '<tr><th>Oluşturulma Tarihi</th><td>' + executionDate + '</td></tr>';
-						tableContent += '<tr><th>Çalıştırılma Tarihi</th><td>' + '-' + '</td></tr>';
-					}
-					tableContent += '<tr><th>Ahenkten Gelen Mesaj</th><td>' + data.responseMessage + '</td></tr>';
-
-					$("#executedTaskDetailTable").empty();
-					$('#executedTaskDetailTable').append(tableContent);
-				}
-			} else {
-				$.notify("No results found.", "error");
-			}
-		},
-		error: function (data, errorThrown) {
-			$.notify("Something went wrong.", "error");
+function executedTaskDetailClicked(executionDate, commandClsId, taskId, commandExecutionResultID) {
+	var parameterMap = null;
+	$.each(historyData, function(index, command) {
+		if (command.task.id == taskId) {
+			parameterMap = command.task.parameterMap;
 		}
 	});
+
+	if (commandExecutionResultID != "NA") {
+		var params = {
+				"id" : commandExecutionResultID
+		};
+		$.ajax({ 
+			type: 'POST', 
+			url: "/command/commandexecutionresult",
+			dataType: 'json',
+			data: params,
+			success: function (data) { 
+				if(data != null) {
+					if(data.responseDataStr != null) {
+						var tableContent = '<tr><th style="width: 35%">Görev Adı</th><td style="width: 65%">' + commandClsId + '</td></tr>';
+						if(data.responseCode == "TASK_PROCESSED" || data.responseCode == "TASK_ERROR") {
+							if(data.responseCode == "TASK_PROCESSED") {
+								tableContent += '<tr><th>Çalıştırma Sonucu</th><td>' + 'Başarılı' + '</td></tr>';
+							} else if(data.responseCode == "TASK_ERROR") {
+								tableContent += '<tr><th>Çalıştırma Sonucu</th><td>' + 'Hata Oluştu' + '</td></tr>';
+							}
+
+							var rawEndDate = data.createDate;
+							var year = rawEndDate.substring(0,4);
+							var month = rawEndDate.substring(5,7);
+							var day = rawEndDate.substring(8,10);
+							var time = rawEndDate.substring(11,19);
+							executionTime = day + '.' + month + '.' + year + ' ' + time;
+							tableContent += '<tr><th>Oluşturulma Tarihi</th><td>' + executionDate + '</td></tr>';
+							tableContent += '<tr><th>Çalıştırılma Tarihi</th><td>' + executionTime + '</td></tr>';
+							if(parameterMap != null) {
+								tableContent += '<tr><th colspan="100%"><h6>Gönderilen Görev Parametreleri</h6></th></tr>';
+								Object.keys(parameterMap).forEach(function(key){
+									tableContent += '<tr><th>' + key + '</th><td>' + parameterMap[key] + '</td></tr>';
+								});
+//								$.each(parameterMap, function(key, value){
+//								tableContent += '<tr><th>' + key + '</th><td>' + value + '</td></tr>';
+//								});
+							}
+							if(data.responseDataStr != null && data.responseDataStr != "" && data.responseDataStr != "?") {
+								tableContent += '<tr><th colspan="100%"><h6>Görev Çalıştırılması Sonucunda Kaydedilen Veriler</h6></th></tr>';
+								$.each(jQuery.parseJSON( data.responseDataStr ), function(key, value){
+									tableContent += '<tr><th>' + key + '</th><td>' + value + '</td></tr>';
+								});
+							}
+						} else {
+							tableContent += '<tr><th>Çalıştırma Sonucu</th><td>' + 'Gönderildi' + '</td></tr>';
+							tableContent += '<tr><th>Oluşturulma Tarihi</th><td>' + executionDate + '</td></tr>';
+							tableContent += '<tr><th>Çalıştırılma Tarihi</th><td>' + '-' + '</td></tr>';
+							tableContent += '<tr><th>Görev İçeriği</th><td>' + '-' + '</td></tr>';
+						}
+						tableContent += '<tr><th>Ahenkten Gelen Mesaj</th><td>' + data.responseMessage + '</td></tr>';
+
+						$("#executedTaskDetailTable").empty();
+						$('#executedTaskDetailTable').append(tableContent);
+					}
+				} else {
+					$.notify("No results found.", "error");
+				}
+			},
+			error: function (data, errorThrown) {
+				$.notify("Something went wrong.", "error");
+			}
+		});
+	} else {
+		var tableContent = '<tr><th style="width: 35%">Görev Adı</th><td style="width: 65%">' + commandClsId + '</td></tr>';
+		if(parameterMap != null) {
+			tableContent += '<tr><th colspan="100%"><h6>Görev Parametreleri</h6></th></tr>';
+			Object.keys(parameterMap).forEach(function(key){
+				tableContent += '<tr><th>' + key + '</th><td>' + parameterMap[key] + '</td></tr>';
+			});
+			$("#executedTaskDetailTable").empty();
+			$('#executedTaskDetailTable').append(tableContent);
+//			$.each(parameterMap, function(key, value){
+//			tableContent += '<tr><th>' + key + '</th><td>' + value + '</td></tr>';
+//			});
+		}
+	}
 }
 
 function dropdownButtonClicked(operation) {
@@ -923,6 +955,8 @@ function addSelectedEntryToTable(row,rootDnComputer){
 //		
 //	}
 	else{
+		$('#selectedAgentInfo').prop('title', row.distinguishedName);
+		$("#agentStatusIcon").html('<i class="fa fa-toggle-off"></i> Durum');
 		$("#btnRenameAgent").hide();
 		$("#moveAgent").hide();
 		$("#deleteAgent").hide();
@@ -981,10 +1015,12 @@ function showSelectedEntries() {
 	{
 		$("#agentOnlineStatus").attr("class","badge badge-success");
 		$("#agentOnlineStatus").html("Çevrimiçi");
+		$("#agentStatusIcon").html('<i class="fas fa-toggle-on"></i> Durum');
 	}
 	else{
 		$("#agentOnlineStatus").attr("class","badge badge-danger");
 		$("#agentOnlineStatus").html("Çevrimdışı");
+		$("#agentStatusIcon").html('<i class="fa fa-toggle-off"></i> Durum');
 	}
 	
 	var agentJid = selectedEntries[0]['attributes'].uid;
@@ -1088,6 +1124,7 @@ function taskHistory() {
 			success: function (data) { 
 				if(data.length > 0) {
 					var trElement = "";
+					historyData = data;
 					$.each(data, function(index, command) {
 						var executionResult = "";
 						var executionTime = "-";
@@ -1113,17 +1150,30 @@ function taskHistory() {
 						trElement += '<td>' + createDate + '</td>';
 						trElement += '<td>' + executionTime + '</td>';
 						if(executionResult == "TASK_PROCESSED" || executionResult == "TASK_ERROR") {
+							var taskId = command.task.id;
 							trElement += '<td><a href="#executedTaskDetail" class="view text-center" '
 								+ 'onclick="executedTaskDetailClicked('
 								+ '\'' + createDate + '\', '
-								+ '\'' + command.task.plugin.name + '\', '
+								+ '\'' + command.task.commandClsId + '\', '
+								+ '\'' + taskId + '\', '
 								+ '\'' + command.commandExecutions[0].commandExecutionResults[0].id + '\')" data-id="' 
 								+ command.commandExecutions[0].commandExecutionResults[0].id
 								+ '" data-toggle="modal" data-target="#executedTaskDetail">'
 								+ '<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>'
 								+ '</a></td></tr>';
 						} else {
-							trElement += '<td></td></tr>';
+							var taskId = command.task.id;
+							var commandExecutionResultsId = "NA";
+							trElement += '<td><a href="#executedTaskDetail" class="view text-center" '
+								+ 'onclick="executedTaskDetailClicked('
+								+ '\'' + createDate + '\', '
+								+ '\'' + command.task.commandClsId + '\', '
+								+ '\'' + taskId + '\', '
+								+ '\'' + commandExecutionResultsId + '\')" data-id="' 
+								+ commandExecutionResultsId
+								+ '" data-toggle="modal" data-target="#executedTaskDetail">'
+								+ '<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>'
+								+ '</a></td></tr>';
 						}
 					});
 					$("#taskHistoryTable").empty();
@@ -1142,6 +1192,7 @@ function taskHistory() {
 }
 
 function showPageAndHideOthers(showPageId){
+	var historyData = null;
 	var trElement = '<tr><td colspan="5" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td></tr>';
 	$("#taskHistoryTable").empty();
 	$('#taskHistoryTable').append(trElement);

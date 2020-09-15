@@ -16,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
-import tr.org.lider.services.AgentService;
 import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
 
@@ -32,10 +31,7 @@ import tr.org.lider.services.ConfigurationService;
 public class PagesController {
 	@Autowired
 	private ConfigurationService configurationService;
-	
-	@Autowired
-	private AgentService agentService;
-	
+
 	@Autowired
 	private LDAPServiceImpl ldapService;
 	
@@ -50,19 +46,23 @@ public class PagesController {
         	ModelAndView modelAndView = new ModelAndView();
         	modelAndView.setViewName(innerPage);
         	if(innerPage.equals("dashboard")) {
-        		model.addAttribute("totalComputerNumber", agentService.count());
+        		
         		//get count of users
         		int countOfLDAPUsers = 0;
+        		int countOfComputers = 0;
         		try {
-        			List<LdapEntry> retList=ldapService.findSubEntries(configurationService.getLdapRootDn(), "(objectclass=pardusAccount)", new String[] { "*" }, SearchScope.SUBTREE);
-        			countOfLDAPUsers = retList.size();
+        			List<LdapEntry> retListUsers = ldapService.findSubEntries(configurationService.getLdapRootDn(), 
+        						"(objectclass=pardusAccount)", new String[] { "*" }, SearchScope.SUBTREE);
+        			List<LdapEntry> retListComputers = ldapService.findSubEntries(configurationService.getLdapRootDn(), 
+        						"(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
+        			countOfLDAPUsers = retListUsers.size();
+        			countOfComputers = retListComputers.size();
         		} catch (LdapException e) {
-        			// TODO Auto-generated catch block
         			e.printStackTrace();
         		}
+        		model.addAttribute("totalComputerNumber", countOfComputers);
         		model.addAttribute("totalUserNumber", countOfLDAPUsers);
         		//sent task total number
-        		
         		model.addAttribute("totalSentTaskNumber", commandService.getTotalCountOfSentTasks());
         	}
         	return modelAndView;

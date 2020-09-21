@@ -470,7 +470,7 @@ $('#sendTaskExecuteScript').click(function(e){
 		}
 	}
 	
-	if (selectedEntries[0].type == "AHENK" && selectedEntries[0].attributes.liderDeviceOSType == "Pardus") {
+	if (selectedEntries[0].type == "AHENK" && selectedEntries[0].attributes.liderDeviceOSType == "Linux") {
 		if (scriptType == "powershell") {
 			$.notify("Lütfen betik türü olarak Bash, Python, Perl ve Ruby seçiniz.", "warn");
 			return;

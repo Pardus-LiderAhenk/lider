@@ -33,7 +33,7 @@ $("#agentOnlineStatus").hide()
 $("#selectedAgentList").hide();
 $("#btnRenameAgent").hide();
 $("#domainUserName").val(user_name);
-$("#domainUserPassword").val(password);
+//$("#domainUserPassword").val(password);
 
 $("#moveAgent").hide();
 $("#deleteAgent").hide();
@@ -80,6 +80,7 @@ function getConfigurationParams() {
 	    	if(data != null) {
 	    		//set ldap configuration
 	    		systemSettings=data;
+	    		console.log(systemSettings)
 	    	}
 	    },
 	    error: function (data, errorThrown) {
@@ -236,7 +237,15 @@ $('#btnInstallAhenk').click(function() {
 	var host=$('#ahenkIp4Install').val();
 	var user=$('#sshUserName4Install').val();
 	var password=$('#sshPassword4Install').val();
-	var repoAddr=$('#repoAddr').val();
+	var repoName=systemSettings.ahenkRepoAddress;
+	var repoKey=systemSettings.ahenkRepoKeyAddress;
+	
+	var repoKeyArr=repoKey.split('/');
+	 
+	var repoKeyName= repoKeyArr[repoKeyArr.length-1]
+	
+	console.log(repoKeyName)
+	
 	if(host == ''){
 		$.notify("Lütfen bağlanılacak IP adresi giriniz.", "error");
 		return;
@@ -254,8 +263,12 @@ $('#btnInstallAhenk').click(function() {
 		return;
 	}
 	
-	var cmdGetKeyring='sudo wget http://'+repoAddr+'/liderahenk-archive-keyring.asc && sudo apt-key add liderahenk-archive-keyring.asc &&  sudo rm liderahenk-archive-keyring.asc '
-	var cmdSetSourcesListPardus= 'sudo printf "\ndeb [arch=amd64] http://'+repoAddr+'/liderahenk-test testing main" | sudo tee -a /etc/apt/sources.list'
+//	var cmdGetKeyring='sudo wget http://'+repoAddr+'/liderahenk-archive-keyring.asc && sudo apt-key add liderahenk-archive-keyring.asc &&  sudo rm liderahenk-archive-keyring.asc '
+	var cmdGetKeyring='sudo wget '+repoKey +' && sudo apt-key add '+repoKeyName+' &&  sudo rm '+repoKeyName;
+//	var cmdSetSourcesListPardus= 'sudo printf "\ndeb [arch=amd64] http://'+repoAddr+'/liderahenk-test testing main" | sudo tee -a /etc/apt/sources.list';
+//	var cmdSetSourcesListPardus= 'sudo printf "\n'+repoName+'" | sudo tee -a /etc/apt/sources.list'
+	var cmdInstallAddRepoTool= 'sudo apt install -y software-properties-common gnupg';
+	var cmdSetSourcesListPardus= 'sudo add-apt-repository "'+repoName+'"';
 	var cmdUpdate= 'sudo apt update'
 	var cmdInstallAhenk= 'sudo apt install -y ahenk'
 	
@@ -263,22 +276,27 @@ $('#btnInstallAhenk').click(function() {
 		$.notify("Ahenk Kurulumu başarı ile gerçekleşti.", "success");
 	}
 	
-	function cbUpdate(result){
+	function cbInstallAhenk(result){
 		setShhLog("Ahenk kurulumu başlatılıyor....")
 		executeRemoteSshCommand(host,user, password,cmdInstallAhenk,cbResult)
 	}
 		
-	function cbSetSourcesList(result){
+	function cbUpdate(result){
 		setShhLog("Repo update ediliyor....")
-		executeRemoteSshCommand(host,user, password,cmdUpdate,cbUpdate)
+		executeRemoteSshCommand(host,user, password,cmdUpdate,cbInstallAhenk)
 	}
 		
-	function cbKeyring(result) {
+	function setSourceList(result) {
 		setShhLog("Repo kurulumu başlatıldı....")
-		executeRemoteSshCommand(host,user, password,cmdSetSourcesListPardus,cbSetSourcesList)
+		executeRemoteSshCommand(host,user, password,cmdSetSourcesListPardus,cbUpdate)
 	}
-	setShhLog("Repo ayarlanıyor....")
-	executeRemoteSshCommand(host,user, password,cmdGetKeyring,cbKeyring)
+	
+	function cbSetAddRepoTool(result){
+		setShhLog("Repo tool kuruluyor....")
+		executeRemoteSshCommand(host,user, password,cmdInstallAddRepoTool,setSourceList)
+	}
+	setShhLog("Repo keyring ayarlanıyor....")
+	executeRemoteSshCommand(host,user, password,cmdGetKeyring,cbSetAddRepoTool)
 });
 
 $('#btnRegisterAhenk').click(function() {
@@ -311,19 +329,35 @@ $('#btnRegisterAhenk').click(function() {
 	}
 	
 	//var cmdRegisterAhenk= 'sudo /usr/bin/python3 /usr/share/ahenk/ahenkd.py start '+ systemSettings.xmppHost + ' '+ domainUserName + ' ' + domainUserPassword + ' ' + domainName;
+	
+	var cmdUpdate= 'sudo apt update'
+	var cmdInstallAhenk= 'sudo apt install -y ahenk'
+	var cmdStopAhenk= 'sudo systemctl stop ahenk.service';
 	var cmdRegisterAhenk= 'sudo /usr/bin/python3 /usr/share/ahenk/ahenkd.py start '+ systemSettings.xmppHost + ' '+ domainUserName + ' ' + domainUserPassword;
 
 	function cbResultRegister(result){
+		setShhLog("Ahenk Lider MYS sistemine başarı ile kaydedildi.")
+		setShhLog("Ahenk yeniden başlatılıyor.Uzak Bağlantı koparılacaktır.")
 		$.notify("Kayıt başarı ile gerçekleşti.", "success");
 	}
-	
 	function cbRegisterAhenk(result) {
-		setShhLog("Ahenk MYS sistemine başarı ile kaydedildi..Ahenk yeniden başlatıılıyor..Uzak Bağlantı koparılacaktır.")
-		executeRemoteSshCommand(host,user, password,"ls",cbResultRegister)
+		setShhLog("Ahenk Lider MYS sistemine kaydediliyor..")
+		executeRemoteSshCommand(host,user, password,cmdRegisterAhenk,cbResultRegister)
 	}
 	
-	setShhLog("Ahenk MYS sistemine kayıt ediliyor.")
-	executeRemoteSshCommand(host,user, password,cmdRegisterAhenk,cbRegisterAhenk)
+	function cbStopAhenk(result) {
+		setShhLog("Ahenk güncellemesi yapılıyor..")
+		executeRemoteSshCommand(host,user, password,cmdStopAhenk,cbRegisterAhenk)
+	}
+	
+	function cbInstallAhenk(result) {
+		setShhLog("Ahenk güncellemesi yapılıyor..")
+		executeRemoteSshCommand(host,user, password,cmdInstallAhenk,cbStopAhenk)
+	}
+	
+	setShhLog("Güncellemeler çekiliyor..")
+	executeRemoteSshCommand(host,user, password,cmdUpdate,cbInstallAhenk)
+	
 });
 
 $('#btnClearRemoteSshLog').click(function() {
@@ -612,6 +646,7 @@ function setShhPage() {
 }
 
 function setInstallAhenkPage() {
+	$('#repoAddr').val(systemSettings.ahenkRepoAddress);
 	showPageAndHideOthers('installAhenkPage')
 }
 
@@ -1398,6 +1433,7 @@ function setShhLog(message){
 	$('#installAhenkLog').append(message)
 	$('#installAhenkLog').append("\n")
 	$('#installAhenkLog').append("---------------------------------------------------------")
+	$('#installAhenkLog').append("\n")
 }
 
 function getAllAndOnlineAgents(searchDn) {

@@ -146,8 +146,23 @@ public class DiyanetRegistrationSubscriberImpl implements IRegistrationSubscribe
 						}
 						if(ldapUserAllowedForRegistration) {
 
-							if(!organizationUnitDoesExist(agentTemplate.getParentDn())) {
-								createOrganizationalUnit(agentTemplate.getParentDn());
+							LdapName dnList = new LdapName(agentTemplate.getParentDn());
+							List<String> subDNList = new ArrayList<>();
+							String subDN = "";
+							for (int i = 1; i <= dnList.getRdns().size(); i++) {
+								for (int j = dnList.getRdns().size()-i; j >= 0; j--) {
+									subDN += dnList.get(j) + ",";
+								}
+								if(subDN.substring(0, (subDN.length()-1)).equals(configurationService.getAgentLdapBaseDn())) {
+									break;
+								}
+								subDNList.add(subDN.substring(0, (subDN.length()-1)));
+								subDN = "";
+							}
+							for (int i = subDNList.size()-1; i >= 0; i--) {
+								if(!organizationUnitDoesExist(subDNList.get(i))) {
+									createOrganizationalUnit(subDNList.get(i));
+								}
 							}
 							/*
 							LdapName dnList = new LdapName(agentTemplate.getParentDn());

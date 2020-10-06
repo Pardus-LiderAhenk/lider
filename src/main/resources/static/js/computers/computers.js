@@ -80,7 +80,6 @@ function getConfigurationParams() {
 	    	if(data != null) {
 	    		//set ldap configuration
 	    		systemSettings=data;
-	    		console.log(systemSettings)
 	    	}
 	    },
 	    error: function (data, errorThrown) {
@@ -241,10 +240,7 @@ $('#btnInstallAhenk').click(function() {
 	var repoKey=systemSettings.ahenkRepoKeyAddress;
 	
 	var repoKeyArr=repoKey.split('/');
-	 
 	var repoKeyName= repoKeyArr[repoKeyArr.length-1]
-	
-	console.log(repoKeyName)
 	
 	if(host == ''){
 		$.notify("Lütfen bağlanılacak IP adresi giriniz.", "error");

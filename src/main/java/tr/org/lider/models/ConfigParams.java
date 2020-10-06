@@ -129,10 +129,14 @@ public class ConfigParams {
 	//other settings
 	private Boolean disableLocalUser;
 	private DomainType domainType;
+	private String ahenkRepoAddress;
+	private String ahenkRepoKeyAddress;
 	
 	public ConfigParams() {
 		super();
 	}
+
+
 
 	public ConfigParams(String liderLocale, String ldapServer, String ldapPort, String ldapUsername,
 			String ldapPassword, String ldapRootDn, Boolean ldapUseSsl, String ldapSearchAttributes,
@@ -155,7 +159,8 @@ public class ConfigParams {
 			Boolean mailSendOnPolicyCompletion, Long mailCheckPolicyCompletionPeriod, String hotDeploymentPath,
 			String cronTaskList, Integer entrySizeLimit, Integer cronIntervalEntrySize, String adDomainName,
 			String adHostName, String adIpAddress, String adAdminUserName, String adAdminUserFullDN,
-			String adAdminPassword, String adPort, Boolean disableLocalUser, DomainType domainType) {
+			String adAdminPassword, String adPort, Boolean disableLocalUser, DomainType domainType,
+			String ahenkRepoAddress, String ahenkRepoKeyAddress) {
 		super();
 		this.liderLocale = liderLocale;
 		this.ldapServer = ldapServer;
@@ -235,7 +240,11 @@ public class ConfigParams {
 		this.adPort = adPort;
 		this.disableLocalUser = disableLocalUser;
 		this.domainType = domainType;
+		this.ahenkRepoAddress = ahenkRepoAddress;
+		this.ahenkRepoKeyAddress = ahenkRepoKeyAddress;
 	}
+
+
 
 	public void setDefaultParams() {
 		logger.info("Default paramaters are set for Configuration.");
@@ -283,6 +292,8 @@ public class ConfigParams {
 		//other settings
 		this.disableLocalUser = false;
 		this.domainType = DomainType.LDAP;
+		this.ahenkRepoAddress = "";
+		this.ahenkRepoKeyAddress = "";
 	}
 
 	public String getLiderLocale() {
@@ -907,6 +918,22 @@ public class ConfigParams {
 
 	public void setDomainType(DomainType domainType) {
 		this.domainType = domainType;
+	}
+
+	public String getAhenkRepoAddress() {
+		return ahenkRepoAddress;
+	}
+
+	public void setAhenkRepoAddress(String ahenkRepoAddress) {
+		this.ahenkRepoAddress = ahenkRepoAddress;
+	}
+
+	public String getAhenkRepoKeyAddress() {
+		return ahenkRepoKeyAddress;
+	}
+
+	public void setAhenkRepoKeyAddress(String ahenkRepoKeyAddress) {
+		this.ahenkRepoKeyAddress = ahenkRepoKeyAddress;
 	}
 
 	public FileServerConf getFileServerConf(String jid) {

@@ -154,10 +154,14 @@ public class SettingsController {
 
 	@RequestMapping(method=RequestMethod.POST, value = "/update/otherSettings", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConfigParams updateOtherSettings(@RequestParam (value = "disableLocalUser", required = true) Boolean disableLocalUser,
-			@RequestParam (value = "domainType", required = true) DomainType domainType) {
+			@RequestParam (value = "domainType", required = true) DomainType domainType,
+			@RequestParam (value = "ahenkRepoAddress", required = true) String ahenkRepoAddress,
+			@RequestParam (value = "ahenkRepoKeyAddress", required = true) String ahenkRepoKeyAddress) {
 		ConfigParams configParams = configurationService.getConfigParams();
 		configParams.setDisableLocalUser(disableLocalUser);
 		configParams.setDomainType(domainType);
+		configParams.setAhenkRepoAddress(ahenkRepoAddress);
+		configParams.setAhenkRepoKeyAddress(ahenkRepoKeyAddress);
 		return configurationService.updateConfigParams(configParams);
 	}
 

@@ -441,6 +441,14 @@ public class ConfigurationService {
 			return getConfigParams().getDomainType();
 	}
 	
+	public String getAhenkRepoAddress() {
+		return getConfigParams().getAhenkRepoAddress();
+	}
+	
+	public String getAhenkRepoKeyAddress() {
+		return getConfigParams().getAhenkRepoKeyAddress();
+	}
+	
 	public FileServerConf getFileServerConf(String jid) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		switch (getConfigParams().getFileServerProtocol()) {

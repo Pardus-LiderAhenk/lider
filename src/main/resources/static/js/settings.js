@@ -1144,6 +1144,9 @@ function setAttributes(data) {
 			$("#domainTypeLDAP").prop("checked", true);
 		}
 	}
+	
+	$('#ahenkRepoAddress').val(data.ahenkRepoAddress);
+	$('#ahenkRepoKeyAddress').val(data.ahenkRepoKeyAddress);
 }
 
 function setRolesTable() {
@@ -1296,7 +1299,9 @@ function saveChanges(type) {
 	} else if(type == 'otherSettings') {
 		var params = {
 				"disableLocalUser": $('#cbDisableLocalUser').is(':checked'),
-				"domainType": $("input[name='domainType']:checked").val()
+				"domainType": $("input[name='domainType']:checked").val(),
+				"ahenkRepoAddress": $('#ahenkRepoAddress').val(),
+				"ahenkRepoKeyAddress": $('#ahenkRepoKeyAddress').val()
 			};
 		$.ajax({ 
 		    type: 'POST', 

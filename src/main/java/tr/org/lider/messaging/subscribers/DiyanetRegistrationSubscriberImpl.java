@@ -111,11 +111,12 @@ public class DiyanetRegistrationSubscriberImpl implements IRegistrationSubscribe
 			if (entry != null) {
 				alreadyExists = true;
 				dn = entry.getDistinguishedName();
-				logger.info("Updating LDAP entry: {} with password: {}",new Object[] { message.getFrom(), message.getPassword() });
-				// Update agent LDAP entry.
-				ldapService.updateEntry(dn, "userPassword", message.getPassword());
-
-				logger.info("Agent LDAP entry {} updated successfully!", dn);
+				logger.info("{} Already exist in LDAP ",new Object[] {dn});
+//				logger.info("Updating LDAP entry: {} with password: {}",new Object[] { message.getFrom(), message.getPassword() });
+//				// Update agent LDAP entry.
+//				ldapService.updateEntry(dn, "userPassword", message.getPassword());
+//
+//				logger.info("Agent LDAP entry {} updated successfully!", dn);
 			} else {
 				//check if there are templates and if agent has any rule for its hostname
 				List<RegistrationTemplateImpl> templates = registrationTemplateService.findAllOrderByUnitLength();
@@ -221,31 +222,58 @@ public class DiyanetRegistrationSubscriberImpl implements IRegistrationSubscribe
 			// Update the record
 			if (agent != null) {
 				alreadyExists = true;
-				agent = new AgentImpl(
-						agent.getId(), 
-						agent.getJid(), 
-						false, 
-						dn,
-						message.getPassword(), 
-						message.getHostname(), 
-						message.getIpAddresses(), 
-						message.getMacAddresses(), 
-						agent.getCreateDate(), 
-						new Date(),
-						false,
-						(Set<AgentPropertyImpl>) agent.getProperties(),
-						(Set<UserSessionImpl>) agent.getSessions(),directoryServer);
-
-				if (message.getData() != null) {
-					for (Entry<String, Object>  entryy : message.getData().entrySet()) {
-						if (entryy.getKey() != null && entryy.getValue() != null) {
-							agent.addProperty(new AgentPropertyImpl(null, agent, entryy.getKey(),
-									entryy.getValue().toString(), new Date()));
+				Boolean macAlreadyExists = true;
+				if(!message.getMacAddresses().equals("")) {
+					String[] messageMacIDList = message.getMacAddresses().replace(" ", "").replaceAll("'", "").split(",");
+					String[] agentMacIDList = agent.getMacAddresses().replace(" ", "").replaceAll("'", "").split(",");
+					
+					for(String messageMacID:messageMacIDList) {
+						for (String agentMacID:agentMacIDList) {
+							if (messageMacID.equals(agentMacID)) {
+								macAlreadyExists = false;
+								break;
+							}
 						}
 					}
 				}
-				agentDao.save(agent);
+				if (macAlreadyExists == false) {
+					alreadyExists = false;
+					agent = new AgentImpl(
+							agent.getId(), 
+							agent.getJid(), 
+							false, 
+							dn,
+							message.getPassword(), 
+							message.getHostname(), 
+							message.getIpAddresses(), 
+							message.getMacAddresses(), 
+							agent.getCreateDate(), 
+							new Date(),
+							false,
+							(Set<AgentPropertyImpl>) agent.getProperties(),
+							(Set<UserSessionImpl>) agent.getSessions(),directoryServer);
+
+					if (message.getData() != null) {
+						for (Entry<String, Object>  entryy : message.getData().entrySet()) {
+							if (entryy.getKey() != null && entryy.getValue() != null) {
+								agent.addProperty(new AgentPropertyImpl(null, agent, entryy.getKey(),
+										entryy.getValue().toString(), new Date()));
+							}
+						}
+					}
+					//Update agent Database.
+					logger.info("Updating agentJid: {} with password: {} in database",new Object[] {agent.getJid(), message.getPassword()});
+					agentDao.save(agent);
+					logger.info("Agent Database {} updated successfully!", agent.getJid());
+					//Update agent LDAP entry
+					logger.info("Updating LDAP entry: {} with password: {}",new Object[] { message.getFrom(), message.getPassword() });
+					ldapService.updateEntry(dn, "userPassword", message.getPassword());
+					logger.info("Agent LDAP entry {} updated successfully!", dn);
+				} else {
+					logger.info("{} Already exist in Database ",new Object[] {agent.getJid()});
+				}
 			} else {
+				alreadyExists = false;
 				// Create new agent database record
 				logger.debug("Creating new agent record in database.");
 				AgentImpl agentImpl = new AgentImpl(null, jid, false, dn, message.getPassword(), 
@@ -266,7 +294,7 @@ public class DiyanetRegistrationSubscriberImpl implements IRegistrationSubscribe
 			IRegistrationResponseMessage respMessage=null;
 
 			if (alreadyExists) {
-				logger.warn("Agent {} already exists! Updated its password and database properties with the values submitted.", dn);
+				logger.warn("Agent {} already exists! Hostname already in use", dn);
 
 				respMessage =new RegistrationResponseMessageImpl(StatusCode.ALREADY_EXISTS,
 						dn + " already exists! Updated its password and database properties with the values submitted.",

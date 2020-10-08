@@ -75,7 +75,7 @@ function getPackagesList(params){
 						+ '<label for="checkbox1"></label>'
 						+ '</span>'
 						+ '</td>';
-					var toogle_btn_tag = '<select onchange="selectTagPackage(this)" disabled class="custom-select selectTag" id="' + selectBoxId + '" title="' + name + '" name="'+ version +'">'
+					var toogle_btn_tag = '<select onchange="selectTagPackage(this)" disabled class="custom-select custom-select-sm selectTag" id="' + selectBoxId + '" title="' + name + '" name="'+ version +'">'
 					+ '<option value="NA" selected>İşlem Seç</option>'
 					+ '<option value="Install">Yükle</option>'
 					+ '<option value="Uninstall">Kaldır</option>'
@@ -114,6 +114,7 @@ function createdPackagesTable() {
 		paging: true,
 		pageLength: 10,
 		scrollCollapse: true,
+//		pagingType: "simple_numbers",
 		"oLanguage": {
 			"sLengthMenu": 'Görüntüle <select>'+
 			'<option value="10">10</option>'+
@@ -130,6 +131,7 @@ function createdPackagesTable() {
 //			"sEmptyTable": "Paket bulunamadı",
 			"sZeroRecords" : "Paket bulunamadı",
 			"oPaginate": {
+//				"sPaginationType": "full_numbers",
 				"sFirst": "İlk Sayfa", // This is the link to the first page
 				"sPrevious": "Önceki", // This is the link to the previous page
 				"sNext": "Sonraki", // This is the link to the next page

@@ -24,7 +24,7 @@
 		<findbugs.maven.plugin.version>3.0.0</findbugs.maven.plugin.version>
 		<checkstyle.maven.plugin.version>2.12</checkstyle.maven.plugin.version>
 		<java.version>1.7</java.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<mockito.version>2.2.29</mockito.version>
 		<log4j.version>1.2.17</log4j.version>
 		<slf4j.version>1.6.1</slf4j.version>

@@ -265,8 +265,10 @@ function checkPackageListInfo(pName, pVersion, tag) {
 	var isExists = false;
 	if (packageInfoList.length > 0) {
 		for (var i = 0; i < packageInfoList.length; i++) {
-			if (pName == packageInfoList[i]["packageName"] && pVersion == packageInfoList[i]["version"]) {
+			if (pName == packageInfoList[i]["packageName"] && pVersion == packageInfoList[i]["version"] && tag == packageInfoList[i]["tag"]) {
 				isExists = true;
+			} else {
+				removePackageList(pName, pVersion);
 			}
 		}
 	}

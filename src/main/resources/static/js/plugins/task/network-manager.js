@@ -39,7 +39,7 @@ networkSettingsHideBtn();
 setEnableOrDisableNerworkManagerForm(true);
 
 function networkSettingsHideBtn() {
-	$("#updateMachineHostnameBtn").hide();
+//	$("#updateMachineHostnameBtn").hide();
 	$("#addHostBtn").hide();
 	$('#deleteHostBtn').hide();
 	$('#deleteNetworkSettingBtn').hide();
@@ -52,7 +52,7 @@ function networkSettingsHideBtn() {
 }
 
 function setEnableOrDisableNerworkManagerForm(disabled) {
-	$("#machineHostname").prop("disabled", disabled);
+//	$("#machineHostname").prop("disabled", disabled);
 	$("#definitionDnsForm").prop("disabled", disabled);
 	$("#addDnsTypeSelect").prop("disabled", disabled);
 	$("#definitionHostIpForm").prop("disabled", disabled);
@@ -186,7 +186,7 @@ function networkManagerListener(msg) {
 							clearNetworkData();
 							$("#currentNetworkInterfaces").html(arrg.interfaces);
 							$("#currentHosts").html(arrg.hosts);
-							$("#machineHostname").val(arrg.machine_hostname);
+//							$("#machineHostname").val(arrg.machine_hostname);
 							hostManagement(arrg);
 							dnsManagement(arrg);
 							interfacesManagement(arrg);
@@ -306,7 +306,7 @@ function networkManagerListener(msg) {
 function showTab() {
 	if ($('#currentConfigurationTabTask').hasClass('active')) {
 		networkSettingsHideBtn();
-		$("#updateMachineHostnameBtn").show();
+//		$("#updateMachineHostnameBtn").show();
 	} 
 	if ($('#dnsTabBtn').hasClass('active')) {
 		networkSettingsHideBtn();
@@ -342,7 +342,7 @@ function clearNetworkData() {
 	}
 	$("#currentNetworkInterfaces").html("");
 	$("#currentHosts").html("");
-	$("#machineHostname").val("");
+//	$("#machineHostname").val("");
 }
 
 //configured HOST file
@@ -462,7 +462,7 @@ $('#currentConfTabBtn').click(function() {
 	if (getSettingSuccess) {
 		clearTabsSettings();
 		networkSettingsHideBtn();
-		$("#updateMachineHostnameBtn").show();
+//		$("#updateMachineHostnameBtn").show();
 	}
 });
 
@@ -589,21 +589,21 @@ $('#networkType').change(function(){
 	}
 });
 
-$('#updateMachineHostnameBtn').click(function(e){
-	if (selectedEntries.length == 0 ) {
-		$.notify("Lütfen istemci seçiniz.", "error");
-		return;
-	}
-	if ($("#machineHostname").val() != "") {
-		var parameterMap = {
-				"hostname":$("#machineHostname").val()
-		};
-		var commandId = "CHANGE_HOSTNAME";
-		sendNetworkManagerTask(commandId, parameterMap);
-	} else {
-		$.notify("Bilgisayar adı boş bırakılamaz.", "warn");
-	}
-});
+//$('#updateMachineHostnameBtn').click(function(e){
+//	if (selectedEntries.length == 0 ) {
+//		$.notify("Lütfen istemci seçiniz.", "error");
+//		return;
+//	}
+//	if ($("#machineHostname").val() != "") {
+//		var parameterMap = {
+//				"hostname":$("#machineHostname").val()
+//		};
+//		var commandId = "CHANGE_HOSTNAME";
+//		sendNetworkManagerTask(commandId, parameterMap);
+//	} else {
+//		$.notify("Bilgisayar adı boş bırakılamaz.", "warn");
+//	}
+//});
 
 //DNS Button actions ------------->> START
 $('#addDnsBtn').click(function(e){

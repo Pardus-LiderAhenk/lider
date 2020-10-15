@@ -175,7 +175,7 @@ function networkManagerListener(msg) {
 						setEnableOrDisableNerworkManagerForm(false);
 						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 						$('#networkManagerHelp').html("");
-						$('#updateHostnameHelp').html("Bilgisayar adını değiştirmek için Bilgisayar Adını Güncelle butonuna tıklayınız.");
+					//	$('#updateHostnameHelp').html("Bilgisayar adını değiştirmek için Bilgisayar Adını Güncelle butonuna tıklayınız.");
 						$('#dnsSettingHelp').html("Silmek istediğiniz DNS kaydını seçerek DNS Sil butonuna ya da yeni bir DNS kaydı eklemek için formu doldurarak DNS Ekle butonuna tıklayınız.");
 						$('#hostSettingHelp').html("Silmek istediğiniz Sunucu(Host) kaydını seçerek Sunucu Sil butonuna ya da yeni bir sunucu(host) eklemek için formu doldurarak Sunucu Ekle butonuna tıklayınız.");
 						$('#deleteNetworkSettingHelp').html("Silmek istediğiniz ağ ayarını seçerek Ağ Ayarı Sil butonuna ya da yeni ağ ayarı eklemek için formu doldurarak Yeni Ağ Ayarı Ekle butonuna tıklayınız.");

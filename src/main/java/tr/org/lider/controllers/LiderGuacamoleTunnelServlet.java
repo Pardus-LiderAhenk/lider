@@ -62,6 +62,8 @@ public class LiderGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 		        	}
 		          config.setParameter("hostname", host.trim());
 		          logger.info("Connection remote to host: "+host.trim());
+		          logger.info("Connection remote to password: "+PASSWORD);
+		          
 		          
 		          config.setParameter("port", PORT);
 		          config.setParameter("password", PASSWORD);

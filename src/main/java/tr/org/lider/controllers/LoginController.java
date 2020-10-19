@@ -7,6 +7,7 @@ import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,9 +20,12 @@ import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.constant.LiderConstants;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
+import tr.org.lider.messaging.messages.SessionInfo;
+import tr.org.lider.messaging.messages.XMPPPrebind;
 import tr.org.lider.services.AgentService;
 import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
+import tr.org.lider.services.XMPPPrebindService;
 
 /**
  * 
@@ -44,6 +48,13 @@ public class LoginController {
 	@Autowired
 	private CommandService commandService;
 	
+	@Autowired
+	private BuildProperties buildProperties;
+
+	@Autowired
+	private XMPPPrebindService xmppPrebindService;
+	
+	
 	@RequestMapping(value = "/",method = {RequestMethod.GET, RequestMethod.POST})
 	public String getMainPage(Model model, Authentication authentication) {
 		try {
@@ -59,6 +70,15 @@ public class LoginController {
 			model.addAttribute("xmppHost", configurationService.getXmppHost());
 			model.addAttribute("roleNames", userDetails.getLiderUser().getRoles());
 			logger.info("User roles : " + userDetails.getLiderUser().getRoles());
+			
+			String version=buildProperties.getVersion();
+			model.addAttribute("version", version);
+			
+			SessionInfo sessionInfo= xmppPrebindService.getSession(userDetails.getLiderUser().getName(), userDetails.getLiderUser().getPassword());
+		    model.addAttribute("SID", sessionInfo.getSid());
+		    model.addAttribute("RID", sessionInfo.getRid());
+		    model.addAttribute("JID", sessionInfo.getJid());
+		    logger.info("Getting prebind sessionInfo SID {} RID {} JID {} ", sessionInfo.getSid(),sessionInfo.getRid(),sessionInfo.getJid());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

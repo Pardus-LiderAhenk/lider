@@ -239,6 +239,17 @@ $('#btnInstallAhenk').click(function() {
 	var repoName=systemSettings.ahenkRepoAddress;
 	var repoKey=systemSettings.ahenkRepoKeyAddress;
 	
+	if(repoName == null){
+		$.notify("Lütfen Repo addresini kontrol ediniz.", "error");
+		return;
+	}
+	
+	if(repoKey == null){
+		$.notify("Lütfen Repo addresini kontrol ediniz.", "error");
+		return;
+	}
+	
+	
 	var repoKeyArr=repoKey.split('/');
 	var repoKeyName= repoKeyArr[repoKeyArr.length-1]
 	
@@ -254,10 +265,7 @@ $('#btnInstallAhenk').click(function() {
 		$.notify("Lütfen SSH parola giriniz.", "error");
 		return;
 	}
-	if(repoAddr == ''){
-		$.notify("Lütfen Repo addresi giriniz.", "error");
-		return;
-	}
+	
 	
 //	var cmdGetKeyring='sudo wget http://'+repoAddr+'/liderahenk-archive-keyring.asc && sudo apt-key add liderahenk-archive-keyring.asc &&  sudo rm liderahenk-archive-keyring.asc '
 	var cmdGetKeyring='sudo wget '+repoKey +' && sudo apt-key add '+repoKeyName+' &&  sudo rm '+repoKeyName;

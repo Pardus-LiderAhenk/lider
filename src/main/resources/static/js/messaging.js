@@ -1,8 +1,11 @@
 $(document).ready(function() {
 	connection = new Strophe.Connection(BOSH_SERVICE);
 
-		connection.connect(username, password, onConnect);
-		
+//		connection.connect(username, password, onConnect);
+		console.log(SID)
+		console.log(RID)
+		console.log(JID)
+		connection.attach(JID,SID,RID,onConnect);
 			$('#rosterListModal').on('show.bs.modal',function(event) {
 				showRosterList();
 			});
@@ -44,6 +47,7 @@ function showRosterList(){
 
 function onConnect(status)
 {
+	console.log(status)
 	if (status == Strophe.Status.CONNECTING) {
 		/* log('Strophe is connecting.'); */
 		log('Mesajlaşma Servisine bağlanıyor...',"INFO");
@@ -76,8 +80,22 @@ function onConnect(status)
 //		connection.send($pres().tree());
 		connection.send($pres().tree());
 	}
+	else if( status == Strophe.Status.ERROR){
+		log('Error');
+		$.notify("Sunucuya Bağlanırken Hata Oluştu. Lütfen Bağlantı bilgilerini kontrol ediniz.","error");
+	}
+	else if (status == Strophe.Status.ATTACHED){
+		log('Attached succesfully to connection');
+		connection.addHandler(onMessage, null, 'message', null, null,  null); 
+		var iq = $iq({type: 'get'}).c('query', {xmlns: 'jabber:iq:roster'});
+		connection.sendIQ(iq, onRoster);
+		connection.addHandler(onRosterChanged, "jabber:iq:roster", "iq", "set");
+//		connection.send($pres().tree());
+		connection.send($pres().tree());
+		
+	}
 	else{
-		log('Sunucuya ulaşılamıyor.');
+		log('Sunucuya ulaşılamıyor.',"ERROR");
 		$.notify("Sunucuya Bağlanırken Hata Oluştu. Lütfen Bağlantı bilgilerini kontrol ediniz.","error");
 	}
 	

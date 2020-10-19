@@ -215,13 +215,13 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 
 									     } 
 										 row.expandedUser="TRUE"
-										 if(onlineCount == 0){
-											newName=row.ou+" ("+childs.length+")";
-										 }
-										 else{
-											newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
-										 }
-										 $('#'+treeGridId).jqxTreeGrid('updateRow',row.entryUUID, {name:newName });
+//										 if(onlineCount == 0){
+//											newName=row.ou+" ("+childs.length+")";
+//										 }
+//										 else{
+//											newName=row.ou+" ("+childs.length+"-"+onlineCount +")";
+//										 }
+//										 $('#'+treeGridId).jqxTreeGrid('updateRow',row.entryUUID, {name:newName });
 										 progress("computerTreeDiv","progressComputerTree",'hide')
 									}
 								});  

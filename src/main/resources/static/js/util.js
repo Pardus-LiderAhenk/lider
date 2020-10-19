@@ -4,6 +4,30 @@
  * @param attributeList
  * @returns attributeList
  */
+
+$(document).ready(function(){
+	   $('#version').html(version)
+});
+function progress(contentDiv,progressDiv,state){
+		if(state=='show'){
+			$('#'+contentDiv).fadeTo(200,0.1);
+	  		$('#'+progressDiv).show();
+	  		$('#'+progressDiv).fadeTo(200,1);
+	  		
+		}
+		else if(state=='hide'){
+			$('#'+progressDiv).hide();
+		    $('#'+contentDiv).fadeTo(200,1);
+		}
+		$('#btnCancelProgress').remove();
+		var html='<button id="btnCancelProgress" class="btn pull-right" style="margin: 5px;" > <i class="nav-link-icon fas fa-window-close"> </i> </button>';
+		$('#'+progressDiv).append(html);
+		$('#btnCancelProgress').click(function(e){
+			$('#'+progressDiv).hide();
+			$('#'+contentDiv).fadeTo(200,1);
+		});
+}
+
 function renameAndOrderAttributeList(attributeList) {
 	var newAttributeList = [];
 	var addedAttributes = [];

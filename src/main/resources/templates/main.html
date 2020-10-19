@@ -97,10 +97,12 @@
 <script type="text/javascript" src="js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="js/additional-methods.min.js"></script>
 <script type="text/javascript">
-	var username = '[[${userNameJid}]]';
-	var user_name = '[[${userName}]]';
-	var password = '[[${password}]]';
+ 	var user_name = '[[${userName}]]';
 	var xmppHost = '[[${xmppHost}]]';
+	var version = '[[${version}]]';
+	var SID = '[[${SID}]]';
+	var RID = '[[${RID}]]';
+	var JID = '[[${JID}]]';
 
 	var BOSH_SERVICE = 'http://' + xmppHost + ':5280/bosh';
 	var connection = null;
@@ -109,26 +111,6 @@
 	var childEntryList = [];
 	var scheduledParam = null;
 	
-	function progress(contentDiv,progressDiv,state){
-		if(state=='show'){
-			$('#'+contentDiv).fadeTo(200,0.1);
-	  		$('#'+progressDiv).show();
-	  		$('#'+progressDiv).fadeTo(200,1);
-	  		
-		}
-		else if(state=='hide'){
-			$('#'+progressDiv).hide();
-		    $('#'+contentDiv).fadeTo(200,1);
-		}
-		$('#btnCancelProgress').remove();
-		var html='<button id="btnCancelProgress" class="btn pull-right" style="margin: 5px;" > <i class="nav-link-icon fas fa-window-close"> </i> </button>';
-		$('#'+progressDiv).append(html);
-		$('#btnCancelProgress').click(function(e){
-			$('#'+progressDiv).hide();
-			$('#'+contentDiv).fadeTo(200,1);
-		});
-	}
-
 	
 </script>
 <script type="text/javascript" src="assets/scripts/main.js"></script> 
@@ -146,15 +128,14 @@
 				<div class="app-header-left" >
                     <ul class="nav" style="font-weight: bold;">
                         <li class="nav-item" >
-                           <a class="nav-link dizin" href="#" data-page="dashboard"> <img width="120"
-									class="" src="img/LiderAhenk-Logo-01.png"
-									alt=""> <i class="fa ml-2 opacity-8" style="color:white; "> </i>
-									
+                           <a class="nav-link dizin" href="#" data-page="dashboard"> 
+                           		<img width="120" src="img/LiderAhenk-Logo-01.png"  > 
+								<span class="fa ml-2 opacity-8"  id="version" style="font-size: 16px;" >  </span>  
 						   </a>
                         </li>
                        
-                        <li  class="nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTERS')}">
-                            <a class="nav-link dizin " id="menuBtnComputers" href="#" data-page="computers"  >
+                        <li class="nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTERS')}">
+                            <a class="nav-link dizin " id="menuBtnComputers" href="#" data-page="computers">
                                 <i class="nav-link-icon fas fa-laptop-code"> </i>
                                 <span th:text="#{computer.management}"></span>
                             </a>
@@ -181,7 +162,7 @@
 					        </div>
                         </li>
                         <li class="dropdown nav-item liderMenuItem" 
-                        th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+                        		th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
                         		or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')} 
                         		or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')} 
                         		or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}
@@ -360,8 +341,8 @@
 		</div>
  			
  		<div class="ui-theme-settings">
-		  <button type="button" id="TooltipDemo" class="btn-open-options btn btn-info" title="Sistem Güncesi">
-                <i class="fas fa-spinner fa-spin fa-2x"></i>
+		  <button type="button" id="TooltipDemo" class="btn-open-options btn btn-default" title="Sistem Güncesi">
+               <i > <img class="" src="img/log.png"> </i> 
             </button>          
              <div class="theme-settings__inner">
             	 <div class="scrollbar-container">

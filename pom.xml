@@ -12,7 +12,7 @@
 	</parent>
 	<groupId>tr.com.lider</groupId>
 	<artifactId>Lider2</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>2.0</version>
 	<name>Lider2</name>
 	<packaging>war</packaging>
 	<description>Lider2 Merkezi Yonetim Sistemi</description>

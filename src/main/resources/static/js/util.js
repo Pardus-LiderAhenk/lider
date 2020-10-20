@@ -5,8 +5,30 @@
  * @returns attributeList
  */
 
+var ctrlKeyDown = false;
+
+function keydown(e) {
+	if ((e.which || e.keyCode) == 116
+			|| ((e.which || e.keyCode) == 82 && ctrlKeyDown)) {
+		// Pressing F5 or Ctrl+R
+		e.preventDefault();
+	} else if ((e.which || e.keyCode) == 17) {
+		// Pressing only Ctrl
+		ctrlKeyDown = true;
+	}
+};
+
+function keyup(e) {
+	// Key up Ctrl
+	if ((e.which || e.keyCode) == 17)
+		ctrlKeyDown = false;
+};
+
 $(document).ready(function(){
-	   $('#version').html(version)
+	   $('#liderVersion').html(liderVersion)
+	   //disable f5 refresh button for strophe connection
+	   $(document).on("keydown", keydown);
+	   $(document).on("keyup", keyup);
 });
 function progress(contentDiv,progressDiv,state){
 		if(state=='show'){

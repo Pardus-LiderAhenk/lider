@@ -82,9 +82,10 @@ public class AdController {
 			String filter="(|"
 					+ "(objectclass=container)"
 					+ "(objectclass=organizationalUnit)"
-				//	+ "(objectclass=computer)"
-				//	+ "(objectclass=organizationalPerson)"
-				//	+ "(objectclass=group)"
+					+ "(objectclass=computer)"
+					+ "(objectclass=organizationalPerson)"
+					+ "(objectclass=group)"
+					+ "(objectclass=*)"
 					+")";
 			
 			oneLevelSubList= new ArrayList<>();

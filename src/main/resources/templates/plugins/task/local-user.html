@@ -4,13 +4,7 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <script type="text/javascript" src="js/plugins/task/local-user.js"></script>
-<style>
-<!--
-.local-user table tr:hover td {
-    background: #B8B5CF !important;
-}
--->
-</style>
+<link rel="stylesheet" href="css/plugin.task.css" />
 </head>
 <body>
 	<div class="main-card mb-3 card">
@@ -30,8 +24,8 @@
 			<div class="login-form-1">
 				<div class="form-group">
 					<div class="main-card mb-3 card">
-						<div class="card-body local-user">
-							<table class="table table-striped table-bordered display table-hover" id="localUsersTable" border="1">
+						<div class="card-body plugin-table">
+							<table class="table table-striped table-bordered display table-hover " id="localUsersTable" border="1">
 								<thead>
 									<tr>
 										<th style="width: 40%">Kullanıcı Adı</th>
@@ -105,7 +99,6 @@
 			</div>
 		</div>
 		</div>
-		
 		<div id="progressLocalUser"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
 		    	<div style="position:absolute; ; top: 38%; left: 30%;"> 
 		    	<img src="img/LoadingPage.gif" width="80" height="80"  /> <span> <b>   Görev Gönderildi.. Lütfen Bekleyiniz... </b> </span> 

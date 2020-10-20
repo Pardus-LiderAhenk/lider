@@ -86,6 +86,8 @@ public class AdService implements ILDAPService{
 			Boolean useSSL = configurationService.getLdapUseSsl(); 
 			Boolean allowSelfSignedCert =configurationService.getLdapAllowSelfSignedCert();
 			
+			useSSL=false;
+			allowSelfSignedCert=true;
 			setParams(host,port,userName,password,useSSL, allowSelfSignedCert);
 			connection = pool.getConnection();
 		} catch (Exception e) {
@@ -117,7 +119,15 @@ public class AdService implements ILDAPService{
 		} else {
 			lconfig.setUseSsl(false);
 		}
+		
+		if (allowSelfSignedCert) {
+			lconfig.setKeyManagers(createCustomKeyManagers());
+			lconfig.setTrustManagers(createCustomTrustManager());
+		}
 
+		lconfig.setUseTls(true);
+		lconfig.setKeyManagers(createCustomKeyManagers());
+		lconfig.setTrustManagers(createCustomTrustManager());
 		// Create connection pool
 		PoolableLdapConnectionFactory factory = new PoolableLdapConnectionFactory(lconfig);
 		pool = new LdapConnectionPool(factory);

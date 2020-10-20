@@ -152,19 +152,47 @@ public class SettingsController {
 		return configurationService.updateConfigParams(configParams);
 	}
 
+	@RequestMapping(method=RequestMethod.POST, value = "/update/emailSettings", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ConfigParams updateEmailSettings(
+			@RequestParam (value = "emailHost", required = false) String emailHost,
+			@RequestParam (value = "emailPort", required = false) Integer emailPort,
+			@RequestParam (value = "emailUsername", required = false) String emailUsername,
+			@RequestParam (value = "emailPassword", required = false) String emailPassword,
+			@RequestParam (value = "smtpAuth", required = false) Boolean smtpAuth,
+			@RequestParam (value = "tlsEnabled", required = false) Boolean tlsEnabled) {
+		ConfigParams configParams = configurationService.getConfigParams();
+		configParams.setMailHost(emailHost);
+		configParams.setMailPassword(emailPassword);
+		configParams.setMailSmtpPort(emailPort);
+		configParams.setMailSmtpAuth(smtpAuth);
+		configParams.setMailSmtpStartTlsEnable(tlsEnabled);
+		configParams.setMailAddress(emailUsername);
+		return configurationService.updateConfigParams(configParams);
+	}
+	
 	@RequestMapping(method=RequestMethod.POST, value = "/update/otherSettings", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConfigParams updateOtherSettings(@RequestParam (value = "disableLocalUser", required = true) Boolean disableLocalUser,
 			@RequestParam (value = "domainType", required = true) DomainType domainType,
 			@RequestParam (value = "ahenkRepoAddress", required = true) String ahenkRepoAddress,
-			@RequestParam (value = "ahenkRepoKeyAddress", required = true) String ahenkRepoKeyAddress) {
+			@RequestParam (value = "ahenkRepoKeyAddress", required = true) String ahenkRepoKeyAddress,
+			
+			@RequestParam (value = "emailHost", required = false) String emailHost,
+			@RequestParam (value = "emailPort", required = false) String emailPort,
+			@RequestParam (value = "emailUsername", required = false) String emailUsername,
+			@RequestParam (value = "emailPassword", required = false) String emailPassword,
+			@RequestParam (value = "smtpAuth", required = false) Boolean smtpAuth,
+			@RequestParam (value = "tlsEnabled", required = false) Boolean tlsEnabled) {
 		ConfigParams configParams = configurationService.getConfigParams();
 		configParams.setDisableLocalUser(disableLocalUser);
 		configParams.setDomainType(domainType);
 		configParams.setAhenkRepoAddress(ahenkRepoAddress);
 		configParams.setAhenkRepoKeyAddress(ahenkRepoKeyAddress);
+		
+		
 		return configurationService.updateConfigParams(configParams);
 	}
 
+	
 	//add roles to user. 
 	@RequestMapping(method=RequestMethod.POST, value = "/editUserRoles", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LdapEntry>> editUserRoles(@RequestParam (value = "dn", required = true) String dn,

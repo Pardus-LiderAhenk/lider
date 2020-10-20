@@ -22,9 +22,6 @@ import java.util.regex.Pattern;
 
 import javax.annotation.PreDestroy;
 import javax.naming.InvalidNameException;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
 import javax.naming.ldap.LdapName;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
@@ -46,7 +43,6 @@ import org.apache.directory.api.ldap.model.message.AddRequest;
 import org.apache.directory.api.ldap.model.message.AddRequestImpl;
 import org.apache.directory.api.ldap.model.message.AddResponse;
 import org.apache.directory.api.ldap.model.message.LdapResult;
-import org.apache.directory.api.ldap.model.message.ModifyDnRequest;
 import org.apache.directory.api.ldap.model.message.ModifyRequest;
 import org.apache.directory.api.ldap.model.message.ModifyRequestImpl;
 import org.apache.directory.api.ldap.model.message.Response;
@@ -142,6 +138,22 @@ public class LDAPServiceImpl implements ILDAPService {
 		return connection;
 	}
 
+	/**
+	 * 
+	 * @return new LDAP connection with cn=admin user
+	 * @throws LdapException
+	 */
+	public LdapConnection getConnectionForAdmin() throws LdapException {
+		LdapConnection connection = null;
+		try {
+			setParamsForAdmin();
+			connection = pool.getConnection();
+		} catch (Exception e) {
+			throw new LdapException(e);
+		}
+		return connection;
+	}
+	
 	@PreDestroy
 	public void destroy() {
 		logger.info("Destroying LDAP service...");
@@ -235,6 +247,32 @@ public class LDAPServiceImpl implements ILDAPService {
 		logger.debug(this.toString());
 	}
 
+	public void setParamsForAdmin() throws Exception {
+		LdapConnectionConfig lconfig = new LdapConnectionConfig();
+		lconfig.setLdapHost(configurationService.getLdapServer());
+		lconfig.setLdapPort(Integer.parseInt(configurationService.getLdapPort()));
+		lconfig.setName(configurationService.getLdapUsername());
+		lconfig.setCredentials(configurationService.getLdapPassword());
+		if (configurationService.getLdapUseSsl()) {
+			lconfig.setUseSsl(true);
+			if (configurationService.getLdapAllowSelfSignedCert()) {
+				lconfig.setKeyManagers(createCustomKeyManagers());
+				lconfig.setTrustManagers(createCustomTrustManager());
+			}
+		} else {
+			lconfig.setUseSsl(false);
+		}
+
+		// Create connection pool
+		PoolableLdapConnectionFactory factory = new PoolableLdapConnectionFactory(lconfig);
+		pool = new LdapConnectionPool(factory);
+		pool.setTestOnBorrow(true);
+		pool.setMaxActive(-1);
+		pool.setMaxWait(3000);
+		pool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+		logger.debug(this.toString());
+	}
+	
 	private TrustManager createCustomTrustManager() {
 		return new X509TrustManager() {
 			public X509Certificate[] getAcceptedIssuers() {
@@ -374,6 +412,29 @@ public class LDAPServiceImpl implements ILDAPService {
 		}
 	}
 
+	public void updateConsoleUserPassword(String entryDn, String attribute, String value) throws LdapException {
+		logger.info("Replacing attribute " + attribute + " value " + value);
+		LdapConnection connection = null;
+
+		connection = getConnectionForAdmin();
+		Entry entry = null;
+		try {
+			entry = connection.lookup(entryDn);
+			if (entry != null) {
+				if (entry.get(attribute) != null) {
+					Value<?> oldValue = entry.get(attribute).get();
+					entry.remove(attribute, oldValue);
+				}
+				entry.add(attribute, value);
+				connection.modify(entry, ModificationOperation.REPLACE_ATTRIBUTE);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+	}
 
 	public void renameHostname(String attribute, String newHostname, String entryDn) throws LdapException {
 		logger.info("Updating attribute " + attribute + " with value " + newHostname);

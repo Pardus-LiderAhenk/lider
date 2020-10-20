@@ -32,6 +32,9 @@
 				href="#tab-file-server" onclick="tabFileServerSettingsClicked()"
 				class="nav-link">Dosya Sunucusu Ayarları</a></li>
 			<li class="nav-item"><a data-toggle="tab"
+				href="#tab-email-settings" onclick="tabEmailSettingsClicked()"
+				class="nav-link">Email Ayarları</a></li>
+			<li class="nav-item"><a data-toggle="tab"
 				href="#tab-other-settings" onclick="tabOtherSettingsClicked()"
 				class="nav-link">Diğer Ayarlar</a></li>
 		</ul>
@@ -669,6 +672,92 @@
 								</div>
 							</div>
 
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="tab-pane" id="tab-email-settings" role="tabpanel">
+				<div class="col-md-12">
+					<h5>Email Ayarları</h5>
+					<!-- row 1 -->
+					<form id="emailSettingsForm">
+						<div class="form-row">
+							<div class="col-md-12">
+								<div class="position-relative form-group">
+									<div class="form-row">
+										<div class="col-md-3">
+											<div class="position-relative form-group">
+												<label for="labelLdapServerAddress" class="control-label">Email Host Adresi</label> 
+												<div class="form-error-message">
+													<input name="emailHost" id="emailHost" required="required" 
+														type="text" placeholder="smtp.gmail.com" 
+														class="form-control editableEmailSettings" disabled>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3">
+											<div class="position-relative form-group">
+												<label for="labelLdapServerAddress" class="control-label">Email Port</label> 
+												<div class="form-error-message">
+													<input name="emailPort" id="emailPort" required="required" 
+														type="text" placeholder="587" 
+														class="form-control editableEmailSettings" disabled>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3">
+											<div class="position-relative form-group">
+												<label class="control-label">Email Kullanıcı Adresi</label> 
+												<div class="form-error-message">
+													<input name="emailUsername" id="emailUsername" required="required" 
+														type="text" placeholder="lider@liderahenk.org" 
+														class="form-control editableEmailSettings" disabled>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="form-row">
+										<div class="col-md-3">
+											<div class="position-relative form-group">
+												<label class="control-label">Email Şifresi</label> 
+												<div class="form-error-message">
+													<input name="emailPassword" id="emailPassword" required="required" 
+														type="password" 
+														class="form-control editableEmailSettings" disabled>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3">
+											<label class="">SMTP Doğrulama</label> 
+											<select class="form-control editableEmailSettings"
+												id="smtpAuth" name="smtpAuth" disabled>
+												<option value="true" selected>Evet</option>
+												<option value="false">Hayır</option>
+											</select>
+										</div>
+										<div class="col-md-3">
+											<label class="">TLS Aktif</label> 
+											<select class="form-control editableEmailSettings" id="tlsEnabled" name="tlsEnabled" disabled>
+												<option value="true" selected>Evet</option>
+												<option value="false">Hayır</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-9" id="editEmailSettingsBtnDiv">
+								<div class="position-relative form-group">
+									<button class="btn btn-primary pull-right"
+										id="editEmailSettings"
+										onclick="removeDisableClass('emailSettings')" type="button">Düzenle</button>
+								</div>
+							</div>
+							<div class="col-md-9" id="saveEmailSettingsBtnDiv">
+								<div class="position-relative form-group">
+									<button class="btn btn-primary pull-right" type="submit">Değişiklikleri
+										Kaydet</button>
+								</div>
+							</div>
 						</div>
 					</form>
 				</div>

@@ -21,7 +21,6 @@ import tr.org.lider.constant.LiderConstants;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.messaging.messages.SessionInfo;
-import tr.org.lider.messaging.messages.XMPPPrebind;
 import tr.org.lider.services.AgentService;
 import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
@@ -33,28 +32,27 @@ import tr.org.lider.services.XMPPPrebindService;
  */
 @Controller
 public class LoginController {
-	
+
 	Logger logger = LoggerFactory.getLogger(LoginController.class);
-	
+
 	@Autowired
 	private ConfigurationService configurationService;
-	
+
 	@Autowired
 	private AgentService agentService;
-	
+
 	@Autowired
 	private LDAPServiceImpl ldapService;
-	
+
 	@Autowired
 	private CommandService commandService;
-	
+
 	@Autowired
 	private BuildProperties buildProperties;
 
 	@Autowired
 	private XMPPPrebindService xmppPrebindService;
-	
-	
+
 	@RequestMapping(value = "/",method = {RequestMethod.GET, RequestMethod.POST})
 	public String getMainPage(Model model, Authentication authentication) {
 		try {
@@ -63,22 +61,22 @@ public class LoginController {
 			logger.info("User has authorities: " + userDetails.getAuthorities());
 			model.addAttribute("user", userDetails);
 			model.addAttribute("userName", userDetails.getLiderUser().getName());
-			
+
 			model.addAttribute("password", userDetails.getPassword());
 			model.addAttribute("userNameJid", userDetails.getLiderUser().getName() + "@" + configurationService.getXmppServiceName());
 			logger.info("User jid : " + userDetails.getLiderUser().getName() + "@" + configurationService.getXmppServiceName());
 			model.addAttribute("xmppHost", configurationService.getXmppHost());
 			model.addAttribute("roleNames", userDetails.getLiderUser().getRoles());
 			logger.info("User roles : " + userDetails.getLiderUser().getRoles());
-			
+
 			String version=buildProperties.getVersion();
 			model.addAttribute("version", version);
-			
+
 			SessionInfo sessionInfo= xmppPrebindService.getSession(userDetails.getLiderUser().getName(), userDetails.getLiderUser().getPassword());
-		    model.addAttribute("SID", sessionInfo.getSid());
-		    model.addAttribute("RID", sessionInfo.getRid());
-		    model.addAttribute("JID", sessionInfo.getJid());
-		    logger.info("Getting prebind sessionInfo SID {} RID {} JID {} ", sessionInfo.getSid(),sessionInfo.getRid(),sessionInfo.getJid());
+			model.addAttribute("SID", sessionInfo.getSid());
+			model.addAttribute("RID", sessionInfo.getRid());
+			model.addAttribute("JID", sessionInfo.getJid());
+			logger.info("Getting prebind sessionInfo SID {} RID {} JID {} ", sessionInfo.getSid(),sessionInfo.getRid(),sessionInfo.getJid());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -94,16 +92,16 @@ public class LoginController {
 		}
 		model.addAttribute("totalUserNumber", countOfLDAPUsers);
 		//sent task total number
-		
+
 		model.addAttribute("totalSentTaskNumber", commandService.getTotalCountOfSentTasks());
 		return LiderConstants.Pages.MAIN_PAGE;
 	}
-	
+
 	@RequestMapping(value = "/logout")
 	public String logout(Model model, Authentication authentication) {
 		return "login";
 	}
-	
+
 	@RequestMapping(value = "/login")
 	public String login(Model model, Authentication authentication) {
 		if(configurationService.isConfigurationDone()) {
@@ -112,7 +110,7 @@ public class LoginController {
 			return "config";
 		}
 	}
-	
+
 	@RequestMapping(value = "/changeLanguage", method = {RequestMethod.POST})
 	@ResponseBody
 	public Boolean changeLanguage(@RequestParam String langa1799b6ac27611eab3de0242ac130004, Model model, Authentication authentication) throws LdapException {

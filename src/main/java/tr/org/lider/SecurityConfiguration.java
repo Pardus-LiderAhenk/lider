@@ -40,6 +40,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		.csrf().disable()
 		.authorizeRequests()
 		.antMatchers(
+				"/forgot_password/**",
 				"/lider/pages/**",
 				"/webfonts/**",
 				"/resources/**",

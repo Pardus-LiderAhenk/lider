@@ -32,6 +32,7 @@ $(document).ready(function () {
 	$('#saveLDAPServerSettingsBtnDiv').hide();
 	$('#saveFileServerSettingsBtnDiv').hide();
 	$('#saveXMPPServerSettingsBtnDiv').hide();
+	$('#saveEmailSettingsBtnDiv').hide();
 	
 	$('#cbShowADSettings').change(function() {
         if($(this).is(":checked")) {
@@ -301,6 +302,53 @@ $(document).ready(function () {
 	    	saveChanges('ldap');
 	    }
 	  });
+
+	$('#emailSettingsForm').validate({
+	    rules: {
+	      emailHost: {
+	        required: true,
+	      },
+	      emailPort: {
+		    required: true,
+		  },
+		  emailUsername: {
+		    required: true,
+			email: true
+		  },
+		  emailPassword: {
+		    required: true,
+		  }
+	    },
+	    messages: {
+	      emailHost: {
+	        required: "Lütfen email sunucu adresini giriniz.",
+	      },
+	      emailPort: {
+	        required: "Lütfen email sunucu portunu giriniz.",
+	      },
+	      emailUsername: {
+	        required: "Lütfen email kullanıcı adını giriniz.",
+			email: "Lütfen geçerli bir email adresi giriniz."
+	      },
+	      emailPassword: {
+	        required: "Lütfen email şifresini giriniz.",
+	      }
+	    },
+	    errorElement: 'span',
+	    errorPlacement: function (error, element) {
+	      error.addClass('invalid-feedback');
+	      element.closest('.form-error-message').append(error);
+	    },
+	    highlight: function (element, errorClass, validClass) {
+	      $(element).addClass('is-invalid');
+	    },
+	    unhighlight: function (element, errorClass, validClass) {
+	      $(element).removeClass('is-invalid');
+	    },
+	    submitHandler: function() {
+	    	saveChanges('emailSettings');
+	    }
+	  });
 });
 
 function tabConsoleSettingsClicked() {
@@ -323,6 +371,10 @@ function tabFileServerSettingsClicked() {
 }
 
 function tabOtherSettingsClicked() {
+	getConfigurationParams();
+}
+
+function tabEmailSettingsClicked() {
 	getConfigurationParams();
 }
 
@@ -1147,6 +1199,17 @@ function setAttributes(data) {
 	
 	$('#ahenkRepoAddress').val(data.ahenkRepoAddress);
 	$('#ahenkRepoKeyAddress').val(data.ahenkRepoKeyAddress);
+	
+	$('#emailHost').val(data.mailHost);
+	$('#emailPort').val(data.mailSmtpPort);
+	$('#emailUsername').val(data.mailAddress);
+	$('#emailPassword').val(data.mailPassword);
+	if(data.mailSmtpAuth != null) {
+		$('#smtpAuth').val(data.mailSmtpAuth.toString());
+	}
+	if(data.mailSmtpStartTlsEnable != null) {
+		$('#tlsEnabled').val(data.mailSmtpStartTlsEnable.toString());
+	}
 }
 
 function setRolesTable() {
@@ -1191,11 +1254,17 @@ function removeDisableClass(type) {
 		$('#editFileServerSettingsBtnDiv').hide();
 		$('#saveFileServerSettingsBtnDiv').show();
 	}  else if(type == 'otherSettings') {
-		//remove disabled attribute from editableFileServer class
+		//remove disabled attribute from otherSettings class
 		$('.editableOtherSettings').prop('disabled', false);
 		//change button name and onClick event to save
 		 $("#editOtherSettings").html("Değişiklikleri Kaydet");
 		 $("#editOtherSettings").attr("onclick","saveChanges('otherSettings')");
+	} else if(type == 'emailSettings') {
+		//remove disabled attribute from editableEmailSettings class
+		$('.editableEmailSettings').prop('disabled', false);
+		//change button name and onClick event to save
+		$('#editEmailSettingsBtnDiv').hide();
+		$('#saveEmailSettingsBtnDiv').show();
 	}
 }
 
@@ -1294,6 +1363,31 @@ function saveChanges(type) {
 		    },
 		    error: function (data, errorThrown) {
 		    	$.notify("Dosya sunucusu bilgileri güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    }
+		});
+	} else if(type == 'emailSettings') {
+		var params = {
+				"emailHost": $('#emailHost').val(),
+				"emailPort": $('#emailPort').val(),
+				"emailUsername": $('#emailUsername').val(),
+				"emailPassword": $('#emailPassword').val(),
+				"smtpAuth": $('#smtpAuth').val(),
+				"tlsEnabled": $('#tlsEnabled').val(),
+			};
+		$.ajax({ 
+		    type: 'POST', 
+		    url: "/lider/settings/update/emailSettings",
+		    dataType: 'json',
+		    data: params,
+		    success: function (data) { 
+		    	if(data != null) {
+		    		$.notify("Ayarlar başarıyla güncellendi.", "success");
+		    	} else {
+		    		$.notify("Ayarlar güncellenirken güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    	}
+		    },
+		    error: function (data, errorThrown) {
+		    	$.notify("Ayarlar güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
 		    }
 		});
 	} else if(type == 'otherSettings') {

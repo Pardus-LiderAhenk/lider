@@ -161,29 +161,34 @@
 		</dependency>
 
 
- 	<!-- Main Guacamole library -->
- 	       <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-common</artifactId>
-            <version>1.1.0</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- Guacamole JavaScript library -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-common-js</artifactId>
-            <version>1.1.0</version>
-            <type>zip</type>
-            <scope>runtime</scope>
-        </dependency>
-        
-        <dependency>
-		    <groupId>com.jcraft</groupId>
-		    <artifactId>jsch</artifactId>
-		    <version>0.1.53</version>
+		<!-- Main Guacamole library -->
+		<dependency>
+			<groupId>org.apache.guacamole</groupId>
+			<artifactId>guacamole-common</artifactId>
+			<version>1.1.0</version>
+			<scope>compile</scope>
 		</dependency>
 
+		<!-- Guacamole JavaScript library -->
+		<dependency>
+			<groupId>org.apache.guacamole</groupId>
+			<artifactId>guacamole-common-js</artifactId>
+			<version>1.1.0</version>
+			<type>zip</type>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.53</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+			<version>2.2.5.RELEASE</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -193,44 +198,44 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<executions>
-			        <execution>
-			            <id>build-info</id>
-			            <goals>
-			                <goal>build-info</goal>
-			            </goals>
-			        </execution>
-			    </executions>
+					<execution>
+						<id>build-info</id>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-			
+
 			<!-- Compile using Java 1.8 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <charset>utf-8</charset>
-                </configuration>
-            </plugin>
-			
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
-                 <configuration>
-                	<failOnMissingWebXml>false</failOnMissingWebXml>    
-            	
-                    <overlays>
-                        <overlay>
-                            <groupId>org.apache.guacamole</groupId>
-                            <artifactId>guacamole-common-js</artifactId>
-                            <type>zip</type>
-                        </overlay>
-                    </overlays>
-                </configuration>
-            </plugin>
-			
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<charset>utf-8</charset>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+
+					<overlays>
+						<overlay>
+							<groupId>org.apache.guacamole</groupId>
+							<artifactId>guacamole-common-js</artifactId>
+							<type>zip</type>
+						</overlay>
+					</overlays>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 </project>

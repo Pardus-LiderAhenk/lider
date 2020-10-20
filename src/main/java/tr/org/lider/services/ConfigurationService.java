@@ -449,6 +449,39 @@ public class ConfigurationService {
 		return getConfigParams().getAhenkRepoKeyAddress();
 	}
 	
+//	public String getEmailHost() {
+//		return getConfigParams().getEmailHost();
+//	}
+//
+//	public String getEmailPort() {
+//		return getConfigParams().getEmailPort();
+//	}
+//
+//	public String getEmailUsername() {
+//		return getConfigParams().getEmailUsername();
+//	}
+//
+//	public String getEmailPassword() {
+//		return getConfigParams().getEmailPassword();
+//	}
+//
+//	public Boolean getEmailSmtpAuth() {
+//		return getConfigParams().getEmailSmtpAuth();
+//	}
+//
+//	public Boolean getEmailStarttlsEnabled() {
+//		return getConfigParams().getEmailStarttlsEnabled();
+//	}
+	
+	public Boolean isEmailConfigurationComplete() {
+		if(getConfigParams().getMailHost() != null && !getConfigParams().getMailHost().equals("")
+				&& getConfigParams().getMailPassword() != null && !getConfigParams().getMailPassword().equals("")
+				&& getConfigParams().getMailSmtpPort() != null && !getConfigParams().getMailSmtpPort().equals("")
+				&& getConfigParams().getMailAddress() != null && !getConfigParams().getMailAddress().equals("")) {
+			return true;
+		}
+		return false;
+	}
 	public FileServerConf getFileServerConf(String jid) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		switch (getConfigParams().getFileServerProtocol()) {

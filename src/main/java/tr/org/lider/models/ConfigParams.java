@@ -132,119 +132,18 @@ public class ConfigParams {
 	private String ahenkRepoAddress;
 	private String ahenkRepoKeyAddress;
 	
+	//email settings
+//	private String emailHost;
+//	private String emailPort;
+//	private String emailUsername;
+//	private String emailPassword;
+//	private Boolean emailSmtpAuth;
+//	private Boolean emailStarttlsEnabled;
+	
+	
 	public ConfigParams() {
 		super();
 	}
-
-
-
-	public ConfigParams(String liderLocale, String ldapServer, String ldapPort, String ldapUsername,
-			String ldapPassword, String ldapRootDn, Boolean ldapUseSsl, String ldapSearchAttributes,
-			Boolean ldapAllowSelfSignedCert, String ldapMailNotifierAttributes, String ldapEmailAttribute,
-			String agentLdapBaseDn, String agentLdapIdAttribute, String agentLdapJidAttribute,
-			String agentLdapObjectClasses, String userLdapBaseDn, String userLdapUidAttribute,
-			String userLdapPrivilegeAttribute, String userLdapObjectClasses, Boolean userAuthorizationEnabled,
-			String groupLdapObjectClasses, String roleLdapObjectClasses, String userLdapRolesDn, String groupLdapBaseDn,
-			String userGroupLdapBaseDn, String ahenkGroupLdapBaseDn, String xmppHost, Integer xmppPort,
-			String xmppUsername, String xmppPassword, String xmppResource, String xmppServiceName,
-			int xmppMaxRetryConnectionCount, int xmppPacketReplayTimeout, Integer xmppPingTimeout, Boolean xmppUseSsl,
-			Boolean xmppAllowSelfSignedCert, Boolean xmppUseCustomSsl, Integer xmppPresencePriority,
-			Protocol fileServerProtocol, String fileServerHost, String fileServerUsername, String fileServerPassword,
-			String fileServerPluginPath, String fileServerAgreementPath, String fileServerAgentFilePath,
-			String fileServerUrl, Integer fileServerPort, Boolean taskManagerCheckFutureTask,
-			Long taskManagerFutureTaskCheckPeriod, Boolean alarmCheckReport, String mailAddress, String mailPassword,
-			String mailHost, Integer mailSmtpPort, Boolean mailSmtpAuth, Boolean mailSmtpStartTlsEnable,
-			Boolean mailSmtpSslEnable, Integer mailSmtpConnTimeout, Integer mailSmtpTimeout,
-			Integer mailSmtpWriteTimeout, Boolean mailSendOnTaskCompletion, Long mailCheckTaskCompletionPeriod,
-			Boolean mailSendOnPolicyCompletion, Long mailCheckPolicyCompletionPeriod, String hotDeploymentPath,
-			String cronTaskList, Integer entrySizeLimit, Integer cronIntervalEntrySize, String adDomainName,
-			String adHostName, String adIpAddress, String adAdminUserName, String adAdminUserFullDN,
-			String adAdminPassword, String adPort, Boolean disableLocalUser, DomainType domainType,
-			String ahenkRepoAddress, String ahenkRepoKeyAddress) {
-		super();
-		this.liderLocale = liderLocale;
-		this.ldapServer = ldapServer;
-		this.ldapPort = ldapPort;
-		this.ldapUsername = ldapUsername;
-		this.ldapPassword = ldapPassword;
-		this.ldapRootDn = ldapRootDn;
-		this.ldapUseSsl = ldapUseSsl;
-		this.ldapSearchAttributes = ldapSearchAttributes;
-		this.ldapAllowSelfSignedCert = ldapAllowSelfSignedCert;
-		this.ldapMailNotifierAttributes = ldapMailNotifierAttributes;
-		this.ldapEmailAttribute = ldapEmailAttribute;
-		this.agentLdapBaseDn = agentLdapBaseDn;
-		this.agentLdapIdAttribute = agentLdapIdAttribute;
-		this.agentLdapJidAttribute = agentLdapJidAttribute;
-		this.agentLdapObjectClasses = agentLdapObjectClasses;
-		this.userLdapBaseDn = userLdapBaseDn;
-		this.userLdapUidAttribute = userLdapUidAttribute;
-		this.userLdapPrivilegeAttribute = userLdapPrivilegeAttribute;
-		this.userLdapObjectClasses = userLdapObjectClasses;
-		this.userAuthorizationEnabled = userAuthorizationEnabled;
-		this.groupLdapObjectClasses = groupLdapObjectClasses;
-		this.roleLdapObjectClasses = roleLdapObjectClasses;
-		this.userLdapRolesDn = userLdapRolesDn;
-		this.groupLdapBaseDn = groupLdapBaseDn;
-		this.userGroupLdapBaseDn = userGroupLdapBaseDn;
-		this.ahenkGroupLdapBaseDn = ahenkGroupLdapBaseDn;
-		this.xmppHost = xmppHost;
-		this.xmppPort = xmppPort;
-		this.xmppUsername = xmppUsername;
-		this.xmppPassword = xmppPassword;
-		this.xmppResource = xmppResource;
-		this.xmppServiceName = xmppServiceName;
-		this.xmppMaxRetryConnectionCount = xmppMaxRetryConnectionCount;
-		this.xmppPacketReplayTimeout = xmppPacketReplayTimeout;
-		this.xmppPingTimeout = xmppPingTimeout;
-		this.xmppUseSsl = xmppUseSsl;
-		this.xmppAllowSelfSignedCert = xmppAllowSelfSignedCert;
-		this.xmppUseCustomSsl = xmppUseCustomSsl;
-		this.xmppPresencePriority = xmppPresencePriority;
-		this.fileServerProtocol = fileServerProtocol;
-		this.fileServerHost = fileServerHost;
-		this.fileServerUsername = fileServerUsername;
-		this.fileServerPassword = fileServerPassword;
-		this.fileServerPluginPath = fileServerPluginPath;
-		this.fileServerAgreementPath = fileServerAgreementPath;
-		this.fileServerAgentFilePath = fileServerAgentFilePath;
-		this.fileServerUrl = fileServerUrl;
-		this.fileServerPort = fileServerPort;
-		this.taskManagerCheckFutureTask = taskManagerCheckFutureTask;
-		this.taskManagerFutureTaskCheckPeriod = taskManagerFutureTaskCheckPeriod;
-		this.alarmCheckReport = alarmCheckReport;
-		this.mailAddress = mailAddress;
-		this.mailPassword = mailPassword;
-		this.mailHost = mailHost;
-		this.mailSmtpPort = mailSmtpPort;
-		this.mailSmtpAuth = mailSmtpAuth;
-		this.mailSmtpStartTlsEnable = mailSmtpStartTlsEnable;
-		this.mailSmtpSslEnable = mailSmtpSslEnable;
-		this.mailSmtpConnTimeout = mailSmtpConnTimeout;
-		this.mailSmtpTimeout = mailSmtpTimeout;
-		this.mailSmtpWriteTimeout = mailSmtpWriteTimeout;
-		this.mailSendOnTaskCompletion = mailSendOnTaskCompletion;
-		this.mailCheckTaskCompletionPeriod = mailCheckTaskCompletionPeriod;
-		this.mailSendOnPolicyCompletion = mailSendOnPolicyCompletion;
-		this.mailCheckPolicyCompletionPeriod = mailCheckPolicyCompletionPeriod;
-		this.hotDeploymentPath = hotDeploymentPath;
-		this.cronTaskList = cronTaskList;
-		this.entrySizeLimit = entrySizeLimit;
-		this.cronIntervalEntrySize = cronIntervalEntrySize;
-		this.adDomainName = adDomainName;
-		this.adHostName = adHostName;
-		this.adIpAddress = adIpAddress;
-		this.adAdminUserName = adAdminUserName;
-		this.adAdminUserFullDN = adAdminUserFullDN;
-		this.adAdminPassword = adAdminPassword;
-		this.adPort = adPort;
-		this.disableLocalUser = disableLocalUser;
-		this.domainType = domainType;
-		this.ahenkRepoAddress = ahenkRepoAddress;
-		this.ahenkRepoKeyAddress = ahenkRepoKeyAddress;
-	}
-
-
 
 	public void setDefaultParams() {
 		logger.info("Default paramaters are set for Configuration.");
@@ -935,6 +834,54 @@ public class ConfigParams {
 	public void setAhenkRepoKeyAddress(String ahenkRepoKeyAddress) {
 		this.ahenkRepoKeyAddress = ahenkRepoKeyAddress;
 	}
+
+//	public String getEmailHost() {
+//		return emailHost;
+//	}
+//
+//	public void setEmailHost(String emailHost) {
+//		this.emailHost = emailHost;
+//	}
+//
+//	public String getEmailPort() {
+//		return emailPort;
+//	}
+//
+//	public void setEmailPort(String emailPort) {
+//		this.emailPort = emailPort;
+//	}
+//
+//	public String getEmailUsername() {
+//		return emailUsername;
+//	}
+//
+//	public void setEmailUsername(String emailUsername) {
+//		this.emailUsername = emailUsername;
+//	}
+//
+//	public String getEmailPassword() {
+//		return emailPassword;
+//	}
+//
+//	public void setEmailPassword(String emailPassword) {
+//		this.emailPassword = emailPassword;
+//	}
+//
+//	public Boolean getEmailSmtpAuth() {
+//		return emailSmtpAuth;
+//	}
+//
+//	public void setEmailSmtpAuth(Boolean emailSmtpAuth) {
+//		this.emailSmtpAuth = emailSmtpAuth;
+//	}
+//
+//	public Boolean getEmailStarttlsEnabled() {
+//		return emailStarttlsEnabled;
+//	}
+//
+//	public void setEmailStarttlsEnabled(Boolean emailStarttlsEnabled) {
+//		this.emailStarttlsEnabled = emailStarttlsEnabled;
+//	}
 
 	public FileServerConf getFileServerConf(String jid) {
 		Map<String, Object> params = new HashMap<String, Object>();

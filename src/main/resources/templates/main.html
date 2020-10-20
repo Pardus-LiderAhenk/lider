@@ -99,7 +99,7 @@
 <script type="text/javascript">
  	var user_name = '[[${userName}]]';
 	var xmppHost = '[[${xmppHost}]]';
-	var version = '[[${version}]]';
+	var liderVersion = '[[${liderVersion}]]';
 	var SID = '[[${SID}]]';
 	var RID = '[[${RID}]]';
 	var JID = '[[${JID}]]';
@@ -110,8 +110,7 @@
 	var onlineEntryList = [];
 	var childEntryList = [];
 	var scheduledParam = null;
-	
-	
+	var computerTreeCreated=false;
 </script>
 <script type="text/javascript" src="assets/scripts/main.js"></script> 
 <script type="text/javascript" src="js/modal.js"></script>
@@ -130,7 +129,7 @@
                         <li class="nav-item" >
                            <a class="nav-link dizin" href="#" data-page="dashboard"> 
                            		<img width="120" src="img/LiderAhenk-Logo-01.png"  > 
-								<span class="fa ml-2 opacity-8"  id="version" style="font-size: 16px;" >  </span>  
+								<span class="fa ml-2 opacity-8"  id="liderVersion" style="font-size: 14px;" >  </span>  
 						   </a>
                         </li>
                        
@@ -310,7 +309,7 @@
 								</div>
 								<div class="widget-content-left ">
 									<div class="widget-heading ml-3" >  
-										<a data-toggle="dropdown" aria-haspopup="true"
+										<a data-toggle="dropdown" aria-haspopup="true" href="#"
 											aria-expanded="false" >   
 											<i class="fa fa-user ml-1 opacity-8" style=""></i>
 											<span th:text="${user.liderUser.name}"></span>
@@ -719,7 +718,7 @@
 	
 	
 	<script type="text/javascript" src="js/notify.min.js"></script>
-	<script type="text/javascript" src="js/messaging.js"></script> <!-- for xmmp connection send message -->
+
 	<script type="text/javascript" src="js/main.js"></script>
 	<script type="text/javascript" src="js/treegrid/jqxcore.js"></script>
 	<script type="text/javascript" src="js/treegrid/jqxbuttons.js"></script>
@@ -741,6 +740,7 @@
 	<script type="text/javascript" src="js/dataTables.buttons.min.js"></script>
 	<script type="text/javascript" src="js/jquery-editable-select.min.js"></script>
 	<script src="js/Chart.js"></script>
+	<script type="text/javascript" src="js/messaging.js"></script> <!-- for xmmp connection send message -->
 
 </body>
 </html>

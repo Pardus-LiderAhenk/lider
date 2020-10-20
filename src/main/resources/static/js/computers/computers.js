@@ -14,10 +14,10 @@ var selectedEntries = [];
 var selectedAgentGroupDN = "";
 var selectedOUDN = "";
 var treeGridHolderDiv= "computerTreeDiv";
-var computerTreeCreated=false;
 var pluginTaskList=null;
 var systemSettings=null;
 var historyData = null;
+var treeGridIdGlob = null;
 
 var selectedRowForMovingEntry;
 
@@ -63,11 +63,10 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 		function(rootComputer , treeGridId){
 			$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
 			$('#'+ treeGridId).jqxTreeGrid('expandRow', rootComputer);
+			computerTreeCreated=true;
+			treeGridIdGlob=treeGridId;
 		}
 );
-
-
-computerTreeCreated=true;
 
 //getting some setting params to use
 getConfigurationParams();
@@ -88,15 +87,22 @@ function getConfigurationParams() {
 	});
 }
 
-//to see compputer state listen connection
-connection.addHandler(onPresence2, null, "presence");
+$(document).ready(function() {
+	//to see compputer state listen connection
+	connection.addHandler(onPresence2, null, "presence");
+});
+
 function onPresence2(presence)
 {
+	
+	console.log(presence)
+	
 	var ptype = $(presence).attr('type');
 	var from = $(presence).attr('from');
 	var jid_id = jid_to_id(from);
 	var name = jid_to_name(from);
 	var source = jid_to_source(from);
+	
 	if (ptype === 'subscribe') {
 		$.notify("subscribe","warn");
 	} 
@@ -104,18 +110,18 @@ function onPresence2(presence)
 		//OFFLine state
 		if (ptype === 'unavailable') {
 			if(computerTreeCreated){
-				var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
+				var row = $('#'+ treeGridIdGlob).jqxTreeGrid('getRow', selectedRow.entryUUID);
 				row.online=false;
-				$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name});
+				$('#'+ treeGridIdGlob).jqxTreeGrid('updateRow',  row.entryUUID , {name:name});
 				$("#agentOnlineStatus").attr("class","badge badge-danger");
 				$("#agentOnlineStatus").html("Çevrimdışı");
 				
 			}
 		} else {
 			if(computerTreeCreated){
-				var row = $('#computerTreeDivGrid').jqxTreeGrid('getRow', name);
+				var row = $('#'+ treeGridIdGlob).jqxTreeGrid('getRow', selectedRow.entryUUID);
 				row.online=true;
-				$('#computerTreeDivGrid').jqxTreeGrid('updateRow', name , {name:name}); 
+				$('#'+ treeGridIdGlob).jqxTreeGrid('updateRow', row.entryUUID , {name:name}); 
 				$("#agentOnlineStatus").attr("class","badge badge-success");
 				$("#agentOnlineStatus").html("Çevrimiçi");
 			}
@@ -1715,6 +1721,19 @@ function deleteUserOu(row) {
 	});  
 }
 
+function jid_to_id(jid) {
+	return Strophe.getBareJidFromJid(jid);
+	/*  .replace("@", "-")
+        .replace(".", "-") */
+}
+
+function jid_to_name(jid) {
+	return jid.substr(0, jid.indexOf('@'));
+}
+
+function jid_to_source(jid) {
+	return jid.substr(jid.indexOf('/')+1,jid.length );
+}
 
 //function addRoster() {
 //	$.ajax({

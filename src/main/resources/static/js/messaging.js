@@ -18,7 +18,7 @@ $(document).ready(function() {
 				connection.disconnect();
 			});
 	
-});
+
 
 function objToString (obj) {
 	var str = '';
@@ -162,7 +162,7 @@ function onRosterChanged(iq) {
 		var name = $(this).attr('name') || jid;
 		var jid_id =jid_to_id(jid);
 		
-		$.notify("Registration yapılıyor..Kayıt defteri güncelleniyor..Kayıt id : "+ jid+ " Ad : "+ name,"success");
+		$.notify("Lider MYS yeni kayıt yapılıyor. Kayıt Ad : "+ name,"success");
 
 		/*   if (sub === 'remove') {
             // contact is being removed
@@ -197,6 +197,8 @@ function onPresence(presence)
 	var jid_id = jid_to_id(from);
 	var name = jid_to_name(from);
 	var source = jid_to_source(from);
+	
+	console.log(ptype)
 
 	if (ptype === 'subscribe') {
 
@@ -208,26 +210,12 @@ function onPresence(presence)
 
 //			$.notify(name+" offline..",{className: 'error',position:"left bottom"}  );
 			log(name+" çevrimdışı oldu.","ERROR");
-			for (var i =0; i < onlineEntryList.length; i++){
-
-				if (onlineEntryList[i].from === from && onlineEntryList[i].source === source) {
-					onlineEntryList.splice(i,1);
-					break;
-				}
-			}
+			
 		} else {
 //			$.notify(name+" online..", {className: 'success',position:"left bottom"}  );
 			log(name+" çevrimiçi oldu.","SUCCESS");
 			var isExist=false;
-			for (i = 0; i < onlineEntryList.length; i++) {
-				var online=onlineEntryList[i];
-				if(online.source==source){
-					isExist=true;
-				}
-			}
-			if (isExist==false) {
-				onlineEntryList.push({'from':from, 'jid':jid_id, 'name':name, 'source':source  });
-			}
+			console.log(computerTreeCreated)
 		}
 	}
 	return true;
@@ -291,3 +279,4 @@ function log(msg, type)
 	$('#logger').append('<br>');    
 }
 
+});

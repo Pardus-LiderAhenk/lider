@@ -72,7 +72,7 @@ public class LoginController {
 			logger.info("User roles : " + userDetails.getLiderUser().getRoles());
 			
 			String version=buildProperties.getVersion();
-			model.addAttribute("version", version);
+			model.addAttribute("liderVersion", version);
 			
 			SessionInfo sessionInfo= xmppPrebindService.getSession(userDetails.getLiderUser().getName(), userDetails.getLiderUser().getPassword());
 		    model.addAttribute("SID", sessionInfo.getSid());

@@ -1,6 +1,7 @@
 /* policy table and profile table scroll and table row height */
 
 .table tbody tr.policysettings td {
+	color: #636462;
 	background-color: #70C1F9;
 }
 .policy table tr:hover td {

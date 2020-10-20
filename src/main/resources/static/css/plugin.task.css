@@ -49,3 +49,12 @@
 	box-shadow: none;
 	background: #ddd;
 }
+.plugin-table table tr:hover td, tr.selected td {
+    background: #70C1F9 !important;
+    background-color: black;
+}
+.plugin-table table tr.selected td {
+	color: #636462;
+	background: #70C1F9 !important;
+    background-color: black;
+}

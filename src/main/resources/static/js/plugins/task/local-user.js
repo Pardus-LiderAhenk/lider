@@ -65,6 +65,11 @@ function localUserListener(msg) {
 			progress("divLocalUser","progressLocalUser",'hide')
 			if (responseDn == selectedDn) {
 				if (xmppResponse.commandClsId == "GET_USERS") {
+					if (tableLocalUser) {
+						tableLocalUser.clear().draw();
+						tableLocalUser.destroy();
+						tableLocalUser = null;
+					}
 					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
 						users = arrg.users;
@@ -77,12 +82,14 @@ function localUserListener(msg) {
 							if (users[j]["is_active"] == "true") {
 								isActive = '<td><i class="fa fa-user-check"></i> Aktif</td>';
 							}
-							var newRow = $("<tr id="+ username +">");
-							var html = '<td>'+ username +'</td>';
-							html += isActive;
-							html += '<td>'+ home +'</td>';
-							newRow.append(html);
-							$("#localUsersTable").append(newRow);
+							if (username != "root") {
+								var newRow = $("<tr id="+ username +">");
+								var html = '<td>'+ username +'</td>';
+								html += isActive;
+								html += '<td>'+ home +'</td>';
+								newRow.append(html);
+								$("#localUsersTable").append(newRow);
+							}
 						}
 						createLocalUsersTable();
 						defaultAllGroups();
@@ -179,7 +186,7 @@ function sendLocalUserTask(params) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamLocalUser;
 	}
 
-	progress("divLocalUser","progressLocalUser",'show')
+	progress("divLocalUser","progressLocalUser",'show');
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",

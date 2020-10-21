@@ -87,7 +87,7 @@ public class AdService implements ILDAPService{
 			Boolean allowSelfSignedCert =configurationService.getLdapAllowSelfSignedCert();
 			
 			useSSL=false;
-			allowSelfSignedCert=true;
+			allowSelfSignedCert=false;
 			setParams(host,port,userName,password,useSSL, allowSelfSignedCert);
 			connection = pool.getConnection();
 		} catch (Exception e) {

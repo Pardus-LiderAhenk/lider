@@ -85,7 +85,10 @@ public class SettingsController {
 			@RequestParam (value = "adAdminUserName", required = true) String adAdminUserName,
 			@RequestParam (value = "adAdminUserFullDN", required = true) String adAdminUserFullDN,
 			@RequestParam (value = "adAdminPassword", required = true) String adAdminPassword,
-			@RequestParam (value = "adHostName", required = true) String adHostName) {
+			@RequestParam (value = "adHostName", required = true) String adHostName,
+			@RequestParam (value = "adUseSSL", required = true) Boolean adUseSSL,
+			@RequestParam (value = "adUseTLS", required = true) Boolean adUseTLS,
+			@RequestParam (value = "adAllowSelfSignedCert", required = true) Boolean adAllowSelfSignedCert) {
 
 		ConfigParams configParams = configurationService.getConfigParams();
 		configParams.setLdapServer(ldapServer);
@@ -99,6 +102,9 @@ public class SettingsController {
 		configParams.setAdAdminUserFullDN(adAdminUserFullDN);
 		configParams.setAdAdminPassword(adAdminPassword);
 		configParams.setAdHostName(adHostName);
+		configParams.setAdUseSSL(adUseSSL);
+		configParams.setAdUseTLS(adUseTLS);
+		configParams.setAdAllowSelfSignedCert(adAllowSelfSignedCert);
 		return configurationService.updateConfigParams(configParams);
 	}
 

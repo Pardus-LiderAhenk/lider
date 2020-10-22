@@ -430,6 +430,18 @@ public class ConfigurationService {
 		return getConfigParams().getAdPort();
 	}
 	
+	public Boolean getAdUseSSL() {
+		return getConfigParams().getAdUseSSL();
+	}
+
+	public Boolean getAdUseTLS() {
+		return getConfigParams().getAdUseTLS();
+	}
+
+	public Boolean getAdAllowSelfSignedCert() {
+		return getConfigParams().getAdAllowSelfSignedCert();
+	}
+	
 	public Boolean getDisableLocalUser() {
 		return getConfigParams().getDisableLocalUser();
 	}

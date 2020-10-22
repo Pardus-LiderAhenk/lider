@@ -125,22 +125,16 @@ public class ConfigParams {
 	private String adAdminUserFullDN;
 	private String adAdminPassword;
 	private String adPort;
+	private Boolean adUseSSL;
+	private Boolean adUseTLS;
+	private Boolean adAllowSelfSignedCert;
 	
 	//other settings
 	private Boolean disableLocalUser;
 	private DomainType domainType;
 	private String ahenkRepoAddress;
 	private String ahenkRepoKeyAddress;
-	
-	//email settings
-//	private String emailHost;
-//	private String emailPort;
-//	private String emailUsername;
-//	private String emailPassword;
-//	private Boolean emailSmtpAuth;
-//	private Boolean emailStarttlsEnabled;
-	
-	
+
 	public ConfigParams() {
 		super();
 	}
@@ -795,6 +789,36 @@ public class ConfigParams {
 		this.adPort = adPort;
 	}
 
+	public Boolean getAdUseSSL() {
+		if(this.adUseSSL == null)
+			return true;
+		return adUseSSL;
+	}
+
+	public void setAdUseSSL(Boolean adUseSSL) {
+		this.adUseSSL = adUseSSL;
+	}
+
+	public Boolean getAdUseTLS() {
+		if(this.adUseTLS == null)
+			return true;
+		return adUseTLS;
+	}
+
+	public void setAdUseTLS(Boolean adUseTLS) {
+		this.adUseTLS = adUseTLS;
+	}
+
+	public Boolean getAdAllowSelfSignedCert() {
+		if(this.adAllowSelfSignedCert == null)
+			return true;
+		return adAllowSelfSignedCert;
+	}
+
+	public void setAdAllowSelfSignedCert(Boolean adAllowSelfSignedCert) {
+		this.adAllowSelfSignedCert = adAllowSelfSignedCert;
+	}
+
 	public Boolean getDisableLocalUser() {
 		return disableLocalUser;
 	}
@@ -834,54 +858,6 @@ public class ConfigParams {
 	public void setAhenkRepoKeyAddress(String ahenkRepoKeyAddress) {
 		this.ahenkRepoKeyAddress = ahenkRepoKeyAddress;
 	}
-
-//	public String getEmailHost() {
-//		return emailHost;
-//	}
-//
-//	public void setEmailHost(String emailHost) {
-//		this.emailHost = emailHost;
-//	}
-//
-//	public String getEmailPort() {
-//		return emailPort;
-//	}
-//
-//	public void setEmailPort(String emailPort) {
-//		this.emailPort = emailPort;
-//	}
-//
-//	public String getEmailUsername() {
-//		return emailUsername;
-//	}
-//
-//	public void setEmailUsername(String emailUsername) {
-//		this.emailUsername = emailUsername;
-//	}
-//
-//	public String getEmailPassword() {
-//		return emailPassword;
-//	}
-//
-//	public void setEmailPassword(String emailPassword) {
-//		this.emailPassword = emailPassword;
-//	}
-//
-//	public Boolean getEmailSmtpAuth() {
-//		return emailSmtpAuth;
-//	}
-//
-//	public void setEmailSmtpAuth(Boolean emailSmtpAuth) {
-//		this.emailSmtpAuth = emailSmtpAuth;
-//	}
-//
-//	public Boolean getEmailStarttlsEnabled() {
-//		return emailStarttlsEnabled;
-//	}
-//
-//	public void setEmailStarttlsEnabled(Boolean emailStarttlsEnabled) {
-//		this.emailStarttlsEnabled = emailStarttlsEnabled;
-//	}
 
 	public FileServerConf getFileServerConf(String jid) {
 		Map<String, Object> params = new HashMap<String, Object>();

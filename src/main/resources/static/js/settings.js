@@ -1155,6 +1155,9 @@ function setAttributes(data) {
 		$('#adAdminUserFullDN').val(data.adAdminUserFullDN);
 		$('#adAdminPassword').val(data.adAdminPassword);
 		$('#adHostName').val(data.adHostName);
+		$('#adUseSSL').val(data.adUseSSL.toString());
+		$('#adUseTLS').val(data.adUseTLS.toString());
+		$('#adAllowSelfSignedCert').val(data.adAllowSelfSignedCert.toString());
 		
 	} 
 	
@@ -1285,9 +1288,11 @@ function saveChanges(type) {
 				    "adAdminUserName": $('#adAdminUserName').val(),
 				    "adAdminUserFullDN": $('#adAdminUserFullDN').val(),
 				    "adAdminPassword": $('#adAdminPassword').val(),
-				    "adHostName": $('#adHostName').val()
+				    "adHostName": $('#adHostName').val(),
+					"adUseSSL": $('#adUseSSL').val(),
+					"adUseTLS": $('#adUseTLS').val(),
+					"adAllowSelfSignedCert": $('#adAllowSelfSignedCert').val(),
 				};
-			console.log(params);
 			$.ajax({ 
 			    type: 'POST', 
 			    url: "/lider/settings/update/ldap",

@@ -83,12 +83,12 @@ public class AdService implements ILDAPService{
 			String port = configurationService.getAdPort();
 			String userName = configurationService.getAdAdminUserFullDN();
 			String password = configurationService.getAdAdminPassword();
-			Boolean useSSL = configurationService.getLdapUseSsl(); 
-			Boolean allowSelfSignedCert =configurationService.getLdapAllowSelfSignedCert();
+			Boolean useSSL = configurationService.getAdUseSSL(); 
+			Boolean useTLS =configurationService.getAdUseTLS();
+			Boolean allowSelfSignedCert =configurationService.getAdAllowSelfSignedCert();
 			
-			useSSL=false;
-			allowSelfSignedCert=true;
-			setParams(host,port,userName,password,useSSL, allowSelfSignedCert);
+			
+			setParams(host,port,userName,password,useSSL, allowSelfSignedCert,useTLS);
 			connection = pool.getConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -97,7 +97,7 @@ public class AdService implements ILDAPService{
 		return connection;
 	}
 
-	public void setParams(String host,String port, String userName, String password, Boolean useSSL, Boolean allowSelfSignedCert) throws Exception {
+	public void setParams(String host,String port, String userName, String password, Boolean useSSL, Boolean allowSelfSignedCert, Boolean useTLS) throws Exception {
 		LdapConnectionConfig lconfig = new LdapConnectionConfig();
 		lconfig.setLdapHost(host);
 		lconfig.setLdapPort(Integer.parseInt(port));
@@ -125,7 +125,7 @@ public class AdService implements ILDAPService{
 			lconfig.setTrustManagers(createCustomTrustManager());
 		}
 
-		lconfig.setUseTls(true);
+		lconfig.setUseTls(useTLS);
 		// Create connection pool
 		PoolableLdapConnectionFactory factory = new PoolableLdapConnectionFactory(lconfig);
 		pool = new LdapConnectionPool(factory);

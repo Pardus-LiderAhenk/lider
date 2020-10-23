@@ -791,7 +791,7 @@ public class ConfigParams {
 
 	public Boolean getAdUseSSL() {
 		if(this.adUseSSL == null)
-			return true;
+			return false;
 		return adUseSSL;
 	}
 

@@ -265,12 +265,14 @@ function exportToExcel () {
 			} else if(property.propertyName == "hardware.systemDefinitions") {
 				var result = property.propertyValue;
 				result = result.split(",");
-				result = result[1].trim();
-				result = result.replace(/'/g,"");
-				result = result.replace("]","");
-				result = result.split(":");
-				result = result[1];
-				model =  result.trim();
+				if(result.length > 1) {
+					result = result[1].trim();
+					result = result.replace(/'/g,"");
+					result = result.replace("]","");
+					result = result.split(":");
+					result = result[1];
+					model =  result.trim();
+				}
 			} else if(property.propertyName == "hardware.memory.total") {
 				memory = property.propertyValue;
 			} else if(property.propertyName == "hardware.disk.total") {

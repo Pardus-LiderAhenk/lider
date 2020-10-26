@@ -264,7 +264,7 @@ function exportToExcel () {
 				brand = property.propertyValue;
 			} else if(property.propertyName == "hardware.systemDefinitions") {
 				var result = property.propertyValue;
-				result = result.split(",");
+				result = result.split("',");
 				if(result.length > 1) {
 					result = result[1].trim();
 					result = result.replace(/'/g,"");

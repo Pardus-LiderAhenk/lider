@@ -148,23 +148,75 @@ public class AdController {
 		 int UF_ACCOUNTENABLE = 0x0001;   
 		 int UF_ACCOUNTDISABLE = 0x0002;
 	     int UF_PASSWD_NOTREQD = 0x0020;
-	       int UF_PASSWD_CANT_CHANGE = 0x0040;
-	        int UF_NORMAL_ACCOUNT = 0x0200;
-	        int UF_DONT_EXPIRE_PASSWD = 0x10000;
-	        int UF_PASSWORD_EXPIRED = 0x800000;
+	     int UF_PASSWD_CANT_CHANGE = 0x0040;
+	     int UF_NORMAL_ACCOUNT = 0x0200;
+	     int UF_DONT_EXPIRE_PASSWD = 0x10000;
+	     int UF_PASSWORD_EXPIRED = 0x800000;
 	        
-	     String uacStr=   Integer.toString(UF_NORMAL_ACCOUNT + UF_PASSWD_NOTREQD + UF_DONT_EXPIRE_PASSWD + UF_ACCOUNTENABLE);
+//	     String uacStr=   Integer.toString(UF_NORMAL_ACCOUNT + UF_PASSWD_NOTREQD + UF_DONT_EXPIRE_PASSWD + UF_ACCOUNTENABLE);
+	     String uacStr=   Integer.toString(UF_NORMAL_ACCOUNT + UF_PASSWD_NOTREQD + UF_PASSWORD_EXPIRED + UF_ACCOUNTENABLE);
 	     attributes.put("userAccountControl", new String[] {uacStr});
 	     attributes.put("userpassword", new String[] {uacStr});
+	     attributes.put("pwdLastSet", new String[] {"0"});
+	    
 		 try {
-			 
 			String rdn="CN="+selectedEntry.getCn()+","+selectedEntry.getParentName();
 			service.addEntry(rdn, attributes);
 			
-//			service.updateEntry(rdn, "unicodePwd",new String(newUnicodePassword) );
-			
+//			service.updateEntryAddAtribute(rdn, "pwdLastSet", "0");
 		} catch (LdapException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	@RequestMapping(value = "/addOu2AD")
+	public Boolean addOu2AD(HttpServletRequest request, LdapEntry selectedEntry) {
+		logger.info("Adding OU to AD. Ou info {} {}", selectedEntry.getDistinguishedName(),selectedEntry.getOu());
+		
+		Map<String, String[]> attributes = new HashMap<String, String[]>();
+		
+		attributes.put("objectClass", new String[] {"top","organizationalUnit"});
+		attributes.put("ou", new String[] {selectedEntry.getOu()});
+	
+		try {
+			String rdn="OU="+selectedEntry.getOu()+","+selectedEntry.getParentName();
+			service.addEntry(rdn, attributes);
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	@RequestMapping(value = "/addGroup2AD")
+	public Boolean addGroup2AD(HttpServletRequest request, LdapEntry selectedEntry) {
+		logger.info("Adding Group to AD. Group info {} {}", selectedEntry.getDistinguishedName(),selectedEntry.getCn());
+		
+		Map<String, String[]> attributes = new HashMap<String, String[]>();
+		
+		attributes.put("objectClass", new String[] {"top","group"});
+		attributes.put("CN", new String[] {selectedEntry.getCn()});
+		attributes.put("sAMAccountName", new String[] {selectedEntry.getCn()});
+		
+		try {
+			String rdn="CN="+selectedEntry.getCn()+","+selectedEntry.getParentName();
+			service.addEntry(rdn, attributes);
+			
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	@RequestMapping(value = "/addMember2ADGroup")
+	public Boolean addMember2ADGroup(HttpServletRequest request, LdapEntry selectedEntry) {
+		logger.info("Adding {} to group. Group info {} {}", selectedEntry.getDistinguishedName(),selectedEntry.getParentName());
+		
+		try {
+			service.updateEntryAddAtribute(selectedEntry.getParentName(), "member", selectedEntry.getDistinguishedName());
+			
+		} catch (LdapException e) {
 			e.printStackTrace();
 		}
 		return true;

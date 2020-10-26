@@ -8,7 +8,8 @@ var selectedLdapRowForUserSync=[]
 var selectedLdapRowForGroupSync=[]
 var treeMenuSelection=null;
 
-$('#treeMenu').hide();
+$('#treeMenu').hide(); 
+$('#treeMenuGroup').hide(); 
 
 createTree(treeGridHolderDiv, false, false,
 		// row select
@@ -161,32 +162,46 @@ $('#btnAdUserAddModal').on('click', function (event) {
 });
 
 $('#btnAdOuAddModal').on('click', function (event) {
-	console.log(treeMenuSelection)
-	getModalContent("modals/ad/adUserAdd", function content(data){
-		$('#genericModalLargeHeader').html("AD Organizasyon Birimi Ekle");
+	getModalContent("modals/ad/adOuAdd", function content(data){
+		$('#genericModalLargeHeader').html("Organizasyon Birimi Ekle");
 		$('#genericModalLargeBodyRender').html(data);
+		$('#ouInfo').html(treeMenuSelection.name+"/");
 		
+		$('#addOuAD').on('click', function (event) {
+			addOu(treeMenuSelection)
+		});
 	});
 });
+
+
+
 $('#btnAdGroupAddModal').on('click', function (event) {
-	console.log(treeMenuSelection)
-	getModalContent("modals/ad/adUserAdd", function content(data){
-		$('#genericModalLargeHeader').html("AD Grup Ekle");
+	getModalContent("modals/ad/adGroupAdd", function content(data){
+		$('#genericModalLargeHeader').html("Grup");
 		$('#genericModalLargeBodyRender').html(data);
+		$('#groupInfo').html(treeMenuSelection.name+"/");
 		
+		$('#addGroupAD').on('click', function (event) {
+			addGroup(treeMenuSelection)
+		});
 	});
 });
 
-$('#btnAdUserAdd').on('click', function (event) {
-	alert("user")
+$('#btnAddMember2GroupModal').on('click', function (event) {
+	
+	getModalContent("modals/ad/addMember2Group", function content(data){
+		$('#genericModalLargeHeader').html("Gruba Üye Ekle");
+		$('#genericModalLargeBodyRender').html(data);
+		
+		$('#groupInfoMember').html(treeMenuSelection.name);
+		
+		$('#addMember2Group').on('click', function (event) {
+			addMember2Group(treeMenuSelection)
+		});
+		
+		
+	});
 });
-$('#btnAdOuAdd').on('click', function (event) {
-	alert("ou")
-});
-$('#btnAdGroupAdd').on('click', function (event) {
-	alert("group")
-});
-
 
 
 $("#adChildSearchTxt").keyup(function() {
@@ -204,6 +219,15 @@ $("#treeMenu").on('itemclick', function (event) {
     console.log(selection)
     var rowid = selection[0].uid
     treeMenuSelection=selection[0];
+});
+$("#treeMenuGroup").on('itemclick', function (event) {
+	console.log(treeGridIdGlob)
+	var args = event.args;
+	console.log(args)
+	var selection = $('#'+treeGridIdGlob).jqxTreeGrid('getSelection');
+	console.log(selection)
+	var rowid = selection[0].uid
+	treeMenuSelection=selection[0];
 });
 
 function attributeTable(orderedAttributes) {
@@ -482,12 +506,6 @@ function btnSyncGroupAd2LdapClicked() {
 function btnAdUserAddClicked() {
 	addUser(treeMenuSelection)
 }
-function btnAdGroupAddClicked() {
-	alert("sfgdf")
-}
-function btnAdOuAddClicked() {
-	alert("sfgdf")
-}
 
 function addUser(treeMenuSelection) {
 	var parentDn=treeMenuSelection.distinguishedName; 
@@ -544,6 +562,85 @@ function addUser(treeMenuSelection) {
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Kullanıcı Eklenirken Hata Oluştu.", "error");
+		}
+	});  
+}
+function addOu(treeMenuSelection) {
+	var parentDn=treeMenuSelection.distinguishedName; 
+	var ouName=$('#ouName').val();
+	if(ouName==""){
+		$.notify("Lütfen Birim Adı Giriniz.","warn");
+		return
+	}
+	
+	var params = {
+			"ou": ouName,
+			"parentName": parentDn
+	};
+	$.ajax({
+		type : 'POST',
+		url : 'ad/addOu2AD',
+		data : params,
+		dataType : 'json',
+		success : function(data) {
+			$.notify("Organizasyon Birimi Başarı ile eklendi.",{className: 'success',position:"right top"}  );
+			$('#genericModalLarge').trigger('click');
+		},
+		error: function (data, errorThrown) {
+			$.notify("Birim Eklenirken Hata Oluştu.", "error");
+		}
+	});  
+}
+function addGroup(treeMenuSelection) {
+	var parentDn=treeMenuSelection.distinguishedName; 
+	var groupName=$('#groupName').val();
+	if(groupName==""){
+		$.notify("Lütfen Grup Adı Giriniz.","warn");
+		return
+	}
+	
+	var params = {
+			"cn": groupName,
+			"parentName": parentDn
+	};
+	$.ajax({
+		type : 'POST',
+		url : 'ad/addGroup2AD',
+		data : params,
+		dataType : 'json',
+		success : function(data) {
+			$.notify("Grup Başarı ile eklendi.",{className: 'success',position:"right top"}  );
+			$('#genericModalLarge').trigger('click');
+		},
+		error: function (data, errorThrown) {
+			$.notify("Grup Eklenirken Hata Oluştu.", "error");
+		}
+	});  
+}
+
+function addMember2Group(selection) {
+	var parentDn=selection.distinguishedName; 
+	var distinguishedName=$('#userInfoMember').val();
+	if(distinguishedName==""){
+		$.notify("Lütfen Üye Seçiniz.","warn");
+		return
+	}
+	
+	var params = {
+			"distinguishedName": distinguishedName,
+			"parentName": parentDn
+	};
+	$.ajax({
+		type : 'POST',
+		url : 'ad/addMember2ADGroup',
+		data : params,
+		dataType : 'json',
+		success : function(data) {
+			$.notify("Üye Başarı ile eklendi.",{className: 'success',position:"right top"}  );
+			$('#genericModalLarge').trigger('click');
+		},
+		error: function (data, errorThrown) {
+			$.notify("Üye Eklenirken Hata Oluştu.", "error");
 		}
 	});  
 }

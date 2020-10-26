@@ -118,19 +118,31 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 				 
 			// create context menu
 	            var contextMenu = $("#treeMenu").jqxMenu({ width: 250, height: 88, autoOpenPopup: false, mode: 'popup' });
+	            var contextMenuGroup = $("#treeMenuGroup").jqxMenu({ width: 250, height:40, autoOpenPopup: false, mode: 'popup' });
 	           
 	            $('#'+treeGridId).on('contextmenu', function () {
+	            	
 	                return false;
 	            });
 	            
 	            $('#'+treeGridId).on('rowClick', function (event) {
 	                var args = event.args;
 	                var row = args.row;
-	                
+	                console.log(row)
+	               
 	                if ( args.originalEvent.button == 2) {
 	                    var scrollTop = $(window).scrollTop();
 	                    var scrollLeft = $(window).scrollLeft();
-	                    contextMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    
+	                    if(row.type=="GROUP"){
+	                    	contextMenu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuGroup.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    }
+	                    else{
+	                    	contextMenuGroup.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	 contextMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    }
+	                   
 	                    return false;
 	                }
 	                else{

@@ -199,7 +199,6 @@ $("#scheduledTasksModal").on('hidden.bs.modal', function(){
 	defaultScheduleSelection();
 });
 
-
 $('#sendTask-manage-root').click(function(e){
 	if (selectedEntries.length == 0 ) {
 		$.notify("Lütfen istemci seçiniz.", "error");
@@ -212,8 +211,7 @@ $('#sendTask-manage-root').click(function(e){
 		pluginTask_ManageRoot.dnType="AHENK";
 	}
 	
-	var entry=onlineEntryList[0];
-	var rootEntity = entry.jid;
+	var rootEntity = user_name;
 	rootPassword = $("#inputRootPassword").val();
 	rootPasswordConfirm = $("#inputRootPasswordConfirm").val();
 	pluginTask_ManageRoot.commandId = "SET_ROOT_PASSWORD";

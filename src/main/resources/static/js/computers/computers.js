@@ -110,18 +110,18 @@ function onPresence2(presence)
 		//OFFLine state
 		if (ptype === 'unavailable') {
 			if(computerTreeCreated){
-				var row = $('#'+ treeGridIdGlob).jqxTreeGrid('getRow', selectedRow.entryUUID);
+				var row = $('#'+ treeGridIdGlob).jqxTreeGrid('getRow', name);
 				row.online=false;
-				$('#'+ treeGridIdGlob).jqxTreeGrid('updateRow',  row.entryUUID , {name:name});
+				$('#'+ treeGridIdGlob).jqxTreeGrid('updateRow',  row.name , {name:name});
 				$("#agentOnlineStatus").attr("class","badge badge-danger");
 				$("#agentOnlineStatus").html("Çevrimdışı");
 				
 			}
 		} else {
 			if(computerTreeCreated){
-				var row = $('#'+ treeGridIdGlob).jqxTreeGrid('getRow', selectedRow.entryUUID);
+				var row = $('#'+ treeGridIdGlob).jqxTreeGrid('getRow', name);
 				row.online=true;
-				$('#'+ treeGridIdGlob).jqxTreeGrid('updateRow', row.entryUUID , {name:name}); 
+				$('#'+ treeGridIdGlob).jqxTreeGrid('updateRow', row.name , {name:name}); 
 				$("#agentOnlineStatus").attr("class","badge badge-success");
 				$("#agentOnlineStatus").html("Çevrimiçi");
 			}

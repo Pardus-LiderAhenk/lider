@@ -46,7 +46,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 								root: "childEntries"
 							},
 							localData: data,
-							id: "entryUUID"
+							id: "name"
 			  };
 			 
 			 var cellclass = function (row, columnfield, value,rowData) {
@@ -78,7 +78,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 					return '<span>' + value + '</span>';
 				}
 			 
-			 rootComputer = source.localData[0].entryUUID;
+			 rootComputer = source.localData[0].name;
 //			 	$("#treeGridUser").jqxTreeGrid('destroy');
 			 	
 			 	$('#'+treeHolderDiv).append('<div id="'+treeGridId+'"></div> ')
@@ -133,7 +133,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 				    	 if(allrows.length==1){
 				    		 var row=allrows[0];
 				    		 if(row.childEntries==null ){
-				    			 $('#'+treeGridId).jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
+				    			 $('#'+treeGridId).jqxTreeGrid('addRow', row.name+"1", {}, 'last', row.name);
 				    		 }
 				    	 }
 				    	 $('#'+treeGridId).jqxTreeGrid('collapseAll');
@@ -207,9 +207,9 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 									          	if(childRow.online){
 													onlineCount++;
 												}
-									          	$('#'+treeGridId).jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
+									          	$('#'+treeGridId).jqxTreeGrid('addRow', childRow.name, childRow, 'last', row.name);
 												if(childRow.hasSubordinates=="TRUE"){
-													$('#'+treeGridId).jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
+													$('#'+treeGridId).jqxTreeGrid('addRow', childRow.name+"1" , {}, 'last', childRow.name); 
 												}
 												$('#'+treeGridId).jqxTreeGrid('collapseRow', childRow.name);
 
@@ -308,9 +308,9 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 					
 					for (var i = 0; i < ldapResult.length; i++) {
 				    	 var entry = ldapResult[i];
-				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.entryUUID , entry , 'last' ,'Arama Sonuçları');
+				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.name , entry , 'last' ,'Arama Sonuçları');
 				    	 if(entry.hasSubordinates=="TRUE"){
-								$('#'+treeGridId).jqxTreeGrid('addRow', entry.entryUUID+"1" , {}, 'last', entry.entryUUID); 
+								$('#'+treeGridId).jqxTreeGrid('addRow', entry.name+"1" , {}, 'last', entry.name); 
 						}
 					}
 					$('#'+treeGridId).jqxTreeGrid('collapseAll');

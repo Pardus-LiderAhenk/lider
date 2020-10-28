@@ -113,17 +113,21 @@ function onPresence2(presence)
 				var row = $('#'+ treeGridIdGlob).jqxTreeGrid('getRow', name);
 				row.online=false;
 				$('#'+ treeGridIdGlob).jqxTreeGrid('updateRow',  row.name , {name:name});
-				$("#agentOnlineStatus").attr("class","badge badge-danger");
-				$("#agentOnlineStatus").html("Çevrimdışı");
 				
+				if(selectedRow.name==name){
+					$("#agentOnlineStatus").attr("class","badge badge-danger");
+					$("#agentOnlineStatus").html("Çevrimdışı");
+				}
 			}
 		} else {
 			if(computerTreeCreated){
 				var row = $('#'+ treeGridIdGlob).jqxTreeGrid('getRow', name);
 				row.online=true;
-				$('#'+ treeGridIdGlob).jqxTreeGrid('updateRow', row.name , {name:name}); 
-				$("#agentOnlineStatus").attr("class","badge badge-success");
-				$("#agentOnlineStatus").html("Çevrimiçi");
+				$('#'+ treeGridIdGlob).jqxTreeGrid('updateRow', row.name , {name:name});
+				if(selectedRow.name==name){
+					$("#agentOnlineStatus").attr("class","badge badge-success");
+					$("#agentOnlineStatus").html("Çevrimiçi");
+				}
 			}
 		}
 	}

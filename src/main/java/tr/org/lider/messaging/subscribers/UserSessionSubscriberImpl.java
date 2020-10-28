@@ -114,15 +114,20 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 			agentRepository.save(agent);
 			// find user authority for sudo role
 			// if user has sudo role user get sudoRole on agent
-			List<LdapEntry> role = getUserRoleGroupList(configurationService.getUserLdapRolesDn(),
-					userSession.getUsername(), message.getHostname());
-
-			if (role != null && role.size() > 0) {
-				Map<String, Object> params = new HashMap<>();
-				return new UserSessionResponseMessageImpl(message.getFrom(), params, userSession.getUsername(),
-						new Date());
+			if (message.getType() == AgentMessageType.LOGIN) {
+				List<LdapEntry> role = getUserRoleGroupList(configurationService.getUserLdapRolesDn(),
+						userSession.getUsername(), message.getHostname());
+	
+				if (role != null && role.size() > 0) {
+					Map<String, Object> params = new HashMap<>();
+					return new UserSessionResponseMessageImpl(message.getFrom(), params, userSession.getUsername(),
+							new Date());
+				} else {
+					logger.info("Logined user not in Sudo Role Groups. User = " + userSession.getUsername());
+					return null;
+				}
 			} else {
-				logger.info("Logined user not authorized. User = " + userSession.getUsername());
+				logger.info("Get message type is LOGUT from agent");
 				return null;
 			}
 		} else {

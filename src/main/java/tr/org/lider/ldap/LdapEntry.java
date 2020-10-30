@@ -139,7 +139,7 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 		setO(getAttributes().get("o"));
 		setUserPassword(getAttributes().get("userPassword"));
 		setExpandedUser("FALSE");
-		if(getType().equals(DNType.USER)) {
+		if(getType()!=null && getType().equals(DNType.USER)) {
 		setName( (getAttributes().get("ou")!=null &&  !getAttributes().get("ou").equals("")) 
 				? getAttributes().get("ou") : getAttributes().get("uid")!=null &&  !getAttributes().get("uid").equals("") 
 				? getAttributes().get("uid") : getAttributes().get("cn")!=null &&  !getAttributes().get("cn").equals("") ? getAttributes().get("cn"): getAttributes().get("o") );

@@ -50,6 +50,9 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 			selectedRow=row;
 			baseRootDnComputer=rootDnComputer;
 			addSelectedEntryToTable(selectedRow)
+			if(selectedRow.online ==false){
+				$('#deleteAgent').hide();
+			}
 		},
 		//check action
 		function(checkedRows, row){
@@ -1294,6 +1297,7 @@ function SHHConnect(){
 
 function displaySSHConnection() {
 	$('#sshDisplay').show()
+	$('#btnSSHConnect').prop( "disabled", true );
 	 // Get display div from document
     var display = document.getElementById("sshDisplay");
 
@@ -1307,7 +1311,7 @@ function displaySSHConnection() {
     
     // Error handler
     guac.onerror = function(error) {
-    	$.notify("Uzak Masaüstü sunucusunda hata oluştu", "warn");
+    	$.notify("SSH bağlantısında hata oluştu", "warn");
     };
     // Connect
     guac.connect();
@@ -1363,6 +1367,7 @@ function displaySSHConnection() {
 		 
          guac.disconnect();
 		 $('#sshDisplay').html("")
+		 $('#btnSSHConnect').prop( "disabled", false );
     });
     
     $('.dizin').click(function(e){

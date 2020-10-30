@@ -34,5 +34,7 @@ public interface IUserSessionMessage extends IAgentMessage {
 	int getDiskFree();
 	
 	String getOsVersion();
+	
+	String getAgentVersion();
 
 }

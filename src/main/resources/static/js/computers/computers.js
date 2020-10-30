@@ -39,6 +39,7 @@ $("#moveAgent").hide();
 $("#deleteAgent").hide();
 $("#btnAddOu").hide();
 $("#btnDeleteOu").hide();
+$("#updateAgentInfo").hide();
 
 /*
  * create user tree select, check and uncheck action functions can be implemented if required
@@ -97,8 +98,6 @@ $(document).ready(function() {
 
 function onPresence2(presence)
 {
-	
-	console.log(presence)
 	
 	var ptype = $(presence).attr('type');
 	var from = $(presence).attr('from');
@@ -1000,6 +999,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#selectedAgentInfo").html(selectedRow.name); 
 		$("#btnAddOu").hide();
 		$("#btnDeleteOu").hide();
+		$("#updateAgentInfo").show();
 	}
 //	else if(row.type=="ORGANIZATIONAL_UNIT"){
 //		
@@ -1027,6 +1027,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#agentPhase").html("");
 		$("#userDomain").html("");
 		$("#agentDn").html("");
+		$("#updateAgentInfo").hide();
 		$("#selectedAgentDN").text("");
 		$("#selectedAgentDNSSH").text("");
 		$("#selectedAgentDNSSHIP").text("");
@@ -1034,6 +1035,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		getAllAndOnlineAgents(selectedRow.distinguishedName);
 		$("#btnAddOu").show();
 		$("#btnDeleteOu").show();
+		$("#agentVersion").html("");
 	}
 }
 
@@ -1091,6 +1093,7 @@ function showSelectedEntries() {
 	$("#agentPhase").html("");
 	$("#userDomain").html("");
 	$("#agentDn").html("");
+	$("#agentVersion").html("");
 	
 	$.ajax({ 
 		type: 'POST', 
@@ -1104,7 +1107,7 @@ function showSelectedEntries() {
 			
 			$("#selectedAgentDNSSHIP").val(ipAddress);
 			if(data.properties.length > 0) {
-
+				$("#agentVersion").html("Bilinmiyor");
 				$.each(data.properties, function(index, element) {
 
 					if (element.propertyName == "os.name") {
@@ -1118,6 +1121,9 @@ function showSelectedEntries() {
 //					}
 					if (element.propertyName == "os.name") {
 						$("#agentOsName").html(element.propertyValue);
+					}
+					if (element.propertyName == "agentVersion") {
+						$("#agentVersion").html(element.propertyValue);
 					}
 //					if (element.propertyName == "phase") {
 //						var phase = "Faz bilgisi alınamadı"
@@ -1149,6 +1155,7 @@ function showSelectedEntries() {
 				$("#agentOsName").html("");
 				$("#userDomain").html("");
 				$("#agentDn").html("");
+				$("#agentVersion").html("");
 			}
 		}
 	});
@@ -1757,3 +1764,107 @@ function jid_to_source(jid) {
 //	
 //}
 
+$('#updateAgentInfo').click(function(e){
+	if(selectedEntries.length ==0 ){
+		$.notify("Lütfen İstemci Seçiniz", "error");
+		return;
+	}
+
+	var content = "İstemci bilgilerini güncellemek istiyor musunuz?";
+	$.confirm({
+		title: 'Uyarı!',
+		content: content,
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+				progress("divAgentInfo","progressAgentInfo",'show');
+				getAgentInfo();
+			},
+			Hayır: function () {
+			}
+		}
+	});
+});
+
+function getAgentInfo() {
+	var params = {
+			"agentDN" : selectedRow.distinguishedName,
+	};
+	$.ajax({ 
+		type: 'POST', 
+		url: '/lider/computer/get_agent_info',
+		dataType: 'json',
+		data: params,
+		success: function (data) {
+			refUpdateAgentInfo = connection.addHandler(updateAgentInfoListener, null, 'message', null, null,  null);
+		},
+		error: function (data, errorThrown) {
+			$.notify("Ahenk bilgileri güncellenirken hata oluştu.", "error");
+		}
+	});
+}
+
+function updateAgentInfoListener(msg) {
+	var to = msg.getAttribute('to');
+	var from = msg.getAttribute('from');
+	var type = msg.getAttribute('type');
+	var elems = msg.getElementsByTagName('body');
+
+	if (type == "chat" && elems.length > 0) {
+		var body = elems[0];
+		var data=Strophe.xmlunescape(Strophe.getText(body));
+		var xmppResponse=JSON.parse(data);
+		var responseDn = xmppResponse.commandExecution.dn;
+		var selectedDn = selectedEntries[0]["attributes"].entryDN;
+		if(xmppResponse.commandClsId == "AGENT_INFO"){
+			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+				progress("divAgentInfo","progressAgentInfo",'hide');
+				if (responseDn == selectedDn) {
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+						if (refUpdateAgentInfo) {
+							connection.deleteHandler(refUpdateAgentInfo);
+						}
+						updateAgentInfo(arrg);
+
+					} else {
+						$.notify(xmppResponse.result.responseMessage, "error");
+					}
+				}
+			}
+		}						 
+	}
+	// we must return true to keep the handler alive. returning false would remove it after it finishes.
+	return true;
+}
+
+function updateAgentInfo(arrg) {
+	var params = {
+			"ipAddresses": arrg.ipAddresses,
+			"hostname": arrg.hostname,
+			"agentVersion": arrg.agentVersion,
+			"macAddresses": arrg.macAddresses,
+			"agentUid" : selectedRow.uid,
+	};
+
+	$.ajax({ 
+		type: 'POST', 
+		url: '/lider/computer/update_agent_info',
+		dataType: 'json',
+		data: params,
+		success: function (data) {
+			if (data == true) {
+				$("#agentHostname").html(arrg.hostname);
+				$("#agentIpAddr").html(arrg.ipAddresses);
+				$("#agentMac").html(arrg.macAddresses);
+				$("#agentVersion").html(arrg.agentVersion);
+				$.notify("Ahenk bilgileri güncellendi.", "success");
+			} else {
+				$.notify("Ahenk bilgileri güncellenirken hata oluştu.", "error");
+			}
+		},
+		error: function (data, errorThrown) {
+			$.notify("Ahenk bilgileri güncellenirken hata oluştu.", "error");
+		}
+	});
+}

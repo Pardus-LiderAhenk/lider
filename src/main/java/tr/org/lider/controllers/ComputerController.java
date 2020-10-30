@@ -2,9 +2,11 @@ package tr.org.lider.controllers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import tr.org.lider.entities.AgentImpl;
+import tr.org.lider.entities.AgentPropertyImpl;
 import tr.org.lider.entities.PluginImpl;
 import tr.org.lider.entities.PluginTask;
 import tr.org.lider.ldap.DNType;
@@ -32,6 +36,7 @@ import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
+import tr.org.lider.repositories.AgentRepository;
 import tr.org.lider.services.AgentService;
 import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
@@ -69,6 +74,9 @@ public class ComputerController {
 
 	@Autowired
 	private TaskService taskService;
+
+	@Autowired
+	private AgentRepository agentRepository;
 
 	@RequestMapping(value = "/getComputers")
 	public List<LdapEntry> getComputers() {
@@ -395,11 +403,11 @@ public class ComputerController {
 			@RequestParam(value="newHostname", required=true) String newHostname) {
 		logger.info("Agent rename request has been receieved. DN: " + agentDN);
 		String newAgentDN = agentDN.replace("cn=" + cn, "cn=" + newHostname);
-		
+
 		List<LdapEntry> entryList = new  ArrayList<LdapEntry>();
 		LdapEntry ldapEntryForTask = ldapService.getEntryDetail(agentDN);
 		entryList.add(ldapEntryForTask);
-		
+
 		if(agentService.findAgentByHostname(newHostname).size() > 0) {
 			return new ResponseEntity<Boolean>(false, HttpStatus.CONFLICT);
 		}
@@ -417,7 +425,7 @@ public class ComputerController {
 		} catch (LdapException e) {
 			logger.error("Error occured while renaming the agent. Message: " + e.getMessage());
 		}
-		
+
 		//send task to Ahenk to change DN with new DN
 		Map<String, Object> parameterMap = new  HashMap<>();
 		parameterMap.put("dn", agentDN);
@@ -478,5 +486,100 @@ public class ComputerController {
 			return null;
 		}
 		return null;
+	}
+
+	@RequestMapping(method=RequestMethod.POST ,value = "/get_agent_info", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Boolean getAgentInfo(@RequestParam(value="agentDN", required=true) String agentDN) {
+		logger.info("Agent info request has been receieved. DN: " + agentDN);
+		//send task to Ahenk to change DN with new DN
+		Map<String, Object> parameterMap = new  HashMap<>();
+		parameterMap.put("dn", agentDN);
+		List<String> dnList = new ArrayList<>();
+		dnList.add(agentDN);
+
+		PluginImpl plugin = new PluginImpl();
+		plugin = pluginService.findPluginIdByName("resource-usage");
+		PluginTask requestBody = new PluginTask();
+		requestBody.setCommandId("AGENT_INFO");
+		requestBody.setPlugin(plugin);
+
+		requestBody.setParameterMap(parameterMap);
+		requestBody.setDnType(DNType.AHENK);
+		requestBody.setState(1);
+		requestBody.setDnList(dnList);
+		List<LdapEntry> entryList = new  ArrayList<LdapEntry>();
+		LdapEntry ldapEntry = ldapService.getEntryDetail(agentDN);
+		entryList.add(ldapEntry);
+
+		requestBody.setEntryList(entryList);
+		IRestResponse restResponse = taskService.execute(requestBody);
+		//		agentService.deleteAgent(agentDN);
+		//		try {
+		//			ldapService.deleteEntry(agentDN);
+		//		} catch (LdapException e) {
+		//			e.printStackTrace();
+		//		}
+		//		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		//
+		//		commandService.deleteAgentCommands(agentDN, agentUID);
+		return true;
+	}
+
+	@RequestMapping(method=RequestMethod.POST ,value = "/update_agent_info", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Boolean updateAgentInfo(@RequestParam(value="ipAddresses", required=true) String ipAddresses,
+			@RequestParam(value="hostname", required=true) String hostname,
+			@RequestParam(value="agentVersion", required=true) String agentVersion,
+			@RequestParam(value="macAddresses", required=true) String macAddresses,
+			@RequestParam(value="agentUid", required=true) String agentUid){
+
+		System.out.println(ipAddresses);
+		List<AgentImpl> agents =  agentService.findAgentByJid(agentUid);
+
+		if (agents != null && agents.size() > 0) {
+			AgentImpl agent = agents.get(0);
+			for (AgentPropertyImpl prop : agent.getProperties()) {
+				if (prop.getPropertyName().equals("hardware.network.ipAddresses")
+						&& prop.getPropertyValue() != ipAddresses
+						&& !agent.getIpAddresses().equals(ipAddresses)) {
+					logger.info("IP Addresses of Agent with ID {} has been changed. Updating in DB", agent.getId());
+					prop.setPropertyValue(ipAddresses);
+					agent.setIpAddresses(ipAddresses);
+				} else if (hostname != null && !agent.getHostname().equals(hostname)) {
+					agent.setHostname(hostname);
+				} else if (prop.getPropertyName().equals("macAddresses")
+						&& prop.getPropertyValue() != macAddresses
+						&& !agent.getMacAddresses().equals(macAddresses)) {
+					prop.setPropertyValue(macAddresses);
+					agent.setMacAddresses(macAddresses);
+				} else if (prop.getPropertyName().equals("agentVersion")
+						&& prop.getPropertyValue() != agentVersion
+						&& !agent.getMacAddresses().equals(agentVersion)) {
+					prop.setPropertyValue(agentVersion);
+				}
+			}
+
+			if (isPropertyName(agentUid, "agentVersion") == false) {
+				agent.addProperty(new AgentPropertyImpl(null, agent, "agentVersion",
+						agentVersion.toString(), new Date()));
+			} 
+			agentRepository.save(agent);
+			return true;
+		} else {
+			return null;
+		}
+	}
+
+	public Boolean isPropertyName(String agentUid, String propertyName) {
+		Boolean isExist = false;
+		List<AgentImpl> agents =  agentService.findAgentByJid(agentUid);
+		if (agents != null && agents.size() > 0) {
+			AgentImpl agent = agents.get(0);
+			for (AgentPropertyImpl prop : agent.getProperties()) {
+				if (prop.getPropertyName().equals(propertyName)) {
+					isExist = true;
+				}
+			}
+		}
+		return isExist;
 	}
 }

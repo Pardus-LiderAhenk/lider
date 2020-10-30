@@ -107,8 +107,16 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 					} else if (message.getHostname() != null && !agent.getHostname().equals(message.getHostname())) {
 						logger.info("Hostname of Agent with ID {} has been changed. Updating in DB", agent.getId());
 						agent.setHostname(message.getHostname());
+					} else if (prop.getPropertyName().equals("agentVersion")
+							&& prop.getPropertyValue() != message.getAgentVersion()
+							&& !agent.getMacAddresses().equals(message.getAgentVersion())) {
+						prop.setPropertyValue(message.getAgentVersion());
 					}
 				}
+				if (isPropertyName(uid, "agentVersion") == false) {
+					agent.addProperty(new AgentPropertyImpl(null, agent, "agentVersion",
+							message.getAgentVersion().toString(), new Date()));
+				} 
 			}
 			// Merge records
 			agentRepository.save(agent);
@@ -182,5 +190,18 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 	public void setLdapService(ILDAPService ldapService) {
 		this.ldapService = ldapService;
 	}
-
+	
+	public Boolean isPropertyName(String agentUid, String propertyName) {
+		Boolean isExist = false;
+		List<AgentImpl> agents =  agentRepository.findByJid(agentUid);
+		if (agents != null && agents.size() > 0) {
+			AgentImpl agent = agents.get(0);
+			for (AgentPropertyImpl prop : agent.getProperties()) {
+				if (prop.getPropertyName().equals(propertyName)) {
+					isExist = true;
+				}
+			}
+		}
+		return isExist;
+	}
 }

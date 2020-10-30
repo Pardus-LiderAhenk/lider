@@ -37,6 +37,8 @@ public class UserSessionMessageImpl implements IUserSessionMessage {
 
 	private Date timestamp;
 	
+	private String agentVersion;
+	
 
 	@Override
 	public AgentMessageType getType() {
@@ -142,6 +144,15 @@ public class UserSessionMessageImpl implements IUserSessionMessage {
 
 	public void setMemory(int memory) {
 		this.memory = memory;
+	}
+	
+	@Override
+	public String getAgentVersion() {
+		return this.agentVersion;
+	}
+
+	public void setAgentVersion(String agentVersion) {
+		this.agentVersion = agentVersion;
 	}
 	
 }

@@ -39,7 +39,7 @@ function fillRegistrationTemplateTable() {
 		    			 + '<td>' + element.createDate + '</td>';
 		    		html += '<td class="text-center">' 
 		    			+ '<button onclick="deleteTemplate(\'' + element.id + '\')"' 
-		    			+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">' 
+		    			+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger btn-sm ">' 
 		    			+ '<i class="pe-7s-trash btn-icon-wrapper"> </i></button>' 
 		    			+ '</td></tr>';
 		    	});

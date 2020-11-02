@@ -1194,12 +1194,12 @@ function taskHistory() {
 							executionTime = command.commandExecutions[0].commandExecutionResults[0].createDate;
 
 							if(executionResult == "TASK_PROCESSED") {
-								trElement += '<td>' + '<div class="badge badge-success">Başarılı</div>' + '</td>';
+								trElement += '<td>' + '<div class="badge p-1 m-0 badge-success">Başarılı</div>' + '</td>';
 							} else {
-								trElement += '<td>' + '<div class="badge badge-danger">Hata oluştu</div>' + '</td>';
+								trElement += '<td>' + '<div class="badge p-1 m-0 badge-danger">Hata oluştu</div>' + '</td>';
 							}
 						} else {
-							trElement += '<td>' + '<div class="badge badge-info">Gönderildi</div>' + '</td>';
+							trElement += '<td>' + '<div class="badge p-1 m-0 badge-info">Gönderildi</div>' + '</td>';
 						}
 
 						trElement += '<td>' + command.commandOwnerUid  + '</td>';
@@ -1208,9 +1208,10 @@ function taskHistory() {
 
 						trElement += '<td>' + createDate + '</td>';
 						trElement += '<td>' + executionTime + '</td>';
+						
 						if(executionResult == "TASK_PROCESSED" || executionResult == "TASK_ERROR") {
 							var taskId = command.task.id;
-							trElement += '<td><a href="#executedTaskDetail" class="view text-center" '
+							trElement += '<td class="text-center"><a href="#executedTaskDetail" class="btn btn-sm text-center p-0 m-0" '
 								+ 'onclick="executedTaskDetailClicked('
 								+ '\'' + createDate + '\', '
 								+ '\'' + command.task.commandClsId + '\', '
@@ -1223,7 +1224,7 @@ function taskHistory() {
 						} else {
 							var taskId = command.task.id;
 							var commandExecutionResultsId = "NA";
-							trElement += '<td><a href="#executedTaskDetail" class="view text-center" '
+							trElement += '<td class="text-center"><a href="#executedTaskDetail" class="btn btn-sm text-center p-0 m-0" '
 								+ 'onclick="executedTaskDetailClicked('
 								+ '\'' + createDate + '\', '
 								+ '\'' + command.task.commandClsId + '\', '

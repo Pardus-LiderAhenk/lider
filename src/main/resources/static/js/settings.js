@@ -628,7 +628,7 @@ function getLDAPAccessRules() {
 			    			}
 			    			trElement += '<td class="text-center">';
 			    			trElement += '<button onclick="deleteOLCAccessRule(\'' + index + '\')" ' +
-			    					'class="btn-icon btn-icon-only btn btn-outline-danger"><i class="pe-7s-trash btn-icon-wrapper"> </i></button>';
+			    					'class="btn-icon btn-icon-only btn btn-outline-danger btn-sm p-o m-0"><i class="pe-7s-trash btn-icon-wrapper"> </i></button>';
 			    			trElement += '</td></tr>';
 			    		});
 			    		$('#olcRulesTable').html(trElement);

@@ -108,8 +108,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 						logger.info("Hostname of Agent with ID {} has been changed. Updating in DB", agent.getId());
 						agent.setHostname(message.getHostname());
 					} else if (prop.getPropertyName().equals("agentVersion")
-							&& prop.getPropertyValue() != message.getAgentVersion()
-							&& !agent.getMacAddresses().equals(message.getAgentVersion())) {
+							&& prop.getPropertyValue() != message.getAgentVersion()) {
 						prop.setPropertyValue(message.getAgentVersion());
 					}
 				}

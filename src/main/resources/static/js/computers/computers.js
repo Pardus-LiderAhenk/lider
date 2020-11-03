@@ -1108,6 +1108,7 @@ function showSelectedEntries() {
 			$("#selectedAgentDNSSHIP").val(ipAddress);
 			if(data.properties.length > 0) {
 				$("#agentVersion").html("Bilinmiyor");
+				$("#agentPhase").html("Bilinmiyor");
 				$.each(data.properties, function(index, element) {
 
 					if (element.propertyName == "os.name") {
@@ -1125,23 +1126,26 @@ function showSelectedEntries() {
 					if (element.propertyName == "agentVersion") {
 						$("#agentVersion").html(element.propertyValue);
 					}
-//					if (element.propertyName == "phase") {
-//						var phase = "Faz bilgisi alınamadı"
-//						if (element.propertyValue){
-//							phase = element.propertyValue;
-//							$("#agentPhase").html(phase);
-//						}
-//					}
+					if (element.propertyName == "phase") {
+						var phase = "Bilinmiyor"
+						if (element.propertyValue){
+							phase = element.propertyValue;
+							$("#agentPhase").html(phase);
+						}
+					}
 				});
 				userDomain = data.userDirectoryDomain;
-				if (userDomain == "NONE") {
-					userDomain = "Bilinmiyor";
+				$("#userDomain").html("Bilinmiyor");
+				if (userDomain) {
+					$("#userDomain").html(userDomain);
+					if (userDomain == "NONE") {
+						$("#userDomain").html("Bilinmiyor");
+					}
 				}
 				$("#agentHostname").html(data.hostname);
 				$("#agentIpAddr").html(data.ipAddresses);
 				$("#agentMac").html(data.macAddresses);
 				$("#agentCreateDate").html(data.createDate);
-				$("#userDomain").html(userDomain);
 				$('#agentDn').html(getEntryFolderName(selDn));
 				
 			} else {
@@ -1840,14 +1844,23 @@ function updateAgentInfoListener(msg) {
 }
 
 function updateAgentInfo(arrg) {
+	var phase = null;
+	var processor = null;
+	if (arrg.hasOwnProperty('phase')) {
+		phase = arrg.phase;
+	}
+	if (arrg.hasOwnProperty('processor11')) {
+		processor = arrg.processor;
+	}
 	var params = {
 			"ipAddresses": arrg.ipAddresses,
 			"hostname": arrg.hostname,
 			"agentVersion": arrg.agentVersion,
 			"macAddresses": arrg.macAddresses,
-			"agentUid" : selectedRow.uid,
+			"phase": phase,
+			"processor": processor,
+			"agentUid" : selectedRow.attributes.uid,
 	};
-
 	$.ajax({ 
 		type: 'POST', 
 		url: '/lider/computer/update_agent_info',
@@ -1859,6 +1872,12 @@ function updateAgentInfo(arrg) {
 				$("#agentIpAddr").html(arrg.ipAddresses);
 				$("#agentMac").html(arrg.macAddresses);
 				$("#agentVersion").html(arrg.agentVersion);
+				if (processor) {
+					$("#agentProcessor").html(processor);
+				}
+				if (phase) {
+					$("#agentPhase").html(phase);
+				}
 				$.notify("Ahenk bilgileri güncellendi.", "success");
 			} else {
 				$.notify("Ahenk bilgileri güncellenirken hata oluştu.", "error");

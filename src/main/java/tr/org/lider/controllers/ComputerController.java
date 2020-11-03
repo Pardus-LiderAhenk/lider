@@ -530,6 +530,8 @@ public class ComputerController {
 			@RequestParam(value="hostname", required=true) String hostname,
 			@RequestParam(value="agentVersion", required=true) String agentVersion,
 			@RequestParam(value="macAddresses", required=true) String macAddresses,
+			@RequestParam(value="phase", required=true) String phase,
+			@RequestParam(value="processor", required=true) String processor,
 			@RequestParam(value="agentUid", required=true) String agentUid){
 
 		System.out.println(ipAddresses);
@@ -552,15 +554,24 @@ public class ComputerController {
 					prop.setPropertyValue(macAddresses);
 					agent.setMacAddresses(macAddresses);
 				} else if (prop.getPropertyName().equals("agentVersion")
-						&& prop.getPropertyValue() != agentVersion
-						&& !agent.getMacAddresses().equals(agentVersion)) {
+						&& prop.getPropertyValue() != agentVersion) {
 					prop.setPropertyValue(agentVersion);
+				} else if (phase != null && phase != "" && prop.getPropertyName().equals("phase")
+						&& prop.getPropertyValue() != phase) {
+					prop.setPropertyValue(phase);
+				} else if (processor != null && processor != "" && prop.getPropertyName().equals("processor")
+						&& prop.getPropertyValue() != processor) {
+					prop.setPropertyValue(processor);
 				}
 			}
 
 			if (isPropertyName(agentUid, "agentVersion") == false) {
 				agent.addProperty(new AgentPropertyImpl(null, agent, "agentVersion",
 						agentVersion.toString(), new Date()));
+			} 
+			if (isPropertyName(agentUid, "phase") == false) {
+				agent.addProperty(new AgentPropertyImpl(null, agent, "phase",
+						phase.toString(), new Date()));
 			} 
 			agentRepository.save(agent);
 			return true;

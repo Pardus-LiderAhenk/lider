@@ -1849,7 +1849,7 @@ function updateAgentInfo(arrg) {
 	if (arrg.hasOwnProperty('phase')) {
 		phase = arrg.phase;
 	}
-	if (arrg.hasOwnProperty('processor11')) {
+	if (arrg.hasOwnProperty('processor')) {
 		processor = arrg.processor;
 	}
 	var params = {

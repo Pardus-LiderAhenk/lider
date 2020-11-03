@@ -342,7 +342,7 @@ function reloadTable(pNumber, pSize, field, text) {
 		params['text'] = text;
 	}
 
-	if(selectedRegistrationStartDate != "" && selectedRegistrationEndDate != "") {
+	if(selectedRegistrationStartDate != "" && selectedRegistrationEndDate != "" && $('#registration_date_filter').val() != "") {
 		params['registrationStartDate'] = selectedRegistrationStartDate;
 		params['registrationEndDate'] = selectedRegistrationEndDate;
 	}

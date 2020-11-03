@@ -114,7 +114,7 @@ public class AgentInfoCriteriaBuilder {
 		}
 		if (registrationEndDate.isPresent()) {
 			predicates.add(criteriaBuilder.lessThanOrEqualTo(from.get("createDate"), registrationEndDate.get()));
-			predicatesCount.add(criteriaBuilderCount.lessThanOrEqualTo(fromCount.get("createDate"), registrationStartDate.get()));
+			predicatesCount.add(criteriaBuilderCount.lessThanOrEqualTo(fromCount.get("createDate"), registrationEndDate.get()));
 		}
 
 		criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));

@@ -10,12 +10,19 @@
 if (ref_manage_root) {
 	connection.deleteHandler(ref_manage_root);
 }
+
+var lockRootUser = "";
+var rootPassword;
+var lowerCase = "abcdefghijklmnopqrstuvwxyz";
+var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var digits = "0123456789";
+var splChars = "+=.@*!";
+var showPasswordClicked=false;
 var scheduledParamManageRoot = null;
 var scheduledModalManageRootOpened = false;
-
+var dnlist=[]
 var ref_manage_root=connection.addHandler(manageRootListener, null, 'message', null, null,  null);
 
-var dnlist=[]
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
 		dnlist.push(selectedEntries[i].distinguishedName);
@@ -27,14 +34,6 @@ for (var n = 0; n < pluginTaskList.length; n++) {
 		pluginTask_ManageRoot=pluginTask;
 	}
 }
-
-var lockRootUser = "";
-var rootPassword;
-
-var lowerCase = "abcdefghijklmnopqrstuvwxyz";
-var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-var digits = "0123456789";
-var splChars = "+=.@*!";
 
 function contains(rootPassword, allowedChars) {
 	for (i = 0; i < rootPassword.length; i++) {
@@ -137,16 +136,16 @@ $('#generateRootPassword').click(function(e){
 	}
 	$("#inputRootPassword").val(pwd);
 	$("#inputRootPasswordConfirm").val(pwd);
-	
-	$("#inputRootPassword").attr("type","text");
-	$("#inputRootPasswordConfirm").attr("type","text");
+
+//	$("#inputRootPassword").attr("type","text");
+//	$("#inputRootPasswordConfirm").attr("type","text");
 });
-var showPasswordClicked=false;
+
 $('.showPassword').click(function(e){
 	if(showPasswordClicked==false){
-	$("#inputRootPassword").attr("type","text");
-	$("#inputRootPasswordConfirm").attr("type","text");
-	showPasswordClicked=true;
+		$("#inputRootPassword").attr("type","text");
+		$("#inputRootPasswordConfirm").attr("type","text");
+		showPasswordClicked=true;
 	}
 	else if(showPasswordClicked==true){
 		$("#inputRootPassword").attr("type","password");
@@ -204,13 +203,13 @@ $('#sendTask-manage-root').click(function(e){
 		$.notify("Lütfen istemci seçiniz.", "error");
 		return;
 	}
-	
+
 	if(pluginTask_ManageRoot){
 		pluginTask_ManageRoot.dnList=dnlist;
 		pluginTask_ManageRoot.entryList=selectedEntries;
 		pluginTask_ManageRoot.dnType="AHENK";
 	}
-	
+
 	var rootEntity = user_name;
 	rootPassword = $("#inputRootPassword").val();
 	rootPasswordConfirm = $("#inputRootPasswordConfirm").val();
@@ -238,5 +237,3 @@ $('#sendTask-manage-root').click(function(e){
 		sendRootTask(params);
 	}
 });
-
-

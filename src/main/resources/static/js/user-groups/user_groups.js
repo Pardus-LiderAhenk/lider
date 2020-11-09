@@ -1404,9 +1404,9 @@ function createMemberList(row) {
 						members += '<tr>';
 						members += '<td>' + (i + 1) + '</td>';
 						members += '<td>' + row.attributesMultiValues[key][i] + '</td>';
-						members += '<td class="text-center">' 
+						members += '<td class="text-center p-0 m-0">' 
 							+ '<button onclick="deleteMemberFromTabList(\'' + row.attributesMultiValues[key][i] + '\')"' 
-							+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">' 
+							+ 'class="btn-icon btn-icon-only btn btn-outline-danger btn-sm">' 
 							+ '<i class="pe-7s-trash btn-icon-wrapper"> </i></button>' 
 							+ '</td>';
 						members += '</tr>';
@@ -1415,9 +1415,9 @@ function createMemberList(row) {
 					members += '<tr>';
 					members += '<td>1</td>';
 					members += '<td>' + row.attributesMultiValues[key] + '</td>';
-					members += '<td class="text-center">' 
+					members += '<td class="text-center p-0 m-0">' 
 						+ '<button onclick="deleteMemberFromTabList(\'' + row.attributesMultiValues[key] + '\')"' 
-						+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">' 
+						+ 'class="btn-icon btn-icon-only btn btn-outline-danger btn-sm">' 
 						+ '<i class="pe-7s-trash btn-icon-wrapper"> </i></button>' 
 						+ '</td>';
 					members += '</tr>';

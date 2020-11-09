@@ -11,6 +11,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 import javax.naming.InvalidNameException;
@@ -888,10 +890,35 @@ public class LDAPServiceImpl implements ILDAPService {
 		} finally {
 			releaseConnection(connection);
 		}
-		return result;
+		return orderLdapEntryList(result);
 	}
 
+	public List<LdapEntry> orderLdapEntryList(List<LdapEntry> entryList) {
+		List<LdapEntry> ouList = new ArrayList<LdapEntry>();
+		List<LdapEntry> otherEntryList = new ArrayList<LdapEntry>();
+		for (LdapEntry entry : entryList) {
+			if(entry.getType() != null && entry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
+				ouList.add(entry);
+			} else {
+				otherEntryList.add(entry);
+			}
+		}
 
+		//sort OU list by DN
+		ouList = ouList.stream()
+				.sorted(Comparator.comparing(LdapEntry::getDistinguishedName, String.CASE_INSENSITIVE_ORDER))
+				.collect(Collectors.toList());
+		//sort entry list by DN
+		otherEntryList = otherEntryList.stream()
+				.sorted(Comparator.comparing(LdapEntry::getDistinguishedName, String.CASE_INSENSITIVE_ORDER))
+				.collect(Collectors.toList());
+
+		//merge sorted ou and entry list
+		List<LdapEntry> mergedList  = new ArrayList<LdapEntry>();
+		mergedList.addAll(ouList);
+		mergedList.addAll(otherEntryList);
+		return mergedList;
+	}
 
 	public LdapEntry getLdapTree(LdapEntry ldapEntry)  {
 

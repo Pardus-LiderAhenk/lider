@@ -120,6 +120,7 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 					
 					// Update agent LDAP entry.
 					ldapService.updateEntry(dn, "userPassword", message.getPassword());
+					ldapService.updateEntry(dn, "uid", message.getFrom().split("@")[0]);
 					logger.info("Agent LDAP entry {} updated successfully!", dn);
 				}
 

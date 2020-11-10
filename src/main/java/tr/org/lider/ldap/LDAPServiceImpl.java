@@ -376,6 +376,11 @@ public class LDAPServiceImpl implements ILDAPService {
 	 */
 	@Override
 	public void deleteEntry(String dn) throws LdapException {
+		if(dn.equals("cn=adminGroups," + configurationService.getUserGroupLdapBaseDn())) {
+			logger.error("Admin group can not be deleted.");
+			//throw new LdapException("adminGroups can not be deleted.");
+			return;
+		}
 		LdapConnection connection = getConnection();
 		try {
 			logger.info("Deleteting entry with DN: " + dn);

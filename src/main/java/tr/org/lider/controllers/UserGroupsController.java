@@ -13,7 +13,9 @@ import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -235,19 +237,21 @@ public class UserGroupsController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, value = "/deleteEntry")
-	public Boolean deleteEntry(@RequestParam(value = "dn") String dn) {
+	public ResponseEntity<?> deleteEntry(@RequestParam(value = "dn") String dn) {
 		try {
-			if(dn != configurationService.getAgentLdapBaseDn()) {
+			if(dn.equals("cn=adminGroups," + configurationService.getUserGroupLdapBaseDn())) {
+				return new ResponseEntity<String[]>(new String[] {"Admin grubu silinemez!"}, HttpStatus.BAD_REQUEST);
+			}
+			if(dn.contains(configurationService.getUserGroupLdapBaseDn()) && dn.length() > configurationService.getUserGroupLdapBaseDn().length() ) {
 				ldapService.updateOLCAccessRulesAfterEntryDelete(dn);
 				ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(dn));
-				return true;
+				return new ResponseEntity<String[]>(new String[] {"Grup başarıyla silindi"}, HttpStatus.OK);
 			} else {
-				return false;
+				return new ResponseEntity<String[]>(new String[] {"Hata oluştu"}, HttpStatus.BAD_REQUEST);
 			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return new ResponseEntity<String[]>(new String[] {"Hata oluştu"}, HttpStatus.BAD_REQUEST);
 		}
 	}
 	

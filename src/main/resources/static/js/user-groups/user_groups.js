@@ -693,13 +693,18 @@ function btnDeleteGroupClicked() {
 		success: function (data) {
 //			$('#'+treeGridId).jqxTreeGrid('deleteRow', selectedEntryUUID);
 //			$('#'+treeGridId).jqxTreeGrid('selectRow', rootEntryUUID);
-			$("#genericModal").trigger('click');
 			$.notify("Kullanıcı grubu başarıyla silindi.", "success");
-			createUserGroupsTree()
-			clearAndHide()
+			createUserGroupsTree();
+			clearAndHide();
 		},
-		error: function (data, errorThrown) {
-			$.notify("Kullanıcı grubu silinirken hata oluştu.", "error");
+		error : function(jqXHR, textStatus, errorThrown) {
+			if(jqXHR != null && jqXHR.responseJSON != null && jqXHR.responseJSON[0] != null && jqXHR.responseJSON[0] != "")
+				$.notify("Kullanıcı grubu silinirken hata oluştu: " + jqXHR.responseJSON[0], "error");
+			else
+				$.notify("Kullanıcı grubu silinirken hata oluştu.", "error");
+		},
+		complete : function() {
+			$("#genericModal").trigger('click');
 		}
 	});
 }

@@ -626,7 +626,7 @@ function getLDAPAccessRules() {
 			    			if(element.accessType == 'write') {
 			    				trElement += '<td class="text-center">' + 'Okuma ve Yazma' + '</td>';
 			    			}
-			    			trElement += '<td class="text-center">';
+			    			trElement += '<td class="text-center p-0 m-0">';
 			    			trElement += '<button onclick="deleteOLCAccessRule(\'' + index + '\')" ' +
 			    					'class="btn-icon btn-icon-only btn btn-outline-danger btn-sm p-o m-0"><i class="pe-7s-trash btn-icon-wrapper"> </i></button>';
 			    			trElement += '</td></tr>';
@@ -824,13 +824,13 @@ function showUserDetail(index, dn) {
 				trElement += '<tr>';
 				trElement += '<td>' + (j+1) + '</td>';
 				trElement += '<td>' + role.name + '</td>';
-				trElement += '<td class="text-center">';
+				trElement += '<td class="text-center p-0 m-0">';
 				trElement += '<div class="custom-control custom-switch">';
 				//if this role is assigned to selected user check this role
 				if(element.attributesMultiValues["liderPrivilege"].indexOf(role.value) > -1) {
-					trElement += '<input type="checkbox" class="custom-control-input cbUserRole" id="' + role.value + '" checked>';
+					trElement += '<input type="checkbox" class="custom-control-input p-0 m-0 cbUserRole" id="' + role.value + '" checked>';
 				} else {
-					trElement += '<input type="checkbox" class="custom-control-input cbUserRole" id="' + role.value + '">';
+					trElement += '<input type="checkbox" class="custom-control-input p-0 m-0 cbUserRole" id="' + role.value + '">';
 				}
 				trElement += '<label class="custom-control-label" for="' + role.value + '"></label>';
 				trElement += '</div>';

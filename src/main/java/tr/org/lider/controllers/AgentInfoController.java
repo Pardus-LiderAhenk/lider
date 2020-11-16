@@ -37,7 +37,6 @@ public class AgentInfoController {
 			@RequestParam (value = "text") Optional<String> text,
 			@RequestParam (value="registrationStartDate") @DateTimeFormat(pattern="dd/MM/yyyy HH:mm:ss") Optional<Date> registrationStartDate,
 			@RequestParam (value="registrationEndDate") @DateTimeFormat(pattern="dd/MM/yyyy HH:mm:ss") Optional<Date> registrationEndDate) {
-
 		Page<AgentImpl> listOfAgentsCB = agentService.findAllAgentsFiltered(pageNumber, pageSize, status, field, text, registrationStartDate, registrationEndDate);
 		return listOfAgentsCB;
 	}

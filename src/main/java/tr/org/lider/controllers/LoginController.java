@@ -21,8 +21,6 @@ import tr.org.lider.constant.LiderConstants;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.messaging.messages.SessionInfo;
-import tr.org.lider.messaging.messages.XMPPPrebind;
-import tr.org.lider.services.AgentService;
 import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.services.XMPPPrebindService;
@@ -38,9 +36,6 @@ public class LoginController {
 	
 	@Autowired
 	private ConfigurationService configurationService;
-	
-	@Autowired
-	private AgentService agentService;
 	
 	@Autowired
 	private LDAPServiceImpl ldapService;
@@ -82,19 +77,25 @@ public class LoginController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		model.addAttribute("totalComputerNumber", agentService.count());
+		
 		//get count of users
 		int countOfLDAPUsers = 0;
+		int countOfComputers = 0;
 		try {
-			List<LdapEntry> retList=ldapService.findSubEntries(configurationService.getLdapRootDn(), "(objectclass=pardusAccount)", new String[] { "*" }, SearchScope.SUBTREE);
-			countOfLDAPUsers = retList.size();
+			List<LdapEntry> ldapUserList = ldapService.findSubEntries(configurationService.getLdapRootDn(), 
+					"(objectclass=pardusAccount)", new String[] { "*" }, SearchScope.SUBTREE);
+			List<LdapEntry> ldapComputerList = ldapService.findSubEntries(configurationService.getLdapRootDn(), 
+					"(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
+			countOfLDAPUsers = ldapUserList.size();
+			countOfComputers = ldapComputerList.size();
 		} catch (LdapException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		model.addAttribute("totalUserNumber", countOfLDAPUsers);
-		//sent task total number
+		model.addAttribute("totalComputerNumber", countOfComputers);
 		
+		//sent task total number
 		model.addAttribute("totalSentTaskNumber", commandService.getTotalCountOfSentTasks());
 		return LiderConstants.Pages.MAIN_PAGE;
 	}

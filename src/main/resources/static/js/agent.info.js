@@ -328,6 +328,7 @@ function pagingClicked(pNum) {
 
 //retrieves agents pageable object from service with given page number and pageSize
 function reloadTable(pNumber, pSize, field, text) {
+	progress("agentInfoBodyDiv","progressAgentInfo",'show');
 	//start number of agent order in table
 	var order = (pNumber-1)*pSize + 1;
 	var params = {
@@ -435,7 +436,12 @@ function reloadTable(pNumber, pSize, field, text) {
 			$("#agentsTable").empty();
 			$("#pagingList").empty();
 	    	$('#agentsTable').append(trElement);
-	    }
+	    }, complete: function() {
+			progress("agentInfoBodyDiv","progressAgentInfo",'hide');
+		}
+
+
+
 	});
 }
 

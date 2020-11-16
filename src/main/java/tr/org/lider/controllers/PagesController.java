@@ -51,12 +51,12 @@ public class PagesController {
         		int countOfLDAPUsers = 0;
         		int countOfComputers = 0;
         		try {
-        			List<LdapEntry> retListUsers = ldapService.findSubEntries(configurationService.getLdapRootDn(), 
-        						"(objectclass=pardusAccount)", new String[] { "*" }, SearchScope.SUBTREE);
-        			List<LdapEntry> retListComputers = ldapService.findSubEntries(configurationService.getLdapRootDn(), 
-        						"(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
-        			countOfLDAPUsers = retListUsers.size();
-        			countOfComputers = retListComputers.size();
+        			List<LdapEntry> ldapUserList = ldapService.findSubEntries(configurationService.getLdapRootDn(), 
+        					"(objectclass=pardusAccount)", new String[] { "*" }, SearchScope.SUBTREE);
+        			List<LdapEntry> ldapComputerList = ldapService.findSubEntries(configurationService.getLdapRootDn(), 
+        					"(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
+        			countOfLDAPUsers = ldapUserList.size();
+        			countOfComputers = ldapComputerList.size();
         		} catch (LdapException e) {
         			e.printStackTrace();
         		}

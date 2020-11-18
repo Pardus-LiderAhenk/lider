@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,9 +36,12 @@ public class ConfigurationService {
 	@Autowired
 	ConfigRepository configRepository;
 
+	@Autowired
+	private Environment env;
+
 	//for singleton
 	private static ConfigParams configParams;
-	
+
 	public ConfigImpl save(ConfigImpl config) {
 		//if configParams is updated delete configParams
 		if(config.getName().equals("liderConfigParams")) {
@@ -247,6 +251,10 @@ public class ConfigurationService {
 	}
 
 	public String getXmppResource() {
+		String resourceValueStr = env.getProperty("xmpp.resource.name");
+		if( resourceValueStr != null && !resourceValueStr.isEmpty()) {
+			return resourceValueStr;
+		}
 		return getConfigParams().getXmppResource();
 	}
 
@@ -279,6 +287,10 @@ public class ConfigurationService {
 	}
 
 	public Integer getXmppPresencePriority() {
+		String priorityValueStr = env.getProperty("xmpp.presence.priority");
+		if( priorityValueStr != null && !priorityValueStr.isEmpty()) {
+			return Integer.parseInt(priorityValueStr);
+		}
 		return getConfigParams().getXmppPresencePriority();
 	}
 
@@ -401,7 +413,7 @@ public class ConfigurationService {
 	public Integer getCronIntervalEntrySize() {
 		return getConfigParams().getCronIntervalEntrySize();
 	}
-	
+
 	public String getAdDomainName() {
 		return getConfigParams().getAdDomainName();
 	}
@@ -421,7 +433,7 @@ public class ConfigurationService {
 	public String getAdAdminUserFullDN() {
 		return getConfigParams().getAdAdminUserFullDN();
 	}
-	
+
 	public String getAdAdminPassword() {
 		return getConfigParams().getAdAdminPassword();
 	}
@@ -429,7 +441,7 @@ public class ConfigurationService {
 	public String getAdPort() {
 		return getConfigParams().getAdPort();
 	}
-	
+
 	public Boolean getAdUseSSL() {
 		return getConfigParams().getAdUseSSL();
 	}
@@ -441,50 +453,50 @@ public class ConfigurationService {
 	public Boolean getAdAllowSelfSignedCert() {
 		return getConfigParams().getAdAllowSelfSignedCert();
 	}
-	
+
 	public Boolean getDisableLocalUser() {
 		return getConfigParams().getDisableLocalUser();
 	}
-	
+
 	public DomainType getDomainType() {
 		if(getConfigParams().getDomainType() == null)
 			return DomainType.LDAP;
 		else
 			return getConfigParams().getDomainType();
 	}
-	
+
 	public String getAhenkRepoAddress() {
 		return getConfigParams().getAhenkRepoAddress();
 	}
-	
+
 	public String getAhenkRepoKeyAddress() {
 		return getConfigParams().getAhenkRepoKeyAddress();
 	}
-	
-//	public String getEmailHost() {
-//		return getConfigParams().getEmailHost();
-//	}
-//
-//	public String getEmailPort() {
-//		return getConfigParams().getEmailPort();
-//	}
-//
-//	public String getEmailUsername() {
-//		return getConfigParams().getEmailUsername();
-//	}
-//
-//	public String getEmailPassword() {
-//		return getConfigParams().getEmailPassword();
-//	}
-//
-//	public Boolean getEmailSmtpAuth() {
-//		return getConfigParams().getEmailSmtpAuth();
-//	}
-//
-//	public Boolean getEmailStarttlsEnabled() {
-//		return getConfigParams().getEmailStarttlsEnabled();
-//	}
-	
+
+	//	public String getEmailHost() {
+	//		return getConfigParams().getEmailHost();
+	//	}
+	//
+	//	public String getEmailPort() {
+	//		return getConfigParams().getEmailPort();
+	//	}
+	//
+	//	public String getEmailUsername() {
+	//		return getConfigParams().getEmailUsername();
+	//	}
+	//
+	//	public String getEmailPassword() {
+	//		return getConfigParams().getEmailPassword();
+	//	}
+	//
+	//	public Boolean getEmailSmtpAuth() {
+	//		return getConfigParams().getEmailSmtpAuth();
+	//	}
+	//
+	//	public Boolean getEmailStarttlsEnabled() {
+	//		return getConfigParams().getEmailStarttlsEnabled();
+	//	}
+
 	public Boolean isEmailConfigurationComplete() {
 		if(getConfigParams().getMailHost() != null && !getConfigParams().getMailHost().equals("")
 				&& getConfigParams().getMailPassword() != null && !getConfigParams().getMailPassword().equals("")

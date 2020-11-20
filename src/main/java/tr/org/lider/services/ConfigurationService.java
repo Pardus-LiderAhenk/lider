@@ -59,6 +59,7 @@ public class ConfigurationService {
 				configImpl.get().setValue(jsonString);
 				ConfigImpl updatedConfigImpl = configRepository.save(configImpl.get());
 				configParams = mapper.readValue(updatedConfigImpl.getValue(), ConfigParams.class);
+				configParams.setAllowVNCConnectionWithoutPermission(getAllowVNCConnectionWithoutPermission());
 				return configParams;
 			} catch (JsonProcessingException e) {
 				logger.error("Error occured while updating configuration parameters.");
@@ -103,6 +104,7 @@ public class ConfigurationService {
 				ObjectMapper mapper = new ObjectMapper();
 				if(findByName("liderConfigParams").isPresent()) {
 					configParams = mapper.readValue(findByName("liderConfigParams").get().getValue(), ConfigParams.class);
+					configParams.setAllowVNCConnectionWithoutPermission(getAllowVNCConnectionWithoutPermission());
 					return configParams;
 				} else {
 					return null;

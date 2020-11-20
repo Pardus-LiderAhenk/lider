@@ -135,6 +135,10 @@ public class ConfigParams {
 	private String ahenkRepoAddress;
 	private String ahenkRepoKeyAddress;
 
+	//plugin settings
+	private Boolean allowVNCConnectionWithoutPermission;
+	
+	
 	public ConfigParams() {
 		super();
 	}
@@ -857,6 +861,14 @@ public class ConfigParams {
 
 	public void setAhenkRepoKeyAddress(String ahenkRepoKeyAddress) {
 		this.ahenkRepoKeyAddress = ahenkRepoKeyAddress;
+	}
+	
+	public Boolean getAllowVNCConnectionWithoutPermission() {
+		return allowVNCConnectionWithoutPermission;
+	}
+
+	public void setAllowVNCConnectionWithoutPermission(Boolean allowVNCConnectionWithoutPermission) {
+		this.allowVNCConnectionWithoutPermission = allowVNCConnectionWithoutPermission;
 	}
 
 	public FileServerConf getFileServerConf(String jid) {

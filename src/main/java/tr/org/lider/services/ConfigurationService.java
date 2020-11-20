@@ -473,6 +473,14 @@ public class ConfigurationService {
 		return getConfigParams().getAhenkRepoKeyAddress();
 	}
 
+	public Boolean getAllowVNCConnectionWithoutPermission() {
+		String allowVNCWithoutPermissionStr = env.getProperty("allow.connection.without.permission");
+		if( allowVNCWithoutPermissionStr != null && !allowVNCWithoutPermissionStr.isEmpty()) {
+			return Boolean.parseBoolean(allowVNCWithoutPermissionStr);
+		}
+		return false;
+	}
+	
 	//	public String getEmailHost() {
 	//		return getConfigParams().getEmailHost();
 	//	}

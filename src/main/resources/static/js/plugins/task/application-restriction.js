@@ -42,7 +42,20 @@ function sendApplicationRestrictionTask(params){
 	if (scheduledParamAppRestriction != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamAppRestriction;
 	}
-	progress("divApplicationRestriction","progressApplicationRestriction",'show');
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamAppRestriction == null) {
+		progress("divApplicationRestriction","progressApplicationRestriction",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+		if (scheduledParamAppRestriction != null) {
+			groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+		}
+		$.notify(groupNotify, "success");
+	}
+
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -58,7 +71,9 @@ function sendApplicationRestrictionTask(params){
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
 			if(res.status=="OK"){
-				$("#plugin-result-app-restriction").html(message.bold());
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-app-restriction").html(message.bold());
+				}
 			}   	
 		},
 		error: function(result) {
@@ -81,121 +96,123 @@ function getApplicationListener(msg) {
 		var responseDn = xmppResponse.commandExecution.dn;
 		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			if (responseDn == selectedDn) {
-				if (xmppResponse.commandClsId == "INSTALLED_APPLICATIONS") {
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED" && xmppResponse.result.contentType =="TEXT_PLAIN") {
-						var params = {
-								"id" : xmppResponse.result.id
-						};
-						$.ajax({
-							type: 'POST', 
-							url: "/command/commandexecutionresult",
-							dataType: 'json',
-							data: params,
-							success: function(data) {
-								if(data != null) {
-									if(data.responseDataStr != null) {
-										progress("divApplicationRestriction","progressApplicationRestriction",'hide');
-										var applications = data.responseDataStr.split("\n");
-										var parser_applications = [];
-										for (var i = 0; i < applications.length; i++) {
-											parser_applications.push(applications[i].split(","));
-										}
-										for (var j = 0; j < parser_applications.length; j++) {
+			if (selectedEntries[0].type == "AHENK") {
+				if (responseDn == selectedDn) {
+					if (xmppResponse.commandClsId == "INSTALLED_APPLICATIONS") {
+						if (xmppResponse.result.responseCode == "TASK_PROCESSED" && xmppResponse.result.contentType =="TEXT_PLAIN") {
+							var params = {
+									"id" : xmppResponse.result.id
+							};
+							$.ajax({
+								type: 'POST', 
+								url: "/command/commandexecutionresult",
+								dataType: 'json',
+								data: params,
+								success: function(data) {
+									if(data != null) {
+										if(data.responseDataStr != null) {
+											progress("divApplicationRestriction","progressApplicationRestriction",'hide');
+											var applications = data.responseDataStr.split("\n");
+											var parser_applications = [];
+											for (var i = 0; i < applications.length; i++) {
+												parser_applications.push(applications[i].split(","));
+											}
+											for (var j = 0; j < parser_applications.length; j++) {
 
-											var app_name = parser_applications[j][1];
-											var username = parser_applications[j][2];
-											var restriction = parser_applications[j][3];
+												var app_name = parser_applications[j][1];
+												var username = parser_applications[j][2];
+												var restriction = parser_applications[j][3];
 
-											var htmlCb = '<td class="text-center"><span class="cb-package-name">'
-												+ '<input class="text-center" onclick="applicationChecked(this)" type="checkbox" name="rest_app_name" id="'+ app_name +'" value="' + app_name +'">'
-												+ '<label for="checkbox1"></label>'
-												+ '</span>'
-												+ '</td>';
-
-											if (restriction == 1) {
-												restriction = "Evet";
-												htmlCb = '<td class="text-center"><span class="cb-package-name">'
-													+ '<input class="text-center" type="checkbox" onclick="applicationChecked(this)" name="rest_app_name" checked id="'+ app_name +'" value="' + app_name +'">'
+												var htmlCb = '<td class="text-center"><span class="cb-package-name">'
+													+ '<input class="text-center" onclick="applicationChecked(this)" type="checkbox" name="rest_app_name" id="'+ app_name +'" value="' + app_name +'">'
 													+ '<label for="checkbox1"></label>'
 													+ '</span>'
 													+ '</td>';
-												isExistAppList.push(app_name);
 
-												applicationInfo = {
-														"app_name": app_name,
-														"username": "ogrenci",
-														"restriction": true
-												};
-												applicationList.push(applicationInfo);
+												if (restriction == 1) {
+													restriction = "Evet";
+													htmlCb = '<td class="text-center"><span class="cb-package-name">'
+														+ '<input class="text-center" type="checkbox" onclick="applicationChecked(this)" name="rest_app_name" checked id="'+ app_name +'" value="' + app_name +'">'
+														+ '<label for="checkbox1"></label>'
+														+ '</span>'
+														+ '</td>';
+													isExistAppList.push(app_name);
 
-											}else {
-												restriction = "Hayır";
+													applicationInfo = {
+															"app_name": app_name,
+															"username": "ogrenci",
+															"restriction": true
+													};
+													applicationList.push(applicationInfo);
+
+												}else {
+													restriction = "Hayır";
+												}
+												if (username == null) {
+													username = "-";
+												}
+
+												var newRow = $("<tr>");
+												var html = htmlCb;
+												html += '<td>'+ app_name +'</td>';
+												html += '<td>'+ restriction +'</td>';
+												html += '<td>'+ username +'</td>';
+												newRow.append(html);
+												$("#applicationsTable").append(newRow);
 											}
-											if (username == null) {
-												username = "-";
-											}
-
-											var newRow = $("<tr>");
-											var html = htmlCb;
-											html += '<td>'+ app_name +'</td>';
-											html += '<td>'+ restriction +'</td>';
-											html += '<td>'+ username +'</td>';
-											newRow.append(html);
-											$("#applicationsTable").append(newRow);
+											var parser_applications = [];
+											createApplicationTable();
+											$("#plugin-result-app-restriction").html("");
+											$.notify(responseMessage, "success");
+											$('#sendTaskRestAppBtn').show();
+											$('#app-restriction-info').html('Sınırlı Erişim Modunda çalışan uygulamalar seçili olarak listelenmektedir. Sınırlı Erişim Modunu iptal etmek için seçili olanları kaldırarak Çalıştır butonuna tıklayınız. Sınırlı Erişim Modunda çalıştırmak istediğiniz uygulama/ları seçerek Çalıştır butonuna tıklayınız.');
 										}
-										var parser_applications = [];
+									}else {
 										createApplicationTable();
-										$("#plugin-result-app-restriction").html("");
-										$.notify(responseMessage, "success");
-										$('#sendTaskRestAppBtn').show();
-										$('#app-restriction-info').html('Sınırlı Erişim Modunda çalışan uygulamalar seçili olarak listelenmektedir. Sınırlı Erişim Modunu iptal etmek için seçili olanları kaldırarak Çalıştır butonuna tıklayınız. Sınırlı Erişim Modunda çalıştırmak istediğiniz uygulama/ları seçerek Çalıştır butonuna tıklayınız.');
 									}
-								}else {
-									createApplicationTable();
+								},
+								error: function(result) {
+									progress("divApplicationRestriction","progressApplicationRestriction",'hide');
+									$.notify(result, "error");
+//									$("#plugin-result-app-restriction").html(("HATA: " + responseMessage).fontcolor("red"));
+									$('#applicationsBody').html('<tr id="applicationsBodyEmptyInfo"><td colspan="4" class="text-center">Uygulama Bulunamadı.</td></tr>');
 								}
-							},
-							error: function(result) {
-								progress("divApplicationRestriction","progressApplicationRestriction",'hide');
-								$.notify(result, "error");
-								$("#plugin-result-app-restriction").html(("HATA: " + responseMessage).fontcolor("red"));
-								$('#applicationsBody').html('<tr id="applicationsBodyEmptyInfo"><td colspan="4" class="text-center">Uygulama Bulunamadı.</td></tr>');
-							}
-						});
-					}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
-						$.notify(responseMessage, "error");
-						$("#plugin-result-app-restriction").html(("HATA: " + responseMessage).fontcolor("red"));
-					}
-				}
-				if (xmppResponse.commandClsId == "APPLICATION_RESTRICTION") {
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-						progress("divApplicationRestriction","progressApplicationRestriction",'hide');
-						$.notify(responseMessage, "success");
-						$("#plugin-result-app-restriction").html("");
-						if (tableApp) {
-							tableApp.clear().draw();
-							tableApp.destroy();
+							});
+						}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
+							$.notify(responseMessage, "error");
+//							$("#plugin-result-app-restriction").html(("HATA: " + responseMessage).fontcolor("red"));
 						}
-//						return send task "INSTALLED_APPLICATIONS" for updated installed applications list after task restricted applications 
-						pluginTask_ApplicationRestriction.dnList=dnlist;
-						pluginTask_ApplicationRestriction.parameterMap={};
-						pluginTask_ApplicationRestriction.entryList=selectedEntries;
-						pluginTask_ApplicationRestriction.dnType="AHENK";
-						pluginTask_ApplicationRestriction.commandId = "INSTALLED_APPLICATIONS";
-						pluginTask_ApplicationRestriction.cronExpression = scheduledParamAppRestriction;
-						var params = JSON.stringify(pluginTask_ApplicationRestriction);
-						sendApplicationRestrictionTask(params);
-						applicationList = [];
-						isExistAppList = [];
-
-					}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
-						$.notify(responseMessage, "error");
-						$("#plugin-result-app-restriction").html(("HATA: " + responseMessage).fontcolor("red"));
 					}
+					if (xmppResponse.commandClsId == "APPLICATION_RESTRICTION") {
+						if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+							progress("divApplicationRestriction","progressApplicationRestriction",'hide');
+							$.notify(responseMessage, "success");
+							$("#plugin-result-app-restriction").html("");
+							if (tableApp) {
+								tableApp.clear().draw();
+								tableApp.destroy();
+							}
+//							return send task "INSTALLED_APPLICATIONS" for updated installed applications list after task restricted applications 
+							pluginTask_ApplicationRestriction.dnList=dnlist;
+							pluginTask_ApplicationRestriction.parameterMap={};
+							pluginTask_ApplicationRestriction.entryList=selectedEntries;
+							pluginTask_ApplicationRestriction.dnType="AHENK";
+							pluginTask_ApplicationRestriction.commandId = "INSTALLED_APPLICATIONS";
+							pluginTask_ApplicationRestriction.cronExpression = scheduledParamAppRestriction;
+							var params = JSON.stringify(pluginTask_ApplicationRestriction);
+							sendApplicationRestrictionTask(params);
+							applicationList = [];
+							isExistAppList = [];
+
+						}else if (xmppResponse.result.responseCode == "TASK_ERROR") {
+							$.notify(responseMessage, "error");
+//							$("#plugin-result-app-restriction").html(("HATA: " + responseMessage).fontcolor("red"));
+						}
+					}
+				} else {
+					$("#plugin-result-app-restriction").html("");
+					progress("divApplicationRestriction","progressApplicationRestriction",'hide');
 				}
-			} else {
-				$("#plugin-result-app-restriction").html("");
-				progress("divApplicationRestriction","progressApplicationRestriction",'hide');
 			}
 		}
 	}

@@ -68,10 +68,22 @@ function sendFileManagementTask(params) {
 		theme: 'light',
 		buttons: {
 			Evet: function () {
-				progress("fileManagementContent","waitFileManagement",'show')
 				var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 				if (scheduledParamFileMan != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamFileMan;
+				}
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamFileMan == null) {
+					progress("fileManagementContent","waitFileManagement",'show');
+				}
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+					$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+				}
+				if (selectedEntries[0].type == "GROUP") {
+					var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+						if (scheduledParamFileMan != null) {
+							groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+						}
+					$.notify(groupNotify, "success");
 				}
 
 				$.ajax({
@@ -88,8 +100,10 @@ function sendFileManagementTask(params) {
 					},
 					success: function(result) {
 						var res = jQuery.parseJSON(result);
-						if(res.status=="OK"){		    		
-							$("#plugin-result-file-management").html(message.bold());
+						if(res.status=="OK"){
+							if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+								$("#plugin-result-file-management").html(message.bold());	
+							}
 						}   	
 					},
 					error: function(result) {
@@ -118,31 +132,33 @@ function fileManagementListener(msg) {
 		var responseDn = xmppResponse.commandExecution.dn;
 		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			progress("fileManagementContent","waitFileManagement",'hide')
-			if (responseDn == selectedDn) {
-				if (xmppResponse.commandClsId == "GET_FILE_CONTENT") {
-					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-						$.notify(responseMessage, "success");
-						$("#plugin-result-file-management").html("");
-						$("#fileContent").val(arrg.file_content);
+			if (selectedEntries[0].type == "AHENK") {
+				progress("fileManagementContent","waitFileManagement",'hide');
+				if (responseDn == selectedDn) {
+					if (xmppResponse.commandClsId == "GET_FILE_CONTENT") {
+						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+						if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+							$.notify(responseMessage, "success");
+							$("#plugin-result-file-management").html("");
+							$("#fileContent").val(arrg.file_content);
+						}
+						else {
+							$.notify(responseMessage, "error");
+//							$("#plugin-result-file-management").html(("HATA: " + responseMessage).fontcolor("red"));
+						}
+					}else if (xmppResponse.commandClsId == "WRITE_TO_FILE") {
+						if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+							$.notify(responseMessage, "success");
+							$("#plugin-result-file-management").html("");
+						}
+						else {
+							$.notify(responseMessage, "error");
+//							$("#plugin-result-file-management").html(("HATA: " + responseMessage).fontcolor("red"));
+						}
 					}
-					else {
-						$.notify(responseMessage, "error");
-						$("#plugin-result-file-management").html(("HATA: " + responseMessage).fontcolor("red"));
-					}
-				}else if (xmppResponse.commandClsId == "WRITE_TO_FILE") {
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-						$.notify(responseMessage, "success");
-						$("#plugin-result-file-management").html("");
-					}
-					else {
-						$.notify(responseMessage, "error");
-						$("#plugin-result-file-management").html(("HATA: " + responseMessage).fontcolor("red"));
-					}
+				} else {
+					$("#plugin-result-file-management").html("");
 				}
-			} else {
-				$("#plugin-result-file-management").html("");
 			}
 		}
 	}

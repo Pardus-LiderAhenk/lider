@@ -18,6 +18,7 @@ var scheduledModalRemoteAccessOpened = false;
 var ref_remote_access = connection.addHandler(remoteAccessListener, null, 'message', null, null,  null);
 var dnlist=[];
 var pluginTask_RemoteAccess = null;
+addOptionsToRemoteAccessSelect();
 
 if(selectedEntries){
 	for (var i = 0; i < selectedEntries.length; i++) {
@@ -31,12 +32,44 @@ for (var n = 0; n < pluginTaskList.length; n++) {
 	}
 }
 
+function addOptionsToRemoteAccessSelect() {
+	$('#remoteAccessSelect').append($('<option>', {
+		text: "Kullanıcı izni ve bildirim aktif et",
+		value : "yes",
+	}));
+
+	$('#remoteAccessSelect').append($('<option>', {
+		text: "Sadece bildirim aktif et",
+		value : "no",
+	}));
+console.log(systemSettings)
+	if (systemSettings.allowVNCConnectionWithoutPermission) {
+		$('#remoteAccessSelect').append($('<option>', {
+			text: "Kullanıcı izni ve bildirim yok",
+			value : "without_notify",
+		}));
+	}
+}
+
 function sendTaskRemoteAccess(params) {
 	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 	if (scheduledParamRemoteAccess != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamRemoteAccess;
 	}
-	progress("remoteAccessDiv","progressRemoteAccess",'show')
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamRemoteAccess == null) {
+		progress("remoteAccessDiv","progressRemoteAccess",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+		if (scheduledParamRemoteAccess != null) {
+			groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+		}
+		$.notify(groupNotify, "success");
+	}
+	
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -52,7 +85,9 @@ function sendTaskRemoteAccess(params) {
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
 			if(res.status=="OK"){
-				$("#plugin-result-remote-access").html(message.bold());
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-remote-access").html(message.bold());
+				}
 			}   	
 			/* $('#closePage').click(); */
 		},
@@ -76,21 +111,23 @@ function remoteAccessListener(msg) {
 		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		
 		if(xmppResponse.commandClsId == "SETUP-VNC-SERVER") {
-			progress("remoteAccessDiv","progressRemoteAccess",'hide')
-			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-				progress("resourceUsageContent","progressDivResourceUsage",'hide');
-				if (responseDn == selectedDn) {
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-						$("#plugin-result-remote-access").html("");
-						$.notify(xmppResponse.result.responseMessage, "success");
-						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-						startRemoteAccess(arrg);
+			if (selectedEntries[0].type == "AHENK") {
+				progress("remoteAccessDiv","progressRemoteAccess",'hide');
+				if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+					progress("resourceUsageContent","progressDivResourceUsage",'hide');
+					if (responseDn == selectedDn) {
+						if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+							$("#plugin-result-remote-access").html("");
+							$.notify(xmppResponse.result.responseMessage, "success");
+							var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+							startRemoteAccess(arrg);
+						} else {
+//							$("#plugin-result-remote-access").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
+							$.notify(xmppResponse.result.responseMessage, "error");
+						}
 					} else {
-						$("#plugin-result-remote-access").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
-						$.notify(xmppResponse.result.responseMessage, "error");
+						$("#plugin-result-remote-access").html("");
 					}
-				} else {
-					$("#plugin-result-remote-access").html("");
 				}
 			}
 		}
@@ -167,7 +204,6 @@ $('#sendTaskRemoteAccess').click(function(e){
 		theme: 'light',
 		buttons: {
 			Evet: function () {
-				console.log(params)
 				sendTaskRemoteAccess(params);
 				scheduledParamRemoteAccess = null;
 			},

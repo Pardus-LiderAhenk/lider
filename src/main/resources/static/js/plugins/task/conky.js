@@ -86,7 +86,20 @@ function sendConkyTask(params) {
 	if (scheduledParamConky != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamConky;
 	}
-	progress("divConky","progressConky",'show')
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamConky == null) {
+		progress("divConky","progressConky",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+		if (scheduledParamConky != null) {
+			groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+		}
+		$.notify(groupNotify, "success");
+	}
+	
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -101,8 +114,10 @@ function sendConkyTask(params) {
 		},
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){		    		
-				$("#plugin-result-conky").html(message.bold());
+			if(res.status=="OK"){	
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-conky").html(message.bold());
+				}
 			}   	
 		},
 		error: function(result) {
@@ -123,16 +138,18 @@ function conkyListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			progress("divConky","progressConky",'hide')
+			progress("divConky","progressConky",'hide');
 			if (xmppResponse.commandClsId == "EXECUTE_CONKY") {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$.notify(responseMessage, "success");
-					$("#plugin-result-conky").html("");
-				}
-				else {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-conky").html(("HATA: " + responseMessage).fontcolor("red"));
+				if (selectedEntries[0].type == "AHENK") {
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$.notify(responseMessage, "success");
+						$("#plugin-result-conky").html("");
+					}
+					else {
+						$.notify(responseMessage, "error");
+//						$("#plugin-result-conky").html(("HATA: " + responseMessage).fontcolor("red"));
+					}
 				}
 			}
 		}
@@ -196,7 +213,7 @@ $('#sendTaskConky').click(function(e){
 		pluginTask_Conky.commandId = "EXECUTE_CONKY";  		
 		var params = JSON.stringify(pluginTask_Conky);
 	}
-	
+
 //	if selected message/Conky. Default select box "Conky seçiniz... value = NA"
 	if ($('#conkySelectBox :selected').val() != "NA" || $('#removeConkyMessageBtn').is(':checked')) {
 		var content = "Görev Gönderilecek, emin misiniz?";

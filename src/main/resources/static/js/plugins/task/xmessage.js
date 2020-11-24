@@ -35,7 +35,20 @@ function sendXmessageTask(params) {
 	if (scheduledParamXmessage != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamXmessage;
 	}
-	progress("divXMesaage","progressXMessage",'show')
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamXmessage == null) {
+		progress("divXMesaage","progressXMessage",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+		if (scheduledParamXmessage != null) {
+			groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+		}
+		$.notify(groupNotify, "success");
+	}
+
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -50,15 +63,16 @@ function sendXmessageTask(params) {
 		},
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){		    		
-				$("#plugin-result-xmessage").html(message.bold());
+			if(res.status=="OK"){
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-xmessage").html(message.bold());	
+				}
 			}   	
 		},
 		error: function(result) {
 			$.notify(result, "error");
 		}
 	});
-	
 }
 
 function xmessageListener(msg) {
@@ -73,16 +87,18 @@ function xmessageListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			progress("divXMesaage","progressXMessage",'hide')
-			if (xmppResponse.commandClsId == "EXECUTE_XMESSAGE") {
-				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$.notify(responseMessage, "success");
-					$("#plugin-result-xmessage").html("");
-				}
-				else {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-xmessage").html(("HATA: " + responseMessage).fontcolor("red"));
+			if (selectedEntries[0].type == "AHENK") {
+				progress("divXMesaage","progressXMessage",'hide');
+				if (xmppResponse.commandClsId == "EXECUTE_XMESSAGE") {
+					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$.notify(responseMessage, "success");
+						$("#plugin-result-xmessage").html("");
+					}
+					else {
+						$.notify(responseMessage, "error");
+//						$("#plugin-result-xmessage").html(("HATA: " + responseMessage).fontcolor("red"));
+					}
 				}
 			}
 		}

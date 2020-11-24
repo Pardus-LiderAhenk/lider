@@ -28,8 +28,7 @@ var refResUsage=connection.addHandler(resourceUsageListener, null, 'message', nu
 
 for (var n = 0; n < pluginTaskList.length; n++) {
 	var pluginTask=pluginTaskList[n];
-	if(pluginTask.page == 'resource-usage')
-	{
+	if(pluginTask.page == 'resource-usage'){
 		pluginTask_ResourceUsage = pluginTask;
 	}
 }
@@ -42,7 +41,7 @@ function getResourceUsage(){
 
 	if(pluginTask_ResourceUsage){
 		pluginTask_ResourceUsage.commandId='RESOURCE_INFO_FETCHER'
-		pluginTask_ResourceUsage.dnList=dnlist;
+			pluginTask_ResourceUsage.dnList=dnlist;
 		pluginTask_ResourceUsage.parameterMap={};
 		pluginTask_ResourceUsage.entryList=selectedEntries;
 		pluginTask_ResourceUsage.dnType="AHENK";
@@ -52,7 +51,21 @@ function getResourceUsage(){
 		if (scheduledParamResUsage != null) {
 			message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri: "+ scheduledParamResUsage;
 		}
-		progress("resouceUsageDiv","progressResourceUsage",'show')
+		if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamResUsage == null) {
+			progress("resouceUsageDiv","progressResourceUsage",'show');
+		}
+		if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+			$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+		}
+		if (selectedEntries[0].type == "GROUP") {
+			var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+			if (scheduledParamResUsage != null) {
+				groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+			}
+			$.notify(groupNotify, "success");
+		}
+		
+
 		$.ajax({
 			type: "POST",
 			url: "/lider/task/execute",
@@ -68,7 +81,9 @@ function getResourceUsage(){
 			success: function(result) {
 				var res = jQuery.parseJSON(result);
 				if(res.status=="OK"){
-					$("#plugin-result-resource-usage").html(message.bold());
+					if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+						$("#plugin-result-resource-usage").html(message.bold());
+					}
 				}   	
 				/* $('#closePage').click(); */
 			},
@@ -130,50 +145,53 @@ function resourceUsageListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseDn = xmppResponse.commandExecution.dn;
 		var selectedDn = selectedEntries[0]["attributes"].entryDN;
+		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.commandClsId == "RESOURCE_INFO_FETCHER"){
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 				progress("resouceUsageDiv","progressResourceUsage",'hide')
 				if (responseDn == selectedDn) {
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-						var phase = "";
-						if(arrg["Phase"]){
-							phase = arrg["Phase"]
-						}
-						else {
-							phase = "Faz Bilgisi Alınamadı"
-						}
-						$("#system").html(arrg["System"]);
-						$("#release").html(arrg["Release"]);
-						$("#version").html(arrg["Version"]);
-						$("#machine").html(arrg["Machine"]);
-						$("#processor").html(arrg["Processor"]);
-						$("#phase").html(phase);
-						$("#physical_core_count").html(arrg["CPU Physical Core Count"]);
-						$("#logical_core_count").html(arrg["CPU Logical Core Count"]);
-						$("#cpu_advertised").html(arrg["CPU Advertised Hz"]);
-						$("#cpu_actual").html(arrg["CPU Actual Hz"]);
-						$("#total_memory").html(arrg["Total Memory"]+" MB");
-						$("#usage_memory").html(arrg["Usage"]+" MB");
-						$("#device").html(arrg["Device"]);
-						$("#total_disk").html(arrg["Total Disc"]+" MB");
-						$("#usage_disk").html(arrg["Usage Disc"]+" MB");
-						$("#plugin-result-resource-usage").html("");
-						$.notify(xmppResponse.result.responseMessage, "success");
+					if (selectedEntries[0].type == "AHENK") {
+						if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+							var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+							var phase = "";
+							if(arrg["Phase"]){
+								phase = arrg["Phase"]
+							}
+							else {
+								phase = "Faz Bilgisi Alınamadı"
+							}
+							$("#system").html(arrg["System"]);
+							$("#release").html(arrg["Release"]);
+							$("#version").html(arrg["Version"]);
+							$("#machine").html(arrg["Machine"]);
+							$("#processor").html(arrg["Processor"]);
+							$("#phase").html(phase);
+							$("#physical_core_count").html(arrg["CPU Physical Core Count"]);
+							$("#logical_core_count").html(arrg["CPU Logical Core Count"]);
+							$("#cpu_advertised").html(arrg["CPU Advertised Hz"]);
+							$("#cpu_actual").html(arrg["CPU Actual Hz"]);
+							$("#total_memory").html(arrg["Total Memory"]+" MB");
+							$("#usage_memory").html(arrg["Usage"]+" MB");
+							$("#device").html(arrg["Device"]);
+							$("#total_disk").html(arrg["Total Disc"]+" MB");
+							$("#usage_disk").html(arrg["Usage Disc"]+" MB");
+							$("#plugin-result-resource-usage").html("");
+							$.notify(responseMessage, "success");
 
-						usageMemory = (arrg["Usage"]/arrg["Total Memory"]*100).toFixed(2);
-						freeMemory = (100 - usageMemory).toFixed(2);
-						usageDisk = (arrg["Usage Disc"]/arrg["Total Disc"]*100).toFixed(2);
-						freeDisk = (100 - usageDisk).toFixed(2);
-//						cpu_actual = arrg["CPU Actual Hz"];
-//						cpu_advertised = arrg["CPU Advertised Hz"];
-						systemChart1.destroy();
-						systemChart2.destroy();
-//						systemChart3.destroy();
-						createCharts();
-					} else {
-						$("#plugin-result-resource-usage").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
-						$.notify(xmppResponse.result.responseMessage, "error");
+							usageMemory = (arrg["Usage"]/arrg["Total Memory"]*100).toFixed(2);
+							freeMemory = (100 - usageMemory).toFixed(2);
+							usageDisk = (arrg["Usage Disc"]/arrg["Total Disc"]*100).toFixed(2);
+							freeDisk = (100 - usageDisk).toFixed(2);
+//							cpu_actual = arrg["CPU Actual Hz"];
+//							cpu_advertised = arrg["CPU Advertised Hz"];
+							systemChart1.destroy();
+							systemChart2.destroy();
+//							systemChart3.destroy();
+							createCharts();
+						} else {
+//							$("#plugin-result-resource-usage").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
+							$.notify(responseMessage, "error");
+						}
 					}
 				} else {
 					$("#plugin-result-resource-usage").html("");

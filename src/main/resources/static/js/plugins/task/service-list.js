@@ -82,7 +82,20 @@ function serviceManagementTask(params){
 	if (scheduledParamServiceList != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamServiceList;
 	}
-	progress("divServiceList","progressServiceList",'show')
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamServiceList == null) {
+		progress("divServiceList","progressServiceList",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+		if (scheduledParamServiceList != null) {
+			groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+		}
+		$.notify(groupNotify, "success");
+	}
+
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -97,8 +110,10 @@ function serviceManagementTask(params){
 		}, 
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){		    		
-				$("#plugin-result-service-list").html(message.bold());
+			if(res.status=="OK"){
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-service-list").html(message.bold());	
+				}
 			}   	
 		},
 		error: function(result) {
@@ -121,123 +136,126 @@ function getServiceListener(msg) {
 		var responseDn = xmppResponse.commandExecution.dn;
 		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			progress("divServiceList","progressServiceList",'hide')
-			if (responseDn == selectedDn) {
-				if (xmppResponse.commandClsId == "GET_SERVICES") {
-					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-						if(xmppResponse.result.contentType =="TEXT_PLAIN"){
-							var params = {
-									"id" : xmppResponse.result.id
-							};
+			if (selectedEntries[0].type == "AHENK") {
+				progress("divServiceList","progressServiceList",'hide');
+				if (responseDn == selectedDn) {
+					if (xmppResponse.commandClsId == "GET_SERVICES") {
+						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+						if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+							if(xmppResponse.result.contentType =="TEXT_PLAIN"){
+								var params = {
+										"id" : xmppResponse.result.id
+								};
 
-							$.ajax({
-								type: 'POST', 
-								url: "/command/commandexecutionresult",
-								dataType: 'json',
-								data: params,
-								success: function(data) {
-									if(data != null) {
-										if(data.responseDataStr != null) {
-											data = data.responseDataStr;
-											var arrg = JSON.parse(data);
-											var services = arrg["service_list"];
-											for (var i = 0; i < services.length; i++) {
-												var serviceName = services[i]["serviceName"];
-												var serviceStatus = services[i]["serviceStatus"];
-												var startAuto = services[i]["startAuto"];
+								$.ajax({
+									type: 'POST', 
+									url: "/command/commandexecutionresult",
+									dataType: 'json',
+									data: params,
+									success: function(data) {
+										if(data != null) {
+											if(data.responseDataStr != null) {
+												data = data.responseDataStr;
+												var arrg = JSON.parse(data);
+												var services = arrg["service_list"];
+												for (var i = 0; i < services.length; i++) {
+													var serviceName = services[i]["serviceName"];
+													var serviceStatus = services[i]["serviceStatus"];
+													var startAuto = services[i]["startAuto"];
 
-												if (serviceStatus == "ACTIVE") {
-													serviceStatus = "AKTİF";
-												}else {
-													serviceStatus = "PASİF";
-												}
+													if (serviceStatus == "ACTIVE") {
+														serviceStatus = "AKTİF";
+													}else {
+														serviceStatus = "PASİF";
+													}
 
-												if (startAuto == "ACTIVE") {
-													startAuto = "AKTİF";
-												}else {
-													startAuto = "PASİF";
-												}
-												var sbSerName = serviceName;
+													if (startAuto == "ACTIVE") {
+														startAuto = "AKTİF";
+													}else {
+														startAuto = "PASİF";
+													}
+													var sbSerName = serviceName;
 
-												if (sbSerName.includes("@")) {
-													sbSerName = sbSerName.replace("@", "");
-												}
-												if (sbSerName.includes(".")) {
-													sbSerName = sbSerName.replace(".", "");
-												}
+													if (sbSerName.includes("@")) {
+														sbSerName = sbSerName.replace("@", "");
+													}
+													if (sbSerName.includes(".")) {
+														sbSerName = sbSerName.replace(".", "");
+													}
 
-												var newRow = $("<tr>");
-												var html = '<td class="text-center"><span class="cb-package-name">'
-													+ '<input type="checkbox" onclick="serviceChecked()" name="service_name" value="' +  serviceName +'">'
-													+ '<label for="checkbox1"></label>'
-													+ '</span>'
+													var newRow = $("<tr>");
+													var html = '<td class="text-center"><span class="cb-package-name">'
+														+ '<input type="checkbox" onclick="serviceChecked()" name="service_name" value="' +  serviceName +'">'
+														+ '<label for="checkbox1"></label>'
+														+ '</span>'
+														+ '</td>';
+													html += '<td>'+ serviceName +'</td>';
+													html += '<td>'+ serviceStatus +'</td>';
+													html += '<td><select disabled class="custom-select" id="status_'+ sbSerName +'" name="' +  serviceName +'">'
+													+ '<option value="null" selected>İşlem Seç</option>'
+													+ '<option value="START">Başlat</option>'
+													+ '<option value="STOP">Durdur</option>'
+													+ '</select>';
 													+ '</td>';
-												html += '<td>'+ serviceName +'</td>';
-												html += '<td>'+ serviceStatus +'</td>';
-												html += '<td><select disabled class="custom-select" id="status_'+ sbSerName +'" name="' +  serviceName +'">'
-												+ '<option value="null" selected>İşlem Seç</option>'
-												+ '<option value="START">Başlat</option>'
-												+ '<option value="STOP">Durdur</option>'
-												+ '</select>';
-												+ '</td>';
-												html += '<td>'+ startAuto +'</td>';
-												html += '<td><select disabled class="custom-select" id="auto_start_'+ sbSerName +'" name="' +  serviceName +'">'
-												+ '<option value="null" selected>İşlem Seç</option>'
-												+ '<option value="START">Aktif</option>'
-												+ '<option value="STOP">Pasif</option>'
-												+ '</select>'
-												+ '</td>';
-												newRow.append(html);
-												$("#servicesListTableId").append(newRow);
+													html += '<td>'+ startAuto +'</td>';
+													html += '<td><select disabled class="custom-select" id="auto_start_'+ sbSerName +'" name="' +  serviceName +'">'
+													+ '<option value="null" selected>İşlem Seç</option>'
+													+ '<option value="START">Aktif</option>'
+													+ '<option value="STOP">Pasif</option>'
+													+ '</select>'
+													+ '</td>';
+													newRow.append(html);
+													$("#servicesListTableId").append(newRow);
+												}
+												createServiceListTable();
+												$("#plugin-result-service-list").html("");
+												$.notify(responseMessage, "success");
+												$('#sendTaskServiceManagement').show();
+//												$('#serviceListExportPdf').show();
+												$("#serviceListHelp").html("İşlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır butonuna tıklayınız.");
 											}
+										}else {
 											createServiceListTable();
-											$("#plugin-result-service-list").html("");
-											$.notify(responseMessage, "success");
-											$('#sendTaskServiceManagement').show();
-//											$('#serviceListExportPdf').show();
-											$("#serviceListHelp").html("İşlem yapmak (Başlat/Durdur/Aktif/Pasif) istediğiniz servis/leri seçerek Çalıştır butonuna tıklayınız. Servis listesini PDF olarak dışa aktarmak için PDF'e aktar butonuna tıklayınız.");
 										}
-									}else {
-										createServiceListTable();
+									},
+									error: function(result) {
+										$.notify(result, "error");
+										$('#serviceListBody').html('<tr id="serviceListBodyEmptyInfo"><td colspan="6" class="text-center">Servis Bulunamadı.</td></tr>');
 									}
-								},
-								error: function(result) {
-									$.notify(result, "error");
-									$('#serviceListBody').html('<tr id="serviceListBodyEmptyInfo"><td colspan="6" class="text-center">Servis Bulunamadı.</td></tr>');
-								}
-							});
+								});
+							}
+						}
+						else {
+							$.notify(responseMessage, "error");
+//							$("#plugin-result-service-list").html(("HATA: " + responseMessage).fontcolor("red"));
 						}
 					}
-					else {
-						$.notify(responseMessage, "error");
-						$("#plugin-result-service-list").html(("HATA: " + responseMessage).fontcolor("red"));
+					if (xmppResponse.commandClsId == "SERVICE_LIST") {
+						if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+							$("#plugin-result-service-list").html("");
+							$.notify(responseMessage, "success");
+							tableServiceList.clear().draw();
+							tableServiceList.destroy();
+							tableServiceList = null;
+							$('#serviceListBody').html('<tr id="serviceListBodyEmptyInfo"><td colspan="6" class="text-center">Servis Bulunamadı.</td></tr>');
+							getServices();
+						}
+						if (xmppResponse.result.responseCode == "TASK_ERROR") {
+							$.notify(responseMessage, "error");
+//							$("#plugin-result-service-list").html(("HATA: " + responseMessage).fontcolor("red"));
+						}
 					}
-				}
-				if (xmppResponse.commandClsId == "SERVICE_LIST") {
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-						$("#plugin-result-service-list").html("");
-						$.notify(responseMessage, "success");
+				} else {
+					if (tableServiceList) {
 						tableServiceList.clear().draw();
 						tableServiceList.destroy();
 						tableServiceList = null;
-						getServices();
 					}
-					if (xmppResponse.result.responseCode == "TASK_ERROR") {
-						$.notify(responseMessage, "error");
-						$("#plugin-result-service-list").html(("HATA: " + responseMessage).fontcolor("red"));
-					}
+					$("#plugin-result-service-list").html("");
+					$('#serviceListBody').html('<tr id="serviceListBodyEmptyInfo"><td colspan="6" class="text-center">Servis Bulunamadı.</td></tr>');
+					$("#serviceListHelp").html("İstemcideki servisleri listelemek için Servisleri Listele butonuna tıklayınız.");
+					$('#sendTaskServiceManagement').hide();
 				}
-			} else {
-				if (tableServiceList) {
-					tableServiceList.clear().draw();
-					tableServiceList.destroy();
-					tableServiceList = null;
-				}
-				$("#plugin-result-service-list").html("");
-				$('#serviceListBody').html('<tr id="serviceListBodyEmptyInfo"><td colspan="6" class="text-center">Servis Bulunamadı.</td></tr>');
-				$("#serviceListHelp").html("İstemcideki servisleri listelemek için Servisleri Listele butonuna tıklayınız.");
-				$('#sendTaskServiceManagement').hide();
 			}
 		}
 	}

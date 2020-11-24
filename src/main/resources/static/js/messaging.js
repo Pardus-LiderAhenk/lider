@@ -2,9 +2,9 @@ $(document).ready(function() {
 	connection = new Strophe.Connection(BOSH_SERVICE);
 
 //		connection.connect(username, password, onConnect);
-		console.log(SID)
-		console.log(RID)
-		console.log(JID)
+//		console.log(SID)
+//		console.log(RID)
+//		console.log(JID)
 		connection.attach(JID,SID,RID,onConnect);
 			$('#rosterListModal').on('show.bs.modal',function(event) {
 				showRosterList();
@@ -47,7 +47,7 @@ function showRosterList(){
 
 function onConnect(status)
 {
-	console.log(status)
+//	console.log(status)
 	if (status == Strophe.Status.CONNECTING) {
 		/* log('Strophe is connecting.'); */
 		log('Mesajlaşma Servisine bağlanıyor...',"INFO");
@@ -198,8 +198,6 @@ function onPresence(presence)
 	var name = jid_to_name(from);
 	var source = jid_to_source(from);
 	
-	console.log(ptype)
-
 	if (ptype === 'subscribe') {
 
 		$.notify("subscribe","warn");
@@ -215,7 +213,7 @@ function onPresence(presence)
 //			$.notify(name+" online..", {className: 'success',position:"left bottom"}  );
 			log(name+" çevrimiçi oldu.","SUCCESS");
 			var isExist=false;
-			console.log(computerTreeCreated)
+//			console.log(computerTreeCreated)
 		}
 	}
 	return true;
@@ -245,9 +243,17 @@ function onMessage(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var ret=JSON.parse(data);
-//		console.log(ret)
-
-		log("Gelen Cevap : "+ret.result.responseMessage, "INFO");
+		var type = "INFO";
+		var agentUid = ret.commandExecution.uid;
+		if (ret.result.responseCode == "TASK_ERROR") {
+			type = "ERROR";
+		}
+		if (ret.result.contentType =="TEXT_PLAIN") {
+			var dnParser = ret.commandExecution.dn.split(",");
+			agentUid = dnParser[0].replace("cn=", "");
+		}
+		
+		log("["+ agentUid +"] Gelen Cevap : "+ret.result.responseMessage, type);
 		var reply = $msg({to: from, from: to, type: 'chat'}).cnode(Strophe.copyElement(body));
 		connection.send(reply.tree());
 	}

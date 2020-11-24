@@ -65,6 +65,7 @@ $('#sendTaskGetRepositories').click(function(e){
 						tableRepositories.clear().draw();
 						tableRepositories.destroy();
 						tableRepositories = null;
+						$('#repositoriesBody').html('<tr id="repositoriesBodyEmptyInfo"><td colspan="2" class="text-center">Paket Deposu Bulunamadı.</td></tr>');
 					}
 					sendRepositoryTask(params);
 					deletedItems = [];
@@ -83,7 +84,20 @@ function sendRepositoryTask(params){
 	if (scheduledParamRepositories != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamRepositories;
 	}
-	progress("divRepositories","progressRepositories",'show')
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamRepositories == null) {
+		progress("divRepositories","progressRepositories",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+		if (scheduledParamRepositories != null) {
+			groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+		}
+		$.notify(groupNotify, "success");
+	}
+	
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -98,8 +112,10 @@ function sendRepositoryTask(params){
 		}, 
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){		    		
-				$("#plugin-result-repositories").html(message.bold());
+			if(res.status=="OK"){
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-repositories").html(message.bold());
+				}
 			}   	
 		},
 		error: function(result) {
@@ -122,49 +138,51 @@ function repositoryListener(msg) {
 		var responseDn = xmppResponse.commandExecution.dn;
 		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		if (xmppResponse.commandClsId == "REPOSITORIES" || xmppResponse.commandClsId == "PACKAGE_SOURCES") {
-			progress("divRepositories","progressRepositories",'hide');
-			if (responseDn == selectedDn) {
-				if(xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-					var repo_addr = arrg["packageSource"].split("\n");
+			if (selectedEntries[0].type == "AHENK") {
+				progress("divRepositories","progressRepositories",'hide');
+				if (responseDn == selectedDn) {
+					if(xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+						var repo_addr = arrg["packageSource"].split("\n");
 
-					if (xmppResponse.commandClsId == "PACKAGE_SOURCES") {
+						if (xmppResponse.commandClsId == "PACKAGE_SOURCES") {
+							tableRepositories.clear().draw();
+							tableRepositories.destroy();
+							tableRepositories = null;
+						}
+						for (var i = 0; i < repo_addr.length ; i++){
+							var newRow = $("<tr>");
+							if(repo_addr[i] != ""){
+								var html = '<td class="repoAdrr">'+ repo_addr[i] +'</td>';
+								html += '<td class="text-center"><button id="' + repo_addr[i] +'" type="button" onclick="repoChecked(this)" title="Sil" value="' + repo_addr[i] +'" class="btn btn-sm btn-outline-danger"><i class="pe-7s-trash"></i></button></td>';
+								newRow.append(html);
+								$("#repositoriesListTable").append(newRow);
+							}				  								
+						}
+						createRepositorieTable();
+						$("#plugin-result-repositories").html("");
+						$.notify(responseMessage, "success");
+						$('#repositoryHelp').html('Depo eklemek için Depo Adresi tanımlayarak Ekle butonuna tıklayınız. Silmek istediğiniz depo adresini Sil butonuna tıklayarak listeden silebilirsiniz. Çalıştır butonuna tıklayarak Sil ve/veya Ekle görevini gönderiniz.');
+						$('#sendTaskRepositories').show();
+						$('#repoAddressDefinition').show();
+					} else {
+						createRepositorieTable();
+//						$("#plugin-result-repositories").html(("HATA:" + responseMessage).fontcolor("red"));
+						$.notify(responseMessage, "error");
+						$('#repositoriesBody').html('<tr id="repositoriesBodyEmptyInfo"><td colspan="2" class="text-center">Paket Deposu Bulunamadı.</td></tr>');
+					}
+				} else {
+					if (tableRepositories) {
 						tableRepositories.clear().draw();
 						tableRepositories.destroy();
 						tableRepositories = null;
 					}
-					for (var i = 0; i < repo_addr.length ; i++){
-						var newRow = $("<tr>");
-						if(repo_addr[i] != ""){
-							var html = '<td class="repoAdrr">'+ repo_addr[i] +'</td>';
-							html += '<td class="text-center"><button id="' + repo_addr[i] +'" type="button" onclick="repoChecked(this)" title="Sil" value="' + repo_addr[i] +'" class="btn btn-sm btn-outline-danger"><i class="pe-7s-trash"></i></button></td>';
-							newRow.append(html);
-							$("#repositoriesListTable").append(newRow);
-						}				  								
-					}
-					createRepositorieTable();
+					$('#sendTaskRepositories').hide();
+					$('#repoAddressDefinition').hide();
 					$("#plugin-result-repositories").html("");
-					$.notify(responseMessage, "success");
-					$('#repositoryHelp').html('Depo eklemek için Depo Adresi tanımlayarak Ekle butonuna tıklayınız. Silmek istediğiniz depo adresini Sil butonuna tıklayarak listeden silebilirsiniz. Çalıştır butonuna tıklayarak Sil ve/veya Ekle görevini gönderiniz.');
-					$('#sendTaskRepositories').show();
-					$('#repoAddressDefinition').show();
-				}else {
-					createRepositorieTable();
-					$("#plugin-result-repositories").html(("HATA:" + responseMessage).fontcolor("red"));
-					$.notify(responseMessage, "error");
 					$('#repositoriesBody').html('<tr id="repositoriesBodyEmptyInfo"><td colspan="2" class="text-center">Paket Deposu Bulunamadı.</td></tr>');
+					$('#repositoryHelp').html("İstemcide tanımlı paket depolarını listelemek için Depoları listele butonuna tıklayınız.");
 				}
-			} else {
-				if (tableRepositories) {
-					tableRepositories.clear().draw();
-					tableRepositories.destroy();
-					tableRepositories = null;
-				}
-				$('#sendTaskRepositories').hide();
-				$('#repoAddressDefinition').hide();
-				$("#plugin-result-repositories").html("");
-				$('#repositoriesBody').html('<tr id="repositoriesBodyEmptyInfo"><td colspan="2" class="text-center">Paket Deposu Bulunamadı.</td></tr>');
-				$('#repositoryHelp').html("İstemcide tanımlı paket depolarını listelemek için Depoları listele butonuna tıklayınız.");
 			}
 		}
 		// we must return true to keep the handler alive. returning false would remove it after it finishes.

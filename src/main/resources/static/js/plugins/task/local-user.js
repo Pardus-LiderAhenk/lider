@@ -62,77 +62,81 @@ function localUserListener(msg) {
 		var responseDn = xmppResponse.commandExecution.dn;
 		var selectedDn = selectedEntries[0]["attributes"].entryDN;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			progress("divLocalUser","progressLocalUser",'hide')
-			if (responseDn == selectedDn) {
-				if (xmppResponse.commandClsId == "GET_USERS") {
-					if (tableLocalUser) {
-						tableLocalUser.clear().draw();
-						tableLocalUser.destroy();
-						tableLocalUser = null;
-					}
-					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-						users = arrg.users;
-						allGroups = arrg["all_groups"];
-						for (var j = 0; j < users.length; j++) {
-							var username = users[j]["user"];
-							var home = users[j]["home"];
-							var groups = users[j]["groups"];
-							var isActive = '<td><i class="fa fa-user-times"></i> Pasif</td>';
-							if (users[j]["is_active"] == "true") {
-								isActive = '<td><i class="fa fa-user-check"></i> Aktif</td>';
-							}
-							if (username != "root") {
-								var newRow = $("<tr id="+ username +">");
-								var html = '<td>'+ username +'</td>';
-								html += isActive;
-								html += '<td>'+ home +'</td>';
-								newRow.append(html);
-								$("#localUsersTable").append(newRow);
-							}
-						}
-						createLocalUsersTable();
-						defaultAllGroups();
-						defaultSettings();
-						$("#localUserForm").show();
-						$("#sendTaskAddLocalUser").show();
-						$.notify(responseMessage, "success");
-						$("#plugin-result-local-user").html("");
-						$("#localUserHelp").html("Listeden seçilen kullanıcıyı silmek için Kullanıcı Sil butonuna, düzenlemek için ise aşağıdaki formda seçilen kullanıcıyı düzenleyerek Kullanıcı Güncelle butonuna tıklayınız. Yeni kullanıcı eklemek için aşağıdaki formda kullanıcı bilgileri girilerek Yeni Kullanıcı Ekle butonuna tıklayınız.");
-					}
-					else {
-						$.notify(responseMessage, "error");
-						$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
-						$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
-					}
-				}
-				if (xmppResponse.commandClsId == "EDIT_USER" || xmppResponse.commandClsId == "ADD_USER" || xmppResponse.commandClsId == "DELETE_USER") {
-					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-						$.notify(responseMessage, "success");
-						$("#plugin-result-local-user").html("");
+			if (selectedEntries[0].type == "AHENK") {
+				progress("divLocalUser","progressLocalUser",'hide');
+				if (responseDn == selectedDn) {
+					if (xmppResponse.commandClsId == "GET_USERS") {
 						if (tableLocalUser) {
 							tableLocalUser.clear().draw();
 							tableLocalUser.destroy();
 							tableLocalUser = null;
-//							$("#localUserForm").hide();
 						}
-						allGroups = [];
-						$("#localUserOfGroups").multiselect('destroy');
-						$("#localUserOfGroups option").remove();
-						createGroupsSelectBox();
-						defaultSettings();
-						sendLocalUserTask(getUsers());
-					}else {
-						$.notify(responseMessage, "error");
-						$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
-						$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
+						var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+						if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+							users = arrg.users;
+							allGroups = arrg["all_groups"];
+							for (var j = 0; j < users.length; j++) {
+								var username = users[j]["user"];
+								var home = users[j]["home"];
+								var groups = users[j]["groups"];
+								var isActive = '<td><i class="fa fa-user-times"></i> Pasif</td>';
+								if (users[j]["is_active"] == "true") {
+									isActive = '<td><i class="fa fa-user-check"></i> Aktif</td>';
+								}
+								if (username != "root") {
+									var newRow = $("<tr id="+ username +">");
+									var html = '<td>'+ username +'</td>';
+									html += isActive;
+									html += '<td>'+ home +'</td>';
+									newRow.append(html);
+									$("#localUsersTable").append(newRow);
+								}
+							}
+							createLocalUsersTable();
+							defaultAllGroups();
+							defaultSettings();
+							$("#localUserForm").show();
+							$("#sendTaskAddLocalUser").show();
+							$.notify(responseMessage, "success");
+							$("#plugin-result-local-user").html("");
+							$("#localUserHelp").html("Listeden seçilen kullanıcıyı silmek için Kullanıcı Sil butonuna, düzenlemek için ise aşağıdaki formda seçilen kullanıcıyı düzenleyerek Kullanıcı Güncelle butonuna tıklayınız. Yeni kullanıcı eklemek için aşağıdaki formda kullanıcı bilgileri girilerek Yeni Kullanıcı Ekle butonuna tıklayınız.");
+						}
+						else {
+							$.notify(responseMessage, "error");
+//							$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
+							$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
+						}
 					}
+					if (xmppResponse.commandClsId == "EDIT_USER" || xmppResponse.commandClsId == "ADD_USER" || xmppResponse.commandClsId == "DELETE_USER") {
+						if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+							$.notify(responseMessage, "success");
+							$("#plugin-result-local-user").html("");
+							if (tableLocalUser) {
+								tableLocalUser.clear().draw();
+								tableLocalUser.destroy();
+								tableLocalUser = null;
+								$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
+								$("#localUserHelp").html("İstemcideki yerel kullanıcıları listelemek için Kullanıcı Listele butonuna tıklayınız.");
+//								$("#localUserForm").hide();
+							}
+							allGroups = [];
+							$("#localUserOfGroups").multiselect('destroy');
+							$("#localUserOfGroups option").remove();
+							createGroupsSelectBox();
+							defaultSettings();
+							sendLocalUserTask(getUsersParams());
+						} else {
+							$.notify(responseMessage, "error");
+//							$("#plugin-result-local-user").html(("HATA: " + responseMessage).fontcolor("red"));
+							$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
+						}
+					}
+				} else {
+					$("#plugin-result-local-user").html("");
+					$("#localUserHelp").html("İstemcideki yerel kullanıcıları listelemek için Kullanıcı Listele butonuna tıklayınız.");
+					defaultSettings();
+					$("#localUserForm").hide();
 				}
-			} else {
-				$("#plugin-result-local-user").html("");
-				$("#localUserHelp").html("İstemcideki yerel kullanıcıları listelemek için Kullanıcı Listele butonuna tıklayınız.")
-				defaultSettings();
-				$("#localUserForm").hide();
 			}
 		}
 	}
@@ -167,7 +171,9 @@ function sendLocalUserTaskConfirm(commandId, parameterMap) {
 						tableLocalUser.destroy();
 						tableLocalUser = null;
 						allGroups = [];
-//						$("#localUserForm").hide();
+						$("#localUserForm").hide();
+						$('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
+						$("#localUserHelp").html("İstemcideki yerel kullanıcıları listelemek için Kullanıcı Listele butonuna tıklayınız.");
 					}
 				}
 				sendLocalUserTask(params);
@@ -185,8 +191,20 @@ function sendLocalUserTask(params) {
 	if (scheduledParamLocalUser != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamLocalUser;
 	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamLocalUser == null) {
+		progress("divLocalUser","progressLocalUser",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+		if (scheduledParamLocalUser != null) {
+			groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+		}
+		$.notify(groupNotify, "success");
+	}
 
-	progress("divLocalUser","progressLocalUser",'show');
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -201,8 +219,10 @@ function sendLocalUserTask(params) {
 		},
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){		    		
-				$("#plugin-result-local-user").html(message.bold());
+			if(res.status=="OK"){
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-local-user").html(message.bold());	
+				}
 			}   	
 		},
 		error: function(result) {
@@ -215,7 +235,7 @@ function userNameFocus() {
 	$("#localUserHomeDirectory").val("/home/"+ $("#localUserName").val() +"");
 }
 
-function getUsers() {
+function getUsersParams() {
 	if(pluginTask_LocalUser){
 		pluginTask_LocalUser.dnList=dnlist;
 		pluginTask_LocalUser.entryList=selectedEntries;

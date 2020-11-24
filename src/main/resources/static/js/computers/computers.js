@@ -1782,7 +1782,13 @@ $('#updateAgentInfo').click(function(e){
 		theme: 'light',
 		buttons: {
 			Evet: function () {
-				progress("divAgentInfo","progressAgentInfo",'show');
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					progress("divAgentInfo","progressAgentInfo",'show');
+				}
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+					$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+				}
+				
 				getAgentInfo();
 			},
 			Hayır: function () {

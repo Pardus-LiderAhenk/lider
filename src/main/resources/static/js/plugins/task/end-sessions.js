@@ -51,11 +51,25 @@ function sendTaskEndSession(commandId) {
 		theme: 'light',
 		buttons: {
 			Evet: function () {
-				progress("endSessionsContent","progressDivEndSessions",'show')
+				
 				var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 				if (scheduledParamEndSessions != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamEndSessions;
 				}
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamEndSessions == null) {
+					progress("endSessionsContent","progressDivEndSessions",'show');
+				}
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+					$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+				}
+				if (selectedEntries[0].type == "GROUP") {
+					var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+					if (scheduledParamEndSessions != null) {
+						groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+					}
+					$.notify(groupNotify, "success");
+				}
+				
 				$.ajax({
 					type: "POST",
 					url: "/lider/task/execute",
@@ -71,7 +85,9 @@ function sendTaskEndSession(commandId) {
 					success: function(result) {
 						var res = jQuery.parseJSON(result);
 						if(res.status=="OK"){
-							$("#plugin-result-end-sessions").html(message.bold());
+							if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+								$("#plugin-result-end-sessions").html(message.bold());
+							}
 						}   	
 						/* $('#closePage').click(); */
 					},
@@ -97,20 +113,23 @@ function endSessionsListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
+		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.commandClsId == "MANAGE" || xmppResponse.commandClsId == "MACHINE_SHUTDOWN" || xmppResponse.commandClsId == "MACHINE_RESTART") {
 			if (xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$("#plugin-result-end-sessions").html("");
-					progress("endSessionsContent","progressDivEndSessions",'hide')
-					$.notify(xmppResponse.result.responseMessage, "success");
-				} else {
-					$("#plugin-result-end-sessions").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
-					$.notify(xmppResponse.result.responseMessage, "error");
+				if (selectedEntries[0].type == "AHENK") {
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$("#plugin-result-end-sessions").html("");
+						progress("endSessionsContent","progressDivEndSessions",'hide');
+						$.notify(responseMessage, "success");
+					} else {
+//						$("#plugin-result-end-sessions").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
+						$.notify(responseMessage, "error");
+					}
 				}
 			}
 		}
 	}
-	// we must return true to keep the handler alive. returning false would remove it after it finishes.
+//	we must return true to keep the handler alive. returning false would remove it after it finishes.
 	return true;
 }
 

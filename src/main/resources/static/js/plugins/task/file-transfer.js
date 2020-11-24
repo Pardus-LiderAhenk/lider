@@ -41,7 +41,20 @@ function sendFileTransferTask(params) {
 	if (scheduledParamFileTransfer != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamFileTransfer;
 	}
-	progress("divFileTransfer","progressFileTransfer",'show')
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamFileTransfer == null) {
+		progress("divFileTransfer","progressFileTransfer",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+		if (scheduledParamFileTransfer != null) {
+			groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+		}
+		$.notify(groupNotify, "success");
+	}
+
 	$.ajax({
 		type: "POST",
 		url: "/file_transfer/task/execute",
@@ -56,8 +69,10 @@ function sendFileTransferTask(params) {
 		},
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){		    		
-				$("#plugin-result-file-transfer").html(message.bold());
+			if(res.status=="OK"){		  
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-file-transfer").html(message.bold());
+				}
 			}   	
 		},
 		error: function(result) {
@@ -78,16 +93,18 @@ function fileTransferListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			progress("divFileTransfer","progressFileTransfer",'hide')
-			if (xmppResponse.commandClsId == "MULTIPLE-FILE-TRANSFER") {
-				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$.notify(responseMessage, "success");
-					$("#plugin-result-file-transfer").html("");
-				}
-				else {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-file-transfer").html(("HATA: " + responseMessage).fontcolor("red"));
+			if (selectedEntries[0].type == "AHENK") {
+				progress("divFileTransfer","progressFileTransfer",'hide');
+				if (xmppResponse.commandClsId == "MULTIPLE-FILE-TRANSFER") {
+					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$.notify(responseMessage, "success");
+						$("#plugin-result-file-transfer").html("");
+					}
+					else {
+						$.notify(responseMessage, "error");
+//						$("#plugin-result-file-transfer").html(("HATA: " + responseMessage).fontcolor("red"));
+					}
 				}
 			}
 		}

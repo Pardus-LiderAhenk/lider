@@ -44,8 +44,21 @@ function sendUsbManagement(params) {
 				var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 				if (scheduledParamUsbManagement != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamUsbManagement;
-				}	
-				progress("divUsbManagement","progressUsbManagement",'show')
+				}
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamUsbManagement == null) {
+					progress("divUsbManagement","progressUsbManagement",'show');
+				}
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+					$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+				}
+				if (selectedEntries[0].type == "GROUP") {
+					var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+					if (scheduledParamUsbManagement != null) {
+						groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+					}
+					$.notify(groupNotify, "success");
+				}
+				
 				$.ajax({
 					type: "POST",
 					url: "/lider/task/execute",
@@ -61,7 +74,9 @@ function sendUsbManagement(params) {
 					success: function(result) {
 						var res = jQuery.parseJSON(result);
 						if(res.status=="OK"){
-							$("#plugin-result-usb-management").html(message.bold());
+							if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+								$("#plugin-result-usb-management").html(message.bold());	
+							}
 						}   	
 						/* $('#closePage').click(); */
 					},
@@ -88,14 +103,16 @@ function usbManagementListener(msg) {
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
 		if(xmppResponse.commandClsId == "MANAGE-USB"){
-			progress("divUsbManagement","progressUsbManagement",'hide')
-			var parameterMap = {};
-			if (xmppResponse.result.responseCode != "TASK_ERROR") {
-				$("#plugin-result-usb-management").html("");
-				$.notify(xmppResponse.result.responseMessage, "success");
-			} else {
-				$("#plugin-result-usb-management").html(xmppResponse.result.responseMessage);
-				$.notify(xmppResponse.result.responseMessage, "error");
+			if (selectedEntries[0].type == "AHENK") {
+				progress("divUsbManagement","progressUsbManagement",'hide');
+				var parameterMap = {};
+				if (xmppResponse.result.responseCode != "TASK_ERROR") {
+					$("#plugin-result-usb-management").html("");
+					$.notify(xmppResponse.result.responseMessage, "success");
+				} else {
+//					$("#plugin-result-usb-management").html(xmppResponse.result.responseMessage);
+					$.notify(xmppResponse.result.responseMessage, "error");
+				}
 			}
 		}						 
 	}

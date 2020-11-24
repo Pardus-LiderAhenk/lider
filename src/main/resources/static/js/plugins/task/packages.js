@@ -51,7 +51,7 @@ $('#getPackagesListBtn').click(function(e){
 });
 
 function getPackagesList(params){
-	progress("divPackages","progressPackages",'show')
+	progress("divPackages","progressPackages",'show');
 	$.ajax({
 		type: "POST",
 		url: "/packages/list",
@@ -154,14 +154,16 @@ function packagesListener(msg) {
 		var xmppResponse=JSON.parse(data);
 //		var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 		if(xmppResponse.commandClsId == "PACKAGES"){
-			if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-				progress("divPackages","progressPackages",'hide');
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$("#plugin-result-packages").html("");
-					$.notify(xmppResponse.result.responseMessage, "success");
-				} else {
-					$("#plugin-result-packages").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
-					$.notify(xmppResponse.result.responseMessage, "error");
+			if (selectedEntries[0].type == "AHENK") {
+				if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
+					progress("divPackages","progressPackages",'hide');
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$("#plugin-result-packages").html("");
+						$.notify(xmppResponse.result.responseMessage, "success");
+					} else {
+//						$("#plugin-result-packages").html(("HATA: "+ xmppResponse.result.responseMessage).fontcolor("red"));
+						$.notify(xmppResponse.result.responseMessage, "error");
+					}
 				}
 			}
 		}
@@ -297,7 +299,20 @@ function sendPackagesTask(params) {
 	if (scheduledParamPackages != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamPackages;
 	}
-	progress("divPackages","progressPackages",'show')
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamPackages == null) {
+		progress("divPackages","progressPackages",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+		if (scheduledParamPackages != null) {
+			groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+		}
+		$.notify(groupNotify, "success");
+	}
+	
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -312,8 +327,10 @@ function sendPackagesTask(params) {
 		},
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){		    		
-				$("#plugin-result-packages").html(message.bold());
+			if(res.status=="OK"){
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-packages").html(message.bold());	
+				}
 			}   	
 		},
 		error: function(result) {

@@ -80,8 +80,22 @@ function sendLdapLogin(params) {
 				if (scheduledParamLdapLogin != null) {
 					message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamLdapLogin;
 				}
+
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamLdapLogin == null) {
+					progress("divLdapLogin","progressLdapLogin",'show');
+				}
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+					$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+				}
+				if (selectedEntries[0].type == "GROUP") {
+					var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+					if (scheduledParamLdapLogin != null) {
+						groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+					}
+					$.notify(groupNotify, "success");
+				}
+
 				changeUserDirectoryDomain();
-				progress("divLdapLogin","progressLdapLogin",'show')
 
 				$.ajax({
 					type: "POST",
@@ -98,7 +112,9 @@ function sendLdapLogin(params) {
 					success: function(result) {
 						var res = jQuery.parseJSON(result);
 						if(res.status=="OK"){
-							$("#plugin-result-ldap-login").html(message.bold());
+							if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+								$("#plugin-result-ldap-login").html(message.bold());
+							}
 						}   	
 						/* $('#closePage').click(); */
 					},
@@ -124,14 +140,17 @@ function ldapLoginListener(msg) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
 		var xmppResponse=JSON.parse(data);
+		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.commandClsId == "EXECUTE_LDAP_LOGIN" || xmppResponse.commandClsId == "EXECUTE_AD_LOGIN" || xmppResponse.commandClsId == "EXECUTE_CANCEL_LDAP_LOGIN"){
-			progress("divLdapLogin","progressLdapLogin",'hide')
-			if (xmppResponse.result.responseCode != "TASK_ERROR") {
-				$("#plugin-result-ldap-login").html("");
-				$.notify(xmppResponse.result.responseMessage, "success");
-			} else {
-				$("#plugin-result-ldap-login").html(("HATA: " + responseMessage).fontcolor("red"));
-				$.notify(xmppResponse.result.responseMessage, "error");
+			if (selectedEntries[0].type == "AHENK") {
+				progress("divLdapLogin","progressLdapLogin",'hide');
+				if (xmppResponse.result.responseCode != "TASK_ERROR") {
+					$("#plugin-result-ldap-login").html("");
+					$.notify(responseMessage, "success");
+				} else {
+//					$("#plugin-result-ldap-login").html(("HATA: " + responseMessage).fontcolor("red"));
+					$.notify(responseMessage, "error");
+				}
 			}
 		}						 
 	}

@@ -79,7 +79,20 @@ function sendNotifyTask(params) {
 	if (scheduledParamEtaNotify != null) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamEtaNotify;
 	}
-	progress("divEtaNotify","progressEtaNotify",'show')
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamEtaNotify == null) {
+		progress("divEtaNotify","progressEtaNotify",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+			if (scheduledParamEtaNotify != null) {
+				groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+			}
+		$.notify(groupNotify, "success");
+	}
+
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -95,7 +108,9 @@ function sendNotifyTask(params) {
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
 			if(res.status=="OK"){		    		
-				$("#plugin-result-eta-notify").html(message.bold());
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-eta-notify").html(message.bold());
+				}
 			}   	
 		},
 		error: function(result) {
@@ -116,16 +131,18 @@ function etaNotifyListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			progress("divEtaNotify","progressEtaNotify",'hide')
+			progress("divEtaNotify","progressEtaNotify",'hide');
 			if (xmppResponse.commandClsId == "ETA_NOTIFY") {
 				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$.notify(responseMessage, "success");
-					$("#plugin-result-eta-notify").html("");
-				}
-				else {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-eta-notify").html(("HATA: " + responseMessage).fontcolor("red"));
+				if (selectedEntries[0].type == "AHENK") {
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$.notify(responseMessage, "success");
+						$("#plugin-result-eta-notify").html("");
+					}
+					else {
+						$.notify(responseMessage, "error");
+//						$("#plugin-result-eta-notify").html(("HATA: " + responseMessage).fontcolor("red"));
+					}
 				}
 			}
 		}

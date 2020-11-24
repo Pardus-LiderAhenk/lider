@@ -385,9 +385,22 @@ $('#scriptCleanBtn').click(function(e){
 function sendExecuteScriptTask(params) {
 	var message = "Görev başarı ile gönderildi.. Lütfen bekleyiniz...";
 	if (scheduledParamExeScript != null) {
-		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParam;
+		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamExeScript;
 	}
-	progress("divExecuteScript","progressExecuteScript",'show')
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamExeScript == null) {
+		progress("divExecuteScript","progressExecuteScript",'show');
+	}
+	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
+		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
+	}
+	if (selectedEntries[0].type == "GROUP") {
+		var groupNotify = "Görev istemci grubuna başarı ile gönderildi.";
+		if (scheduledParamExeScript != null) {
+			groupNotify = "Zamanlanmış görev istemci grubuna başarı ile gönderildi.";
+		}
+		$.notify(groupNotify, "success");
+	}
+	
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",
@@ -402,8 +415,10 @@ function sendExecuteScriptTask(params) {
 		},
 		success: function(result) {
 			var res = jQuery.parseJSON(result);
-			if(res.status=="OK"){		    		
-				$("#plugin-result-execute-script").html(message.bold());
+			if(res.status=="OK"){
+				if (selectedEntries[0].type == "AHENK" && selectedRow.online == true) {
+					$("#plugin-result-execute-script").html(message.bold());
+				}
 			}   	
 		},
 		error: function(result) {
@@ -424,16 +439,18 @@ function executeScriptListener(msg) {
 		var xmppResponse=JSON.parse(data);
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
-			progress("divExecuteScript","progressExecuteScript",'hide')
-			if (xmppResponse.commandClsId == "EXECUTE_SCRIPT") {
-				var arrg = JSON.parse(xmppResponse.result.responseDataStr);
-				if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
-					$.notify(responseMessage, "success");
-					$("#plugin-result-execute-script").html("");
-				}
-				else {
-					$.notify(responseMessage, "error");
-					$("#plugin-result-execute-script").html(("HATA: " + responseMessage).fontcolor("red"));
+			if (selectedEntries[0].type == "AHENK") {
+				progress("divExecuteScript","progressExecuteScript",'hide');
+				if (xmppResponse.commandClsId == "EXECUTE_SCRIPT") {
+					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
+					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
+						$.notify(responseMessage, "success");
+						$("#plugin-result-execute-script").html("");
+					}
+					else {
+						$.notify(responseMessage, "error");
+//						$("#plugin-result-execute-script").html(("HATA: " + responseMessage).fontcolor("red"));
+					}
 				}
 			}
 		}

@@ -42,7 +42,6 @@ function addOptionsToRemoteAccessSelect() {
 		text: "Sadece bildirim aktif et",
 		value : "no",
 	}));
-console.log(systemSettings)
 	if (systemSettings.allowVNCConnectionWithoutPermission) {
 		$('#remoteAccessSelect').append($('<option>', {
 			text: "Kullanıcı izni ve bildirim yok",

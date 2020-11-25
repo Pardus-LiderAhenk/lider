@@ -242,18 +242,14 @@ function onMessage(msg) {
 	if (type == "chat" && elems.length > 0) {
 		var body = elems[0];
 		var data=Strophe.xmlunescape(Strophe.getText(body));
-		var ret=JSON.parse(data);
+		var response = JSON.parse(data);
 		var type = "INFO";
-		var agentUid = ret.commandExecution.uid;
-		if (ret.result.responseCode == "TASK_ERROR") {
+		var dnParser = response.commandExecution.dn.split(",");
+		var agentCn =  dnParser[0].replace("cn=", "");
+		if (response.result.responseCode == "TASK_ERROR") {
 			type = "ERROR";
 		}
-		if (ret.result.contentType =="TEXT_PLAIN") {
-			var dnParser = ret.commandExecution.dn.split(",");
-			agentUid = dnParser[0].replace("cn=", "");
-		}
-		
-		log("["+ agentUid +"] Gelen Cevap : "+ret.result.responseMessage, type);
+		log("["+ agentCn +"] Gelen Cevap : "+response.result.responseMessage, type);
 		var reply = $msg({to: from, from: to, type: 'chat'}).cnode(Strophe.copyElement(body));
 		connection.send(reply.tree());
 	}
@@ -268,7 +264,7 @@ function log(msg, type)
 	var d = new Date();
 	var h = d.getHours();
 	var n = d.getMinutes();
-	var message=h+":"+n+" | ["+ type + "] | "+msg;
+	var message=h+":"+n+" - ["+ type + "] - "+msg;
 	var color="blue";
 
 	if(type=="SUCCESS"){

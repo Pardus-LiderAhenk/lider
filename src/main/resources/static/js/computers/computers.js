@@ -515,17 +515,17 @@ function setSystemPluginPage() {
 						}
 					});
 				}
-//				if(pluginTask.page == 'screenshot'){
-//					$.ajax({
-//						type : 'POST',
-//						url : 'getPluginTaskHtmlPage',
-//						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
-//						dataType : 'text',
-//						success : function(res1) {
-//							$('#screenshot').html(res1);
-//						}
-//					});
-//				}
+				if(pluginTask.page == 'screenshot'){
+					$.ajax({
+						type : 'POST',
+						url : 'getPluginTaskHtmlPage',
+						data : 'id=' + pluginTask.id + '&name=' + pluginTask.name	+ '&page=' + pluginTask.page + '&description=' + pluginTask.description,
+						dataType : 'text',
+						success : function(res1) {
+							$('#screenshot').html(res1);
+						}
+					});
+				}
 			}
 		}
 	});

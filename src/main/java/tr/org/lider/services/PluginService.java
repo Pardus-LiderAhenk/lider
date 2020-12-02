@@ -64,6 +64,7 @@ public class PluginService {
 		pluginList.add(new PluginImpl("sudoers", "1.0.0", "Uygulama kurma yetkilendirme", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("user-privilege", "1.0.0", "Kullanıcı yetkilendierme ve kısıtlaması", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("ldap", "1.0.0", "Ahenk silme ve taşıma işlemleri", true, false, true, true, false, true, false, false));
+		pluginList.add(new PluginImpl("screenshot", "1.0.0", "Ekran görüntüsü", true, false, true, true, true, true, true, false));
 		
 		
 		for (int i = 0; i < pluginList.size(); i++) {
@@ -98,6 +99,7 @@ public class PluginService {
 		pluginTaskList.add(new PluginTask("USB Yönetimi", "usb-management", "İstemcideki aygıtları yönetir", "MANAGE_USB", true, findPluginIdByName("usb"), 1));
 		pluginTaskList.add(new PluginTask("Dosya Paylaşımı", "file-transfer", "20 MB kadar dosya paylaşımı sağlar", "MULTIPLE-FILE-TRANSFER", true, findPluginIdByName("network-inventory"), 1));
 		pluginTaskList.add(new PluginTask("Uzak Masaüstü", "remote-access", "İstemciye uzak masaüstü erişimi sağlar", "SETUP-VNC-SERVER", false, findPluginIdByName("remote-access"), 1));
+		pluginTaskList.add(new PluginTask("Ekran Görüntüsü Al", "screenshot", "İstemcide oturum açmış olan kullanıcının ekran görüntüsünü alır", "TAKE-SCREENSHOT", false, findPluginIdByName("screenshot"), 1));
 		
 		for (int i = 0; i < pluginTaskList.size(); i++) {
 			if (findPluginTaskByPage(pluginTaskList.get(i).getPage()).isEmpty()) {

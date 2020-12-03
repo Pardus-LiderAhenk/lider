@@ -893,7 +893,6 @@ function getFormattedDate(date) {
 }
 
 function fillUserSessions(ldapResult) {
-	
 	$.ajax({
 		type : 'POST',
 		url : 'lider/user/getUserSessions',

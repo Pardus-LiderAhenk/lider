@@ -10,6 +10,7 @@ import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import tr.org.lider.entities.AgentImpl;
@@ -48,6 +49,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 	private ConfigurationService configurationService;
 
 	@Autowired
+	@Qualifier("ldapImpl")
 	private ILDAPService ldapService;
 
 	@Override

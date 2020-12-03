@@ -28,9 +28,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import tr.org.lider.entities.CommandExecutionImpl;
@@ -38,13 +40,16 @@ import tr.org.lider.entities.CommandImpl;
 import tr.org.lider.entities.PolicyImpl;
 import tr.org.lider.entities.ProfileImpl;
 import tr.org.lider.ldap.ILDAPService;
+import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
+import tr.org.lider.messaging.enums.DomainType;
 import tr.org.lider.messaging.messages.ExecutePoliciesMessageImpl;
 import tr.org.lider.messaging.messages.ExecutePolicyImpl;
 import tr.org.lider.messaging.messages.IGetPoliciesMessage;
 import tr.org.lider.repositories.PolicyRepository;
+import tr.org.lider.services.AdService;
 import tr.org.lider.services.ConfigurationService;
 
 /**
@@ -58,7 +63,11 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 
 	private static Logger logger = LoggerFactory.getLogger(PolicySubscriberImpl.class);
 	@Autowired
-	private ILDAPService ldapService;
+	private LDAPServiceImpl ldapService;
+	
+	@Autowired
+	private AdService adService;
+	
 	@Autowired
 	private ConfigurationService configurationService;
 	@Autowired
@@ -197,8 +206,25 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 	 * @throws LdapException
 	 */
 	private String findUserDn(String userUid) throws LdapException {
-		return ldapService.getDN(configurationService.getLdapRootDn(), configurationService.getUserLdapUidAttribute(),
-				userUid);
+		String userDN=null;
+		
+		if(configurationService.getDomainType().equals(DomainType.ACTIVE_DIRECTORY)) {
+
+			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+			filterAttributes.add(new LdapSearchFilterAttribute("sAMAccountName", userUid, SearchFilterEnum.EQ));
+			
+			List<LdapEntry> users= adService.search(adService.getADDomainName(),filterAttributes, new String[] {"*"});
+			if(users.size()>0) {
+				userDN=users.get(0).getDistinguishedName();
+			}
+		}
+		else if(configurationService.getDomainType().equals(DomainType.LDAP)) {
+			userDN=ldapService.getDN(configurationService.getLdapRootDn(), configurationService.getUserLdapUidAttribute(),
+					userUid);
+		}
+		
+		
+		return userDN;
 	}
 
 	/**
@@ -210,11 +236,19 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 	 */
 	private List<LdapEntry> findGroups(String userDn) throws LdapException {
 		List<LdapSearchFilterAttribute> filterAttributesList = new ArrayList<LdapSearchFilterAttribute>();
-		String[] groupLdapObjectClasses = configurationService.getGroupLdapObjectClasses().split(",");
-		for (String groupObjCls : groupLdapObjectClasses) {
-			filterAttributesList.add(new LdapSearchFilterAttribute("objectClass", groupObjCls, SearchFilterEnum.EQ));
-		}
+		
+		filterAttributesList.add(new LdapSearchFilterAttribute("objectClass", "group", SearchFilterEnum.EQ));
 		filterAttributesList.add(new LdapSearchFilterAttribute("member", userDn, SearchFilterEnum.EQ));
-		return ldapService.search(configurationService.getLdapRootDn(), filterAttributesList, new String[] {"*"});
+		
+		List<LdapEntry> groups=null;
+		if(configurationService.getDomainType().equals(DomainType.ACTIVE_DIRECTORY)) {
+			String baseDn=((AdService)adService).getADDomainName();
+			groups = adService.search(baseDn, filterAttributesList, new String[] {"*"});
+		}
+		else if(configurationService.getDomainType().equals(DomainType.LDAP)) {
+			groups=  ldapService.search(configurationService.getLdapRootDn(), filterAttributesList, new String[] {"*"});
+		}
+		
+		return groups;
 	}
 }

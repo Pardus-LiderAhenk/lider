@@ -1,5 +1,5 @@
 /**
- * Ad Tree component 
+ * DM Tree component 
  * this component can be use for user tree
  * edip.yildiz
  * @param page
@@ -22,8 +22,6 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 		url : 'ad/getDomainEntry',
 		dataType : 'json',
 		success : function(data) {
-			console.log(data)
-			
 			$('#'+treeHolderDiv).append('<div id="'+treeGridId+'"></div> ')
 			 var source = {
 			      dataType: "json",
@@ -72,7 +70,7 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 			     filterMode: "simple",
 			     selectionMode: "singleRow",
 			     localization: getLocalization(),
-			     pageSize: 100,
+			     pageSize: 50,
 			     pageSizeOptions: ['15', '25', '100'],
 			     icons: function (rowKey, dataRow) {
 			    	    var level = dataRow.level;
@@ -117,8 +115,8 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 			 });
 				 
 			// create context menu
-	            var contextMenu = $("#treeMenu").jqxMenu({ width: 250, height: 88, autoOpenPopup: false, mode: 'popup' });
-	            var contextMenuGroup = $("#treeMenuGroup").jqxMenu({ width: 250, height:40, autoOpenPopup: false, mode: 'popup' });
+	            var contextMenu = $("#treeMenuContainer").jqxMenu({ width: 250, height: 188, autoOpenPopup: false, mode: 'popup' });
+	            var contextMenuGroup = $("#treeMenuGroup").jqxMenu({ width: 250, height:188, autoOpenPopup: false, mode: 'popup' });
 	           
 	            $('#'+treeGridId).on('contextmenu', function () {
 	            	
@@ -152,13 +150,12 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 	                }
 	            });
 			 
-//				 $('#'+treeGridId).on('rowSelect', function (event) {
-//				        var args = event.args;
-//					    var row = args.row;
-//					    var name= row.name;
-//					    console.log(args)
-//					    rowSelectAction(row,rootDN);
-//				    });
+				 $('#'+treeGridId).on('rowSelect', function (event) {
+				        var args = event.args;
+					    var row = args.row;
+					    var name= row.name;
+					    rowSelectAction(row,rootDN);
+				    });
 				 
 					$('#'+treeGridId).on('rowCheck', function (event) {
 					      var args = event.args;

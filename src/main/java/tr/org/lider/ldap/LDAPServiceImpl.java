@@ -61,6 +61,7 @@ import org.apache.directory.ldap.client.api.PoolableLdapConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -78,7 +79,7 @@ import tr.org.lider.services.ConfigurationService;
  */
 
 @Service
-@Primary
+@Qualifier("ldapImpl")
 public class LDAPServiceImpl implements ILDAPService {
 
 	private final static Logger logger = LoggerFactory.getLogger(LDAPServiceImpl.class);

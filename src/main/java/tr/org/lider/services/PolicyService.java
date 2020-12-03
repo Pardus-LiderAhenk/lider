@@ -10,6 +10,7 @@ import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,8 +24,10 @@ import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.entities.CommandExecutionImpl;
 import tr.org.lider.entities.CommandImpl;
 import tr.org.lider.entities.PolicyImpl;
+import tr.org.lider.ldap.ILDAPService;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
+import tr.org.lider.messaging.enums.DomainType;
 import tr.org.lider.models.PolicyExecutionRequestImpl;
 import tr.org.lider.models.PolicyResponse;
 import tr.org.lider.repositories.PolicyRepository;
@@ -47,7 +50,13 @@ public class PolicyService {
 	private CommandService commandService;
 
 	@Autowired
-	private LDAPServiceImpl ldapService;
+	@Qualifier("ldapImpl")
+	private ILDAPService ldapService;
+
+	@Autowired
+	@Qualifier("AdImpl")
+	private ILDAPService adService;
+
 
 	@Autowired
 	private ConfigurationService configService;
@@ -154,7 +163,13 @@ public class PolicyService {
 		List<LdapEntry> targetEntries= new ArrayList<>();
 		for (String dn : selectedDns) {
 			try {
-				List<LdapEntry> member= ldapService.findSubEntries(dn, "(objectclass=*)", new String[] { "*" }, SearchScope.OBJECT);
+				List<LdapEntry> member=null;
+				if(configService.getDomainType().equals(DomainType.ACTIVE_DIRECTORY)) {
+					member=adService.findSubEntries(dn, "(objectclass=*)", new String[] { "*" }, SearchScope.OBJECT);
+				}
+				else if(configService.getDomainType().equals(DomainType.LDAP)) {
+					member=ldapService.findSubEntries(dn, "(objectclass=*)", new String[] { "*" }, SearchScope.OBJECT);
+				}
 				if(member!=null && member.size()>0) {
 					targetEntries.add(member.get(0));
 				}

@@ -92,36 +92,42 @@ public class LdapEntry implements Serializable , Comparable<LdapEntry>{
 		this.attributesMultiValues = attributesMultiValues;
 		this.type = type;
 		this.priviliges=priviliges;
-		setAttributesToFields(attributes);
 		
+		if(attributes!=null) {
+		setAttributesToFields(attributes);
+		}
 		if(attributesMultiValues!=null) {
 		String[] objectClasses= getAttributesMultiValues().get("objectClass");
-		
-		for (int i = 0; i < objectClasses.length; i++) {
-			String objClass=objectClasses[i];
-			if(objClass.equals("group")) { setType(DNType.GROUP); break; }
-			else if(objClass.equals("container")) { setType(DNType.CONTAINER); break;  }
-			else if(objClass.equals("computer")) { 
-				if(getAttributesMultiValues().get("operatingSystem")!=null) {
-				if(getAttributesMultiValues().get("operatingSystem")[0].contains("linux-gnu") ) {setType(DNType.AHENK);}
-				else if(getAttributesMultiValues().get("operatingSystem")[0].contains("Windows") ) {setType(DNType.WIND0WS_AHENK);}
-				 break;  
+			if(objectClasses!=null) {
+				for (int i = 0; i < objectClasses.length; i++) {
+					String objClass=objectClasses[i];
+					if(objClass.equals("group")) { setType(DNType.GROUP); break; }
+					else if(objClass.equals("container")) { setType(DNType.CONTAINER); break;  }
+					else if(objClass.equals("computer")) { 
+						if(getAttributesMultiValues().get("operatingSystem")!=null) {
+						if(getAttributesMultiValues().get("operatingSystem")[0].contains("linux-gnu") ) {setType(DNType.AHENK);}
+						else if(getAttributesMultiValues().get("operatingSystem")[0].contains("Windows") ) {setType(DNType.WIND0WS_AHENK);}
+						 break;  
+						}
+					}
+					else if(objClass.equals("organizationalPerson")) { setType(DNType.USER);  }
+					else if(objClass.equals("organizationalUnit")) { setType(DNType.ORGANIZATIONAL_UNIT);  }
 				}
 			}
-			else if(objClass.equals("organizationalPerson")) { setType(DNType.USER);  }
-			else if(objClass.equals("organizationalUnit")) { setType(DNType.ORGANIZATIONAL_UNIT);  }
 		}
-		}
-		String dateStr= get("createTimestamp");
-		if(dateStr!=null) {
-			String year=dateStr.substring(0,4);
-			String month=dateStr.substring(4,6);
-			String day=dateStr.substring(6,8);
-			String hour=dateStr.substring(8,10);
-			String min=dateStr.substring(10,12);
-			String sec=dateStr.substring(12,14);
-			String crtDate=day+"/"+ month+"/"+ year+" "+ hour +":"+min;
-			setCreateDateStr(crtDate);
+		
+		if(attributes!=null) {
+			String dateStr= get("createTimestamp");
+			if(dateStr!=null) {
+				String year=dateStr.substring(0,4);
+				String month=dateStr.substring(4,6);
+				String day=dateStr.substring(6,8);
+				String hour=dateStr.substring(8,10);
+				String min=dateStr.substring(10,12);
+				String sec=dateStr.substring(12,14);
+				String crtDate=day+"/"+ month+"/"+ year+" "+ hour +":"+min;
+				setCreateDateStr(crtDate);
+			}
 		}
 	}
 	

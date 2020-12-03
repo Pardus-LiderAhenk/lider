@@ -112,7 +112,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 				     filterMode: "simple",
 				     selectionMode: "singleRow",
 				     localization: getLocalization(),
-				     pageSize: 500,
+				     pageSize: 50,
 				     pagerMode: "default",
 				     pageSizeOptions: ['15', '20', '50'],
 				     icons: function (rowKey, dataRow) {

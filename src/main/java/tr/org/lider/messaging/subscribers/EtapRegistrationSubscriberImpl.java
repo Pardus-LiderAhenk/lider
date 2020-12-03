@@ -28,6 +28,7 @@ import tr.org.lider.entities.AgentImpl;
 import tr.org.lider.entities.AgentPropertyImpl;
 import tr.org.lider.entities.UserSessionImpl;
 import tr.org.lider.ldap.ILDAPService;
+import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.messaging.enums.AgentMessageType;
 import tr.org.lider.messaging.enums.StatusCode;
@@ -48,7 +49,7 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 	private static Logger logger = LoggerFactory.getLogger(EtapRegistrationSubscriberImpl.class);
 
 	@Autowired
-	private ILDAPService ldapService;
+	private LDAPServiceImpl ldapService;
 	
 	@Autowired
 	private ConfigurationService configurationService;
@@ -396,7 +397,7 @@ public class EtapRegistrationSubscriberImpl implements IRegistrationSubscriber{
 	 * 
 	 * @param ldapService
 	 */
-	public void setLdapService(ILDAPService ldapService) {
+	public void setLdapService(LDAPServiceImpl ldapService) {
 		this.ldapService = ldapService;
 	}
 

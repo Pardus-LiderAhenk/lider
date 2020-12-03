@@ -85,7 +85,7 @@ public class AdController {
 					+ "(objectclass=computer)"
 					+ "(objectclass=organizationalPerson)"
 					+ "(objectclass=group)"
-					+ "(objectclass=*)"
+					+ "(objectclass=user)"
 					+")";
 			
 			oneLevelSubList= new ArrayList<>();
@@ -129,6 +129,9 @@ public class AdController {
 		 attributes.put("givenName", new String[] {selectedEntry.getName()});
 		 attributes.put("displayName", new String[] {selectedEntry.getCn()});
 		 attributes.put("name", new String[] {selectedEntry.getCn()});
+		 attributes.put("mail", new String[] {selectedEntry.getMail()});
+		 attributes.put("telephoneNumber", new String[] {selectedEntry.getTelephoneNumber()});
+		 attributes.put("streetAddress", new String[] {selectedEntry.getHomePostalAddress()});
 		 attributes.put("sn", new String[] {selectedEntry.getSn()});
 //		 attributes.put("userpassword", new String[] {selectedEntry.getUserPassword()});
 		 String newQuotedPassword = "\"" + selectedEntry.getUserPassword() + "\"";
@@ -211,7 +214,7 @@ public class AdController {
 	
 	@RequestMapping(value = "/addMember2ADGroup")
 	public Boolean addMember2ADGroup(HttpServletRequest request, LdapEntry selectedEntry) {
-		logger.info("Adding {} to group. Group info {} {}", selectedEntry.getDistinguishedName(),selectedEntry.getParentName());
+		logger.info("Adding {} to group. Group info {} ", selectedEntry.getDistinguishedName(),selectedEntry.getParentName());
 		
 		try {
 			service.updateEntryAddAtribute(selectedEntry.getParentName(), "member", selectedEntry.getDistinguishedName());
@@ -230,7 +233,7 @@ public class AdController {
 		List<LdapEntry> results=null;
 		try {
 			if(searchDn.equals("")) {
-				searchDn=configurationService.getAdDomainName();
+				searchDn=service.getADDomainName();
 			}
 			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
 			filterAttributes.add(new LdapSearchFilterAttribute(key, value, SearchFilterEnum.EQ));

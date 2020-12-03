@@ -20,6 +20,7 @@ import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.directory.api.ldap.model.cursor.EntryCursor;
 import org.apache.directory.api.ldap.model.cursor.SearchCursor;
 import org.apache.directory.api.ldap.model.entry.Attribute;
 import org.apache.directory.api.ldap.model.entry.DefaultEntry;
@@ -49,6 +50,7 @@ import org.apache.directory.ldap.client.api.PoolableLdapConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,6 +66,7 @@ import tr.org.lider.ldap.LdapSearchFilterAttribute;
 
 
 @Service
+@Qualifier("AdImpl")
 public class AdService implements ILDAPService{
 	
 	
@@ -107,7 +110,7 @@ public class AdService implements ILDAPService{
 				lconfig.setCredentials(password);
 		}  else {
 			lconfig.setName(userName);
-			lconfig.setCredentials(userName);
+			lconfig.setCredentials(password);
 		}
 
 		if (useSSL) {
@@ -349,7 +352,28 @@ public class AdService implements ILDAPService{
 
 	@Override
 	public String getDN(String baseDn, String attributeName, String attributeValue) throws LdapException {
-		// TODO Auto-generated method stub
+
+		LdapConnection connection = null;
+		EntryCursor cursor = null;
+
+		String filter = "(" + attributeName + "=" + attributeValue + ")";
+
+		try {
+			connection = getConnection();
+			cursor = connection.search(baseDn, filter, SearchScope.SUBTREE);
+			while (cursor.next()) {
+				return cursor.get().getDn().getName();
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+			releaseConnection(connection);
+		}
+
 		return null;
 	}
 
@@ -603,8 +627,7 @@ public class AdService implements ILDAPService{
 		return null;
 	}
 
-	@Override
-	public LdapEntry getDomainEntry() throws LdapException {
+	public String getADDomainName() {
 		String domainName = configurationService.getAdDomainName();
 		String domainNameStr="";
 		if(domainName!=null && !domainName.equals("")) {
@@ -618,6 +641,13 @@ public class AdService implements ILDAPService{
 				}
 			}
 		}
+		return domainNameStr;
+	}
+	
+	@Override
+	public LdapEntry getDomainEntry() throws LdapException {
+		String  domainNameStr=getADDomainName();
+		
 		logger.info("Searching on AD for DN: "+domainNameStr);
 		LdapEntry domainEntry = null;
 		try {

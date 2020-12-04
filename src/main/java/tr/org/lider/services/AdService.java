@@ -144,6 +144,7 @@ public class AdService implements ILDAPService{
 		try {
 			pool.releaseConnection(ldapConnection);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 		}
 	}
@@ -194,6 +195,7 @@ public class AdService implements ILDAPService{
 			connection.delete(new Dn(dn));
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
+			e.printStackTrace();
 			throw new LdapException(e);
 		} finally {
 			releaseConnection(connection);
@@ -219,6 +221,7 @@ public class AdService implements ILDAPService{
 				connection.modify(entry, ModificationOperation.REPLACE_ATTRIBUTE);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
 		} finally {
@@ -247,6 +250,7 @@ public class AdService implements ILDAPService{
 				connection.modify(mr);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
 		} finally {
@@ -286,6 +290,7 @@ public class AdService implements ILDAPService{
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
 		} finally {
@@ -295,10 +300,7 @@ public class AdService implements ILDAPService{
 	}
 
 	@Override
-	public void updateEntryRemoveAttributeWithValue(String entryDn, String attribute, String value)
-			throws LdapException {
-
-
+	public void updateEntryRemoveAttributeWithValue(String entryDn, String attribute, String value)	throws LdapException {
 		logger.info("Removing attribute: {}", attribute);
 		LdapConnection connection = null;
 
@@ -322,6 +324,7 @@ public class AdService implements ILDAPService{
 				connection.modify(entry, ModificationOperation.REPLACE_ATTRIBUTE);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
 		} finally {
@@ -336,6 +339,7 @@ public class AdService implements ILDAPService{
 		try {
 			entry = connection.getRootDse();
 		} catch (org.apache.directory.api.ldap.model.exception.LdapException e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
 		} finally {
@@ -365,6 +369,7 @@ public class AdService implements ILDAPService{
 				return cursor.get().getDn().getName();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);
 		} finally {
@@ -466,6 +471,7 @@ public class AdService implements ILDAPService{
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage());
 			throw new LdapException(e);
 		} finally {
@@ -555,6 +561,7 @@ public class AdService implements ILDAPService{
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage());
 			throw new LdapException(e);
 		} finally {
@@ -729,6 +736,7 @@ public class AdService implements ILDAPService{
 				pool.close();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 		}
 	}

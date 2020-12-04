@@ -69,8 +69,10 @@ function addMember(distinguishedName, groupName) {
 		data : params,
 		dataType: "json",
 		success : function(ldapResult) {
-			
-			
+			console.log(data)
+			$.notify("Üye Başarı ile eklendi.",{className: 'success',position:"right top"}  );
+			$('#genericModalLarge').trigger('click');
+			createDmTreeGrid();
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Hata Oluştu.", "error");

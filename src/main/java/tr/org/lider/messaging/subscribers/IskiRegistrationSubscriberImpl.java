@@ -41,6 +41,7 @@ import tr.org.lider.messaging.messages.ILiderMessage;
 import tr.org.lider.messaging.messages.IRegistrationResponseMessage;
 import tr.org.lider.messaging.messages.RegistrationMessageImpl;
 import tr.org.lider.messaging.messages.RegistrationResponseMessageImpl;
+import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.repositories.AgentRepository;
 import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.services.RegistrationTemplateService;
@@ -64,6 +65,9 @@ public class IskiRegistrationSubscriberImpl implements IRegistrationSubscriber {
 	@Autowired
 	private RegistrationTemplateService registrationTemplateService;
 
+	@Autowired
+	private XMPPClientImpl xmppClient;
+	
 	private String LDAP_VERSION = "3";
 
 	private static String DIRECTORY_SERVER_LDAP="LDAP";
@@ -100,7 +104,7 @@ public class IskiRegistrationSubscriberImpl implements IRegistrationSubscriber {
 			if(ldapUserEntry==null) {
 
 				RegistrationResponseMessageImpl	respMessage = new RegistrationResponseMessageImpl(StatusCode.NOT_AUTHORIZED,
-						"User Not Found", dn, null, new Date());
+						"User Not Found!!!", dn, null, new Date());
 				return respMessage;
 			}
 
@@ -128,6 +132,7 @@ public class IskiRegistrationSubscriberImpl implements IRegistrationSubscriber {
 						if(ip.startsWith(template.getUnitId())) {
 							agentTemplate = template;
 							isTemplateFound = true;
+							logger.info("Registration template found: " + agentTemplate.toString());
 							break;
 						}
 					}
@@ -152,6 +157,12 @@ public class IskiRegistrationSubscriberImpl implements IRegistrationSubscriber {
 							if(ldapUserEntry.getDistinguishedName().equals(agentTemplate.getAuthGroup())) {
 								ldapUserAllowedForRegistration = true;
 							}
+						}
+						if(ldapUserAllowedForRegistration) {
+							logger.info("User is allowed for agent registration. " + ldapUserEntry.getDistinguishedName() + " is member of agent template auth group: " + agentTemplate.getAuthGroup());
+						} else {
+							logger.error(ldapUserEntry.getDistinguishedName() + " is not allowed to register agent:" + message.getHostname());
+							logger.error(ldapUserEntry.getDistinguishedName() + " is not member of agent template auth group: " + agentTemplate.getAuthGroup());
 						}
 						if(ldapUserAllowedForRegistration) {
 
@@ -346,6 +357,7 @@ public class IskiRegistrationSubscriberImpl implements IRegistrationSubscriber {
 						+ "  ldap version =" + respMessage.getLdapVersion()
 						);
 			}
+			xmppClient.addClientToRoster(jid + "@"+configurationService.getXmppServiceName());
 			return respMessage;
 
 		} else if (AgentMessageType.UNREGISTER == message.getType()) {

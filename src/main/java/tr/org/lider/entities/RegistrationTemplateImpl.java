@@ -106,4 +106,11 @@ public class RegistrationTemplateImpl implements Serializable{
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
+
+	@Override
+	public String toString() {
+		return "RegistrationTemplateImpl [id=" + id + ", unitId=" + unitId + ", authGroup=" + authGroup + ", parentDn="
+				+ parentDn + ", createDate=" + createDate + "]";
+	}
+	
 }

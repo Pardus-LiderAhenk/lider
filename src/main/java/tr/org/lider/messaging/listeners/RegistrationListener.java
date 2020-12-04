@@ -35,7 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import tr.org.lider.messaging.messages.ILiderMessage;
 import tr.org.lider.messaging.messages.RegistrationMessageImpl;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
-import tr.org.lider.messaging.subscribers.DefaultRegistrationSubscriberImpl;
 import tr.org.lider.messaging.subscribers.IRegistrationSubscriber;
 
 

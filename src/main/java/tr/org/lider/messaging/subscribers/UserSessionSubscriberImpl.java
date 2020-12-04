@@ -18,6 +18,7 @@ import tr.org.lider.entities.AgentPropertyImpl;
 import tr.org.lider.entities.SessionEvent;
 import tr.org.lider.entities.UserSessionImpl;
 import tr.org.lider.ldap.ILDAPService;
+import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
@@ -49,8 +50,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 	private ConfigurationService configurationService;
 
 	@Autowired
-	@Qualifier("ldapImpl")
-	private ILDAPService ldapService;
+	private LDAPServiceImpl ldapService;
 
 	@Override
 	public ILiderMessage messageReceived(IUserSessionMessage message) throws Exception {
@@ -188,7 +188,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 		return ldapService;
 	}
 
-	public void setLdapService(ILDAPService ldapService) {
+	public void setLdapService(LDAPServiceImpl ldapService) {
 		this.ldapService = ldapService;
 	}
 	

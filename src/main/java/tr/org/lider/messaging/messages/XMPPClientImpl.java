@@ -1,6 +1,6 @@
 /*
  *
- *    Copyright © 2015-2016 Tübitak ULAKBIM
+t *    Copyright © 2015-2016 Tübitak ULAKBIM
  *
  *    This file is part of Lider Ahenk.
  *
@@ -291,7 +291,7 @@ public class XMPPClientImpl {
 				// 'smack'
 				if (configurationService.getXmppResource() != null
 						&& !configurationService.getXmppResource().isEmpty()) {
-					connection.login(username, password, "test");
+					connection.login(username, password, configurationService.getXmppResource() );
 				} else {
 					connection.login(username, password);
 				}

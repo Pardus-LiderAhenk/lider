@@ -208,22 +208,20 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 	private String findUserDn(String userUid) throws LdapException {
 		String userDN=null;
 		
-		if(configurationService.getDomainType().equals(DomainType.ACTIVE_DIRECTORY)) {
-
-			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
-			filterAttributes.add(new LdapSearchFilterAttribute("sAMAccountName", userUid, SearchFilterEnum.EQ));
-			
-			List<LdapEntry> users= adService.search(adService.getADDomainName(),filterAttributes, new String[] {"*"});
-			if(users.size()>0) {
-				userDN=users.get(0).getDistinguishedName();
-			}
-		}
-		else if(configurationService.getDomainType().equals(DomainType.LDAP)) {
+//		if(configurationService.getDomainType().equals(DomainType.ACTIVE_DIRECTORY)) {
+//
+//			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+//			filterAttributes.add(new LdapSearchFilterAttribute("sAMAccountName", userUid, SearchFilterEnum.EQ));
+//			
+//			List<LdapEntry> users= adService.search(adService.getADDomainName(),filterAttributes, new String[] {"*"});
+//			if(users.size()>0) {
+//				userDN=users.get(0).getDistinguishedName();
+//			}
+//		}
+//		else if(configurationService.getDomainType().equals(DomainType.LDAP)) {
 			userDN=ldapService.getDN(configurationService.getLdapRootDn(), configurationService.getUserLdapUidAttribute(),
 					userUid);
-		}
-		
-		
+//		}
 		return userDN;
 	}
 
@@ -241,13 +239,13 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 		filterAttributesList.add(new LdapSearchFilterAttribute("member", userDn, SearchFilterEnum.EQ));
 		
 		List<LdapEntry> groups=null;
-		if(configurationService.getDomainType().equals(DomainType.ACTIVE_DIRECTORY)) {
-			String baseDn=((AdService)adService).getADDomainName();
-			groups = adService.search(baseDn, filterAttributesList, new String[] {"*"});
-		}
-		else if(configurationService.getDomainType().equals(DomainType.LDAP)) {
+//		if(configurationService.getDomainType().equals(DomainType.ACTIVE_DIRECTORY)) {
+//			String baseDn=((AdService)adService).getADDomainName();
+//			groups = adService.search(baseDn, filterAttributesList, new String[] {"*"});
+//		}
+//		else if(configurationService.getDomainType().equals(DomainType.LDAP)) {
 			groups=  ldapService.search(configurationService.getLdapRootDn(), filterAttributesList, new String[] {"*"});
-		}
+//		}
 		
 		return groups;
 	}

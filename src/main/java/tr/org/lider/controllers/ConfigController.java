@@ -57,4 +57,9 @@ public class ConfigController {
 		}
 
 	}
+	
+	@RequestMapping(method=RequestMethod.GET, value = "/configurations", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ConfigParams getConfigParams() {
+		return configurationService.getConfigParams();
+	}
 }

@@ -77,7 +77,7 @@ getConfigurationParams();
 function getConfigurationParams() {
 	$.ajax({ 
 	    type: 'GET', 
-	    url: "/lider/settings/configurations",
+	    url: "/lider/config/configurations",
 	    dataType: 'json',
 	    success: function (data) { 
 	    	if(data != null) {

@@ -17,7 +17,7 @@ var scheduledParamPackageManagement = null;
 var scheduledModalPacManagementOpened = false;
 var packageInfoList = [];
 var dnlist = [];
-var tableInsPackages;
+var tableInsPackages = null;
 var pluginTask_PackageManagement = null;
 $('#sendTaskDeletePackageBtn').hide();
 $('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="3" class="text-center">Paket Bulunamadı.</td></tr>');
@@ -172,6 +172,7 @@ function getPackagesListener(msg) {
 							var params = JSON.stringify(pluginTask_PackageManagement);
 							tableInsPackages.clear().draw();
 							tableInsPackages.destroy();
+							tableInsPackages= null;
 							$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="3" class="text-center">Paket Bulunamadı.</td></tr>');
 							$('#packageManagementHelp').html('İstemcide kurulu olan paketleri listelemek için Paketleri Listele butonuna tıklayınız.');
 							sendPackageManagementTask(params);
@@ -190,6 +191,7 @@ function getPackagesListener(msg) {
 				$('#sendTaskDeletePackageBtn').hide();
 				tableInsPackages.clear().draw();
 				tableInsPackages.destroy();
+				tableInsPackages= null;
 			}
 		}
 	}
@@ -330,6 +332,7 @@ $('#sendTaskGetPackagesBtn').click(function(e){
 				if (tableInsPackages) {
 					tableInsPackages.clear().draw();
 					tableInsPackages.destroy();
+					tableInsPackages= null;
 					$('#packageManagementBody').html('<tr id="packageManagementBodyEmptyInfo"><td colspan="3" class="text-center">Paket Bulunamadı.</td></tr>');
 					$('#packageManagementHelp').html('İstemcide kurulu olan paketleri listelemek için Paketleri Listele butonuna tıklayınız.');
 				}

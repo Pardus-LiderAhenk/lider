@@ -20,7 +20,7 @@ import tr.org.lider.services.NotifyService;
  *
  */
 
-@Secured({"ROLE_ADMIN", "ROLE_NOTIFY_DEFINITION" })
+@Secured({"ROLE_ADMIN", "ROLE_ETA_MESSAGE_DEFINITION" })
 @RestController
 @RequestMapping("/notify")
 public class NotifyController {

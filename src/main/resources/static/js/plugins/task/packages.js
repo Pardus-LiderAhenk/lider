@@ -13,15 +13,15 @@ if (ref_packages) {
 }
 var scheduledParamPackages = null;
 var scheduledModalPackagesOpened = false;
-var packages_data = [];
+var packagesData = [];
 var packageInfoList = [];
 var dnlist=[];
-var tablePackages;
+var tablePackages = null;
 var pluginTask_Packages = null;
 var ref_packages=connection.addHandler(packagesListener, null, 'message', null, null,  null);
 $('#sendTaskPackages').hide();
 $('#sendTaskCronPackages').hide();
-var packages_list_table = [];
+var packagesListTable = [];
 $('#packageBody').html('<tr id="packagesBodyEmptyInfo"><td colspan="6" class="text-center">Paket Bulunamadı. Paket Listele Butonuna Tıklayınız.</td></tr>');
 
 for (var i = 0; i < selectedEntries.length; i++) {
@@ -37,10 +37,14 @@ for (var n = 0; n < pluginTaskList.length; n++) {
 
 $("#installRadioBtn").prop("checked", true);
 $('#getPackagesListBtn').click(function(e){
+	
 	if (tablePackages) {
+		packagesListTable = [];
 		tablePackages.clear().draw();
 		tablePackages.destroy();
+		tablePackages = null;
 	}
+	
 	var params = {
 			"type" : $('#packageType').val(),
 			"url": $('#repoUrl').val(),
@@ -51,6 +55,7 @@ $('#getPackagesListBtn').click(function(e){
 });
 
 function getPackagesList(params){
+	
 	progress("divPackages","progressPackages",'show');
 	$.ajax({
 		type: "POST",
@@ -58,8 +63,8 @@ function getPackagesList(params){
 		data: params,
 		dataType: "json",
 		success: function(data) {
-			packages_data = data;
-			progress("divPackages","progressPackages",'hide')
+			packagesData = data;
+			progress("divPackages","progressPackages",'hide');
 			if (data != null) {
 				for (var i = 0; i < data.length; i++) {
 					var name = data[i]["packageName"];
@@ -81,22 +86,25 @@ function getPackagesList(params){
 					+ '<option value="Uninstall">Kaldır</option>'
 					+ '</select>';
 
-					packages_list_table.push( [ cb_row, name, version, size, description, toogle_btn_tag] );
+					packagesListTable.push( [ cb_row, name, version, size, description, toogle_btn_tag] );
 				}
+				$("#plugin-result-packages").html("");
+				createdPackagesTable();
+				$('#sendTaskPackages').show();
+				$('#sendTaskCronPackages').show();
+				$('#packagesHelp').html("Kurmak ya da Kaldırmak istediğiniz paket/leri seçerek Çalıştır butonuna tıklayınız. ")
 			}
 			else {
-				packages_list_table.push( [ null, null, null, null, null, null] );
+				packagesListTable = [];
+				$('#packageBody').html('<tr id="packagesBodyEmptyInfo"><td colspan="6" class="text-center">Paket Bulunamadı.</td></tr>');
+				$('#packagesHelp').html("Girilen depo adresindeki paketleri listemek için Paketleri Listele butonuna tıklayınız.")
 			}
-			$("#plugin-result-packages").html("");
-			createdPackagesTable();
-			$('#sendTaskPackages').show();
-			$('#sendTaskCronPackages').show();
-			$('#packagesHelp').html("Kurmak ya da Kaldırmak istediğiniz paket/leri seçerek Çalıştır butonuna tıklayınız. ")
 		},
 		error: function(data){
 			$.notify("Paketler listelenirken hata oluştu", "error");
-			$("#plugin-result-packages").html("Paketler listelenirken hata oluştu");
-			progress("divPackages","progressPackages",'hide')
+			$("#plugin-result-packages").html(("Paketler listelenirken hata oluştu").fontcolor("red"));
+			progress("divPackages","progressPackages",'hide');
+			$('#packagesHelp').html("Girilen depo adresindeki paketleri listemek için Paketleri Listele butonuna tıklayınız.")
 			$('#packageBody').html('<tr id="packagesBodyEmptyInfo"><td colspan="6" class="text-center">Paket Bulunamadı.</td></tr>');
 		},
 	});
@@ -109,7 +117,7 @@ function createdPackagesTable() {
 	}
 
 	tablePackages = $('#packagesListTableId').DataTable( {
-		data:           packages_list_table,
+		data:           packagesListTable,
 		deferRender:    true,
 		paging: true,
 		pageLength: 10,
@@ -201,37 +209,37 @@ function selectTagPackage(sel){
 	var packageInfo = {};
 	if (tag == "Install" || tag == "Uninstall") {
 		if (status == false) {
-			for (var i = 0; i < packages_data.length; i++) {
-				if (pName == packages_data[i]["packageName"] && pVersion == packages_data[i]["version"]) {
+			for (var i = 0; i < packagesData.length; i++) {
+				if (pName == packagesData[i]["packageName"] && pVersion == packagesData[i]["version"]) {
 					packageInfo = {
-							"packageName": packages_data[i]["packageName"],
-							"version": packages_data[i]["version"],
-							"installed": packages_data[i]["installed"],
-							"desiredStatus": packages_data[i]["desiredStatus"], //NA and UNINSTALL
+							"packageName": packagesData[i]["packageName"],
+							"version": packagesData[i]["version"],
+							"installed": packagesData[i]["installed"],
+							"desiredStatus": packagesData[i]["desiredStatus"], //NA and UNINSTALL
 							"tag": tag, // i and u(Yükle, Kaldır)
-							"installedSize": packages_data[i]["installedSize"],
-							"maintainer": packages_data[i]["maintainer"],
-							"architecture": packages_data[i]["architecture"],
-							"depends": packages_data[i]["depends"],
-							"recommends": packages_data[i]["recommends"],
-							"breaks": packages_data[i]["breaks"],
-							"descriptionMd5": packages_data[i]["descriptionMd5"],
-							"homepage": packages_data[i]["homepage"],
-							"suggests": packages_data[i]["suggests"],
-							"multiArch": packages_data[i]["multiArch"],
-							"md5Sum": packages_data[i]["md5Sum"],
-							"sha1": packages_data[i]["sha1"],
-							"sha256": packages_data[i]["sha256"],
-							"replaces": packages_data[i]["replaces"],
-							"preDepends": packages_data[i]["preDepends"],
-							"provides": packages_data[i]["provides"],
-							"description": packages_data[i]["description"],
-							"section": packages_data[i]["section"],
-							"source": packages_data[i]["source"],
-							"conflicts": packages_data[i]["conflicts"],
-							"filename": packages_data[i]["filename"],
-							"priority": packages_data[i]["priority"],
-							"size": packages_data[i]["size"]
+							"installedSize": packagesData[i]["installedSize"],
+							"maintainer": packagesData[i]["maintainer"],
+							"architecture": packagesData[i]["architecture"],
+							"depends": packagesData[i]["depends"],
+							"recommends": packagesData[i]["recommends"],
+							"breaks": packagesData[i]["breaks"],
+							"descriptionMd5": packagesData[i]["descriptionMd5"],
+							"homepage": packagesData[i]["homepage"],
+							"suggests": packagesData[i]["suggests"],
+							"multiArch": packagesData[i]["multiArch"],
+							"md5Sum": packagesData[i]["md5Sum"],
+							"sha1": packagesData[i]["sha1"],
+							"sha256": packagesData[i]["sha256"],
+							"replaces": packagesData[i]["replaces"],
+							"preDepends": packagesData[i]["preDepends"],
+							"provides": packagesData[i]["provides"],
+							"description": packagesData[i]["description"],
+							"section": packagesData[i]["section"],
+							"source": packagesData[i]["source"],
+							"conflicts": packagesData[i]["conflicts"],
+							"filename": packagesData[i]["filename"],
+							"priority": packagesData[i]["priority"],
+							"size": packagesData[i]["size"]
 					};
 					packageInfoList.push(packageInfo);
 				}

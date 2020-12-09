@@ -54,6 +54,7 @@ $('#sendTaskGetServiceList').click(function(e){
 				if (tableServiceList) {
 					tableServiceList.clear().draw();
 					tableServiceList.destroy();
+					tableServiceList = null;
 				}
 				getServices();
 				scheduledParamServiceList = null;

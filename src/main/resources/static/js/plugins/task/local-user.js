@@ -392,7 +392,7 @@ function generateLocalUserPassword() {
 	var digitsFlag = contains(userPassword, digits);
 	var splCharsFlag = contains(userPassword, splChars);
 
-	if(userPassword.length>=8 && ucaseFlag && lcaseFlag && digitsFlag && splCharsFlag){
+	if(userPassword.length>=6 && ucaseFlag && lcaseFlag && digitsFlag){
 		return true;
 	}else {
 		return false;
@@ -430,10 +430,11 @@ $('#sendTaskEditLocalUser').click(function(e){
 	if (newUsername == selectUserName) {
 		newUsername = "";
 	}
+	var password = $("#localUserNewPassword").val();
 	var parameterMap={
 			"username": selectUserName,
 			"new_username": newUsername,
-			"password": $("#localUserNewPassword").val(),
+			"password": password,
 			"desktop_write_permission": "true",
 			"active": $("#localUserActiveSb").val().toString(),
 			"groups": groups,
@@ -444,13 +445,17 @@ $('#sendTaskEditLocalUser').click(function(e){
 
 		if ($("#localUserNewPassword").val() != "") {
 			if (generateLocalUserPassword()) {
+				if (contains(password, "*")) {
+			    	$.notify("Parola * içermemelidir.","warn");
+					return;
+				}
 				if ($("#localUserNewPassword").val() == $("#localUserVerifyPassword").val()) {
 					sendLocalUserTaskConfirm("EDIT_USER", parameterMap);
 				}else {
 					$.notify("Parola uyuşmamaktadır.","warn");
 				}
 			}else {
-				$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
+				$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
 			}
 		}else {
 			sendLocalUserTaskConfirm("EDIT_USER", parameterMap);
@@ -477,9 +482,10 @@ $('#sendTaskAddLocalUser').click(function(e){
 	if ($('#kioskModeCb').is(':checked')) {
 		kioskMode = "true";
 	}
+	var password = $("#localUserNewPassword").val();
 	var parameterMap={
 			"username": $("#localUserName").val(),
-			"password": $("#localUserNewPassword").val(),
+			"password": password,
 			"desktop_write_permission": "true",
 			"active": $("#localUserActiveSb").val().toString(),
 			"groups": groups,
@@ -488,6 +494,10 @@ $('#sendTaskAddLocalUser').click(function(e){
 	};
 	if ($("#localUserName").val() != "" && $("#localUserHomeDirectory").val() != "") {
 		if (generateLocalUserPassword()) {
+			if (contains(password, "*")) {
+		    	$.notify("Parola * içermemelidir.","warn");
+				return;
+			}
 			if ($("#localUserNewPassword").val() == $("#localUserVerifyPassword").val()) {
 				sendLocalUserTaskConfirm("ADD_USER", parameterMap);
 			}else {
@@ -495,7 +505,7 @@ $('#sendTaskAddLocalUser').click(function(e){
 			}
 
 		}else {
-			$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
+			$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
 		}
 
 	}else {

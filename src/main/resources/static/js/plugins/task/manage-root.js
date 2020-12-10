@@ -143,15 +143,15 @@ $('#generateRootPassword').click(function(e){
 	var digitsFlag2 = contains(pwd, digits);
 	var splCharsFlag2 = contains(pwd, splChars);
 
-	if(ucaseFlag2 && lcaseFlag2 && digitsFlag2 && splCharsFlag2){
+	if(ucaseFlag2 && lcaseFlag2 && digitsFlag2){
 		$("#inputRootPassword").val(pwd);
 	}
-	while (ucaseFlag2 == false || lcaseFlag2 == false || digitsFlag2 == false || splCharsFlag2 == false) {
+	while (ucaseFlag2 == false || lcaseFlag2 == false || digitsFlag2 == false) {
 		var pwd = generatePassword();
 		var ucaseFlag2 = contains(pwd, upperCase);
 		var lcaseFlag2 = contains(pwd, lowerCase);
 		var digitsFlag2 = contains(pwd, digits);
-		var splCharsFlag2 = contains(pwd, splChars);
+//		var splCharsFlag2 = contains(pwd, splChars);
 	}
 	$("#inputRootPassword").val(pwd);
 	$("#inputRootPasswordConfirm").val(pwd);
@@ -174,8 +174,8 @@ $('.showPassword').click(function(e){
 });
 
 function generatePassword(){
-	var length = 8; //root password min length
-	var chars = "abcdefghijklmnopqrstuvwxyz+=.@*!ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	var length = 6; //root password min length
+	var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	var password = "";
 	for (var x = 0; x < length; x++) {
 		var i = Math.floor(Math.random() * chars.length);
@@ -240,8 +240,13 @@ $('#sendTask-manage-root').click(function(e){
 		var ucaseFlag = contains(rootPassword, upperCase);
 		var lcaseFlag = contains(rootPassword, lowerCase);
 		var digitsFlag = contains(rootPassword, digits);
-		var splCharsFlag = contains(rootPassword, splChars);
-		if(rootPassword.length>=8 && ucaseFlag && lcaseFlag && digitsFlag && splCharsFlag){
+//		var splCharsFlag = contains(rootPassword, splChars);
+		var splCharsFlag = contains(rootPassword, "*");
+		if (splCharsFlag) {
+			$.notify("Parola * içermemelidir.","warn");
+			return;
+		}
+		if(rootPassword.length>=6 && ucaseFlag && lcaseFlag && digitsFlag){
 			if (rootPassword == rootPasswordConfirm) {
 				sendRootTask(params);
 			}else {
@@ -249,7 +254,7 @@ $('#sendTask-manage-root').click(function(e){
 			}
 		}
 		else{
-			$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
+			$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
 		}
 	}
 	else{

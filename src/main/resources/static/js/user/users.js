@@ -237,14 +237,18 @@ $(document).ready(function(){
 				var ucaseFlag = contains(userPassword, upperCase);
 			    var lcaseFlag = contains(userPassword, lowerCase);
 			    var digitsFlag = contains(userPassword, digits);
-			    var splCharsFlag = contains(userPassword, splChars);
+			    var splCharsFlag = contains(userPassword, "*");
+			    if (splCharsFlag) {
+			    	$.notify("Parola * içermemelidir.","warn"  );
+					return;
+				}
 			    if(userPassword!=confirmPassword){
 					$.notify("Parolalar uyuşmamaktadır.","warn"  );
-					return
+					return;
 				}
-			    if(userPassword.length < 8 || !ucaseFlag || !lcaseFlag || !digitsFlag || !splCharsFlag){
-			    	$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
-			    	return
+			    if(userPassword.length < 6 || !ucaseFlag || !lcaseFlag || !digitsFlag){
+			    	$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
+			    	return;
 			    }
 			    updateUserPassword(selectedRowGen.distinguishedName)
 			});
@@ -278,7 +282,6 @@ $(document).ready(function(){
 							$.notify("Kullanıcıya Parola Politikası Atanmıştır", "success");
 							$('#genericModal').trigger('click');
 							var selectedData = $("#treeGridUserHolderDivGrid").jqxTreeGrid('getRow', selectedRowGen.entryUUID);
-							console.log(selectedData)
 							if(selectedData){
 								selectedData.attributes = data.attributes
 								$("#treeGridUserHolderDivGrid").jqxTreeGrid('updateRow', selectedData.entryUUID, data);
@@ -316,17 +319,21 @@ function addUser(row) {
 	var ucaseFlag = contains(userPassword, upperCase);
     var lcaseFlag = contains(userPassword, lowerCase);
     var digitsFlag = contains(userPassword, digits);
-    var splCharsFlag = contains(userPassword, splChars);
+    var splCharsFlag = contains(userPassword, "*");
+    if (splCharsFlag) {
+    	$.notify("Parola * içermemelidir.","warn");
+		return;
+	}
     
     var parentEntryUUID= row.entryUUID;
     
-    if(userPassword.length < 8 || !ucaseFlag || !lcaseFlag || !digitsFlag || !splCharsFlag){
-    	$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
-    	return
+    if(userPassword.length < 6 || !ucaseFlag || !lcaseFlag || !digitsFlag){
+    	$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
+    	return;
     }
     if(userPassword!=confirm_password){
 		$.notify("Parolalar Uyuşmamaktadır.",{className: 'warn',position:"right top"}  );
-		return
+		return;
 	}
     var params = {
 			"uid" : uid,
@@ -344,7 +351,6 @@ function addUser(row) {
 		data : params,
 		dataType : 'json',
 		success : function(data) {
-			console.log(data)
 			$.notify("Kullanıcı Başarı ile eklendi.",{className: 'success',position:"right top"}  );
 			$('#genericModalLarge').trigger('click');
 			$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
@@ -440,7 +446,6 @@ function editUser(userId) {
 		success : function(data) {
 			$.notify("Kullanıcı Başarı ile güncellendi.",{className: 'success',position:"right top"}  );
 //			$('#editUserBtn').addClass('disabled');
-			console.log(data)
 			$('#genericModal').trigger('click');
 			var selectedData = $("#treeGridUserHolderDivGrid").jqxTreeGrid('getRow', data.entryUUID);
 			if(selectedData){
@@ -640,7 +645,6 @@ var groupPanelOpened=false;
 function showGroups(row){
 	var memberHtml='<table class="table table-striped table-bordered " id="attrMemberTable">';
 	memberHtml +='<thead> <tr><th style="width: 80%" > Kullanıcı Grup Adı </th> <th style="width: 20%"> </th></tr> </thead>';
-	console.log(row)
 	var isGroupExist=false;
 	for (key in row.attributesMultiValues) {
 		if (row.attributesMultiValues.hasOwnProperty(key)) {
@@ -792,7 +796,6 @@ function getLastUser() {
 }
 
 function fillUserInfo(ldapResult) {
-	console.log(ldapResult)
 	$('#userName').html("");
 	$('#userAddress').html("");
 	$('#userPhone').html("");
@@ -886,7 +889,6 @@ function fillUserInfo(ldapResult) {
 function getFormattedDate(date) {
 	
 	var h= date.split('T');
-	console.log(h[1])
 	var hours=h[1].split(':')
 	var d = date.slice(0, 10).split('-');  
 	return d[1] +'/'+ d[2] +'/'+ d[0] + ' '+(hours[0])+":"+hours[1]; // 10/30/2010
@@ -911,7 +913,6 @@ function fillUserSessions(ldapResult) {
 				html += '<th style="width: 30%" >TARİH</th>';
 				html += '</thead>';
 				
-				console.log(sessionList)
 				for (var m = 0; m < sessionList.length; m++) {
 					var row = sessionList[m];
 					

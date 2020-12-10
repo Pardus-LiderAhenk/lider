@@ -1,5 +1,5 @@
 /**
- * Registration suscriber for DİB
+ * Registration suscriber for BTK
  * if hostname does not match with any registration rules agent will be
  * added to Agent ou as default
  * 

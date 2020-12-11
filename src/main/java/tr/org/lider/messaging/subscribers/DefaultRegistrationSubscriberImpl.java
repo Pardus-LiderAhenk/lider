@@ -47,6 +47,7 @@ import tr.org.lider.messaging.messages.ILiderMessage;
 import tr.org.lider.messaging.messages.IRegistrationResponseMessage;
 import tr.org.lider.messaging.messages.RegistrationMessageImpl;
 import tr.org.lider.messaging.messages.RegistrationResponseMessageImpl;
+import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.repositories.AgentRepository;
 import tr.org.lider.services.AdService;
 import tr.org.lider.services.ConfigurationService;
@@ -82,6 +83,10 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultRegistrationSubscriberImpl.class);
 
+	
+	@Autowired
+	private XMPPClientImpl xmppClient;
+	
 	@Autowired
 	private LDAPServiceImpl ldapService;
 	
@@ -311,6 +316,8 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 						);
 			}
 			
+			
+			xmppClient.addClientToRoster(jid + "@"+configurationService.getXmppServiceName());
 			return respMessage;
 			
 		} else if (AgentMessageType.UNREGISTER == message.getType()) {
@@ -354,6 +361,8 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 			if (agent != null) {
 				agentDao.delete(agent);
 			}
+			
+			
 			
 			IRegistrationResponseMessage respMessage= new RegistrationResponseMessageImpl(StatusCode.UNREGISTERED,dn + " and its related database record unregistered successfully!", dn, null, new Date());
 

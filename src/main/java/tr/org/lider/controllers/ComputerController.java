@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
@@ -361,37 +360,47 @@ public class ComputerController {
 	public Boolean deleteAgent(@RequestParam(value="agentDN", required=true) String agentDN,
 			@RequestParam(value="agentUID", required=true) String agentUID) {
 		logger.info("Agent delete request has been receieved. DN: " + agentDN);
+
+		List<AgentImpl> agent = agentService.findAgentByDn(agentDN);
+		Boolean isAgentOnline = false;
+		if(agent != null && agent.size() > 0) {
+			isAgentOnline = messagingService.isRecipientOnline(agent.get(0).getJid());
+		}
+		
 		//send task to Ahenk to change DN with new DN
 		Map<String, Object> parameterMap = new  HashMap<>();
 		parameterMap.put("dn", agentDN);
 		parameterMap.put("directory_server", configurationService.getDomainType());
 		List<String> dnList = new ArrayList<>();
 		dnList.add(agentDN);
+		//if only agent is online send delete task
+		//if agent is offline just delete from database and ldap
+		if(isAgentOnline) {
+			PluginImpl plugin = new PluginImpl();
+			plugin = pluginService.findPluginIdByName("ldap");
+			PluginTask requestBody = new PluginTask();
+			requestBody.setCommandId("DELETE_AGENT");
+			requestBody.setPlugin(plugin);
 
-		PluginImpl plugin = new PluginImpl();
-		plugin = pluginService.findPluginIdByName("ldap");
-		PluginTask requestBody = new PluginTask();
-		requestBody.setCommandId("DELETE_AGENT");
-		requestBody.setPlugin(plugin);
+			requestBody.setParameterMap(parameterMap);
+			requestBody.setDnType(DNType.AHENK);
+			requestBody.setState(1);
+			requestBody.setDnList(dnList);
+			List<LdapEntry> entryList = new  ArrayList<LdapEntry>();
+			LdapEntry ldapEntry = ldapService.getEntryDetail(agentDN);
+			entryList.add(ldapEntry);
 
-		requestBody.setParameterMap(parameterMap);
-		requestBody.setDnType(DNType.AHENK);
-		requestBody.setState(1);
-		requestBody.setDnList(dnList);
-		List<LdapEntry> entryList = new  ArrayList<LdapEntry>();
-		LdapEntry ldapEntry = ldapService.getEntryDetail(agentDN);
-		entryList.add(ldapEntry);
+			requestBody.setEntryList(entryList);
+			IRestResponse restResponse = taskService.execute(requestBody);
+			logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		}
 
-		requestBody.setEntryList(entryList);
-		IRestResponse restResponse = taskService.execute(requestBody);
 		agentService.deleteAgent(agentDN);
 		try {
 			ldapService.deleteEntry(agentDN);
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
-		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
-
 		commandService.deleteAgentCommands(agentDN, agentUID);
 		return true;
 	}
@@ -402,6 +411,13 @@ public class ComputerController {
 			@RequestParam(value="cn", required=true) String cn,
 			@RequestParam(value="newHostname", required=true) String newHostname) {
 		logger.info("Agent rename request has been receieved. DN: " + agentDN);
+		
+		List<AgentImpl> agent = agentService.findAgentByDn(agentDN);
+		Boolean isAgentOnline = false;
+		if(agent != null && agent.size() > 0) {
+			isAgentOnline = messagingService.isRecipientOnline(agent.get(0).getJid());
+		}
+		
 		String newAgentDN = agentDN.replace("cn=" + cn, "cn=" + newHostname);
 
 		List<LdapEntry> entryList = new  ArrayList<LdapEntry>();
@@ -434,22 +450,23 @@ public class ComputerController {
 		parameterMap.put("directory_server", configurationService.getDomainType());
 		List<String> dnList = new ArrayList<>();
 		dnList.add(agentDN);
+		
+		if(isAgentOnline) {
+			PluginImpl plugin = new PluginImpl();
+			plugin = pluginService.findPluginIdByName("ldap");
+			PluginTask requestBody = new PluginTask();
+			requestBody.setCommandId("RENAME_ENTRY");
+			requestBody.setPlugin(plugin);
 
-		PluginImpl plugin = new PluginImpl();
-		plugin = pluginService.findPluginIdByName("ldap");
-		PluginTask requestBody = new PluginTask();
-		requestBody.setCommandId("RENAME_ENTRY");
-		requestBody.setPlugin(plugin);
+			requestBody.setParameterMap(parameterMap);
+			requestBody.setDnType(DNType.AHENK);
+			requestBody.setState(1);
+			requestBody.setDnList(dnList);
 
-		requestBody.setParameterMap(parameterMap);
-		requestBody.setDnType(DNType.AHENK);
-		requestBody.setState(1);
-		requestBody.setDnList(dnList);
-
-
-		requestBody.setEntryList(entryList);
-		IRestResponse restResponse = taskService.execute(requestBody);
-		logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+			requestBody.setEntryList(entryList);
+			IRestResponse restResponse = taskService.execute(requestBody);
+			logger.debug("Completed processing request, returning result: {}", restResponse.toJson());
+		}
 		//update C_AGENT table
 		agentService.updateHostname(agentDN, newAgentDN, newHostname);
 

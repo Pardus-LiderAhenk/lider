@@ -103,6 +103,7 @@
 	var SID = '[[${SID}]]';
 	var RID = '[[${RID}]]';
 	var JID = '[[${JID}]]';
+	
 
 	var BOSH_SERVICE = 'http://' + xmppHost + ':5280/bosh';
 	var connection = null;
@@ -306,22 +307,28 @@
 								           	</a>										
 										</div>
 									</div>
-								</div>
-								<div class="widget-content-left ">
-									<div class="widget-heading ml-3" >  
-										<a data-toggle="dropdown" aria-haspopup="true" href="#"
-											aria-expanded="false" >   
-											<i class="fa fa-user ml-1 opacity-8" style=""></i>
-											<span th:text="${user.liderUser.name}"></span>
-											<i class="fa fa-angle-down ml-2 opacity-8" style=""></i>
+									<div class="btn-group">
+										<a data-toggle="dropdown" aria-haspopup="true"
+											aria-expanded="false" class="btn" style="margin-top: 7px;"><img width="22"
+											class="" src="img/person.png" th:title="${user.liderUser.name}">
+<!-- 											<i th:title="${user.liderUser.name}" class="fa fa-user ml-1 opacity-8" style=""></i> -->
+<!-- 											<span th:text="${user.liderUser.name}"></span> -->
+											<i class="fa fa-angle-down" style=""></i>
 										</a>
-									 
-						   		  	</div>
-<!-- 									<div class="widget-subheading"> Lider Yönetici</div> -->
-								</div>
-								<div class="widget-content-right header-user-info ml-3">
-								
-									<a href="logout" id="logout"><i class="fas fa-sign-out-alt"></i></a>
+										<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+								          	<a class="nav-link">
+								          		<span th:text="${user.liderUser.name}" style="color:#1780D8"></span>
+								          	</a>
+								          	<div class="dropdown-divider"></div>
+								          	<a id="userProfile" class="nav-link dizin "data-page="lider_console_user">
+								          		<span>Profil Görüntüle</span>
+								          	</a>
+								          	<div class="dropdown-divider"></div>
+								          	<a href="logout" id="logout" class="nav-link dizin ">
+								          		<span>Çıkış Yap</span>
+								          	</a>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>

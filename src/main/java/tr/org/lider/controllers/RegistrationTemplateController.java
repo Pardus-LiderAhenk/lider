@@ -54,7 +54,10 @@ public class RegistrationTemplateController {
 			@RequestParam(value = "authorizedUserGroupDN", required=true) String authorizedUserGroupDN,
 			@RequestParam(value = "agentCreationDN", required=true) String agentCreationDN) {
 		
-		return registrationTemplateService.addRegistrationTemplate(new RegistrationTemplateImpl(templateText, authorizedUserGroupDN, agentCreationDN));
+		return registrationTemplateService.addRegistrationTemplate(
+				new RegistrationTemplateImpl(templateText.trim(), 
+												authorizedUserGroupDN.trim(), 
+												agentCreationDN.trim()));
 	}
 	
 	//delete registration template

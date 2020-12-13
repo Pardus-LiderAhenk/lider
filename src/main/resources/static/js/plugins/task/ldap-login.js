@@ -162,7 +162,7 @@ function changeUserDirectoryDomain() {
 
 	var userDirectoryDomain = $('#ldapLoginSb').val();
 	if (userDirectoryDomain == "AD") {
-		userDirectoryDomain = "AD";
+		userDirectoryDomain = "ACTIVE_DIRECTORY";
 	} else if (userDirectoryDomain == "OpenLDAP") {
 		userDirectoryDomain = "LDAP";
 	} else {

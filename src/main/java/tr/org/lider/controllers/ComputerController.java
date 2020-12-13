@@ -76,6 +76,9 @@ public class ComputerController {
 
 	@Autowired
 	private AgentRepository agentRepository;
+	
+	@Autowired
+	private XMPPClientImpl xmppClient;
 
 	@RequestMapping(value = "/getComputers")
 	public List<LdapEntry> getComputers() {
@@ -316,18 +319,22 @@ public class ComputerController {
 				ldapService.updateEntryAddAtribute(ldapEntry.getDistinguishedName(), "member", newAgentDN);
 				ldapService.updateEntryRemoveAttributeWithValue(ldapEntry.getDistinguishedName(), "member", sourceDN);
 			}
-
+			List<AgentImpl> agent = agentService.findAgentByDn(sourceDN);
 			//update C_AGENT table
 			agentService.updateAgentDN(sourceDN, newAgentDN);
 
 			//update C_COMMAND and C_COMMAND_EXECUTION table
 			commandService.updateAgentDN(sourceDN, newAgentDN);
-
+			
+			String directoryType = agent.get(0).getUserDirectoryDomain();
+			if (directoryType == "AD") {
+				directoryType = "ACTIVE_DIRECTORY";
+			}
 			//send task to Ahenk to change DN with new DN
 			Map<String, Object> parameterMap = new  HashMap<>();
 			parameterMap.put("dn", sourceDN);
 			parameterMap.put("new_parent_dn", destinationDN);
-			parameterMap.put("directory_server", configurationService.getDomainType());
+			parameterMap.put("directory_server", directoryType);
 			List<String> dnList = new ArrayList<>();
 			dnList.add(sourceCN);
 
@@ -362,6 +369,10 @@ public class ComputerController {
 		logger.info("Agent delete request has been receieved. DN: " + agentDN);
 
 		List<AgentImpl> agent = agentService.findAgentByDn(agentDN);
+		String directoryType = agent.get(0).getUserDirectoryDomain();
+		if (directoryType == "AD") {
+			directoryType = "ACTIVE_DIRECTORY";
+		}
 		Boolean isAgentOnline = false;
 		if(agent != null && agent.size() > 0) {
 			isAgentOnline = messagingService.isRecipientOnline(agent.get(0).getJid());
@@ -370,7 +381,7 @@ public class ComputerController {
 		//send task to Ahenk to change DN with new DN
 		Map<String, Object> parameterMap = new  HashMap<>();
 		parameterMap.put("dn", agentDN);
-		parameterMap.put("directory_server", configurationService.getDomainType());
+		parameterMap.put("directory_server", directoryType);
 		List<String> dnList = new ArrayList<>();
 		dnList.add(agentDN);
 		//if only agent is online send delete task
@@ -430,6 +441,8 @@ public class ComputerController {
 		try {
 			//update uid attribute
 			ldapService.renameHostname("uid", newHostname, agentDN);
+			
+			xmppClient.addClientToRoster(newHostname + "@"+configurationService.getXmppServiceName());
 
 			//check memberships and if membership exists in any group update DN info
 			ldapService.renameEntry(agentDN, "cn=" + newHostname);
@@ -441,13 +454,17 @@ public class ComputerController {
 		} catch (LdapException e) {
 			logger.error("Error occured while renaming the agent. Message: " + e.getMessage());
 		}
+		String directoryType = agent.get(0).getUserDirectoryDomain();
+		if (directoryType == "AD") {
+			directoryType = "ACTIVE_DIRECTORY";
+		}
 
 		//send task to Ahenk to change DN with new DN
 		Map<String, Object> parameterMap = new  HashMap<>();
 		parameterMap.put("dn", agentDN);
 		parameterMap.put("old_cn", cn);
 		parameterMap.put("new_cn", newHostname);
-		parameterMap.put("directory_server", configurationService.getDomainType());
+		parameterMap.put("directory_server", directoryType);
 		List<String> dnList = new ArrayList<>();
 		dnList.add(agentDN);
 		

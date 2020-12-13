@@ -51,8 +51,11 @@ createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false
 			selectedRow=row;
 			baseRootDnComputer=rootDnComputer;
 			addSelectedEntryToTable(selectedRow)
+//			if(selectedRow.online ==false){
+//				$('#deleteAgent').hide();
+//			}
 			if(selectedRow.online ==false){
-				$('#deleteAgent').hide();
+				$('#btnRenameAgent').hide();
 			}
 		},
 		//check action
@@ -1630,6 +1633,12 @@ $('#deleteAgent').click(function(e){
 
 	var content = "Bu istemciyi silmek istediğinizden emin misiniz ? <br> Silme işlemi geri alınamaz ve " +
 			"bu işlem sonucunda veritabanında ve LDAP'ta bu istemciye ait tüm bilgiler silinecektir. Ayrıca istemci domainden çıkarılacaktır.";
+	
+	if (selectedRow.online == false) {
+		content = "Bu istemciyi silmek istediğinizden emin misiniz ? <br> İstemcinin domainde olmadığından emin olunuz. <br> Silme işlemi geri alınamaz ve " +
+		"bu işlem sonucunda sadece veritabanında ve LDAP'ta bu istemciye ait tüm bilgiler silinecektir.";
+	}
+	
 	$.confirm({
 		title: 'Uyarı!',
 		content: content,

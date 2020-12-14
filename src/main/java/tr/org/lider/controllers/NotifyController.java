@@ -20,7 +20,6 @@ import tr.org.lider.services.NotifyService;
  *
  */
 
-@Secured({"ROLE_ADMIN", "ROLE_ETA_MESSAGE_DEFINITION" })
 @RestController
 @RequestMapping("/notify")
 public class NotifyController {
@@ -28,22 +27,25 @@ public class NotifyController {
 	@Autowired
 	private NotifyService notifyService;
 	
-//	get notify list
+	@Secured({"ROLE_ADMIN", "ROLE_ETA_MESSAGE_DEFINITION", "ROLE_COMPUTERS" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<NotifyTemplate> notifyList() {
 		return notifyService.list();
 	}
 
+	@Secured({"ROLE_ADMIN", "ROLE_ETA_MESSAGE_DEFINITION" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
 	public NotifyTemplate notifyAdd(@RequestBody NotifyTemplate file){
 		return notifyService.add(file);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_ETA_MESSAGE_DEFINITION" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/del", produces = MediaType.APPLICATION_JSON_VALUE)
 	public NotifyTemplate notifyDel(@RequestBody NotifyTemplate file){
 		return notifyService.del(file);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_ETA_MESSAGE_DEFINITION" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
 	public NotifyTemplate notifyUpdate(@RequestBody NotifyTemplate file){
 		return notifyService.update(file);

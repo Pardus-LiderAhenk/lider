@@ -20,7 +20,6 @@ import tr.org.lider.services.ConkyService;
  *
  */
 
-@Secured({"ROLE_ADMIN", "ROLE_CONKY_DEFINITION" })
 @RestController
 @RequestMapping("/conky")
 public class ConkyController {
@@ -29,21 +28,25 @@ public class ConkyController {
 	private ConkyService conkyService;
 	
 //	get conky list
+	@Secured({"ROLE_ADMIN", "ROLE_CONKY_DEFINITION", "ROLE_COMPUTERS" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<ConkyTemplate> notifyList() {
 		return conkyService.list();
 	}
 
+	@Secured({"ROLE_ADMIN", "ROLE_CONKY_DEFINITION" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConkyTemplate notifyAdd(@RequestBody ConkyTemplate file){
 		return conkyService.add(file);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_CONKY_DEFINITION" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/del", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConkyTemplate notifyDel(@RequestBody ConkyTemplate file){
 		return conkyService.del(file);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_CONKY_DEFINITION" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ConkyTemplate notifyUpdate(@RequestBody ConkyTemplate file){
 		return conkyService.update(file);

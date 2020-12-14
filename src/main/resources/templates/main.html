@@ -282,9 +282,7 @@
 				                               <span th:text="#{server.settings}"></span>
 				                            </a>	
 				                            <div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
-					                        		or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')} 
-					                        		or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}
-					                        		or ${#lists.contains(roleNames, 'ROLE_ETA_MESSAGE_DEFINITION')}"
+					                        		or ${#lists.contains(roleNames, 'ROLE_SERVER_SETTINGS')}" 
 				                            	class="dropdown-divider"></div>
 								          	
 								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')}" 
@@ -320,7 +318,7 @@
 								          		<span>Profil Görüntüle</span>
 								          	</a>
 								          	<div class="dropdown-divider"></div>
-								          	<a href="logout" id="logout" class="nav-link dizin ">
+								          	<a href="logout" id="logout" class="nav-link">
 								          		<span>Çıkış Yap</span>
 								          	</a>
 										</div>

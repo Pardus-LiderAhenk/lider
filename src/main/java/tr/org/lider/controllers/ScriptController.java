@@ -19,7 +19,6 @@ import tr.org.lider.services.ScriptService;
  * @author <a href="mailto:tuncay.colak@tubitak.gov.tr">Tuncay ÇOLAK</a>
  *
  */
-@Secured({"ROLE_ADMIN", "ROLE_SCRIPT_DEFINITION" })
 @RestController
 @RequestMapping("/script")
 public class ScriptController {
@@ -27,22 +26,25 @@ public class ScriptController {
 	@Autowired
 	private ScriptService scriptService;
 	
-//	get script templates
+	@Secured({"ROLE_ADMIN", "ROLE_SCRIPT_DEFINITION", "ROLE_COMPUTERS" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<ScriptTemplate> scriptList() {
 		return scriptService.list();
 	}
 
+	@Secured({"ROLE_ADMIN", "ROLE_SCRIPT_DEFINITION" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ScriptTemplate scriptAdd(@RequestBody ScriptTemplate file){
 		return scriptService.add(file);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_SCRIPT_DEFINITION" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/del", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ScriptTemplate scriptDel(@RequestBody ScriptTemplate file){
 		return scriptService.del(file);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_SCRIPT_DEFINITION" })
 	@RequestMapping(method=RequestMethod.POST ,value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ScriptTemplate scriptUpdate(@RequestBody ScriptTemplate file){
 		return scriptService.update(file);

@@ -37,7 +37,7 @@ import tr.org.lider.services.RoleService;
  * 
  */
 
-@Secured({"ROLE_ADMIN", "ROLE_SETTINGS" })
+@Secured({"ROLE_ADMIN", "ROLE_SERVER_SETTINGS" })
 @RestController
 @RequestMapping("lider/settings")
 public class SettingsController {

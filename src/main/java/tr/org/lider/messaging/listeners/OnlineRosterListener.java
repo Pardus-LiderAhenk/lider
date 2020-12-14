@@ -139,7 +139,6 @@ public class OnlineRosterListener implements RosterListener {
 	 * @return
 	 */
 	public List<String> getOnlineUsers() {
-		getInitialOnlineUsers();
 		return onlineUsers;
 	}
 

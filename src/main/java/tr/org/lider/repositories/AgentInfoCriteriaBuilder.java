@@ -16,7 +16,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import tr.org.lider.entities.AgentImpl;
 import tr.org.lider.entities.AgentPropertyImpl;
-import tr.org.lider.messaging.messages.XMPPClientImpl;
 
 /*
  * AgentInfoCriteriaBuilder implements filtering agents with multiple data.
@@ -38,17 +36,15 @@ public class AgentInfoCriteriaBuilder {
 
 	@PersistenceContext
 	EntityManager entityManager;
-
-	@Autowired
-	private XMPPClientImpl messagingService;
-
+	
 	public Page<AgentImpl> filterAgents(int pageNumber, int pageSize, String status,
 			Optional<String> field, Optional<String> text,
-			Optional<Date> registrationStartDate, Optional<Date> registrationEndDate) {
+			Optional<Date> registrationStartDate, Optional<Date> registrationEndDate, List<String> listOfOnlineUsers) {
 		PageRequest pageable = PageRequest.of(pageNumber - 1, pageSize);
 
-		List<String> listOfOnlineUsers = messagingService.getOnlineUsers();
+		//List<String> listOfOnlineUsers = messagingService.getOnlineUsers();
 
+		
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		//for filtered result count
 		CriteriaBuilder criteriaBuilderCount = entityManager.getCriteriaBuilder();

@@ -708,6 +708,9 @@ function executedTaskDetailClicked(executionDate, commandClsId, taskId, commandE
 							if(parameterMap != null) {
 								tableContent += '<tr><th colspan="100%"><h6>Gönderilen Görev Parametreleri</h6></th></tr>';
 								Object.keys(parameterMap).forEach(function(key){
+									if (key == "password" || key == "RootPassword" || key == "admin-password" || key == "admin_password") {
+										parameterMap[key] = parameterMap[key].replace(parameterMap[key], "*****");
+									}
 									tableContent += '<tr><th>' + key + '</th><td>' + parameterMap[key] + '</td></tr>';
 								});
 //								$.each(parameterMap, function(key, value){

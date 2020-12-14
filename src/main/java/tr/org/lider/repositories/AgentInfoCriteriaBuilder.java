@@ -42,9 +42,6 @@ public class AgentInfoCriteriaBuilder {
 			Optional<Date> registrationStartDate, Optional<Date> registrationEndDate, List<String> listOfOnlineUsers) {
 		PageRequest pageable = PageRequest.of(pageNumber - 1, pageSize);
 
-		//List<String> listOfOnlineUsers = messagingService.getOnlineUsers();
-
-		
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		//for filtered result count
 		CriteriaBuilder criteriaBuilderCount = entityManager.getCriteriaBuilder();

@@ -69,7 +69,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import tr.org.lider.LiderSecurityUserDetails;
+import tr.org.lider.entities.CommandImpl;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
+import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
 
 /**
@@ -90,6 +92,9 @@ public class LDAPServiceImpl implements ILDAPService {
 	@Autowired
 	private XMPPClientImpl xmppClientImpl;
 
+	@Autowired
+	private CommandService commandService;
+	
 	//	@Autowired
 	//	private Environment env;
 
@@ -385,6 +390,24 @@ public class LDAPServiceImpl implements ILDAPService {
 		try {
 			logger.info("Deleteting entry with DN: " + dn);
 			//updateOLCAccessRulesAfterEntryDelete(dn);
+			
+			LdapEntry ldapEntry = getEntryDetail(dn);
+			if(ldapEntry.getType().equals(DNType.USER)) {
+				List<LdapEntry> subEntries = search("member", ldapEntry.getDistinguishedName(), new String[] {"*"});
+				for (LdapEntry groupEntry : subEntries) {
+					if(groupEntry.getAttributesMultiValues().get("member").length > 1) {
+						updateEntryRemoveAttributeWithValue(groupEntry.getDistinguishedName(), "member", ldapEntry.getDistinguishedName());
+					} else {
+						deleteNodes(getOuAndOuSubTreeDetail(groupEntry.getDistinguishedName()));
+						//if there is any policy assigned to that group mark command as deleted
+						List<CommandImpl> commands = commandService.findAllByDN(groupEntry.getDistinguishedName());
+						for (CommandImpl command : commands) {
+							command.setDeleted(true);
+							commandService.updateCommand(command);
+						}
+					}
+				}
+			}
 			connection.delete(new Dn(dn));
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -533,7 +556,7 @@ public class LDAPServiceImpl implements ILDAPService {
 	public void updateEntryRemoveAttributeWithValue(String entryDn, String attribute, String value)
 			throws LdapException {
 
-		logger.info("Removing attribute: {}", attribute);
+		logger.info("Removing attribute: {} with value: {}", attribute,value);
 		LdapConnection connection = null;
 
 		connection = getConnection();
@@ -1465,8 +1488,25 @@ public class LDAPServiceImpl implements ILDAPService {
 		connection = getConnection();
 		try {
 			updateOLCAccessRulesAfterEntryMove(sourceDN, destinationDN);
+			//CASE 2 if moved entry is user update memberships
+			//CASE 3 if moved entry is agent update memberships
+			LdapEntry entry = getEntryDetail(sourceDN);
+			if(entry.getType().equals(DNType.USER)) {
+				String newUserDN = "uid=" + entry.getUid() + "," + destinationDN;
+				List<LdapEntry> subEntries = search("member", sourceDN, new String[] {"*"});
+				for (LdapEntry groupEntry : subEntries) {
+					updateEntryAddAtribute(groupEntry.getDistinguishedName(), "member", newUserDN);
+					updateEntryRemoveAttributeWithValue(groupEntry.getDistinguishedName(), "member", sourceDN);
+				}
+			} else if(entry.getType().equals(DNType.AHENK)) {
+				String newAgentDN = "cn=" + entry.getCn() + "," + destinationDN;
+				List<LdapEntry> subEntries = search("member", sourceDN, new String[] {"*"});
+				for (LdapEntry ldapEntry : subEntries) {
+					updateEntryAddAtribute(ldapEntry.getDistinguishedName(), "member", newAgentDN);
+					updateEntryRemoveAttributeWithValue(ldapEntry.getDistinguishedName(), "member", sourceDN);
+				}
+			}
 			connection.move(sourceDN,destinationDN);
-
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new LdapException(e);

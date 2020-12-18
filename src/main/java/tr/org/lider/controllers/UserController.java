@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import tr.org.lider.entities.CommandImpl;
 import tr.org.lider.entities.UserSessionImpl;
 import tr.org.lider.ldap.DNType;
 import tr.org.lider.ldap.LDAPServiceImpl;
@@ -29,6 +30,7 @@ import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.models.UserSessionsModel;
+import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.services.UserService;
 
@@ -46,6 +48,9 @@ public class UserController {
 	
 	@Autowired
 	private ConfigurationService configurationService;
+	
+	@Autowired
+	private CommandService commandService;
 	
 	@RequestMapping(value = "/getOuDetails")
 	public List<LdapEntry> task(LdapEntry selectedEntry) {
@@ -156,6 +161,20 @@ public class UserController {
 		try {
 			for (LdapEntry ldapEntry : selectedEntryArr) {
 				if(ldapEntry.getType().equals(DNType.USER)) {
+					List<LdapEntry> subEntries = ldapService.search("member", ldapEntry.getDistinguishedName(), new String[] {"*"});
+					for (LdapEntry groupEntry : subEntries) {
+						if(groupEntry.getAttributesMultiValues().get("member").length > 1) {
+							ldapService.updateEntryRemoveAttributeWithValue(groupEntry.getDistinguishedName(), "member", ldapEntry.getDistinguishedName());
+						} else {
+							ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(groupEntry.getDistinguishedName()));
+							//if there is any policy assigned to that group mark command as deleted
+							List<CommandImpl> commands = commandService.findAllByDN(groupEntry.getDistinguishedName());
+							for (CommandImpl command : commands) {
+								command.setDeleted(true);
+								commandService.updateCommand(command);
+							}
+						}
+					}
 					ldapService.deleteEntry(ldapEntry.getDistinguishedName());
 					logger.info("User deleted successfully RDN ="+ldapEntry.getDistinguishedName());
 				}
@@ -355,7 +374,6 @@ public class UserController {
 					ldapService.updateOLCAccessRulesAfterEntryDelete(ldapEntry.getDistinguishedName());
 					ldapService.deleteNodes(ldapService.getOuAndOuSubTreeDetail(ldapEntry.getDistinguishedName()));
 				}
-				
 			}
 			return true;
 		} catch (Exception e) {
@@ -417,7 +435,6 @@ public class UserController {
 			@RequestParam(value="destinationDN", required=true) String destinationDN) {
 		try {
 			ldapService.moveEntry(sourceDN, destinationDN);
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

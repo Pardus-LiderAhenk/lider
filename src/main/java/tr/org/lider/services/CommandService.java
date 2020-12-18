@@ -51,8 +51,8 @@ public class CommandService {
 		commandRepository.delete(pluginImpl);
 	}
 
-	public CommandImpl updateCommand(CommandImpl pluginImpl) {
-		return 	commandRepository.save(pluginImpl);
+	public CommandImpl updateCommand(CommandImpl commandImpl) {
+		return 	commandRepository.save(commandImpl);
 	}
 
 	// command execution CRUD operations

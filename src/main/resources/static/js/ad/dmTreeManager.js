@@ -6,14 +6,15 @@
  * @param callback
  * @returns
  */
-function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction , postAdTreeCreatedAction ) {
+function createDMTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction , postAdTreeCreatedAction ) {
 	var rootDN = null;
 	var firstRow=null
 	var treeGridId=treeHolderDiv+"Grid";
+	$('#'+treeHolderDiv).html("");
 	/**
 	 * create search area
 	 */
-	createSearch(treeHolderDiv,treeGridId,showOnlyFolder);
+	createSearchDM(treeHolderDiv,treeGridId,showOnlyFolder);
 	/**
 	 * get root dn for user and set treegrid tree
 	 */
@@ -100,7 +101,6 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 			    	 if(allrows.length==1){
 			    		 var row=allrows[0];
 			    		 firstRow=row;
-			    		 console.log(row)
 			    		 if(row.childEntries==null ){
 			    			 $('#'+treeGridId).jqxTreeGrid('addRow', row.uid+"1", {}, 'last', row.uid);
 			    		 }
@@ -115,8 +115,12 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 			 });
 				 
 			// create context menu
-	            var contextMenu = $("#treeMenuContainer").jqxMenu({ width: 250, height: 188, autoOpenPopup: false, mode: 'popup' });
-	            var contextMenuGroup = $("#treeMenuGroup").jqxMenu({ width: 250, height:188, autoOpenPopup: false, mode: 'popup' });
+			 	var contextDomain=$("#treeMenuDomain").jqxMenu({ width: 250, height: 120, autoOpenPopup: false, mode: 'popup' });;
+         		var contextMenu=$("#treeMenuContainer").jqxMenu({ width: 250, height: 60, autoOpenPopup: false, mode: 'popup' });;
+	            var contextMenuGroup = $("#treeMenuGroup").jqxMenu({ width: 250, height:88, autoOpenPopup: false, mode: 'popup' });
+	            var contextMenuUser = $("#treeMenuUser").jqxMenu({ width: 250, height:88, autoOpenPopup: false, mode: 'popup' });
+	            var contextMenuOu = $("#treeMenuOu").jqxMenu({ width: 250, height:144, autoOpenPopup: false, mode: 'popup' });
+		
 	           
 	            $('#'+treeGridId).on('contextmenu', function () {
 	            	
@@ -124,29 +128,72 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 	            });
 	            
 	            $('#'+treeGridId).on('rowClick', function (event) {
-	                var args = event.args;
+	            	
+	            	var args = event.args;
 	                var row = args.row;
-	                console.log(row)
-	               
+	                
 	                if ( args.originalEvent.button == 2) {
 	                    var scrollTop = $(window).scrollTop();
 	                    var scrollLeft = $(window).scrollLeft();
-	                    
-	                    if(row.type=="GROUP"){
+	                    console.log(row)
+	                    if(row.type==null){ // this is for root dn
 	                    	contextMenu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuGroup.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuUser.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuOu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextDomain.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    }
+	                    else if(row.type=="GROUP"){
+	                    	contextMenu.jqxMenu('close');
+	                    	contextMenuUser.jqxMenu('close');
+	                    	contextMenuOu.jqxMenu('close');
+	                    	contextDomain.jqxMenu('close');
 	                    	contextMenuGroup.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    }
+	                    else if(row.type=="USER"){
+	                    	contextMenu.jqxMenu('close');
+	                    	contextMenuGroup.jqxMenu('close');
+	                    	contextMenuOu.jqxMenu('close'); 
+	                    	contextDomain.jqxMenu('close'); 
+	                    	contextMenuUser.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    }
+	                    else if(row.type=="ORGANIZATIONAL_UNIT"){
+	                    	contextMenu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuGroup.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuUser.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextDomain.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuOu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    }
+	                   
+	                    else if(row.type.includes('AHENK')){
+	                    	contextMenu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuGroup.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuUser.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuOu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextDomain.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
 	                    }
 	                    else{
 	                    	contextMenuGroup.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
-	                    	 contextMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuUser.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenuOu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextDomain.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                    	contextMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
 	                    }
 	                   
 	                    return false;
 	                }
 	                else{
-	                	rowSelectAction(row,rootDN);
-	                	contextMenu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
-	                	contextMenuGroup.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+//	                	rowSelectAction(row,rootDN);
+	                	if(contextMenu!=null)
+	                		contextMenu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                	if(contextMenuGroup!=null)
+	                		contextMenuGroup.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                	if(contextMenuUser!=null)
+	                		contextMenuUser.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                	if(contextDomain!=null)
+	                		contextDomain.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+	                	if(contextMenuOu!=null)
+	                		contextMenuOu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
 	                }
 	            });
 			 
@@ -199,7 +246,6 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 									dataType : 'text',
 									success : function(ldapResult) {
 										var childs = jQuery.parseJSON(ldapResult);
-										console.log(childs)
 										 for (var m = 0; m < childs.length; m++) {
 											 	// get a row.
 									          	var childRow = childs[m];
@@ -226,7 +272,7 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 	
 }
 
-function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
+function createSearchDM(treeHolderDiv,treeGridId, showOnlyFolder) {
 	
 	var srcInputId= treeHolderDiv+"srcInput";
 	var srcBtnId= treeHolderDiv+"srcBtn";
@@ -237,13 +283,19 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 			'       <select class="form-control " style="font-family: cursive; font-size: 12px;" id="'+srcSelectId+'" > ';
 	       
 		   if(showOnlyFolder==false){
-				searchHtml +='<option selected value="uid"> ID </option> '+
-						'<option value="CN"> Ad </option> '+ 
-						'<option value="SN"> Soyad </option>'+
-						'<option value="OU"> Klasör </option>';
+				searchHtml +='<option selected value="uid"> UID </option> '+
+						'<option value="CN"> CN </option> '+ 
+						'<option value="SN"> SN </option>'+
+						'<option value="OU"> Organizational Unit </option>'+
+						'<option value="description"> Description </option>'+
+						'<option value="sAMAccountName"> sAMAccountName </option>'+
+						'<option value="streetAddress"> Adress </option>'+
+						'<option value="telephoneNumber"> Telephone Number </option>'+
+						'<option value="objectclass"> Object Class </option>';
+				;
 			}
 			else if(showOnlyFolder==true){
-				searchHtml +='<option selected value="ou"> Klasör </option> ';
+				searchHtml +='<option selected value="ou"> Organizational Unit </option> ';
 						}
 			searchHtml +='</select> '+
 			'    </div> '+ 
@@ -288,7 +340,8 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 					
 					for (var i = 0; i < ldapResult.length; i++) {
 				    	 var entry = ldapResult[i];
-				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.entryUUID , entry , 'last' ,'userSearch');
+				    	 $('#'+treeGridId).jqxTreeGrid('addRow' , entry.uid , entry , 'last' ,'userSearch');
+				    	 $('#'+treeGridId).jqxTreeGrid('addRow', entry.uid+"1", {}, 'last', entry.uid);
 					}
 					$('#'+treeGridId).jqxTreeGrid('collapseAll');
 					$('#'+treeGridId).jqxTreeGrid('expandRow', "userSearch");

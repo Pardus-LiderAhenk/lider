@@ -54,6 +54,38 @@ function fillMemberToTable() {
 	$('#bodyMembers').html(members);
 }
 
+/*
+ */
+function deleteMemberFromTabList(dn) {
+	var selectedRowData=selectedRow;
+	var dnListToDelete = [];
+	dnListToDelete.push(dn);
+	if(selectedRowData.attributesMultiValues['member'].length > 1) {
+		var params = {
+				"dnList": dnListToDelete,
+				"dn": selectedRowData.distinguishedName
+		};
+		$.ajax({
+			type : 'POST',
+			url  : 'ad/deleteMemberFromGroup',
+			data : params,
+			dataType : 'json',
+			success : function(data) {
+
+				if(data != null) {
+					$.notify("Grup üyeleri başarıyla düzenlendi", "success");
+					createDmTreeGrid();
+				}
+			},
+			error: function (data, errorThrown) {
+				$.notify("Grup üyesi silinirken hata oluştu.", "error");
+			}
+		}); 
+	} else {
+		$.notify("Grup en az bir üye bulundurmalıdır. Son üye silinemez", "error");
+	}
+}
+
 function getActivePolicies() {
 	$.ajax({
 		type : 'POST',
@@ -61,6 +93,7 @@ function getActivePolicies() {
 		dataType : 'json',
 		success : function(data) {
 			policyList = data
+			console.log(policyList)
 			if (data != null && data.length > 0) {
 				if ($("#bodyPolicyRow").length > 0) {
 					$("#bodyPolicyRow").remove();

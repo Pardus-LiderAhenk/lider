@@ -22,7 +22,7 @@ $('#searchMemberDM').on('click',  function(event) {
 	
 	$.ajax({
 		type : 'POST',
-		url : 'ad/searchEntry',
+		url : 'ad/searchEntryUser',
 		data : params,
 		dataType: "json",
 		success : function(ldapResult) {
@@ -34,18 +34,16 @@ $('#searchMemberDM').on('click',  function(event) {
 			var members = "";
 			for (var i = 0; i < ldapResult.length; i++) {
 		    	 var entry = ldapResult[i];
-		    	 console.log(entry)
 		    	members += '<tr>';
 				members += '<td>' + entry.name + '</td>';
 				members += '<td>' + entry.type + '</td>';
 				members += '<td>' + entry.distinguishedName + '</td>';
-				members += '<td> <button class="btn btn-info" id="btnAddMember2AdGroup" data-id="'+entry.distinguishedName+'"> <i class="fa fa-plus"> </i> </button> </td>';
+				members += '<td> <button class="btn btn-info btnAddMember2AdGroup" id="btnAddMember2AdGroup" data-id="'+entry.distinguishedName+'"> <i class="fa fa-plus"> </i> </button> </td>';
 				members += '</tr>';
 			}
 			$('#bodyMembersAdSearch').html(members);
 			
-			$('#btnAddMember2AdGroup').on('click',  function(event) {
-				console.log(treeMenuSelection)
+			$('.btnAddMember2AdGroup').on('click',  function(event) {
 				var distinguishedName= $(this).data('id')
 				addMember(distinguishedName, treeMenuSelection.distinguishedName);
 				
@@ -69,7 +67,6 @@ function addMember(distinguishedName, groupName) {
 		data : params,
 		dataType: "json",
 		success : function(ldapResult) {
-			console.log(data)
 			$.notify("Üye Başarı ile eklendi.",{className: 'success',position:"right top"}  );
 			$('#genericModalLarge').trigger('click');
 			createDmTreeGrid();

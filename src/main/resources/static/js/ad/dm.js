@@ -8,7 +8,6 @@ var selectedLdapRowForGroupSync=[]
 var treeMenuSelection=null;
 
 $('#treeMenu').hide(); 
-$('#treeMenuGroup').hide(); 
 
 /**
  * create directory manager treegrid and fill tree from directory entry node
@@ -18,8 +17,7 @@ $('#treeMenuGroup').hide();
 createDmTreeGrid();
 
 
-$('#btnAdUserAddModal').on('click', function (event) {
-	console.log(treeMenuSelection)
+$('.btnAdUserAddModal').on('click', function (event) {
 	getModalContent("modals/ad/adUserAdd", function content(data){
 		$('#genericModalLargeHeader').html("Active Directory Kullanıcı Ekle");
 		$('#genericModalLargeBodyRender').html(data);
@@ -41,7 +39,7 @@ $('#btnAdUserAddModal').on('click', function (event) {
 	});
 });
 
-$('#btnAdOuAddModal').on('click', function (event) {
+$('.btnAdOuAddModal').on('click', function (event) {
 	getModalContent("modals/ad/adOuAdd", function content(data){
 		$('#genericModalLargeHeader').html("Organizasyon Birimi Ekle");
 		$('#genericModalLargeBodyRender').html(data);
@@ -55,7 +53,7 @@ $('#btnAdOuAddModal').on('click', function (event) {
 
 
 
-$('#btnAdGroupAddModal').on('click', function (event) {
+$('.btnAdGroupAddModal').on('click', function (event) {
 	getModalContent("modals/ad/adGroupAdd", function content(data){
 		$('#genericModalLargeHeader').html("Grup");
 		$('#genericModalLargeBodyRender').html(data);
@@ -67,9 +65,14 @@ $('#btnAdGroupAddModal').on('click', function (event) {
 	});
 });
 
+/**
+ * add member to group from group entry
+ * @param event
+ * @returns
+ */
 $('#btnAddMember2GroupModal').on('click', function (event) {
 	
-	getModalContent("modals/ad/addMember2Group", function content(data){
+	getModalContent("modals/ad/adAddMember2Group", function content(data){
 		$('#genericModalLargeHeader').html("Gruba Üye Ekle");
 		$('#genericModalLargeBodyRender').html(data);
 		
@@ -83,19 +86,225 @@ $('#btnAddMember2GroupModal').on('click', function (event) {
 	});
 });
 
+/**
+ * add member to group from user entry
+ * @param event
+ * @returns
+ */
+$('#btnAddUserToADGroupModal').on('click', function (event) {
+	
+	getModalContent("modals/ad/adAddMemberGroupFromUser", function content(data){
+		$('#genericModalLargeHeader').html("Kullanıcıyı Gruba Ekle");
+		$('#genericModalLargeBodyRender').html(data);
+		
+		$('#groupInfoMember').html(treeMenuSelection.name);
+		
+		$('#addMember2Group').on('click', function (event) {
+			addMember2Group(treeMenuSelection)
+		});
+		
+		
+	});
+});
+
+$('#moveLdapModal').on('click', function (event) {
+	
+	getModalContent("modals/ad/adMoveUser2Ldap", function content(data){
+		$('#genericModalLargeHeader').html("Lider MYS Aktarma ");
+		$('#genericModalLargeBodyRender').html(data);
+//		$('#selectedEntrySize').html(treeMenuSelection.name);
+		
+		
+		
+//		createUserTree("ldapUserTreeGrid", false, false,
+//				// row select
+//				function(row, rootDnUser){
+//					selectedLdapRowForUserSync=row;
+//				},
+//				//check action
+//				function(checkedRows, row){
+//					
+//				},
+//				//uncheck action
+//				function(unCheckedRows, row){
+//					
+//				}
+//		);
+		// selected AD users adding modal
+			var html = '<tr id="'+ treeMenuSelection.attributesMultiValues.objectGUID +'">';
+			var imgPath="";
+			if(treeMenuSelection.type=="USER"){	imgPath="img/person.png"; }
+			html += '<td> <img src='+imgPath+' alt="" height="24" width="24"> '+ treeMenuSelection.attributesMultiValues.name +'</td>';
+			var desc=""
+			if(treeMenuSelection.attributesMultiValues.description){desc=treeMenuSelection.attributesMultiValues.description}
+			html += '<td>'+ desc +'</td>';
+			html += '</tr>'
+			
+			$('#selectedEntryTableBody').html(html);
+	});
+});
+
+function btnMoveUserAd2Ldap() {
+	if(treeMenuSelection == null){
+		$.notify("Lütfen yetki verilecek kullanıcı seçiniz.", "warn");
+		return;
+	}
+	var userPassword  =$('#newUserPassword').val()
+	var confirmPassword  =$('#newConfirmPassword').val()
+	
+	var lowerCase = "abcdefghijklmnopqrstuvwxyz";
+	var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	var digits = "0123456789";
+	var splChars = "+=.@*!_";
+	
+	var ucaseFlag = contains(userPassword, upperCase);
+    var lcaseFlag = contains(userPassword, lowerCase);
+    var digitsFlag = contains(userPassword, digits);
+    var splCharsFlag = contains(userPassword, splChars);
+    if(userPassword!=confirmPassword){
+		$.notify("Parolalar uyuşmamaktadır.","warn"  );
+		return
+	}
+    if(userPassword.length < 8 || !ucaseFlag || !lcaseFlag || !digitsFlag || !splCharsFlag){
+    	$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
+    	return
+    }
+	var selectedLdap={
+			"distinguishedName" : selectedLdapRowForUserSync.distinguishedName,
+			"userPassword" : userPassword,
+			"childEntries" : [{"distinguishedName" : treeMenuSelection.distinguishedName}]
+	}
+	
+	$.ajax({
+		type: "POST",
+		url: "ad/moveAdUser2Ldap",
+		data: JSON.stringify(selectedLdap),
+		dataType: "json",
+		contentType: "application/json",
+		success: function(result) {
+			console.log(result)
+			if(result.length>0){
+				$.notify("Kullanıcı Lider MYS sisteminde zaten bulunmaktadır.", "warn");
+			}
+			else if(result){
+				$.notify("Kullanıcı başarı ile Lider'e aktarıldı. Arayüz yetkisi verildi.", "success");
+			}else{
+				$.notify("Kullanıcı aktarılırken sorun oluştu.", "warn");
+			}
+			$('#genericModalLarge').trigger('click');
+			
+		},
+		error: function(result) {
+			$.notify(result, "error");
+		}
+	});
+}
+
+$('#btnDeleteGroupModal').on('click', function (event) {
+	getModalContent("modals/ad/adDeleteGroup", function content(data){
+		$('#genericModalLargeHeader').html("Grubu Sil");
+		$('#genericModalLargeBodyRender').html(data);
+		$('#btnDeleteGroup').on('click', function (event) {
+			
+			var params = {
+					"distinguishedName": treeMenuSelection.distinguishedName,
+			};
+			$.ajax({ 
+				type: 'POST', 
+				url: '/ad/deleteEntry',
+				dataType: 'json',
+				data: params,
+				success: function (data) {
+					
+//					$.notify("Kullanıcı grubu başarıyla silindi.", "success");
+					$('#genericModalLarge').trigger('click');
+					createDmTreeGrid();
+				},
+				error : function(jqXHR, textStatus, errorThrown) {
+					if(jqXHR != null && jqXHR.responseJSON != null && jqXHR.responseJSON[0] != null && jqXHR.responseJSON[0] != "")
+						$.notify("Kullanıcı grubu silinirken hata oluştu: " + jqXHR.responseJSON[0], "error");
+					else
+						$.notify("Kullanıcı grubu silinirken hata oluştu.", "error");
+				}
+			});
+		});
+		
+		
+	});
+});
+
+$('#btnDeleteOuModal').on('click', function (event) {
+	getModalContent("modals/ad/adDeleteOu", function content(data){
+		$('#genericModalLargeHeader').html("Organizasyon Birimi Sil");
+		$('#genericModalLargeBodyRender').html(data);
+		
+		$('#btnDeleteOU').on('click', function (event) {
+			var params = {
+					"distinguishedName": treeMenuSelection.distinguishedName,
+			};
+			$.ajax({ 
+				type: 'POST', 
+				url: '/ad/deleteEntry',
+				dataType: 'json',
+				data: params,
+				success: function (data) {
+					
+					$.notify("Birim başarıyla silindi.", "success");
+					$('#genericModalLarge').trigger('click');
+					createDmTreeGrid();
+				},
+				error : function(jqXHR, textStatus, errorThrown) {
+					if(jqXHR != null && jqXHR.responseJSON != null && jqXHR.responseJSON[0] != null && jqXHR.responseJSON[0] != "")
+						$.notify("Birim silinirken hata oluştu: " + jqXHR.responseJSON[0], "error");
+					else
+						$.notify("Birime ait kayıt bulunmaktadır. Lütfen birim içeriğini kontrol ediniz. ", "error");
+				}
+			});
+		});
+	});
+});
+
 $('.btnEntryAttributeModal').on('click', function (event) {
 	getModalContent("modals/ad/adAttributes", function content(data){
 		$('#genericModalLargeHeader').html("Öznitelikler");
 		$('#genericModalLargeBodyRender').html(data);
-		console.log(treeMenuSelection)
 		   var members = "";
 		    for (var key in treeMenuSelection.attributesMultiValues) {
 				if (treeMenuSelection.attributesMultiValues.hasOwnProperty(key) ) {
 					for(var i = 0; i< treeMenuSelection.attributesMultiValues[key].length; i++) {
-						members += '<tr>';
-						members += '<td>' +key + '</td>';
-						members += '<td>' + treeMenuSelection.attributesMultiValues[key][i] + '</td>';
-						members += '</tr>';
+						if(key != 'objectGUID' 
+							&& key !='uSNChanged' 
+							&& key !='dSCorePropagationData' 
+							&& key !='systemFlags' 
+							&& key !='gPLink' 
+							&& key !='objectSid' 
+							&& key !='instanceType'
+							&& key !='codePage'
+							&& key !='primaryGroupID'
+							&& key !='primaryGroupID'
+							&& key !='pwdLastSet'
+							&& key !='whenChanged'
+							&& key !='whenCreated'
+							&& key !='groupType'
+							&& key !='lastLogonTimestamp'
+							&& key !='accountExpires'
+							&& key !='lastLogon'
+							&& key !='badPasswordTime'
+							&& key !='badPwdCount'
+							&& key !='sAMAccountType'
+							&& key !='userAccountControl'
+							&& key !='objectCategory'
+							&& key !='wellKnownObjects'
+								&& key !='userCertificate'
+									&& key !='servicePrincipalName'
+										&& key !='rIDSetReferences'
+							&& key!='uSNCreated'){
+							members += '<tr>';
+							members += '<td>' +key + '</td>';
+							members += '<td>' + treeMenuSelection.attributesMultiValues[key][i] + '</td>';
+							members += '</tr>';
+						}
+						
 					}
 				}
 			}
@@ -121,11 +330,27 @@ $("#treeMenuContainer").on('itemclick', function (event) {
     treeMenuSelection=selection[0];
 });
 $("#treeMenuGroup").on('itemclick', function (event) {
-	console.log(treeGridIdGlob)
 	var args = event.args;
-	console.log(args)
 	var selection = $('#'+treeGridIdGlob).jqxTreeGrid('getSelection');
-	console.log(selection)
+	var rowid = selection[0].uid
+	treeMenuSelection=selection[0];
+});
+
+$("#treeMenuUser").on('itemclick', function (event) {
+	var args = event.args;
+	var selection = $('#'+treeGridIdGlob).jqxTreeGrid('getSelection');
+	var rowid = selection[0].uid
+	treeMenuSelection=selection[0];
+});
+$("#treeMenuOu").on('itemclick', function (event) {
+	var args = event.args;
+	var selection = $('#'+treeGridIdGlob).jqxTreeGrid('getSelection');
+	var rowid = selection[0].uid
+	treeMenuSelection=selection[0];
+});
+$("#treeMenuDomain").on('itemclick', function (event) {
+	var args = event.args;
+	var selection = $('#'+treeGridIdGlob).jqxTreeGrid('getSelection');
 	var rowid = selection[0].uid
 	treeMenuSelection=selection[0];
 });
@@ -225,7 +450,6 @@ function setChildsToTable(childs) {
 	selectedADUserEntries=[]
 	selectedADGroupEntries=[]
 	entryTable.on( 'select', function ( e, dt, type, indexes ) {
-		console.log(indexes)
 		for( var a = 0; a < indexes.length; a++){
 			var index=indexes[a];
 			var selectedEntry= childs[index];
@@ -283,8 +507,6 @@ function setChildsToTable(childs) {
 	
 	entryTable.on('dblclick', 'tr', function () {
 	    var data = entryTable.row(this).data();
-	    console.log(data)
-	    console.log(data.DT_RowId)
 	    var dtSelectedRw=null
 	    for (var k = 0; k < childs.length; k++) {
 	    	var child=childs[k]
@@ -292,15 +514,12 @@ function setChildsToTable(childs) {
 	    		dtSelectedRw=child;
 	    	}
 	    }
-	    console.log(dtSelectedRw);
-	    
 	    $('#adInfoDet').html(dtSelectedRw.distinguishedName); 
 	    
 	    var members = "";
 		//to print members at different tab
 	    for (var key in dtSelectedRw.attributesMultiValues) {
 			if (dtSelectedRw.attributesMultiValues.hasOwnProperty(key) ) {
-				console.log(key)
 				for(var i = 0; i< dtSelectedRw.attributesMultiValues[key].length; i++) {
 					members += '<tr>';
 					members += '<td>' +key + '</td>';
@@ -371,13 +590,18 @@ function addUser(treeMenuSelection) {
 		data : params,
 		dataType : 'json',
 		success : function(data) {
-			console.log(data)
-			$.notify("Kullanıcı Başarı ile eklendi.",{className: 'success',position:"right top"}  );
+			console.log(data);
+			var status=''
+			if(data.status =='OK') status ='success';
+			if(data.status =='WARNING') status ='warning';
+			if(data.status =='ERROR') status ='error';
+			
+			$.notify(data.messages[0],{className: status,position:"right top"}  );
 			$('#genericModalLarge').trigger('click');
 			createDmTreeGrid();
 		},
 	    error: function (data, errorThrown) {
-			$.notify("Kullanıcı Eklenirken Hata Oluştu.", "error");
+			$.notify("Hata Oluştu.", "error");
 		}
 	});  
 }
@@ -489,7 +713,7 @@ function getInnerPageContent(pageName) {
 function createDmTreeGrid() {
 	$('#treeGridAdUserHolderDiv').html("");
 	var treeGridHolderDiv="treeGridAdUserHolderDiv"
-	createTree(treeGridHolderDiv, false, false,
+	createDMTree(treeGridHolderDiv, false, false,
 			// row select
 			function(row, rootDn){
 				selectedRow=row;
@@ -499,7 +723,6 @@ function createDmTreeGrid() {
 				else if(row.type=="GROUP"){
 					getInnerPageContent("DMGroupManager")
 				}
-				
 				else{
 					getInnerPageContent("DMEntryInfo")
 				}
@@ -517,7 +740,6 @@ function createDmTreeGrid() {
 				
 				treeGridIdGlob=treeGridId
 				if(error != null ){
-					console.log(error)
 					$.notify("Lütfen AD bağlantı ayarlarınızı kontrol ediniz.", "error");
 					$('#treeMenu').hide();
 				}else{

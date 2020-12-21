@@ -1,4 +1,4 @@
-<script type="text/javascript" src="js/ad/dmSearch.js"></script>
+<script type="text/javascript" src="js/ad/dmSearchGroup.js"></script>
 
 <div class="col-lg-12">
 	<div class="main-card mb-3 card">
@@ -8,19 +8,17 @@
 				<!-- 					<span id="groupInfoMember" class="pull-right"> </span>  -->
 				<select class="form-control" id="searchKey">
 					<option value="CN">CN</option>
-					<option value="SN">SN</option>
-					<option value="sAMAccountName">sAMAccountName</option>
 					<option value="UID">UID</option>
 				</select>
 			</div>
 			<div class="col-lg-8 pull-left">
 				<input class="form-control pull-left" type="text" id="value"
-					placeholder="Ara" />
+					placeholder="Grup Ara" />
 			</div>
 			<div class="col-lg-2 pull-left">
-				<button id="searchMemberDM" type="button"
-					class="btn-shadow btn btn-info " title="Üye Ara">
-					<i class="fa fa-search"></i> Ara
+				<button id="searchGroupDM" type="button"
+					class="btn-shadow btn btn-info " title="Grup Ara">
+					<i class="fa fa-search"></i> Grup Ara
 				</button>
 			</div>
 			</div>
@@ -40,7 +38,7 @@
 						</thead>
 						<tbody id="bodyMembersAdSearch">
 							<tr>
-								<td colspan="3" class="text-center">Üye bulunamadı</td>
+								<td colspan="3" class="text-center">Grup bulunamadı</td>
 							</tr>
 						</tbody>
 					</table>

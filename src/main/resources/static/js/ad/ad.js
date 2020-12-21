@@ -421,46 +421,6 @@ function setChildsToTable(childs) {
 
 }
 
-function btnSyncUserAd2LdapClicked() {
-	if(selectedLdapRowForUserSync.type != "ORGANIZATIONAL_UNIT"){
-		$.notify("Lütfen Ldap Dizini Seçiniz.", "warn");
-		return;
-	}
-	if(selectedADUserEntries.length ==0){
-		$.notify("Lütfen aktarılacak kullanıcı Seçiniz.", "warn");
-		return;
-	}
-	adUsersDnArr = [];
-	for( var a = 0; a < selectedADUserEntries.length; a++){
-		adUsersDnArr.push({"distinguishedName":selectedADUserEntries[a].distinguishedName});
-	}
-	var selectedLdap={
-			"distinguishedName":selectedLdapRowForUserSync.distinguishedName,
-			"childEntries" :adUsersDnArr,
-	}
-	
-	$.ajax({
-		type: "POST",
-		url: "ad/syncUserFromAd2Ldap",
-		data: JSON.stringify(selectedLdap),
-		dataType: "json",
-		contentType: "application/json",
-		success: function(result) {
-			console.log(result)
-			if(result){
-				$.notify("Kullanıcı başarı ile LDAP a aktarıldı.", "success");
-			}else{
-				$.notify("Kullanıcı aktarılırken sorun oluştu.", "warn");
-			}
-			$('#genericModalLarge').trigger('click');
-			
-		},
-		error: function(result) {
-			$.notify(result, "error");
-			console.log(result)
-		}
-	});
-}
 function btnSyncGroupAd2LdapClicked() {
 	
 	if(selectedLdapRowForGroupSync.type != "ORGANIZATIONAL_UNIT"){

@@ -1,5 +1,6 @@
 package tr.org.lider.services;
 
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.Principal;
 import java.security.PrivateKey;
@@ -63,6 +64,7 @@ import tr.org.lider.ldap.ILDAPService;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
+import tr.org.lider.ldap.SearchFilterEnum;
 
 
 @Service
@@ -230,6 +232,31 @@ public class AdService implements ILDAPService{
 	
 	}
 
+	public void updateEntryReplaceAttribute(String entryDn, String attribute, String value) throws LdapException {
+	   
+		LdapConnection connection = null;
+		connection = getConnection();
+		Entry entry = null;
+		try {
+			entry = connection.lookup(entryDn);
+			if (entry != null) {
+				List<Modification> modificationListForRemove = new ArrayList<Modification>();
+				modificationListForRemove.add(new DefaultModification( ModificationOperation.REPLACE_ATTRIBUTE, attribute, value ));
+				Modification[] modifications = new Modification[modificationListForRemove.size()];
+				for (int i = 0; i < modificationListForRemove.size(); i++) {
+					modifications[i] = modificationListForRemove.get(i);
+				}
+				connection.modify(entry.getDn(), modifications);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+			throw new LdapException(e);
+		} finally {
+			releaseConnection(connection);
+		}
+	}
+
 	@Override
 	public void updateEntryAddAtribute(String entryDn, String attribute, String value) throws LdapException {
 
@@ -303,25 +330,32 @@ public class AdService implements ILDAPService{
 	public void updateEntryRemoveAttributeWithValue(String entryDn, String attribute, String value)	throws LdapException {
 		logger.info("Removing attribute: {}", attribute);
 		LdapConnection connection = null;
-
+		List<Modification> modificationListForRemove = new ArrayList<Modification>();
 		connection = getConnection();
 		Entry entry = null;
 		try {
 			entry = connection.lookup(entryDn);
 			if (entry != null) {
-
+				boolean isAttributeExist=false;
 				for (Attribute a : entry.getAttributes()) {
 					if (a.contains(value)) {
-						a.remove(value);
+						isAttributeExist=true;
+						Iterator<Value<?>> iter = entry.get(a.getId()).iterator();
+						while (iter.hasNext()) {
+							String val = iter.next().getValue().toString();
+							if(value.equals(val)) {
+								modificationListForRemove.add(new DefaultModification( ModificationOperation.REMOVE_ATTRIBUTE, a.getId(), val ));
+							}
+						}
 					}
 				}
-				//				if (entry.get(attribute) != null) {
-				//					Value<?> oldValue = entry.get(attribute).get();
-				//					entry.remove(attribute, oldValue);
-				//				}
-				//				entry.add(attribute, value);
-
-				connection.modify(entry, ModificationOperation.REPLACE_ATTRIBUTE);
+				if(isAttributeExist) {
+					Modification[] modifications = new Modification[modificationListForRemove.size()];
+					for (int i = 0; i < modificationListForRemove.size(); i++) {
+						modifications[i] = modificationListForRemove.get(i);
+					}
+					connection.modify(entryDn, modifications);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -410,8 +444,14 @@ public class AdService implements ILDAPService{
 			// Construct filter expression
 			String searchFilterStr = "(&";
 			for (LdapSearchFilterAttribute filterAttr : filterAttributes) {
+				if(filterAttr.getOperator().equals(SearchFilterEnum.EQ)) {
 				searchFilterStr = searchFilterStr + "(" + filterAttr.getAttributeName()
 				+ filterAttr.getOperator().getOperator() + filterAttr.getAttributeValue() + ")";
+				}
+				else if(filterAttr.getOperator().equals(SearchFilterEnum.NOT_EQ)) {
+					searchFilterStr = searchFilterStr + "(!(" + filterAttr.getAttributeName()
+					+ "=" + filterAttr.getAttributeValue() + "))";
+				}
 			}
 			searchFilterStr = searchFilterStr + ")";
 			req.setFilter(searchFilterStr);
@@ -554,9 +594,7 @@ public class AdService implements ILDAPService{
 							attributesMultiValues.put(attrName, new String[] {value});
 						}
 					}
-
 					LdapEntry ldapEntry= new LdapEntry(entry.getDn().toString(), attrs,attributesMultiValues, null,convertObjectClass2DNType(entry.get("objectClass")));
-					
 					result.add(ldapEntry);
 				}
 			}
@@ -568,7 +606,6 @@ public class AdService implements ILDAPService{
 			releaseConnection(connection);
 		}
 		return result;
-	
 	}
 	
 	/**
@@ -741,9 +778,25 @@ public class AdService implements ILDAPService{
 		}
 	}
 	
-	public void syncUserFromAd2Ldap(String selectedLdapDn, String[] adUsersDn) {
-		
-	}
-	
+	public LdapEntry getEntryDetail(String dn) {
+		LdapEntry ouEntry = null;
+		try {
+			logger.info("Getting ou detail");
+			List<LdapEntry> retList = findSubEntries(dn, "(objectclass=*)",
+					new String[] { "*" }, SearchScope.OBJECT);
 
+			logger.info("Ldap Computers Group Node listed.");
+			if (retList.size() > 0) {
+				ouEntry = retList.get(0);
+				ouEntry.setExpandedUser("FALSE");
+			}
+			List<LdapEntry> entries=findSubEntries(dn, "(objectclass=*)",
+					new String[]{"*"}, SearchScope.SUBTREE);
+
+			ouEntry.setChildEntries(entries);
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return ouEntry;
+	}
 }

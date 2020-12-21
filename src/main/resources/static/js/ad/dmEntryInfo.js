@@ -170,10 +170,35 @@ function setChildsToTable(childs) {
 	    for (var key in dtSelectedRw.attributesMultiValues) {
 			if (dtSelectedRw.attributesMultiValues.hasOwnProperty(key) ) {
 				for(var i = 0; i< dtSelectedRw.attributesMultiValues[key].length; i++) {
+					if(key != 'objectGUID' 
+						&& key !='uSNChanged' 
+						&& key !='dSCorePropagationData' 
+						&& key !='systemFlags' 
+						&& key !='gPLink' 
+						&& key !='objectSid' 
+						&& key !='instanceType'
+						&& key !='codePage'
+						&& key !='primaryGroupID'
+						&& key !='primaryGroupID'
+						&& key !='pwdLastSet'
+						&& key !='whenChanged'
+						&& key !='whenCreated'
+						&& key !='groupType'
+						&& key !='lastLogonTimestamp'
+						&& key !='accountExpires'
+						&& key !='lastLogon'
+						&& key !='badPasswordTime'
+						&& key !='badPwdCount'
+						&& key !='sAMAccountType'
+						&& key !='userAccountControl'
+						&& key !='objectCategory'
+						&& key !='wellKnownObjects'
+						&& key!='uSNCreated'){
 					members += '<tr>';
 					members += '<td>' +key + '</td>';
 					members += '<td>' + dtSelectedRw.attributesMultiValues[key][i] + '</td>';
 					members += '</tr>';
+					}
 				}
 			}
 		}

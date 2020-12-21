@@ -5,11 +5,11 @@ var groupPanelOpened=false;
 var passwordPoliciesGen=null;
 
 $('#btnChangePasswordUserModal').on('click',function(event) {
-	getModalContent("modals/user/changePasswordUserModal", function content(data){
+	getModalContent("modals/ad/adChangePasswordUser", function content(data){
 		$('#genericModalHeader').html("Parola Güncelle")
 		$('#genericModalBodyRender').html(data);
 		
-		$('#updateUserPasswordBtn').on('click',function(event) {
+		$('#updateAdUserPasswordBtn').on('click',function(event) {
 			var userPassword  =$('#newUserPassword').val()
 			var confirmPassword  =$('#newConfirmPassword').val()
 			
@@ -30,10 +30,70 @@ $('#btnChangePasswordUserModal').on('click',function(event) {
 		    	$.notify("Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
 		    	return
 		    }
-		    updateUserPassword(selectedRow.distinguishedName)
+		    updateAdUserPassword(selectedRow.distinguishedName)
 		});
 	});
 });
+
+
+$('#btnDeleteUserModal').on('click',function(event) {
+	
+	getModalContent("modals/ad/adDeleteUser", function content(data){
+			$('#genericModalHeader').html("Kullanıcı Sil")
+			$('#genericModalBodyRender').html(data);
+			
+			$('#userInfoDelete').html(selectedRow.name);
+			
+			$('#deleteUserBtn').on('click',function(event) {
+				deleteUser(selectedRow)
+			});
+	});
+});
+
+function deleteUser(row) {
+	
+	var params = {
+			"distinguishedName" :	row.distinguishedName
+	};
+	console.log(params)
+    $.ajax({
+		type : 'POST',
+		url : 'ad/deleteEntry',
+		data :params,
+		dataType: "json",
+		success : function(ldapResult) {
+			$.notify("Kullanıcı Başarı ile Silindi.",{className: 'success',position:"right top"}  );
+			$('#genericModal').trigger('click');
+//			if(ldapResult){
+//				$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', row.entryUUID); 
+//			}
+			createDmTreeGrid();
+		},
+	    error: function (data, errorThrown) {
+			$.notify("Kullanıcı Silinirken Hata Oluştu.", "error");
+		}
+	});  
+}
+
+function updateAdUserPassword(userId) {
+	var params = {
+			"distinguishedName" :	userId,
+			"userPassword" : $('#newUserPassword').val(),
+	};
+	$.ajax({
+		type : 'POST',
+		url : 'ad/updateUserPassword',
+		data : params,
+		dataType : 'json',
+		success : function(ldapResult) {
+			$.notify("Kullanıcı Parolası Başarı ile güncellendi.",{className: 'success',position:"right top"}  );
+			$('#genericModal').trigger('click');
+		},
+		error: function (data, errorThrown) {
+			$.notify("Kullanıcı Parolası Güncellenirken Hata Oluştu.", "error");
+		}
+	});  
+}
 
 function fillUserSessions4Ad(ldapResult) {
 	$.ajax({
@@ -221,7 +281,7 @@ function fillUserInfo(ldapResult) {
 
 function showAdGroups(row){
 	var memberHtml='<table class="table table-striped table-bordered " id="attrMemberTable">';
-	memberHtml +='<thead> <tr><th style="width: 80%" > Kullanıcı Grup Adı </th> <th style="width: 20%"> </th></tr> </thead>';
+	memberHtml +='<thead> <tr><th style="width: 80%" > Kullanıcı Grup Adı </th> </tr> </thead>';
 	console.log(row)
 	var isGroupExist=false;
 	for (key in row.attributesMultiValues) {
@@ -233,14 +293,14 @@ function showAdGroups(row){
 					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
 						memberHtml += '<tr>';
 						memberHtml += '<td>' + row.attributesMultiValues[key][i] + '</td>'; 
-						memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' >  <i class="fas fa-minus"></i>  </button></td>'; 
+//						memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' >  <i class="fas fa-minus"></i>  </button></td>'; 
 						memberHtml += '</tr>';
 					}
 				} else {
 					isGroupExist=true;
 					memberHtml += '<tr>';
 					memberHtml += '<td>' + row.attributesMultiValues[key] + '</td>';
-					memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' > <i class="fas fa-minus"></i>  </button></td>'; 
+//					memberHtml += '<td> <button class="btn btn-info deleteMember" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' > <i class="fas fa-minus"></i>  </button></td>'; 
 					memberHtml += '</tr>';
 				}
 			}

@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.constant.LiderConstants;
+import tr.org.lider.entities.OperationType;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.messaging.messages.SessionInfo;
 import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
+import tr.org.lider.services.OperationLogService;
 import tr.org.lider.services.XMPPPrebindService;
 
 /**
@@ -49,6 +51,9 @@ public class LoginController {
 	@Autowired
 	private XMPPPrebindService xmppPrebindService;
 	
+	@Autowired
+	private OperationLogService operationLogService; 
+	
 	
 	@RequestMapping(value = "/",method = {RequestMethod.GET, RequestMethod.POST})
 	public String getMainPage(Model model, Authentication authentication) {
@@ -73,7 +78,11 @@ public class LoginController {
 		    model.addAttribute("SID", sessionInfo.getSid());
 		    model.addAttribute("RID", sessionInfo.getRid());
 		    model.addAttribute("JID", sessionInfo.getJid());
+		    model.addAttribute("userDomainType", configurationService.getDomainType());
+		    
+		    operationLogService.saveOperationLog(OperationType.LOGIN,"Lider Arayüze Giriş Yapıldı.",null);
 		    logger.info("Getting prebind sessionInfo SID {} RID {} JID {} ", sessionInfo.getSid(),sessionInfo.getRid(),sessionInfo.getJid());
+		    
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -102,6 +111,7 @@ public class LoginController {
 	
 	@RequestMapping(value = "/logout")
 	public String logout(Model model, Authentication authentication) {
+		operationLogService.saveOperationLog(OperationType.LOGOUT,"Lider Arayüzden Çıkıldı.",null);
 		return "login";
 	}
 	

@@ -14,6 +14,7 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,8 +22,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import tr.org.lider.entities.OperationType;
+import tr.org.lider.services.OperationLogService;
+
 @Controller
 public class LiderGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	Logger logger = LoggerFactory.getLogger(LiderGuacamoleTunnelServlet.class);
 	
 	private static String PROTOCOL="";
@@ -30,12 +39,21 @@ public class LiderGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 	private static String PORT="";
 	private static String USERNAME="";
 	private static String PASSWORD="";
+	private static String DOMAIN="";
+	
+	@Autowired
+	private OperationLogService operationLogService; 
 
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request)
          {
     	try {
         // Create our configuration
+//    		PROTOCOL="rdp";
+//    		HOST="rdp";
+//    		PORT="rdp";
+//    		PASSWORD="rdp";
+    		
 	    	if(PROTOCOL!="" && HOST!="" && PORT!="" && PASSWORD!="") {
 	    		logger.info("Starting Remote Connection HOST: "+ HOST+ " PORT: "+ PORT +" PROTOCOL"+ PROTOCOL);
 		        GuacamoleConfiguration config = new GuacamoleConfiguration();
@@ -68,11 +86,23 @@ public class LiderGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 		          config.setParameter("port", PORT);
 		          config.setParameter("password", PASSWORD);
 		        }
+		        else if(PROTOCOL.equals("rdp")) {
+		       
+		        	config.setParameter("hostname", HOST);
+		        	config.setParameter("port", "3389");
+		        	config.setParameter("username", USERNAME);
+		        	config.setParameter("password", PASSWORD);
+		        	config.setParameter("domain", DOMAIN);
+		        	config.setParameter("ignore-cert", "true");
+		        	
+		        }
 		        // Connect to guacd - everything is hard-coded here.
 		        GuacamoleSocket socket = new ConfiguredGuacamoleSocket(new InetGuacamoleSocket("localhost", 4822), config);
 				
 		        // Return a new tunnel which uses the connected socket
 		        GuacamoleTunnel tunnel=new SimpleGuacamoleTunnel(socket);
+		        
+		        operationLogService.saveOperationLog(OperationType.EXECUTE_TASK,"Uzak Erişim Görevi Çalıştırıldı. Host:"+HOST+" Protokol: "+PROTOCOL+" User:"+ USERNAME ,null);
 		        
 		        return tunnel;
 		    	}

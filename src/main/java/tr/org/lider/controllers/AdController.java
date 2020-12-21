@@ -6,10 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.directory.Attribute;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
@@ -18,23 +14,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
-import tr.org.lider.constant.LiderConstants;
+import tr.org.lider.entities.OperationType;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.services.AdService;
-import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
+import tr.org.lider.services.OperationLogService;
+import tr.org.lider.utils.IRestResponse;
+import tr.org.lider.utils.ResponseFactoryService;
+import tr.org.lider.utils.RestResponseStatus;
 
 /**
  * 
@@ -44,7 +41,7 @@ import tr.org.lider.services.ConfigurationService;
 @RestController()
 @RequestMapping(value = "/ad")
 public class AdController {
-	Logger logger = LoggerFactory.getLogger(AdminController.class);
+	Logger logger = LoggerFactory.getLogger(AdController.class);
 
 	@Autowired
 	private AdService service;
@@ -54,6 +51,12 @@ public class AdController {
 	
 	@Autowired
 	private ConfigurationService configurationService;
+	
+	@Autowired
+	private ResponseFactoryService responseFactoryService;
+	
+	@Autowired
+	private OperationLogService operationLogService; 
 	
 	@RequestMapping(value = "/getDomainEntry")
 	public List<LdapEntry> getDomainEntry(HttpServletRequest request) {
@@ -117,9 +120,9 @@ public class AdController {
 		return oneLevelSubList;
 	}
 	@RequestMapping(value = "/addUser2AD")
-	public Boolean addUser2AD(HttpServletRequest request, LdapEntry selectedEntry) {
-		logger.info("Adding user to AD. User info"+ selectedEntry.getDistinguishedName());
-		
+	public IRestResponse addUser2AD(HttpServletRequest request, LdapEntry selectedEntry) {
+		 logger.info("Adding user to AD. User info : "+ selectedEntry.getDistinguishedName());
+		 
 		 Map<String, String[]> attributes = new HashMap<String, String[]>();
 		
 		 attributes.put("objectClass", new String[] {"top","person","organizationalPerson","user"});
@@ -159,19 +162,24 @@ public class AdController {
 //	     String uacStr=   Integer.toString(UF_NORMAL_ACCOUNT + UF_PASSWD_NOTREQD + UF_DONT_EXPIRE_PASSWD + UF_ACCOUNTENABLE);
 	     String uacStr=   Integer.toString(UF_NORMAL_ACCOUNT + UF_PASSWD_NOTREQD + UF_PASSWORD_EXPIRED + UF_ACCOUNTENABLE);
 	     attributes.put("userAccountControl", new String[] {uacStr});
-	     attributes.put("userpassword", new String[] {uacStr});
 	     attributes.put("pwdLastSet", new String[] {"0"});
 	    
 		 try {
 			String rdn="CN="+selectedEntry.getCn()+","+selectedEntry.getParentName();
 			service.addEntry(rdn, attributes);
 			
+			operationLogService.saveOperationLog(OperationType.CREATE,"Dizin yapısına kullanıcı eklendi.Kullanıcı: "+rdn,null);
+			return responseFactoryService.createResponse(RestResponseStatus.OK,"Kullanıcı Başarı ile oluşturuldu.");
+			
 //			service.updateEntryAddAtribute(rdn, "pwdLastSet", "0");
 		} catch (LdapException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			String message=e.getLocalizedMessage();
+			if(message!=null && message.contains("CONSTRAINT_ATT_TYPE")) {
+			return 	responseFactoryService.createResponse(RestResponseStatus.WARNING,"Aynı kullanıcı giriş ismine sahip kullanıcı bulunmaktadır.");
+			}
 		}
-		return true;
+		return null;
 	}
 	
 	@RequestMapping(value = "/addOu2AD")
@@ -186,6 +194,8 @@ public class AdController {
 		try {
 			String rdn="OU="+selectedEntry.getOu()+","+selectedEntry.getParentName();
 			service.addEntry(rdn, attributes);
+			
+			operationLogService.saveOperationLog(OperationType.CREATE,"Dizin yapısına organizasyon birimi eklendi. Ou: "+rdn,null);
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
@@ -205,7 +215,7 @@ public class AdController {
 		try {
 			String rdn="CN="+selectedEntry.getCn()+","+selectedEntry.getParentName();
 			service.addEntry(rdn, attributes);
-			
+			operationLogService.saveOperationLog(OperationType.CREATE,"Dizin yapısına grup eklendi. Grup: "+rdn,null);
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
@@ -218,18 +228,62 @@ public class AdController {
 		
 		try {
 			service.updateEntryAddAtribute(selectedEntry.getParentName(), "member", selectedEntry.getDistinguishedName());
-			
+			operationLogService.saveOperationLog(OperationType.CREATE,"Gruba üye eklendi. Üye: "+selectedEntry.getDistinguishedName(),null);
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
 		return true;
 	}
 	
+	@RequestMapping(value = "/searchEntryUser")
+	public List<LdapEntry>  searchEntryUser(HttpServletRequest request,
+			@RequestParam(value="searchDn", required=true) String searchDn,
+			@RequestParam(value="key", required=true) String key, 
+			@RequestParam(value="value", required=true) String value) {
+		List<LdapEntry> results=null;
+		
+		logger.info("Search for key {} value {}  only users ",key, value);
+		try {
+			if(searchDn.equals("")) {
+				searchDn=service.getADDomainName();
+			}
+			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+			filterAttributes.add(new LdapSearchFilterAttribute(key, value, SearchFilterEnum.EQ));
+			filterAttributes.add(new LdapSearchFilterAttribute("objectclass", "user", SearchFilterEnum.EQ)); 
+			filterAttributes.add(new LdapSearchFilterAttribute("objectclass", "computer", SearchFilterEnum.NOT_EQ)); 
+			results = service.search(searchDn,filterAttributes, new String[] {"*"});
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+	@RequestMapping(value = "/searchEntryGroup")
+	public List<LdapEntry>  searchEntryGroup(HttpServletRequest request,
+			@RequestParam(value="searchDn", required=true) String searchDn,
+			@RequestParam(value="key", required=true) String key, 
+			@RequestParam(value="value", required=true) String value) {
+		List<LdapEntry> results=null;
+		
+		logger.info("Search for key {} value {}  only groups ",key, value);
+		try {
+			if(searchDn.equals("")) {
+				searchDn=service.getADDomainName();
+			}
+			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+			filterAttributes.add(new LdapSearchFilterAttribute(key, value, SearchFilterEnum.EQ));
+			filterAttributes.add(new LdapSearchFilterAttribute("objectclass", "group", SearchFilterEnum.EQ)); 
+			results = service.search(searchDn,filterAttributes, new String[] {"*"});
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
 	@RequestMapping(value = "/searchEntry")
 	public List<LdapEntry>  searchEntry(HttpServletRequest request,
 			@RequestParam(value="searchDn", required=true) String searchDn,
 			@RequestParam(value="key", required=true) String key, 
 			@RequestParam(value="value", required=true) String value) {
+		logger.info("Search for key {} value {}   ",key, value);
 		List<LdapEntry> results=null;
 		try {
 			if(searchDn.equals("")) {
@@ -270,7 +324,8 @@ public class AdController {
 							, "(uid="+sAMAccountName+")", new String[] { "*" }, SearchScope.SUBTREE);
 					
 					if(adUserListForCheck!=null && adUserListForCheck.size()==0) {
-						addUser(selectedLdapEntryList.get(0).getDistinguishedName(), adUser, sAMAccountName);
+						addUserToLDAP(selectedLdapEntryList.get(0).getDistinguishedName(), adUser, sAMAccountName,sAMAccountName);
+						operationLogService.saveOperationLog(OperationType.UPDATE,"Kullanıcı Lider LDAP yapısına taşındı. Kullanıcı : "+selectedLdapEntryList.get(0).getDistinguishedName(),null);
 					}
 					else {
 						logger.info("SYNC AD to LDAP.. User exist ="+adUser.getDistinguishedName() );
@@ -279,7 +334,48 @@ public class AdController {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return existUserList;
+	}
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/moveAdUser2Ldap")
+	public List<LdapEntry> moveAdUser2Ldap(HttpServletRequest request,@RequestBody LdapEntry selectedLdapDn) {
+		
+		List<LdapEntry> existUserList= new ArrayList<>();
+		try {
+			String globalUserOu = configurationService.getUserLdapBaseDn();
+			String adfilter="(objectclass=organizationalPerson)";
+			/**
+			 *  selectedLdapDn.getChildEntries() holds users that they will add to ldap
+			 */
+			for (LdapEntry adUserEntry : selectedLdapDn.getChildEntries()) {
+				//getting users from AD
+				List<LdapEntry> adUserList = service.findSubEntries(adUserEntry.getDistinguishedName(),adfilter,new String[] { "*" }, SearchScope.OBJECT);
+				
+				if(adUserList !=null && adUserList.size()>0) {
+					LdapEntry adUser= adUserList.get(0);
+					String sAMAccountName= adUser.getAttributesMultiValues().get("sAMAccountName")[0];
+					
+					List<LdapEntry> adUserListForCheck=ldapService.findSubEntries(ldapService.getDomainEntry().getDistinguishedName() 
+							, "(uid="+sAMAccountName+")", new String[] { "*" }, SearchScope.SUBTREE);
+					
+					if(adUserListForCheck!=null && adUserListForCheck.size()==0) {
+						String dn=addUserToLDAP(globalUserOu, adUser, sAMAccountName, selectedLdapDn.getUserPassword());
+						
+						ldapService.updateEntryAddAtribute(dn, "liderPrivilege", "ROLE_USER");
+						ldapService.updateEntryAddAtribute(dn, "liderPrivilege", "ROLE_ADMIN");
+						
+						operationLogService.saveOperationLog(OperationType.UPDATE,"Kullanıcı Lider sistemine taşındı. Kullanıcı : "+dn,null);
+					}
+					else {
+						logger.info("SYNC AD to LDAP.. User exist ="+adUser.getDistinguishedName() );
+						existUserList.add(adUser);
+					}
+				}
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -332,7 +428,7 @@ public class AdController {
 								 * if user isn't in ldap, user can add ldap
 								 */
 								if(adUserListForCheck!=null && adUserListForCheck.size()==0) {
-									String rdn=addUser(configurationService.getUserLdapBaseDn(), adUserList.get(0), sAMAccountName);
+									String rdn=addUserToLDAP(configurationService.getUserLdapBaseDn(), adUserList.get(0), sAMAccountName,sAMAccountName);
 									memberDistinguishedNameArr.add(rdn);
 								}
 								else {
@@ -365,7 +461,7 @@ public class AdController {
 		return existGroupList;
 	}
 
-	private String addUser(String destinationDistinguishedName, LdapEntry adUser, String sAMAccountName)
+	private String addUserToLDAP(String destinationDistinguishedName, LdapEntry adUser, String sAMAccountName, String userPassword)
 			throws LdapException {
 		String gidNumber="9000";
 		int randomInt = (int)(1000000.0 * Math.random());
@@ -383,13 +479,13 @@ public class AdController {
 		if(adUser.get("sn") !=null &&  adUser.get("sn")!="" ) {
 			attributes.put("sn", new String[] { adUser.get("sn") });
 		}else {
-			logger.info("SN not exist ="+adUser.getDistinguishedName() );
+			logger.info("SN not exist " );
 			attributes.put("sn", new String[] { " " });
 		}
 		attributes.put("uid", new String[] { sAMAccountName });
 		attributes.put("uidNumber", new String[] { uidNumber });
 		attributes.put("loginShell", new String[] { "/bin/bash" });
-		attributes.put("userPassword", new String[] { sAMAccountName });
+		attributes.put("userPassword", new String[] { userPassword });
 		attributes.put("homePostalAddress", new String[] { adUser.get("streetAddress") });
 		attributes.put("employeeType", new String[] { "ADUser" });
 		if(adUser.get("telephoneNumber")!=null && adUser.get("telephoneNumber")!="")
@@ -401,4 +497,115 @@ public class AdController {
 		
 		return rdn;
 	}
+
+	/**
+	 * update user password
+	 * @param selectedEntry
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST, value = "/updateUserPassword",produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry updateUserPassword(LdapEntry selectedEntry) {
+		logger.info("Resetting user password. Dn: {}",selectedEntry.getDistinguishedName());
+		try {
+			String newPassword =  selectedEntry.getUserPassword();
+			     
+			     String newQuotedPassword = "\"" + newPassword + "\"";
+			     byte[] newUnicodePassword = null;
+				try {
+					newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
+				} catch (UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				}
+			
+			if(!"".equals(selectedEntry.getUserPassword())){
+				service.updateEntryReplaceAttribute(selectedEntry.getDistinguishedName(),"unicodePwd",new String(newUnicodePassword));
+				
+				operationLogService.saveOperationLog(OperationType.UPDATE,"Kullanıcı Parolası Değiştirildi. Kullanıcı : "+selectedEntry.getDistinguishedName(),null);
+			}
+			selectedEntry = service.findSubEntries(selectedEntry.getDistinguishedName(), "(objectclass=*)", new String[] {"*"}, SearchScope.OBJECT).get(0);
+			return selectedEntry;
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * delete entry for ad
+	 * @param selectedEntry
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST, value = "/deleteEntry",produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry deleteEntry(LdapEntry selectedEntry) {
+		try {
+			logger.info("AD Deleting entry. Dn: {}",selectedEntry.getDistinguishedName());
+			service.deleteEntry(selectedEntry.getDistinguishedName());
+			
+			operationLogService.saveOperationLog(OperationType.DELETE,"Dizin yapısından nesne silindi. Silinen nesne: "+selectedEntry.getDistinguishedName(),null);
+			return selectedEntry;
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+//	/**
+//	 * delete entry for ad
+//	 * @param selectedEntry
+//	 * @return
+//	 */
+//	@RequestMapping(method=RequestMethod.POST, value = "/deleteMemberFromGroup",produces = MediaType.APPLICATION_JSON_VALUE)
+//	@ResponseBody
+//	public LdapEntry deleteMemberFromGroup(LdapEntry selectedEntry) {
+//		logger.info("AD Delete member from group. Dn: {} Member {}",selectedEntry.getDistinguishedName());
+//		try {
+//			service.updateEntryRemoveAttributeWithValue(selectedEntry.getDistinguishedName(),"","");
+//			return selectedEntry;
+//		} catch (LdapException e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+//	}
+	
+	
+	@RequestMapping(method=RequestMethod.POST ,value = "/deleteMemberFromGroup", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry deleteMembersOfGroup(@RequestParam(value="dn", required=true) String dn, 
+			@RequestParam(value="dnList[]", required=true) List<String> dnList) {
+		//when single dn comes spring boot takes it as multiple arrays
+		//so dn must be joined with comma
+		//if member dn that will be added to group is cn=agent1,ou=Groups,dn=liderahenk,dc=org
+		//spring boot gets this param as array which has size 4
+		Boolean checkedArraySizeIsOne = true;
+		for (int i = 0; i < dnList.size(); i++) {
+			if(dnList.get(i).contains(",")) {
+				checkedArraySizeIsOne = false;
+				break;
+			}
+		}
+		if(checkedArraySizeIsOne) {
+			try {
+				service.updateEntryRemoveAttributeWithValue(dn, "member", String.join(",", dnList));
+				operationLogService.saveOperationLog(OperationType.DELETE,"Dizin grubundan üye silindi. Grup: "+dn +" Silinen üyeler: "+dnList,null);
+				
+			} catch (LdapException e) {
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			for (int i = 0; i < dnList.size(); i++) {
+				try {
+					service.updateEntryRemoveAttributeWithValue(dn, "member", dnList.get(i));
+					operationLogService.saveOperationLog(OperationType.DELETE,"Dizin grubundan üye silindi. Grup: "+dn +" Silinen üye: "+dnList.get(i),null);
+				} catch (LdapException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+		}
+		return service.getEntryDetail(dn);
+	}
+	
 }

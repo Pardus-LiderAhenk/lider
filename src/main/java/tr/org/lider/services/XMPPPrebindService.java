@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import tr.org.lider.controllers.LoginController;
 import tr.org.lider.messaging.messages.SessionInfo;
 import tr.org.lider.messaging.messages.XMPPPrebind;
 
@@ -20,7 +19,7 @@ import tr.org.lider.messaging.messages.XMPPPrebind;
 @Service
 public class XMPPPrebindService {
 	
-	Logger logger = LoggerFactory.getLogger(LoginController.class);
+	Logger logger = LoggerFactory.getLogger(XMPPPrebindService.class);
 	
 	@Autowired
 	private ConfigurationService configurationService;
@@ -34,7 +33,6 @@ public class XMPPPrebindService {
 			xmppPrebind.connect(username,password);
 	        xmppPrebind.auth();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
        return xmppPrebind.getSessionInfo();

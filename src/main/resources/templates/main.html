@@ -133,13 +133,14 @@
 								<span class="fa ml-2 opacity-8"  id="liderVersion" style="font-size: 14px;" >  </span>  
 						   </a>
                         </li>
-                       
+                       <!-- Computer MANAGEMENT -->
                         <li class="nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTERS')}">
                             <a class="nav-link dizin " id="menuBtnComputers" href="#" data-page="computers">
                                 <i class="nav-link-icon fas fa-laptop-code"> </i>
                                 <span th:text="#{computer.management}"></span>
                             </a>
                         </li>
+                         <!-- User MANAGEMENT -->
                         <li class="dropdown nav-item liderMenuItem" 
                         	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
                         			or ${#lists.contains(roleNames, 'ROLE_USERS')} 
@@ -149,19 +150,45 @@
                                 <span th:text="#{user.management}"></span>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-						        <a class="nav-link dizin" 
+						        <div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).ACTIVE_DIRECTORY}" >
+                            		<a class="nav-link dizin" 
+		                            	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AD_SYNC')}" 
+		                            	href="#" data-page="directory-manager" >
+			                            <span>Kullanıcı Yönetimi</span>
+		                        	</a>
+                            	</div>
+                            	<div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).LDAP}">
+                            	  <a class="nav-link dizin" 
 						        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}" 
 						        	href="#" data-page="users" >
-	                                <span th:text="#{user.operations}"></span>
-	                            </a>
-	                            <a class="nav-link dizin" 
-	                            	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AD_SYNC')}" 
-	                            	href="#" data-page="ad_user" >
+						       	           <span th:text="#{user.operations}"></span>
+	                           		 </a>
+	                           		 
+		                           	<a class="nav-link dizin" 
+		                            	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AD_SYNC')}" 
+		                            	href="#" data-page="ad_user" >
+			                            <span th:text="#{ad.synchronization}"></span>
+			                        </a>
+                            	</div>
+                            	
+                            	<div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).NONE}">
+        	                    	  <a class="nav-link dizin" 
+							        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}" 
+							        	href="#" data-page="users" >
+					       	           <span th:text="#{user.operations}"></span>
+	                           		 </a>
+	                           		 <a class="nav-link dizin" 
+	                            		th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AD_SYNC')}" 
+	                            		href="#" data-page="ad_user" >
 		                            <span th:text="#{ad.synchronization}"></span>
 		                        </a>
+		                           	
+                            	</div>
 					        </div>
                         </li>
-                        <li class="dropdown nav-item liderMenuItem" 
+                        
+                        <!-- GROUP MANAGEMENT -->
+                         <li class="dropdown nav-item liderMenuItem" 
                         		th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
                         		or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')} 
                         		or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')} 
@@ -172,18 +199,35 @@
                                 <span th:text="#{group.management}"></span>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}" 
-					          	class="nav-link dizin" href="#" data-page="user_groups">
-					          		<span th:text="#{group.management.user}"></span>
-					          	</a>
-					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')}" 
+                            	
+                              	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')}" 
 					          	class="nav-link  dizin " href="#" data-page="computer_groups">
 					          		<span th:text="#{group.management.computer}"></span>
 					          	</a>
-					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}" 
-					          	class="nav-link  dizin " href="#" data-page="sudo_groups">
-					          		<span th:text="#{group.management.role}"></span>
-					          	</a>
+                             <div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).LDAP} | ">
+						          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}" 
+						          		class="nav-link dizin" href="#" data-page="user_groups">
+						          		<span th:text="#{group.management.user}"></span>
+						          	</a>
+						          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}" 
+					          			class="nav-link  dizin " href="#" data-page="sudo_groups">
+					          			<span th:text="#{group.management.role}"></span>
+					          		</a>
+					         </div>
+					         
+                             <div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).NONE}">
+						        	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}" 
+						          		class="nav-link dizin" href="#" data-page="user_groups">
+						          		<span th:text="#{group.management.user}"></span>
+						          	</a>
+						          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}" 
+					          			class="nav-link  dizin " href="#" data-page="sudo_groups">
+					          			<span th:text="#{group.management.role}"></span>
+					          		</a>
+					         </div>
+					         
+					         
+					          
 					          <a class="nav-link  dizin" href="#" data-page="policy" 
 					          	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_POLICY')}" >
                                 <span th:text="#{policy.management}"></span>
@@ -191,6 +235,8 @@
 					          	
 					        </div>
                         </li>
+                        
+                       <!-- REPORT -->
                       <li class="dropdown nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                 <i class="nav-link-icon fas fa-tasks"></i>
@@ -262,7 +308,8 @@
 	                                        </a>
                                         </div>
                                     </div>
-									<div class="btn-group"
+                                    
+                                    			<div class="btn-group"
 										th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
 			                        		or ${#lists.contains(roleNames, 'ROLE_SERVER_SETTINGS')} 
 			                        		or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')} 
@@ -282,7 +329,9 @@
 				                               <span th:text="#{server.settings}"></span>
 				                            </a>	
 				                            <div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
-					                        		or ${#lists.contains(roleNames, 'ROLE_SERVER_SETTINGS')}" 
+					                        		or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')} 
+					                        		or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}
+					                        		or ${#lists.contains(roleNames, 'ROLE_ETA_MESSAGE_DEFINITION')}"
 				                            	class="dropdown-divider"></div>
 								          	
 								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')}" 
@@ -302,9 +351,26 @@
 								           	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}" 
 								           		class="nav-link dizin " href="#" data-page="plugins/definitions/registration_template">
 								           		<span th:text="#{registration.templates}"></span>
-								           	</a>										
+								           	</a>		
+								           	
+								           	<div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}"
+								          		class="dropdown-divider"></div>
+										          <div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).ACTIVE_DIRECTORY} ">
+										          		 <a class="nav-link dizin" 
+												        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}" 
+												        	href="#" data-page="users" >
+												       	           <span th:text="#{console.user.operations}"></span>
+							                           	</a>
+										          
+											          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}" 
+											          		class="nav-link dizin" href="#" data-page="user_groups">
+											          		<span th:text="#{console.group.management.user}"></span>
+											          	</a>
+										         </div>
+								          									
 										</div>
 									</div>
+						
 									<div class="btn-group">
 										<a data-toggle="dropdown" aria-haspopup="true"
 											aria-expanded="false" class="btn" style="margin-top: 7px;"><img width="22"
@@ -675,7 +741,7 @@
 		<div class="modal-dialog modal-xl" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title w-100 text-center" >Active Directory Object Details</h5>
+					<h5 class="modal-title w-100 text-center" >Öznitelikler</h5>
 				</div>
 				
 				<div class="modal-body">

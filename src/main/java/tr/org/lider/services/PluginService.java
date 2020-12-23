@@ -43,19 +43,19 @@ public class PluginService {
 		//		boolean policyPlugin(8), boolean taskPlugin(9), boolean usesFileTransfer(10), boolean xBased(11))
 
 		pluginList.add(new PluginImpl("conky", "1.0.0", "Conky mesajı", true, false, true, true, true, true, false, false));
-		pluginList.add(new PluginImpl("resource-usage", "1.0.0", "Kaynak Kullanıcı", true, false, true, false, false, true, false, false));
+		pluginList.add(new PluginImpl("resource-usage", "1.0.0", "Kaynak kullanımı", true, false, true, false, false, true, false, false));
 		pluginList.add(new PluginImpl("package-manager", "1.0.0", "Paket yönetimi", true, false, true, true, true, true, true, false));
 		pluginList.add(new PluginImpl("manage-root", "1.0.0", "Root parola yönetimi", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("login-manager", "1.0.0", "Oturum yönetimi", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("service", "1.0.0", "Servis yönetimi", true, false, true, true, true, true, true, false));
 		pluginList.add(new PluginImpl("script", "1.0.0", "Betik çalıştır", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("notify", "1.0.0", "ETA bilgilendirme mesajı", true, false, true, true, true, true, false, false));
-		pluginList.add(new PluginImpl("file-management", "1.0.0", "Betik çalıştır", true, false, true, true, true, true, false, false));
+		pluginList.add(new PluginImpl("file-management", "1.0.0", "Doysa Yönetimi", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("local-user", "1.0.0", "Yerel kullanıcı yönetimi", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("system-restriction", "1.0.0", "Kullanıcı ve uygulama kısıtlamaları yönetimi", true, false, true, true, true, true, true, false));
 		pluginList.add(new PluginImpl("ldap-login", "1.0.0", "LDAP ve AD oturum açma ve iptal etme ayarları", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("network-manager", "1.0.0", "Ağ yönetimi", true, false, true, true, true, true, false, false));
-		pluginList.add(new PluginImpl("usb", "1.0.0", "USB yöneitim", true, false, true, true, true, true, false, false));
+		pluginList.add(new PluginImpl("usb", "1.0.0", "I/O yönetimi", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("network-inventory", "1.0.0", "Dosya paylaşımı ve ağ taraması(nmap)", true, false, true, true, true, true, true, false));
 		pluginList.add(new PluginImpl("remote-access", "1.0.0", "Uzak masaüstü", true, false, true, true, true, true, false, false));
 		pluginList.add(new PluginImpl("browser", "1.0.0", "Tarayıcı yönetimi", true, false, true, true, true, true, false, false));

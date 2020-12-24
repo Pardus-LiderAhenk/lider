@@ -35,7 +35,6 @@ $('#searchGroupDM').on('click',  function(event) {
 			var members = "";
 			for (var i = 0; i < ldapResult.length; i++) {
 		    	 var entry = ldapResult[i];
-		    	 console.log(entry)
 		    	members += '<tr>';
 				members += '<td>' + entry.name + '</td>';
 				members += '<td>' + entry.type + '</td>';

@@ -10,6 +10,20 @@ var treeMenuSelection=null;
 $('#treeMenu').hide(); 
 
 /**
+ * if delete and update operation disabed by properties disable buttons
+ */
+
+if(enableDeleteUpdate == 'true'){
+	$('#btnDeleteOuModal').show();
+	$('#btnDeleteGroupModal').show();
+	
+}
+else{
+	$('#btnDeleteOuModal').hide();
+	$('#btnDeleteGroupModal').hide();
+}
+
+/**
  * create directory manager treegrid and fill tree from directory entry node
  * @param event
  * @returns
@@ -182,7 +196,6 @@ function btnMoveUserAd2Ldap() {
 		dataType: "json",
 		contentType: "application/json",
 		success: function(result) {
-			console.log(result)
 			if(result.length>0){
 				$.notify("Kullanıcı Lider MYS sisteminde zaten bulunmaktadır.", "warn");
 			}
@@ -590,7 +603,6 @@ function addUser(treeMenuSelection) {
 		data : params,
 		dataType : 'json',
 		success : function(data) {
-			console.log(data);
 			var status=''
 			if(data.status =='OK') status ='success';
 			if(data.status =='WARNING') status ='warning';

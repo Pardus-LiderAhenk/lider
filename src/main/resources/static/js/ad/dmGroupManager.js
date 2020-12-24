@@ -155,7 +155,7 @@ function getPolicyListForSelectedGroup(selectedGroup) {
 					html += '<td>'+ data[i].commandExecutionImpl.createDate +'</td>';
 					html += '<td>'+ data[i].policyImpl.policyVersion +'</td>';
 					html += '<td class="text-center">' 
-						+ '<button onclick="unassignmentUserPolicy(\'' + commandId + '\')"' 
+						+ '<button onclick="removeUserPolicy(\'' + commandId + '\')"' 
 						+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger" title="Kaldır">' 
 						+ '<i class="fas fa-times"></i></button>' 
 						+ '</td>';
@@ -171,6 +171,45 @@ function getPolicyListForSelectedGroup(selectedGroup) {
 		},
 		error: function(result) {
 			$.notify(result, "error");
+		}
+	});
+}
+
+
+function removeUserPolicy(commandId) {
+	params = {
+			"id": commandId
+	}
+	$.confirm({
+		title: 'Uyarı!',
+		content: 'Politikayı kullanıcı grubundan kaldırmak istiyor musunuz?',
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+				$.ajax({
+					type: "POST",
+					url: "/policy/unassignment",
+					headers: {
+						'Content-Type':'application/json',
+					}, 
+					data: JSON.stringify(params),
+					contentType: "application/json",
+					dataType: "json",
+					converters: {
+						'text json': true
+					},
+					success: function(data) {
+						if (data != null && data.length > 0) {
+							$.notify("Politika başarıyla kaldırıldı.", "success");
+							getPolicyListForSelectedGroup(selectedRow);
+						} else {
+							$.notify("Politika kaldırılırken hata oluştu.", "error");
+						}
+					}
+				});
+			},
+			Hayır: function () {
+			}
 		}
 	});
 }

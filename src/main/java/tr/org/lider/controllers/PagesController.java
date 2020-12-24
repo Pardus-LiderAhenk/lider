@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,6 +39,10 @@ public class PagesController {
 	@Autowired
 	private CommandService commandService;
 	
+	@Autowired
+	private Environment env;
+	
+	
 	@RequestMapping(value="/getInnerHtmlPage", method = {RequestMethod.POST })
 	public ModelAndView getInnerHtmlPage(String innerPage, Model model) {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -64,6 +69,13 @@ public class PagesController {
         		model.addAttribute("totalUserNumber", countOfLDAPUsers);
         		//sent task total number
         		model.addAttribute("totalSentTaskNumber", commandService.getTotalCountOfSentTasks());
+        	}
+        	/**
+        	 * delete and update operations enable by application.properties values
+        	 */
+        	else if(innerPage.equals("directory-manager")) {
+        		String enableDelete4Directory = env.getProperty("lider.enableDelete4Directory");
+        		model.addAttribute("enableDeleteUpdate", enableDelete4Directory);
         	}
         	return modelAndView;
         } else {

@@ -155,7 +155,6 @@ function setChildsToTable(childs) {
 	
 	entryTable.on('dblclick', 'tr', function () {
 	    var data = entryTable.row(this).data();
-	    console.log(data)
 	    var dtSelectedRw=null
 	    for (var k = 0; k < childs.length; k++) {
 	    	var child=childs[k]

@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -59,7 +61,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		.loginPage("/login").permitAll()
 		.successHandler(authenticationSuccessHandler)
 		.and()
-		.logout().invalidateHttpSession(true)
+		.logout()
+		.addLogoutHandler(logoutHandler())
+		.invalidateHttpSession(true)
+		.deleteCookies("JSESSIONID")
 		.clearAuthentication(true)
         .permitAll()
         .and()
@@ -71,4 +76,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return NoOpPasswordEncoder.getInstance(); 
 	}
 	
+	@Bean
+	public LogoutHandler logoutHandler() {
+	    return new LiderLogoutSuccessHandler();
+	}
+
 }

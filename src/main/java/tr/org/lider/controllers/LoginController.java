@@ -1,6 +1,9 @@
 package tr.org.lider.controllers;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
@@ -109,7 +112,7 @@ public class LoginController {
 		return LiderConstants.Pages.MAIN_PAGE;
 	}
 	
-	@RequestMapping(value = "/logout")
+	@RequestMapping(value = "/perform_logout")
 	public String logout(Model model, Authentication authentication) {
 		operationLogService.saveOperationLog(OperationType.LOGOUT,"Lider Arayüzden Çıkıldı.",null);
 		return "login";
@@ -117,6 +120,7 @@ public class LoginController {
 	
 	@RequestMapping(value = "/login")
 	public String login(Model model, Authentication authentication) {
+
 		if(configurationService.isConfigurationDone()) {
 			return "login";
 		} else {

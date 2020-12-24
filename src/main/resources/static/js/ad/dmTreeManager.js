@@ -116,7 +116,7 @@ function createDMTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction
 				 
 			// create context menu
 			 	var contextDomain=$("#treeMenuDomain").jqxMenu({ width: 250, height: 120, autoOpenPopup: false, mode: 'popup' });;
-         		var contextMenu=$("#treeMenuContainer").jqxMenu({ width: 250, height: 60, autoOpenPopup: false, mode: 'popup' });;
+         		var contextMenu=$("#treeMenuContainer").jqxMenu({ width: 250, height: 88, autoOpenPopup: false, mode: 'popup' });;
 	            var contextMenuGroup = $("#treeMenuGroup").jqxMenu({ width: 250, height:88, autoOpenPopup: false, mode: 'popup' });
 	            var contextMenuUser = $("#treeMenuUser").jqxMenu({ width: 250, height:88, autoOpenPopup: false, mode: 'popup' });
 	            var contextMenuOu = $("#treeMenuOu").jqxMenu({ width: 250, height:144, autoOpenPopup: false, mode: 'popup' });
@@ -135,7 +135,6 @@ function createDMTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction
 	                if ( args.originalEvent.button == 2) {
 	                    var scrollTop = $(window).scrollTop();
 	                    var scrollLeft = $(window).scrollLeft();
-	                    console.log(row)
 	                    if(row.type==null){ // this is for root dn
 	                    	contextMenu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
 	                    	contextMenuGroup.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);

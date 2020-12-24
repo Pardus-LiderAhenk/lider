@@ -20,7 +20,6 @@ import tr.org.lider.entities.OperationLogImpl;
 import tr.org.lider.entities.OperationType;
 import tr.org.lider.repositories.OperationLogRepository;
 
-
 /**
  * 
  * Service for operation logs.
@@ -38,25 +37,22 @@ public class OperationLogService {
 	@Autowired 
 	private HttpServletRequest httpRequest;
 
-	public OperationLogImpl saveOperationLog(OperationType operationType,String logMessage,byte[] requestData ) {
+	public void saveOperationLog(OperationType operationType,String logMessage,byte[] requestData ) {
 		logger.info("Operation log saving. Log Type {} Log Message {}",operationType.name(),logMessage);
 		
-		OperationLogImpl operationLogImpl= new OperationLogImpl();
-		
-		operationLogImpl.setCreateDate(new Date());
-		operationLogImpl.setCrudType(operationType);
-		operationLogImpl.setLogMessage(logMessage);
-		operationLogImpl.setRequestData(requestData);
-		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (!(authentication instanceof AnonymousAuthenticationToken)) {
+		if (authentication!=null && !(authentication instanceof AnonymousAuthenticationToken)) {
 			LiderSecurityUserDetails principal = (LiderSecurityUserDetails)authentication.getPrincipal();
 			String userId=principal.getLiderUser().getDn();
+			OperationLogImpl operationLogImpl= new OperationLogImpl();
+			operationLogImpl.setCreateDate(new Date());
+			operationLogImpl.setCrudType(operationType);
+			operationLogImpl.setLogMessage(logMessage);
+			operationLogImpl.setRequestData(requestData);
 		    operationLogImpl.setUserId(userId);
+		    operationLogImpl.setRequestIp(httpRequest.getRemoteHost());
+		    operationLogRepository.save(operationLogImpl);
 		}
-		
-		operationLogImpl.setRequestIp(httpRequest.getRemoteHost());
-		return operationLogRepository.save(operationLogImpl);
 	}
 
 	public OperationLogImpl saveOperationLog(OperationType operationType,String logMessage,byte[] requestData, Long taskId, Long policyId, Long profileId  ) {

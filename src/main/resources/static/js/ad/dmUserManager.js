@@ -1,8 +1,21 @@
 showAdGroups(selectedRow);
 fillUserInfo(selectedRow);
 fillUserSessions4Ad(selectedRow);
+getUserPolicies(selectedRow);
 var groupPanelOpened=false;
 var passwordPoliciesGen=null;
+
+/**
+ * if delete and update operation disabed by properties disable buttons
+ */
+
+if(enableDeleteUpdate == 'true'){
+	$('#btnDeleteUserModal').show();
+}
+else{
+	$('#btnDeleteUserModal').hide();
+}
+	
 
 $('#btnChangePasswordUserModal').on('click',function(event) {
 	getModalContent("modals/ad/adChangePasswordUser", function content(data){
@@ -55,7 +68,6 @@ function deleteUser(row) {
 	var params = {
 			"distinguishedName" :	row.distinguishedName
 	};
-	console.log(params)
     $.ajax({
 		type : 'POST',
 		url : 'ad/deleteEntry',
@@ -114,7 +126,6 @@ function fillUserSessions4Ad(ldapResult) {
 				html += '<th style="width: 30%" >TARİH</th>';
 				html += '</thead>';
 				
-				console.log(sessionList)
 				for (var m = 0; m < sessionList.length; m++) {
 					var row = sessionList[m];
 					
@@ -189,7 +200,6 @@ function showAttributes(row){
 
 
 function fillUserInfo(ldapResult) {
-	console.log(ldapResult)
 	$('#userName').html("");
 	$('#userAddress').html("");
 	$('#userPhone').html("");
@@ -282,7 +292,6 @@ function fillUserInfo(ldapResult) {
 function showAdGroups(row){
 	var memberHtml='<table class="table table-striped table-bordered " id="attrMemberTable">';
 	memberHtml +='<thead> <tr><th style="width: 80%" > Kullanıcı Grup Adı </th> </tr> </thead>';
-	console.log(row)
 	var isGroupExist=false;
 	for (key in row.attributesMultiValues) {
 		if (row.attributesMultiValues.hasOwnProperty(key)) {
@@ -369,6 +378,44 @@ function showAdGroups(row){
 		 }); 
 		
 	});
+}
+
+function getUserPolicies(row) {
+	var params = {
+			"distinguishedName" :	row.distinguishedName
+	};
+	$.ajax({
+		type : 'POST',
+		url : 'ad/getUserPolicies',
+		data : params,
+		dataType : 'json',
+		success : function(res) {
+			setUserPolicyTable(res);
+			
+		},
+		error: function (data, errorThrown) {
+			$.notify("Kullanıcı Politikası Getirilirken Hata Oluştu.", "error");
+		}
+	});  
+}
+
+function setUserPolicyTable(data) {
+	var html = "";
+	for (var i = 0; i < data.length; i++) {
+		var commandId = data[i].commandImpl.id;
+		html += '<tr id="'+ data[i].policyImpl.id +'">';
+		html += '<td>'+ data[i].commandExecutionImpl.dn +' </td>';
+		html += '<td>'+ data[i].policyImpl.label +'</td>';
+		html += '<td>'+ data[i].commandExecutionImpl.createDate +'</td>';
+		html += '<td>'+ data[i].policyImpl.policyVersion +'</td>';
+//		html += '<td class="text-center">' 
+//			+ '<button onclick="unassignmentUserPolicy(\'' + commandId + '\')"' 
+//			+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger" title="Kaldır">' 
+//			+ '<i class="fas fa-times"></i></button>' 
+//			+ '</td>';
+		html += '</tr>'
+	}
+	$("#bodyUserExecutedPolicies").html(html);
 }
 
 function getFormattedDate(date) {

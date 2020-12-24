@@ -26,9 +26,11 @@ import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
+import tr.org.lider.models.PolicyResponse;
 import tr.org.lider.services.AdService;
 import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.services.OperationLogService;
+import tr.org.lider.services.PolicyService;
 import tr.org.lider.utils.IRestResponse;
 import tr.org.lider.utils.ResponseFactoryService;
 import tr.org.lider.utils.RestResponseStatus;
@@ -57,6 +59,9 @@ public class AdController {
 	
 	@Autowired
 	private OperationLogService operationLogService; 
+	
+	@Autowired
+	private PolicyService policyService; 
 	
 	@RequestMapping(value = "/getDomainEntry")
 	public List<LdapEntry> getDomainEntry(HttpServletRequest request) {
@@ -607,5 +612,37 @@ public class AdController {
 		}
 		return service.getEntryDetail(dn);
 	}
+	
+	
+	/**
+	 * getting user policies
+	 * @param selectedEntry
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST, value = "/getUserPolicies",produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<PolicyResponse> getUserPolicies(LdapEntry selectedEntry) {
+		logger.info("Getting user policies user Dn: {}",selectedEntry.getDistinguishedName());
+		try {
+			//get user groups
+			List<LdapSearchFilterAttribute> filterAttributes = new ArrayList<LdapSearchFilterAttribute>();
+			filterAttributes.add(new LdapSearchFilterAttribute("objectClass", "group", SearchFilterEnum.EQ));
+			filterAttributes.add(new LdapSearchFilterAttribute("member", selectedEntry.getDistinguishedName(), SearchFilterEnum.EQ));
+			List<LdapEntry> groups = service.search(service.getADDomainName(),filterAttributes, new String[] {"*"});
+
+			
+			List<PolicyResponse> userPolicies=new ArrayList<PolicyResponse>();
+			// find policiy for user groups
+			for (LdapEntry ldapEntry : groups) {
+				List<PolicyResponse> policies= policyService.getPolicies4Group(ldapEntry.getDistinguishedName());
+				userPolicies.addAll(policies);
+			}
+			return userPolicies;
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	
 }

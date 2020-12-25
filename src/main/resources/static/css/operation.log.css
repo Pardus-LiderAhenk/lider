@@ -1,0 +1,59 @@
+.console-show-entries select.form-control {
+	width: 90px;
+	margin: 0 5px;
+}
+
+.console-table-filter .console-filter-group {
+	float: right;
+	margin-left: 15px;
+}
+
+.console-table-filter input, .console-table-filter select {
+	height: 34px;
+	border-radius: 3px;
+	border-color: #ddd;
+	box-shadow: none;
+}
+
+.console-table-filter {
+	padding: 5px 0 15px;
+	margin-bottom: 5px;
+}
+
+.console-table-filter .btn {
+	height: 34px;
+}
+
+.console-table-filter label {
+	font-weight: normal;
+	margin-left: 10px;
+}
+
+.console-table-filter select, .console-table-filter input {
+	display: inline-block;
+	margin-left: 5px;
+}
+
+.console-table-filter input {
+	width: 230px;
+	display: inline-block;
+	font-size: 13px;
+}
+
+#inputDiv {
+	width: 270px;
+}
+
+.console-filter-group select.console-filter {
+	width: 150px;
+	font-size: 13px;
+}
+
+.console-filter-group select.stat {
+	width: 110px;
+	font-size: 13px;
+}
+.console-filter-group input.dtpicker {
+	width: 200px;
+	font-size: 13px;
+}

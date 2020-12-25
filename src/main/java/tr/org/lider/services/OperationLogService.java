@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +27,7 @@ import tr.org.lider.repositories.OperationLogRepository;
  * 
  * Service for operation logs.
  * @author Edip YILDIZ
+ * @author <a href="mailto:tuncay.colak@tubitak.gov.tr">Tuncay ÇOLAK</a>
  *
  */
 @Service
@@ -99,5 +103,21 @@ public class OperationLogService {
 	
 	public List<OperationLogImpl> getOperationLogs() {
 		return operationLogRepository.findAll();
+	}
+	
+	public Page<OperationLogImpl> getLoginLogsByLiderConsole(String userId, int pageNumber, int pageSize, String type) {
+		PageRequest pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("createDate").descending());
+		Page<OperationLogImpl> pagedResult = null;
+		if (type.equals("all")) {
+			pagedResult = operationLogRepository.findByUserIdAndOperationTypeLoginOrOperationTypeLogout(userId, OperationType.LOGIN.getId(), OperationType.LOGOUT.getId(), pageable);
+		}
+		if (type.equals("login") || type.equals("logout")) {
+			int oType = OperationType.LOGIN.getId();
+			if (type.equals("logout")) {
+				oType = OperationType.LOGOUT.getId();
+			}
+			pagedResult = operationLogRepository.findByUserIdAndOperationType(userId, oType, pageable);
+		}
+		return pagedResult;
 	}
 }

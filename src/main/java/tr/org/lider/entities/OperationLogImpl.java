@@ -12,6 +12,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 /**
  * 
@@ -53,6 +55,7 @@ public class OperationLogImpl implements Serializable {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "CREATE_DATE", nullable = false)
+	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Europe/Istanbul")
 	private Date createDate;
 
 	public OperationLogImpl() {

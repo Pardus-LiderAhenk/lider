@@ -1,5 +1,5 @@
 /**
- * This page updated profile and changed password of the logged console user 
+ * This page updated profile and changed password of the logged console user. Usage lider console history.
  * Tuncay ÇOLAK 
  * tuncay.colak@tubitak.gov.tr
  * 
@@ -7,6 +7,10 @@
  */
 
 var liderConsoleInfo = null;
+var pageNumber = 1;
+var pageSize = 10;
+var totalPages = 0;
+
 getLiderConsoleUser();
 
 //Return logged in user information from ldap
@@ -27,7 +31,6 @@ function getLiderConsoleUser() {
 			getSessionsOfLiderConsoleUser(ldapResult);
 			showGroupsOfLiderConsoleUser(ldapResult);
 			showRolesOfLiderConsoleUser(ldapResult);
-
 		},
 		error: function (data, errorThrown) {
 			$.notify("Kullanıcı Bulunamadı", "warn");
@@ -37,6 +40,8 @@ function getLiderConsoleUser() {
 
 //show profile of lider console
 function showProfileOfLiderConsoleUser() {
+	var lastPwdDate = getFormattedDate(liderConsoleInfo.attributes.pwdChangedTime);
+	$('#lasChangedPasswordDate').val(lastPwdDate);
 	$('#liderConsoleUserUid').val(liderConsoleInfo.attributes.uid)
 	$('#liderConsoleUserCn').val(liderConsoleInfo.attributes.cn)
 	$('#liderConsoleUserSn').val(liderConsoleInfo.attributes.sn)
@@ -223,53 +228,128 @@ function contains(rootPassword, allowedChars) {
 }
 
 function getFormattedDate(date) {
-	var h= date.split('T');
-	var hours=h[1].split(':')
-	var d = date.slice(0, 10).split('-');  
-	return d[1] +'/'+ d[2] +'/'+ d[0] + ' '+(hours[0])+":"+hours[1]; // 10/30/2010
+	var year = date.slice(0,4);
+	var month = date.slice(4,6);
+	var day = date.slice(6,8);
+	return day + "/" + month + "/" + year; 
 }
 
 //show sessions of lider console
 function getSessionsOfLiderConsoleUser(ldapResult) {
+	var operationType = $("#lcLoginStatus").val();
+	var params = {
+			"userId" : liderConsoleInfo.distinguishedName,
+			"pageSize": pageSize,
+			"pageNumber": pageNumber,
+			"operationType": operationType,
+			"startDate": null,
+			"endDate": null
+	};
+	var num = (pageNumber-1) * pageSize + 1;
+	var html = "";
 	$.ajax({
 		type : 'POST',
-		url : 'lider/user/getUserSessions',
-		data: 'uid='+ldapResult.attributes.uid,
+		url : 'log/login',
+		data: params,
 		dataType: "json",
-		success : function(sessionList) {
-			var html='<table class="table table-striped table-bordered">';
-			html += '<thead>';
-			html += '<th style="width: 10%" ></th>';
-			html += '<th style="width: 30%" >BİLGİSAYAR ADI</th>';
-			html += '<th style="width: 30%" >IP</th>';
-			html += '<th style="width: 30%" >DURUM</th>';
-			html += '<th style="width: 30%" >TARİH</th>';
-			html += '</thead>';
-
-			$("#sessionListDiv").html("");
-			if(sessionList.length>0){
-				for (var m = 0; m < sessionList.length; m++) {
-					var row = sessionList[m];
-
-					var sessionEvent = "Oturum Açıldı";
-					if (row.sessionEvent == "LOGOUT") {
-						sessionEvent = "Oturum Kapatıldı";
+		success : function(data) {
+			if(data.content.length > 0) {
+				var sessionList = data.content;
+				totalPages = data.totalPages;
+				userSessionPagination(pageNumber, totalPages);
+				if(sessionList.length>0 && sessionList != null){
+					for (var m = 0; m < sessionList.length; m++) {
+						var row = sessionList[m];
+						var operationType = "Oturum Açıldı";
+						if (row.crudType == "LOGOUT") {
+							operationType = "Oturum Kapatıldı";
+						}
+						var requestIp = row.requestIp;
+						if (row.requestIp == "0:0:0:0:0:0:0:1") {
+							requestIp = "localhost";
+						}
+						html += '<tr>';
+						html += '<td > '+ (num) +' </td>';
+						html += '<td >' + liderConsoleInfo.uid + '</td>';
+//						html += '<td >' + row.userId + '</td>';
+						html += '<td >' + row.createDate + '</td>';
+						html += '<td >' + requestIp + '</td>';
+						html += '<td >' + operationType + '</td>';
+						html += '</tr>';
+						num++;
 					}
-					html += '<tr>';
-					html += '<td > <img src="img/linux.png" class="avatar" alt="Avatar"> </td>';
-					html += '<td >' + row.agent.hostname + '</td>';
-					html += '<td >' + row.agent.ipAddresses + '</td>';
-					html += '<td >' + sessionEvent + '</td>';
-					html += '<td >' + getFormattedDate(row.createDate) + '</td>';
-					html += '</tr>';
 				}
-				html += '</table>';
 			} else{
-				html += '<tr><td class="text-center" colspan="5">Kullanıcı henüz herhangi bir istemcide oturum açmamıştır</td></tr>'
+				if (operationType == "login") {
+					html += '<tr><td class="text-center" colspan="5">Kullanıcı henüz oturum açmamıştır</td></tr>'
+				} else {
+					html += '<tr><td class="text-center" colspan="5">Kullanıcı henüz oturumdan çıkmamıştır</td></tr>'
+				}
 			}
-			$("#liderConsoleSessionListDiv").html(html);
+			$("#liderConsoleSessionListBody").html(html);
 		},
 		error: function (data, errorThrown) {
 		}
 	}); 
 }
+
+function userSessionPagination(c, m) {
+	var current = c,
+	last = m,
+	delta = 2,
+	left = current - delta,
+	right = current + delta + 1,
+	range = [],
+	rangeWithDots = [],
+	l;
+
+	for (let i = 1; i <= last; i++) {
+		if (i == 1 || i == last || i >= left && i < right) {
+			range.push(i);
+		}
+	}
+
+	for (let i of range) {
+		if (l) {
+			if (i - l === 2) {
+				rangeWithDots.push(l + 1);
+			} else if (i - l !== 1) {
+				rangeWithDots.push('...');
+			}
+		}
+		rangeWithDots.push(i);
+		l = i;
+	}
+	$('#pagingConsoleUserList').empty();
+	if(m != 1){
+		for (let i = 0; i < rangeWithDots.length; i++) {
+			if(rangeWithDots[i] == c) {
+				$('#pagingConsoleUserList').append('<li class="active"><a href="javascript:sessionPagingClicked(' + rangeWithDots[i] + ')">' + rangeWithDots[i] + '</a></li>');
+			}
+			else {
+				if(rangeWithDots[i] == "...") {
+					$('#pagingConsoleUserList').append('<li class="disabled"><a href="javascript:sessionPagingClicked(' + rangeWithDots[i] + ')">' + rangeWithDots[i]+ '</a></li>');
+				}
+				else {
+					$('#pagingConsoleUserList').append('<li ><a href="javascript:sessionPagingClicked(' + rangeWithDots[i] + ')">' + rangeWithDots[i]+ '</a></li>');
+				}
+			}
+		}
+	}
+}
+
+function sessionPagingClicked(pNum) {
+	pageNumber = pNum;
+	getSessionsOfLiderConsoleUser(liderConsoleInfo);
+}
+
+$('#lcPageSize').change(function(){
+	pageSize = $('#lcPageSize').val();
+	getSessionsOfLiderConsoleUser(liderConsoleInfo);
+});
+
+function changeOperationTypeForLogin() {
+	$('#pagingConsoleUserList').empty();
+	getSessionsOfLiderConsoleUser(liderConsoleInfo);
+}
+

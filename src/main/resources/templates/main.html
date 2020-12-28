@@ -19,6 +19,7 @@
 <link rel="stylesheet" type="text/css" href="css/main_b.css" />
 <link rel="stylesheet" type="text/css" href="css/custom.css" />
 <link rel="stylesheet" id="css-font-awesome" href="css/agent.info.css" />
+<link rel="stylesheet" id="css-font-awesome" href="css/executed-task-report.css" />
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables.min.css"> 
 
 <link rel="stylesheet" href="css/jquery-confirm.min.css">
@@ -237,7 +238,9 @@
                         </li>
                         
                        <!-- REPORT -->
-                      <li class="dropdown nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}">
+                      <li class="dropdown nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+                      			or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}
+                      			or ${#lists.contains(roleNames, 'ROLE_EXECUTED_TASK_INFO')}">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                 <i class="nav-link-icon fas fa-tasks"></i>
                                 <span th:text="#{reports}"></span>
@@ -247,6 +250,10 @@
 					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}" 
 					          class="nav-link dizin" href="#" data-page="agent_info">
 					          	<span th:text="#{reports.detailed.agent.report}"></span>
+					          </a>
+					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_EXECUTED_TASK_INFO')}" 
+					          class="nav-link dizin" href="#" data-page="executed_task_report">
+					          	<span th:text="#{reports.executed.task.report}"></span>
 					          </a>
 					        </div>
                         </li>
@@ -343,7 +350,7 @@
 								          		<span th:text="#{script.definitions}"></span>
 								          	</a>
 								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_ETA_MESSAGE_DEFINITION')}" 
-								          		class="nav-link dizin " href="#" data-page="plugins/definitions/notify_definition">
+								          		class="nav-link dizin" href="#" data-page="plugins/definitions/notify_definition">
 								          		<span th:text="#{eta.message.definitions}"></span>
 								          	</a>
 								          	<div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}"
@@ -649,7 +656,39 @@
 	    </div>
 	</div>
 	<!--END Agent Detail Modal -->
-	
+<!-- Start Command Executed Agents Modal -->
+	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="taskExecutedAgentModal">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="exampleModalLongTitle">Görev Gönderilen Ahenk Listesi</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+				<div class="modal-body">
+				    <table class="mb-0 table table-bordered table-sm">
+				        <thead>
+				        <tr>
+				            <th style="width: 5%">#</th>
+				            <th style="width: 25%">Bilgisayar Adı</th>
+				            <th style="width: 20%">Gönderilme Tarihi</th>
+				            <th style="width: 20%">Çalıştırılma Tarihi</th>
+				            <th style="width: 15%" class="text-center">Sonuç</th>
+				            <th style="width: 15%" class="text-center">Cevap</th>
+				        </tr>
+				        </thead>
+				        <tbody id="taskSentAgentList">
+				        </tbody>
+				    </table>
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- End Executed Task Detail Modal -->	
 	<!-- Start Executed Task Detail Modal -->
 	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="executedTaskDetail">
 	    <div class="modal-dialog modal-lg">

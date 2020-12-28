@@ -321,7 +321,7 @@ function reloadTable(pNumber, pSize, taskCommand) {
 						}
 					});
 
-					trElement += '<td class="text-center">' + (index+1) + '</td>'
+					trElement += '<td class="text-center">' + (order + index) + '</td>'
 					trElement += '<td>' + pluginName + '</td>';
 					trElement += '<td>' + pluginTaskName + '</td>';
 					trElement += '<td>' + command.createDate + '</td>';

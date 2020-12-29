@@ -111,10 +111,11 @@ public class AgentInfoCriteriaBuilder {
 		}
 
 		criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
+		criteriaQuery.orderBy(criteriaBuilder.desc(from.get("createDate")));
 		Long count = count(criteriaBuilderCount, predicatesCount, criteriaCount);
 
 		TypedQuery<AgentImpl> typedQuery = entityManager.createQuery(select);
-		typedQuery.setFirstResult(pageNumber - 1);
+		typedQuery.setFirstResult((pageNumber - 1)*pageSize);
 		if(pageNumber*pageSize > count) {
 			typedQuery.setMaxResults((int) (count%pageSize));
 		} else {

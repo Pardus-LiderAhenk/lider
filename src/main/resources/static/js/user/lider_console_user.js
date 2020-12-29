@@ -349,6 +349,9 @@ $('#lcPageSize').change(function(){
 });
 
 function changeOperationTypeForLogin() {
+	pageNumber = 1;
+	pageSize = 10;
+	totalPages = 0;
 	$('#pagingConsoleUserList').empty();
 	getSessionsOfLiderConsoleUser(liderConsoleInfo);
 }

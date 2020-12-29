@@ -1173,7 +1173,7 @@ function showSelectedEntries() {
 
 function taskHistory() {
 	if(selectedRow==null){
-		var trElement = '<tr><td colspan="8" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td></tr>';
+		var trElement = '<tr><td colspan="6" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td></tr>';
 		$("#taskHistoryTable").empty();
 		$('#taskHistoryTable').append(trElement);
 		$('#selectedAgentInfoSection').hide();
@@ -1250,7 +1250,7 @@ function taskHistory() {
 					$('#taskHistoryTable').append(trElement);
 				} else {
 					$("#taskHistoryTable").empty();
-					var trElement = '<tr><td colspan="5" class="text-center">Bu ahenk üzerinde henüz bir görev çalıştırılmamıştır.</td></tr>';
+					var trElement = '<tr><td colspan="6" class="text-center">Bu ahenk üzerinde henüz bir görev çalıştırılmamıştır.</td></tr>';
 					$('#taskHistoryTable').append(trElement);
 				}
 			},
@@ -1263,7 +1263,7 @@ function taskHistory() {
 
 function showPageAndHideOthers(showPageId){
 	var historyData = null;
-	var trElement = '<tr><td colspan="5" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td></tr>';
+	var trElement = '<tr><td colspan="6" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td></tr>';
 	$("#taskHistoryTable").empty();
 	$('#taskHistoryTable').append(trElement);
 	$('#selectedAgentInfoSection').hide();

@@ -1173,7 +1173,7 @@ function showSelectedEntries() {
 
 function taskHistory() {
 	if(selectedRow==null){
-		var trElement = '<tr><td colspan="5" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td></tr>';
+		var trElement = '<tr><td colspan="8" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td></tr>';
 		$("#taskHistoryTable").empty();
 		$('#taskHistoryTable').append(trElement);
 		$('#selectedAgentInfoSection').hide();

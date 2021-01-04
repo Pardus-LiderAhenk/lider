@@ -30,7 +30,7 @@ var splChars = "+=.@*!";
 $("#sendTaskEditLocalUser").hide();
 $("#sendTaskDeleteLocalUser").hide();
 $("#sendTaskAddLocalUser").hide();
-//$("#localUserForm").hide();
+$("#localUserForm").hide();
 $('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
 
 createGroupsSelectBox();

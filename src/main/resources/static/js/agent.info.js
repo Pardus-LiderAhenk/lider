@@ -66,7 +66,7 @@ $(document).ready(function(){
  */
 function btnSelectDNFromTreeClicked() {
 	getModalContent("modals/agent_info/select_ou", function content(data){
-		$('#genericModalHeader').html("Arama için bi klasör seçiniz");
+		$('#genericModalHeader').html("Aramak için bir klasör seçiniz");
 		$('#genericModalBodyRender').html(data);
 		generateTreeForOUSelection();
 	});

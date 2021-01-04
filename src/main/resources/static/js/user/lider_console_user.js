@@ -158,6 +158,10 @@ $('#btnUpdateConsoleUserPassword').on('click',function(event) {
 	updatePasswordOfLiderConsole(liderConsoleInfo.distinguishedName)
 });
 
+$( "#newConsoleUserPassword,#newConsoleUserConfirmPassword " ).on( "copy cut paste drop", function() {
+    return false;
+});
+
 //updated password of lider console
 function updatePasswordOfLiderConsole(dn) {
 	var userPassword  =$('#newConsoleUserPassword').val();
@@ -190,6 +194,12 @@ function updatePasswordOfLiderConsole(dn) {
 		$.notify("Parolalar uyuşmamaktadır.","warn");
 		return;
 	}
+	
+	if (userPassword == oldPassword) {
+		$.notify("Yeni parola eski parola ile aynı olamaz.","warn");
+		return;
+	}
+	
 	if(userPassword.length < 6 || !ucaseFlag || !lcaseFlag || !digitsFlag){
 		$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
 		return;
@@ -227,6 +237,36 @@ function contains(rootPassword, allowedChars) {
 	return false;
 }
 
+function showOldPassword() {
+	if ($('#oldConsoleUserPassword').attr('type') == "text") {
+		$("#oldConsoleUserPassword").attr("type","password");
+		$("#oldConsoleUserPasswordShowBtn").html('<i class="fas fa-eye-slash"></i>');
+	} else {
+		$("#oldConsoleUserPassword").attr("type","text");
+		$("#oldConsoleUserPasswordShowBtn").html('<i class="fas fa-eye"></i>');
+	}
+}
+
+function showNewPassword() {
+	if ($('#newConsoleUserPassword').attr('type') == "text") {
+		$("#newConsoleUserPassword").attr("type","password");
+		$("#newConsoleUserPasswordShowBtn").html('<i class="fas fa-eye-slash"></i>');
+	} else {
+		$("#newConsoleUserPassword").attr("type","text");
+		$("#newConsoleUserPasswordShowBtn").html('<i class="fas fa-eye"></i>');
+	}
+}
+
+function showNewConfirmPassword() {
+	if ($('#newConsoleUserConfirmPassword').attr('type') == "text") {
+		$("#newConsoleUserConfirmPassword").attr("type","password");
+		$("#newConsoleUserConfirmPasswordShowBtn").html('<i class="fas fa-eye-slash"></i>');
+	} else {
+		$("#newConsoleUserConfirmPassword").attr("type","text");
+		$("#newConsoleUserConfirmPasswordShowBtn").html('<i class="fas fa-eye"></i>');
+	}
+}
+
 function getFormattedDate(date) {
 	var year = date.slice(0,4);
 	var month = date.slice(4,6);
@@ -249,7 +289,7 @@ function getSessionsOfLiderConsoleUser(ldapResult) {
 	var html = "";
 	$.ajax({
 		type : 'POST',
-		url : 'log/login',
+		url : 'operation/login',
 		data: params,
 		dataType: "json",
 		success : function(data) {
@@ -265,11 +305,11 @@ function getSessionsOfLiderConsoleUser(ldapResult) {
 							operationType = "Oturum Kapatıldı";
 						}
 						var requestIp = row.requestIp;
-						if (row.requestIp == "0:0:0:0:0:0:0:1") {
-							requestIp = "localhost";
-						}
+//						if (row.requestIp == "0:0:0:0:0:0:0:1") {
+//							requestIp = "localhost";
+//						}
 						html += '<tr>';
-						html += '<td > '+ (num) +' </td>';
+						html += '<td class="text-center"> '+ (num) +' </td>';
 						html += '<td >' + liderConsoleInfo.uid + '</td>';
 //						html += '<td >' + row.userId + '</td>';
 						html += '<td >' + row.createDate + '</td>';
@@ -344,14 +384,18 @@ function sessionPagingClicked(pNum) {
 }
 
 $('#lcPageSize').change(function(){
+	if (pageNumber != 1) {
+		pageNumber = 1;
+	}
+	$('#pagingConsoleUserList').empty()
 	pageSize = $('#lcPageSize').val();
 	getSessionsOfLiderConsoleUser(liderConsoleInfo);
 });
 
 function changeOperationTypeForLogin() {
 	pageNumber = 1;
-	pageSize = 10;
-	totalPages = 0;
+	pageSize = $('#lcPageSize').val();
+//	totalPages = 0;
 	$('#pagingConsoleUserList').empty();
 	getSessionsOfLiderConsoleUser(liderConsoleInfo);
 }

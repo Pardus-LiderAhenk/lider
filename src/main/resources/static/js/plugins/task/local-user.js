@@ -30,7 +30,7 @@ var splChars = "+=.@*!";
 $("#sendTaskEditLocalUser").hide();
 $("#sendTaskDeleteLocalUser").hide();
 $("#sendTaskAddLocalUser").hide();
-$("#localUserForm").hide();
+//$("#localUserForm").hide();
 $('#localUserBody').html('<tr id="localUserBodyEmptyInfo"><td colspan="3" class="text-center">Yerel Kullanıcı Bulunamadı.</td></tr>');
 
 createGroupsSelectBox();
@@ -235,6 +235,26 @@ function userNameFocus() {
 	$("#localUserHomeDirectory").val("/home/"+ $("#localUserName").val() +"");
 }
 
+function localUserPasswordShow() {
+	if ($('#localUserNewPassword').attr('type') == "text") {
+		$("#localUserNewPassword").attr("type","password");
+		$("#localUserPasswordShowBtn").html('<i class="fas fa-eye-slash"></i>');
+	} else {
+		$("#localUserNewPassword").attr("type","text");
+		$("#localUserPasswordShowBtn").html('<i class="fas fa-eye"></i>');
+	}
+}
+
+function localUserVerifyPasswordShow() {
+	if ($('#localUserVerifyPassword').attr('type') == "text") {
+		$("#localUserVerifyPassword").attr("type","password");
+		$("#localUserVerifyPasswordShowBtn").html('<i class="fas fa-eye-slash"></i>');
+	} else {
+		$("#localUserVerifyPassword").attr("type","text");
+		$("#localUserVerifyPasswordShowBtn").html('<i class="fas fa-eye"></i>');
+	}
+}
+
 function getUsersParams() {
 	if(pluginTask_LocalUser){
 		pluginTask_LocalUser.dnList=dnlist;
@@ -372,6 +392,10 @@ $('#localUsersTable tbody').on( 'click', 'tr', function () {
 			}
 		}
 	}
+});
+
+$( "#localUserNewPassword,#localUserVerifyPassword " ).on( "copy cut paste drop", function() {
+    return false;
 });
 
 //START -->> generate local user password

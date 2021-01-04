@@ -17,7 +17,6 @@ var lowerCase = "abcdefghijklmnopqrstuvwxyz";
 var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 var digits = "0123456789";
 var splChars = "+=.@*!";
-var showPasswordClicked=false;
 var scheduledParamManageRoot = null;
 var scheduledModalManageRootOpened = false;
 var dnlist=[]
@@ -136,6 +135,10 @@ function manageRootListener(msg) {
 	return true;
 }
 
+$( "#inputRootPassword,#inputRootPasswordConfirm " ).on( "copy cut paste drop", function() {
+    return false;
+});
+
 $('#generateRootPassword').click(function(e){
 	var pwd = generatePassword();
 	var ucaseFlag2 = contains(pwd, upperCase);
@@ -160,18 +163,25 @@ $('#generateRootPassword').click(function(e){
 //	$("#inputRootPasswordConfirm").attr("type","text");
 });
 
-$('.showPassword').click(function(e){
-	if(showPasswordClicked==false){
-		$("#inputRootPassword").attr("type","text");
-		$("#inputRootPasswordConfirm").attr("type","text");
-		showPasswordClicked=true;
-	}
-	else if(showPasswordClicked==true){
+function newRootPwdShow() {
+	if ($('#inputRootPassword').attr('type') == "text") {
 		$("#inputRootPassword").attr("type","password");
-		$("#inputRootPasswordConfirm").attr("type","password");
-		showPasswordClicked=false;
+		$("#newRootPwdShowBtn").html('<i class="fas fa-eye-slash"></i>');
+	} else {
+		$("#inputRootPassword").attr("type","text");
+		$("#newRootPwdShowBtn").html('<i class="fas fa-eye"></i>');
 	}
-});
+}
+
+function newConfirmRootPwdShow() {
+	if ($('#inputRootPasswordConfirm').attr('type') == "text") {
+		$("#inputRootPasswordConfirm").attr("type","password");
+		$("#newConfirmRootPwdShowBtn").html('<i class="fas fa-eye-slash"></i>');
+	} else {
+		$("#inputRootPasswordConfirm").attr("type","text");
+		$("#newConfirmRootPwdShowBtn").html('<i class="fas fa-eye"></i>');
+	}
+}
 
 function generatePassword(){
 	var length = 6; //root password min length

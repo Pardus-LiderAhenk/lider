@@ -54,15 +54,21 @@
 							 </div>
 							 <div class="form-group row">
 							    <label for="colFormLabel" class="col-sm-4 col-form-label"><i class="fa fa-lock"></i> Yeni Parola</label>
-							    <div class="col-sm-8">
-							      	<input type="password" class="form-control form-control-sm" id="localUserNewPassword" placeholder="Yeni Parola...">
-							    </div>
+						      	<div class="input-group mb-1 col-sm-8">
+									<input type="password" id="localUserNewPassword" class="form-control form-control-sm" name="localUserNewPassword" placeholder="Yeni Parola">
+									<div class="input-group-append">
+										<button class="btn btn-info btn-xs btn-sm" id="localUserPasswordShowBtn" type="button" onclick="localUserPasswordShow()"><i class="fas fa-eye-slash"></i></button>
+									</div>
+								</div>
 							 </div>
 							 <div class="form-group row">
-							    <label for="colFormLabel" class="col-sm-4 col-form-label"><i class="fa fa-lock"></i> Parola Doğrula</label>
-							    <div class="col-sm-8">
-							    	<input type="password" class="form-control form-control-sm" id="localUserVerifyPassword" placeholder="Parola Doğrula...">
-							    </div>
+							  <label for="colFormLabel" class="col-sm-4 col-form-label"><i class="fa fa-lock"></i> Parola Doğrula</label>
+								<div class="input-group mb-1 col-sm-8">
+									<input type="password" id="localUserVerifyPassword" class="form-control form-control-sm" name="newConfirmPassword" placeholder="Yeni Parola Onayla">
+									<div class="input-group-append">
+										<button class="btn btn-info btn-xs btn-sm" id="localUserVerifyPasswordShowBtn" type="button" onclick="localUserVerifyPasswordShow()" ><i class="fas fa-eye-slash"></i></button>
+									</div>
+								</div>
 							 </div>
 							 <div class="form-group row">
 							    <label for="colFormLabel" class="col-sm-4 col-form-label"><i class="fa fa-home"></i> Ev Dizini</label>

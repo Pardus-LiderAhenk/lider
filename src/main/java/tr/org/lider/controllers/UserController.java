@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import tr.org.lider.entities.CommandImpl;
+import tr.org.lider.entities.OperationType;
 import tr.org.lider.entities.UserSessionImpl;
 import tr.org.lider.ldap.DNType;
 import tr.org.lider.ldap.LDAPServiceImpl;
@@ -32,6 +33,7 @@ import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.models.UserSessionsModel;
 import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
+import tr.org.lider.services.OperationLogService;
 import tr.org.lider.services.UserService;
 
 @RestController()
@@ -51,6 +53,9 @@ public class UserController {
 	
 	@Autowired
 	private CommandService commandService;
+	
+	@Autowired
+	private OperationLogService operationLogService; 
 	
 	@RequestMapping(value = "/getOuDetails")
 	public List<LdapEntry> task(LdapEntry selectedEntry) {
@@ -499,6 +504,7 @@ public class UserController {
 			if(!"".equals(selectedEntry.getUserPassword())){
 				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "userPassword", selectedEntry.getUserPassword());
 			}
+			operationLogService.saveOperationLog(OperationType.CHANGE_PASSWORD,"Lider Arayüz kullanıcı parolası güncellendi.",null);
 			return true;
 		} catch (LdapException e) {
 			e.printStackTrace();

@@ -1,0 +1,152 @@
+<link rel="stylesheet" href="css/daterangepicker.css">
+<script src="js/FileSaver.js"></script>
+<script src="js/xlsx.full.min.js"></script>
+<script src="js/operation-log-report.js"></script>
+<style>
+<!--
+#btnSelectUserDN {
+	background: #02a9f4;
+	color: #fff;
+}
+-->
+</style>
+
+<div class="main-card mb-3 card" style="margin: 18px;"
+	xmlns:th="http://www.thymeleaf.org"
+  	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+	<div class="card-body" id="LogsReportBodyDiv">
+		<div class="table-wrapper">
+			<div class="table-title">
+				<div class="row">
+					<div class="col-sm-4">
+						<h2>Sistem Güncesi</h2>
+					</div>
+					<div class="col-sm-8">
+						<a href="#" class="btn btn-primary"
+							onclick="exportButtonClicked()"> <i class="fa fa-download" aria-hidden="true"> </i><span>Dışa
+								Aktar</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="table-filter">
+				<div class="row">
+					<div class="col-sm-2">
+						<div class="show-entries">
+							<select id="logPageSize" name="logPageSize" class="form-control">
+								<option>10</option>
+								<option>20</option>
+								<option>25</option>
+								<option>50</option>
+								<option>100</option>
+								<option>200</option>
+								<option>500</option>
+								<option>1000</option>
+							</select> <span> Sonuç Göster</span>
+						</div>
+					</div>
+					<div class="col-sm-10">
+						<button type="button" class="btn btn-primary" onclick="logSearch()" id="searchButton">
+							<i class="fa fa-search"></i>
+						</button>
+						
+						<div class="filter-group">
+							<div class="input-group" id="inputDiv">
+							  <input type="text" class="form-control" placeholder="Search" id="searchTextForLog">
+							  <div class="input-group-append">
+							    <button class="btn btn-success" type="submit" data-toggle="modal" 
+							    	data-target="#genericModal" id="btnSelectUserDN" 
+							    	onclick="btnSelectUserDNFromTreeClicked()">
+							    	<i class="pe-7s-network btn-icon-wrapper fa-lg"></i>
+							    </button>
+							  </div>
+							</div>
+						</div>
+						<div class="filter-group">
+							<label>Filtre Alanı</label> 
+							<select class="form-control filter" style="width:120px !important;" id="logFilterParam" name="logFilterParam">
+								<option value="userId">Kullanıcı DN</option>
+								<option value="requestIp">İP Adresi</option>
+							</select>
+							
+						<div class="filter-group">
+
+						</div>
+						</div>
+						<div class="filter-group">
+							<label>Günce Tipi</label> 
+							<select class="form-control filter" style="width:175px !important;" id="selectOperationType" name="selectOperationType">
+							</select>
+						</div>
+						<div class="filter-group"  id="date-range-picker">
+							<label>Günce Tarihi</label>
+		                    <input type="text" class="form-control dtpicker" id="date_filter" onkeydown="return false" autocomplete="off">
+						</div>
+						<span class="filter-icon"><i class="fa fa-filter"></i></span>
+					</div>
+				</div>
+			</div>
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="text-center" style="width: 5%">#</th>
+						<th style="width: 7%">İşlem Tipi</th>
+						<th style="width: 10%">Oluşturulma Tarihi</th>
+						<th style="width: 24%">Mesaj</th>
+						<th style="width: 24%">Kullanıcı DN</th>
+						<th style="width: 10%" >İP Adresi</th>
+						<th style="width: 7%" >Görev ID</th>
+						<th style="width: 7%" >Politika ID</th>
+						<th style="width: 7%" >Profil ID</th>
+<!-- 						<th class="text-center" style="width: 5%"></th> -->
+					</tr>
+				</thead>
+				<tbody id="operationLogsTable">
+				</tbody>
+			</table>
+			<div class="clearfix">
+				<!-- <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>  -->
+				<ul id="pagingLogList" class="pagination">
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div id="progressLogsReport" class="plugin-progress" style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+    	<div style="position:absolute; ; top: 38%; left: 45%;"> 
+    		<img src="img/LoadingPage.gif" width="80" height="80"  /> <span> <b>   Sistem güncesi getiriliyor lütfen bekleyiniz ... </b> </span> 
+    	</div>
+	</div>
+</div>
+<script src="js/daterangepicker/moment-with-locales.min.js"></script>
+<script src="js/daterangepicker/locale/tr.js"></script>
+<script src="js/daterangepicker/tempusdominus-bootstrap-4.min.js"></script>
+<script src="js/daterangepicker/daterangepicker.js"></script>
+
+<script>
+  $(function() {
+    //Date range picker
+    $('#date_filter').daterangepicker( {
+    	 autoUpdateInput: false,
+         locale: {
+             cancelLabel: 'Temizle',
+             applyLabel: 'Uygula',
+             format: 'DD/MM/YYYY'
+         },
+    	language: 'tr',
+    });
+
+    $('#date_filter').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        filterStartDate = picker.startDate.format('DD/MM/YYYY HH:mm:ss');
+        filterEndDate = picker.endDate.format('DD/MM/YYYY  HH:mm:ss');
+    });
+
+    $('#date_filter').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+        filterStartDate = "";
+        filterEndDate = "";
+    });
+  });
+  
+</script>
+

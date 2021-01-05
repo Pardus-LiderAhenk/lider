@@ -1,6 +1,6 @@
 package tr.org.lider.entities;
 public enum OperationType {
-	CREATE(1), READ(2), UPDATE(3), DELETE(4), LOGIN(5), LOGOUT(6), EXECUTE_TASK(7), EXECUTE_POLICY(8);
+	CREATE(1), READ(2), UPDATE(3), DELETE(4), LOGIN(5), LOGOUT(6), EXECUTE_TASK(7), EXECUTE_POLICY(8), CHANGE_PASSWORD(9), MOVE(10);
 
 	private int id;
 

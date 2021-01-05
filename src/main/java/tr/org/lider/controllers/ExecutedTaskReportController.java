@@ -21,7 +21,7 @@ import tr.org.lider.entities.PluginTask;
 import tr.org.lider.services.ExecutedTaskReportService;
 import tr.org.lider.services.PluginTaskService;
 
-@Secured({"ROLE_ADMIN", "ROLE_EXECUTED_TASK_REPORT" })
+@Secured({"ROLE_ADMIN", "ROLE_EXECUTED_TASK" })
 @RestController
 @RequestMapping("lider/executedTaskReport")
 public class ExecutedTaskReportController {

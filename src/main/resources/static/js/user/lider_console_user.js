@@ -40,7 +40,10 @@ function getLiderConsoleUser() {
 
 //show profile of lider console
 function showProfileOfLiderConsoleUser() {
-	var lastPwdDate = getFormattedDate(liderConsoleInfo.attributes.pwdChangedTime);
+	var lastPwdDate = liderConsoleInfo.createDateStr;
+	if (liderConsoleInfo.attributes.pwdChangedTime) {
+		lastPwdDate = getFormattedDate(liderConsoleInfo.attributes.pwdChangedTime);
+	}
 	$('#lasChangedPasswordDate').val(lastPwdDate);
 	$('#liderConsoleUserUid').val(liderConsoleInfo.attributes.uid)
 	$('#liderConsoleUserCn').val(liderConsoleInfo.attributes.cn)

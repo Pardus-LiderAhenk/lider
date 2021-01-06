@@ -58,3 +58,28 @@
 	background: #70C1F9 !important;
     background-color: black;
 }
+
+.packages-table select {
+	width: 50px !important;
+	height: 25px;
+	margin: 0 5px;
+}
+
+.packages-table .selectTag {
+	width: 172px !important;
+	height: 30px;
+}
+
+.packages-table .page-item.active .page-link {
+    background-color: #02a9f4 !important;
+    border: 1px solid blue;
+}
+.packages-table .page-link {
+    color: black !important;
+}
+.packages-table .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: none;
+  color: #02a9f4!important;
+  border-radius: 2px;
+  border: 1px solid #828282;
+}

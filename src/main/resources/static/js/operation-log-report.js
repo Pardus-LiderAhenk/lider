@@ -107,14 +107,11 @@ function exportToExcel () {
 	wb.SheetNames.push("Operation Logs");
 	var wsData = [];
 	var header = ['' , 
-		'işlem Tipi', 
+		'Günce Tipi', 
 		'Oluşturulma Tarihi', 
 		'Mesaj',
 		'Kullanıcı DN', 
-		'İP Adresi', 
-		'Görev ID',
-		'Politika ID', 
-		'Profil ID'];
+		'İP Adresi'];
 	//give character number size for column width
 	var colLength = [];
 	for (var i = 0; i < header.length; i++) {
@@ -129,10 +126,7 @@ function exportToExcel () {
 			log.createDate, 
 			log.logMessage,
 			log.userId,
-			log.requestIp,
-			log.taskId,
-			log.policyId,
-			log.profileId];
+			log.requestIp];
 
 		//if column element character length is bigger than before update it
 		for (var i = 0; i < logListData.length; i++) {
@@ -222,9 +216,9 @@ function getOperationLogs() {
 						html += '<td >' + row.logMessage + '</td>';
 						html += '<td >' + row.userId + '</td>';
 						html += '<td >' + requestIp + '</td>';
-						html += '<td >' + row.taskId + '</td>';
-						html += '<td >' + row.policyId + '</td>';
-						html += '<td >' + row.profileId + '</td>';
+//						html += '<td >' + row.taskId + '</td>';
+//						html += '<td >' + row.policyId + '</td>';
+//						html += '<td >' + row.profileId + '</td>';
 						html += '</tr>';
 						num++;
 					}

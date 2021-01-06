@@ -29,18 +29,19 @@
 		  			</div>
 		  			<input type="text" id="repoUrl" class="form-control form-control-sm" value="http://depo.pardus.org.tr/pardus">
 		  			<input type="text" id="repoComponent" class="form-control form-control-sm" value="ondokuz main contrib non-free">
-<!-- 					<input type="text" id="repoUrl" class="form-control" value="http://repo.liderahenk.org/liderahenk-test"> -->
-<!-- 		  			<input type="text" id="repoComponent" class="form-control" value="testing main"> -->
+<!-- 					<input type="text" id="repoUrl" class="form-control form-control-sm" value="http://repo.liderahenk.org/liderahenk-test"> -->
+<!-- 		  			<input type="text" id="repoComponent" class="form-control form-control-sm" value="testing main"> -->
 					<div class="input-group-append">
 						<button id="getPackagesListBtn" type="button" class="btn-shadow btn btn-info btn-sm"><i class="fa fa-list"></i> Paketleri Listele</button>
 					</div>
 				</div>
 				<div class="input_fields_wrap" id="addedRepositoryId"></div>
+				<div class="packages-table">
 				<table class="table table-striped table-bordered display" id="packagesListTableId" border="1">
 				        <thead>
 				            <tr>
-				                <th style="width: 5%">#</th>
-								<th style="width: 15%">Paket Adı</th>
+				                <th style="width: 4%">#</th>
+								<th style="width: 16%">Paket Adı</th>
 								<th style="width: 15%">Versiyon</th>
 								<th style="width: 10%">Büyüklük</th>
 								<th style="width: 40%">Tanım</th>
@@ -49,6 +50,7 @@
 				        </thead>
 			        <tbody id="packageBody"></tbody>
 		    	</table>
+		    	</div>
 		    	<small id="packagesHelp" class="text-muted">Girilen depo adresindeki paketleri listemek için Paketleri Listele butonuna tıklayınız.</small>
 				<div id="plugin-result-packages"></div>
 			</div>

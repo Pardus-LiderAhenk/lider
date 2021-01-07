@@ -28,18 +28,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
-import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import tr.org.lider.entities.CommandExecutionImpl;
 import tr.org.lider.entities.CommandImpl;
 import tr.org.lider.entities.PolicyImpl;
 import tr.org.lider.entities.ProfileImpl;
-import tr.org.lider.ldap.ILDAPService;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
@@ -218,7 +215,7 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 				userDN=users.get(0).getDistinguishedName();
 			}
 		}
-		else if(configurationService.getDomainType().equals(DomainType.LDAP)) {
+		else{
 			userDN=ldapService.getDN(configurationService.getLdapRootDn(), configurationService.getUserLdapUidAttribute(),
 					userUid);
 		}
@@ -243,7 +240,7 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 			String baseDn=adService.getADDomainName();
 			groups = adService.search(baseDn, filterAttributesList, new String[] {"*"});
 		}
-		else if(configurationService.getDomainType().equals(DomainType.LDAP)) {
+		else{
 			groups=  ldapService.search(configurationService.getLdapRootDn(), filterAttributesList, new String[] {"*"});
 		}
 		

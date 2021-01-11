@@ -483,6 +483,20 @@ public class ConfigurationService {
 		return false;
 	}
 	
+	public String getPardusRepoAddress() {
+		if(getConfigParams().getPardusRepoAddress() == null || getConfigParams().getPardusRepoAddress().equals("")) {
+			return "http://depo.pardus.org.tr/pardus";
+		}
+		return getConfigParams().getPardusRepoAddress();
+	}
+	
+	public String getPardusRepoComponent() {
+		if(getConfigParams().getPardusRepoComponent() == null || getConfigParams().getPardusRepoComponent().equals("")) {
+			return "ondokuz main contrib non-free";
+		}
+		return getConfigParams().getPardusRepoComponent();
+	}
+	
 	//	public String getEmailHost() {
 	//		return getConfigParams().getEmailHost();
 	//	}

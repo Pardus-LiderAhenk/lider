@@ -138,6 +138,9 @@ public class ConfigParams {
 	//plugin settings
 	private Boolean allowVNCConnectionWithoutPermission;
 	
+	//repo address for package and repository plugin
+	private String pardusRepoAddress;
+	private String pardusRepoComponent;
 	
 	public ConfigParams() {
 		super();
@@ -869,6 +872,22 @@ public class ConfigParams {
 
 	public void setAllowVNCConnectionWithoutPermission(Boolean allowVNCConnectionWithoutPermission) {
 		this.allowVNCConnectionWithoutPermission = allowVNCConnectionWithoutPermission;
+	}
+
+	public String getPardusRepoAddress() {
+		return pardusRepoAddress;
+	}
+
+	public void setPardusRepoAddress(String pardusRepoAddress) {
+		this.pardusRepoAddress = pardusRepoAddress;
+	}
+
+	public String getPardusRepoComponent() {
+		return pardusRepoComponent;
+	}
+
+	public void setPardusRepoComponent(String pardusRepoComponent) {
+		this.pardusRepoComponent = pardusRepoComponent;
 	}
 
 	public FileServerConf getFileServerConf(String jid) {

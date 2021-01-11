@@ -56,6 +56,10 @@ function getRepoAddress() {
 					$('#repoUrl').val(repoAddData.pardusRepoAddress);
 					$('#repoComponent').val(repoAddData.pardusRepoComponent);
 				}
+				else {
+					$('#repoUrl').val("http://depo.pardus.org.tr/pardus");
+					$('#repoComponent').val("ondokuz main contrib non-free");
+				}
 			}
 		},
 		error: function (data, errorThrown) {

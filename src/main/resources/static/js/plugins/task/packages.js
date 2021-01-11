@@ -16,13 +16,21 @@ var scheduledModalPackagesOpened = false;
 var packagesData = [];
 var packageInfoList = [];
 var dnlist=[];
+var packagesListTable = [];
 var tablePackages = null;
 var pluginTask_Packages = null;
+var repoAddData = null;
 var ref_packages=connection.addHandler(packagesListener, null, 'message', null, null,  null);
+
 $('#sendTaskPackages').hide();
 $('#sendTaskCronPackages').hide();
-var packagesListTable = [];
 $('#packageBody').html('<tr id="packagesBodyEmptyInfo"><td colspan="6" class="text-center">Paket Bulunamadı. Paket Listele Butonuna Tıklayınız.</td></tr>');
+$('#packageType').attr("disabled", true);
+$('#repoUrl').attr("disabled", true);
+$('#repoComponent').attr("disabled", true);
+$("#installRadioBtn").prop("checked", true);
+
+getRepoAddress();
 
 for (var i = 0; i < selectedEntries.length; i++) {
 	dnlist.push(selectedEntries[i].distinguishedName);
@@ -35,16 +43,79 @@ for (var n = 0; n < pluginTaskList.length; n++) {
 	}
 }
 
-$("#installRadioBtn").prop("checked", true);
+//get repository address from database
+function getRepoAddress() {
+	$.ajax({ 
+		type: 'GET', 
+		url: "/lider/config/configurations",
+		dataType: 'json',
+		success: function (data) { 
+			if(data != null) {
+				repoAddData = data;
+				$('#repoUrl').val(repoAddData.pardusRepoAddress);
+				$('#repoComponent').val(repoAddData.pardusRepoComponent);
+			}
+		},
+		error: function (data, errorThrown) {
+			$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		}
+	});
+}
+
+function editRepoAddress() {
+	var repoAddrBtnVal = $("#repoAddrUpdateBtn").val();
+	if (repoAddrBtnVal == "edit") {
+		$('#packageType').attr("disabled", false);
+		$('#repoUrl').attr("disabled", false);
+		$('#repoComponent').attr("disabled", false);
+		$("#repoAddrUpdateBtn").attr('value', 'save'); //versions older than 1.6
+		$("#repoAddrUpdateBtn").html('<i class="fas fa-save"></i>');
+		$('#repoAddrUpdateBtn').prop('title', 'Depo Adresini Kaydet');
+	} else {
+		updatedRepoAddress();
+		$('#packageType').attr("disabled", true);
+		$('#repoUrl').attr("disabled", true);
+		$('#repoComponent').attr("disabled", true);
+		$("#repoAddrUpdateBtn").attr('value', 'edit');
+		$("#repoAddrUpdateBtn").html('<i class="fas fa-edit"></i>');
+		$('#repoAddrUpdateBtn').prop('title', 'Depo Adresini Düzenle');
+	}
+}
+
+//updated repository address
+function updatedRepoAddress() {
+	var params = {
+			"pardusRepoAddress": $('#repoUrl').val(),
+			"pardusRepoComponent": $('#repoComponent').val()
+	};
+	$.ajax({ 
+		type: 'POST', 
+		url: "/packages/update/repoAddress",
+		dataType: 'json',
+		data: params,
+		success: function (data) { 
+			if(data != null) {
+				repoAddData = data;
+				$('#repoUrl').val(repoAddData.pardusRepoAddress);
+				$('#repoComponent').val(repoAddData.pardusRepoComponent);
+				$.notify("Paket Depo Adresi başarıyla güncellendi.", "success");
+			} else {
+				$.notify("Paket Depo Adresi güncellenirken güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+			}
+		},
+		error: function (data, errorThrown) {
+			$.notify("Paket Depo Adresi güncellenirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		}
+	});
+}
+//get packages from package repository
 $('#getPackagesListBtn').click(function(e){
-	
 	if (tablePackages) {
 		packagesListTable = [];
 		tablePackages.clear().draw();
 		tablePackages.destroy();
 		tablePackages = null;
 	}
-	
 	var params = {
 			"type" : $('#packageType').val(),
 			"url": $('#repoUrl').val(),
@@ -55,7 +126,6 @@ $('#getPackagesListBtn').click(function(e){
 });
 
 function getPackagesList(params){
-	
 	progress("divPackages","progressPackages",'show');
 	$.ajax({
 		type: "POST",
@@ -320,7 +390,7 @@ function sendPackagesTask(params) {
 		}
 		$.notify(groupNotify, "success");
 	}
-	
+
 	$.ajax({
 		type: "POST",
 		url: "/lider/task/execute",

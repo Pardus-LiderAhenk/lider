@@ -15,12 +15,13 @@
 				<div class="col-lg-6 text-left">PAKET KUR VEYA KALDIR</div>
 				<div class="col-lg-6 text-right">
 					<button id="sendTaskCronPackages" type="button"	class="btn-shadow btn btn-info btn-sm"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+					<button id="repoAddrUpdateBtn" onclick="editRepoAddress()" title="Depo Adresi Düzenle" value="edit" type="button" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></button>
 					<button id="sendTaskPackages" type="button" title="Çalıştır" class="btn-shadow btn btn-info btn-sm"><i class="fa fa-play"></i></button>
 				</div>
 			</div>
 		<div class="card-body">
-		   	<div class="login-form-1">
-				<div class="input-group mb-3">
+		   	<div class="login-form-1 ">
+		   		<div class="input-group">
 		  			<div class="input-group-prepend">
 		  			 <select class="form-control custom-select custom-select-sm" id="packageType">
 					    <option value="deb">deb</option>
@@ -29,10 +30,8 @@
 		  			</div>
 		  			<input type="text" id="repoUrl" class="form-control form-control-sm" value="http://depo.pardus.org.tr/pardus">
 		  			<input type="text" id="repoComponent" class="form-control form-control-sm" value="ondokuz main contrib non-free">
-<!-- 					<input type="text" id="repoUrl" class="form-control form-control-sm" value="http://repo.liderahenk.org/liderahenk-test"> -->
-<!-- 		  			<input type="text" id="repoComponent" class="form-control form-control-sm" value="testing main"> -->
 					<div class="input-group-append">
-						<button id="getPackagesListBtn" type="button" class="btn-shadow btn btn-info btn-sm"><i class="fa fa-list"></i> Paketleri Listele</button>
+						<button id="getPackagesListBtn" type="button" class="btn btn-info btn-sm"><i class="fa fa-list"></i> Paketleri Listele</button>
 					</div>
 				</div>
 				<div class="input_fields_wrap" id="addedRepositoryId"></div>

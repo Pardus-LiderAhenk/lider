@@ -12,7 +12,6 @@
 var totalPageNumber = 0;
 var selectedPage = 1;
 var selectedPageSize = 10;
-var searchText = "";
 var commandList = "";
 var pluginList;
 var taskCommand = "";
@@ -263,8 +262,8 @@ function pagingClicked(pNum) {
 	//user can not click same page number
 	//gets new page from backend, refreshes the table and append new data
 	if(pNum != selectedPage) {
-		if(searchText != "") {
-			reloadTable(pNum, selectedPageSize, $("#searchByAgentProperty option:selected").val(), searchText);
+		if(taskCommand != "") {
+			reloadTable(pNum, selectedPageSize, taskCommand);
 		} else {
 			reloadTable(pNum, selectedPageSize);
 		}
@@ -363,9 +362,6 @@ function reloadTable(pNumber, pSize, taskCommand) {
 	    }, complete: function() {
 			progress("executedTaskReportBodyDiv","progressExecutedTaskReport",'hide');
 		}
-
-
-
 	});
 }
 

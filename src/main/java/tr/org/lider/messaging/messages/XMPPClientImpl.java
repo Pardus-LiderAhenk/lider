@@ -220,7 +220,7 @@ public class XMPPClientImpl {
 		this.packetReplyTimeout = configurationService.getXmppPacketReplayTimeout();
 		this.pingTimeout = configurationService.getXmppPingTimeout();
 		logger.info("XMPP parameters are initialized");
-		logger.info(this.toString());
+		//logger.info(this.toString());
 	}
 
 	/**
@@ -248,7 +248,7 @@ public class XMPPClientImpl {
 			}
 			config = builder.build();
 		}
-		logger.debug("XMPP configuration finished: {}", config.toString());
+		//logger.debug("XMPP configuration finished: {}", config.toString());
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class XMPPClientImpl {
 	 */
 	private void connect() {
 		connection = new XMPPTCPConnection(config);
-		logger.info("XMPP configuration packetReplyTimeout : " +packetReplyTimeout);
+		logger.info("XMPP configuration packetReplyTimeout : " + packetReplyTimeout);
 		connection.setPacketReplyTimeout(packetReplyTimeout);
 
 		// Retry connection if it fails.
@@ -324,8 +324,9 @@ public class XMPPClientImpl {
 		// should be automatically acknowledged with a receipt.
 		DeliveryReceiptManager.getInstanceFor(connection).setAutoReceiptMode(AutoReceiptMode.always);
 		SmackConfiguration.setDefaultPacketReplyTimeout(packetReplyTimeout);
-		logger.debug("Successfully set server settings: {} - {}", new Object[] { pingTimeout, packetReplyTimeout });
+		//logger.debug("Successfully set server settings: {} - {}", new Object[] { pingTimeout, packetReplyTimeout });
 	}
+	
 	/**
 	 * Hook packet and connection listeners
 	 */
@@ -458,7 +459,7 @@ public class XMPPClientImpl {
 
 		try{
 			String jidFinal = getFullJid(jid);
-			logger.info("Sending message: {} to user: {}", new Object[] { message, jidFinal });
+			//logger.info("Sending message: {} to user: {}", new Object[] { message, jidFinal });
 			Message msg = new Message(jidFinal, Message.Type.normal);
 			msg.setBody(message);
 			connection.sendStanza(msg);

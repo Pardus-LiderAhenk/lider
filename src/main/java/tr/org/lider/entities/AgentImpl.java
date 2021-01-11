@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -80,6 +81,7 @@ public class AgentImpl implements Serializable{
 	private Set<AgentPropertyImpl> properties = new HashSet<AgentPropertyImpl>(0); // bidirectional
 
 	@OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = false)
+	@OrderBy("createDate DESC")
 	private Set<UserSessionImpl> sessions = new HashSet<UserSessionImpl>(0); // bidirectional
 
 	public AgentImpl() {

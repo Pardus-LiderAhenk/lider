@@ -31,22 +31,15 @@ public class PluginPagesController {
 	
 	@RequestMapping(value="/getPluginTaskHtmlPage", method = {RequestMethod.POST })
 	public ModelAndView getPluginTaskHtmlPage(Model model, PluginTask pluginTask) {
-
-		logger.info("Getting pluging tas for page : {}", pluginTask.getPage());
-		
 		ModelAndView modelAndView = new ModelAndView();
-	    modelAndView.setViewName("plugins/task/"+pluginTask.getPage());
-	    
+	    modelAndView.setViewName("plugins/task/" + pluginTask.getPage());
 	    modelAndView.addObject("pluginTask", pluginTask);
 	    return modelAndView;
 	}
 	
-	
 	@RequestMapping(value="/getPluginTaskList", method = {RequestMethod.POST })
 	public List<PluginTask> getPluginTaskList(Model model, PluginTask pluginTask) {
-		
-		logger.info("Getting plugink list ");
-		List<PluginTask>  list=pluginService.findAllPluginTask();
+		List<PluginTask>  list = pluginService.findAllPluginTask();
 		return list;
 	}
 

@@ -60,7 +60,7 @@ $(document).ready(function(){
 	$("#pageSize").change(function(){
 		selectedPageSize = $("#pageSize option:selected").val();
 		selectedPage = 1;
-		reloadTable(1, selectedPageSize);
+		reloadTable(1, selectedPageSize, taskCommand);
 	});
 });
 

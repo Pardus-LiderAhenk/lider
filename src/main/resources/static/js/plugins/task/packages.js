@@ -52,8 +52,10 @@ function getRepoAddress() {
 		success: function (data) { 
 			if(data != null) {
 				repoAddData = data;
-				$('#repoUrl').val(repoAddData.pardusRepoAddress);
-				$('#repoComponent').val(repoAddData.pardusRepoComponent);
+				if (repoAddData.pardusRepoAddress && repoAddData.pardusRepoComponent) {
+					$('#repoUrl').val(repoAddData.pardusRepoAddress);
+					$('#repoComponent').val(repoAddData.pardusRepoComponent);
+				}
 			}
 		},
 		error: function (data, errorThrown) {

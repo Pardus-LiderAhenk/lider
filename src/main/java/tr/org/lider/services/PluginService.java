@@ -143,6 +143,7 @@ public class PluginService {
 		pluginTaskList.add(new PluginTask("USB Yönetimi", "usb-management", "İstemcideki aygıtları yönetir", "MANAGE_USB", true, findPluginIdByName("usb"), 1));
 		pluginTaskList.add(new PluginTask("ETA Mesajı Gönder", "eta-notify", "ETA mesaj gönderir", "ETA_NOTIFY", true, findPluginIdByName("notify"), 0));
 		pluginTaskList.add(new PluginTask("Uygulama Sınırlı Erişim Yönetimi", "application-restriction", "ETA uygulama kısıtlama", "APPLICATION_RESTRICTION", false, findPluginIdByName("system-restriction"), 0));
+		pluginTaskList.add(new PluginTask("ETA-Uygulama Listeleme", "installed-application", "ETA uygulama listeleme", "INSTALLED_APPLICATIONS", false, findPluginIdByName("system-restriction"), 0));
 		pluginTaskList.add(new PluginTask("Ekran Görüntüsü Al", "screenshot", "İstemcide oturum açmış olan kullanıcının ekran görüntüsünü alır", "TAKE-SCREENSHOT", false, findPluginIdByName("screenshot"), 0));
 		
 		for (int i = 0; i < pluginTaskList.size(); i++) {

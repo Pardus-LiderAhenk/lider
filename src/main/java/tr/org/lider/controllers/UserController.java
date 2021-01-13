@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import tr.org.lider.entities.CommandImpl;
-import tr.org.lider.entities.OperationType;
 import tr.org.lider.entities.UserSessionImpl;
 import tr.org.lider.ldap.DNType;
 import tr.org.lider.ldap.LDAPServiceImpl;
@@ -33,7 +32,6 @@ import tr.org.lider.ldap.SearchFilterEnum;
 import tr.org.lider.models.UserSessionsModel;
 import tr.org.lider.services.CommandService;
 import tr.org.lider.services.ConfigurationService;
-import tr.org.lider.services.OperationLogService;
 import tr.org.lider.services.UserService;
 
 @RestController()
@@ -53,9 +51,6 @@ public class UserController {
 	
 	@Autowired
 	private CommandService commandService;
-	
-	@Autowired
-	private OperationLogService operationLogService; 
 	
 	@RequestMapping(value = "/getOuDetails")
 	public List<LdapEntry> task(LdapEntry selectedEntry) {
@@ -470,47 +465,4 @@ public class UserController {
 		}
 		return entry ;
 	}
-	
-//	return lider console information from ldap
-	@RequestMapping(method=RequestMethod.POST, value = "/liderConsoleUser")
-	@ResponseBody
-	public LdapEntry getLiderConsoleUser(@RequestParam(value="uid", required=true) String uid) {
-		String globalUserOu = configurationService.getUserLdapBaseDn();
-		LdapEntry liderConsoleUser = null;
-		try {
-			
-			String filter="(&(uid="+ uid +"))";
-			
-			List<LdapEntry> usersEntrylist = ldapService.findSubEntries(globalUserOu, filter,new String[] { "*" }, SearchScope.SUBTREE);
-			liderConsoleUser = usersEntrylist.get(usersEntrylist.size()-1);
-			
-			logger.info("lider console user : "+liderConsoleUser);
-		} catch (LdapException e) {
-			e.printStackTrace();
-		}
-		return liderConsoleUser;
-	}
-	
-	/**
-	 * update lider console  password
-	 * @param selectedEntry
-	 * @return
-	 */
-	@RequestMapping(method=RequestMethod.POST, value = "/updateLiderConsoelUserPassword",produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public boolean updateLiderConsoleUserPassword(LdapEntry selectedEntry) {
-		try {
-		
-			if(!"".equals(selectedEntry.getUserPassword())){
-				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "userPassword", selectedEntry.getUserPassword());
-			}
-			operationLogService.saveOperationLog(OperationType.CHANGE_PASSWORD,"Lider Arayüz kullanıcı parolası güncellendi.",null);
-			return true;
-		} catch (LdapException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	
 }

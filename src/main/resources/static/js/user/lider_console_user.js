@@ -22,7 +22,7 @@ function getLiderConsoleUser() {
 
 	$.ajax({
 		type : 'POST',
-		url : 'lider/user/liderConsoleUser',
+		url : 'liderConsole/profile',
 		data: params,
 		dataType: "json",
 		success : function(ldapResult) {
@@ -143,7 +143,7 @@ function updateProfileOfLiderConsle(dn) {
 	};
 	$.ajax({
 		type : 'POST',
-		url : 'lider/user/editUser',
+		url : 'liderConsole/updateProfile',
 		data : params,
 		dataType : 'json',
 		success : function(data) {
@@ -214,7 +214,7 @@ function updatePasswordOfLiderConsole(dn) {
 	};
 	$.ajax({
 		type : 'POST',
-		url : 'lider/user/updateLiderConsoelUserPassword',
+		url : 'liderConsole/updatePassword',
 		data : params,
 		dataType : 'json',
 		success : function(ldapResult) {

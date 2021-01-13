@@ -15,7 +15,7 @@ public class NotifyService {
 
 	@Autowired
 	private NotifyRepository notifyRepository;
-	
+
 	@Autowired
 	private OperationLogService operationLogService;
 
@@ -24,20 +24,34 @@ public class NotifyService {
 	}
 
 	public NotifyTemplate add(NotifyTemplate file) {
-		operationLogService.saveOperationLog(OperationType.CREATE, "ETA Mesaj Tanımı oluşturuldu.", file.getContents().getBytes());
-		return notifyRepository.save(file);
+		NotifyTemplate notifyFile = notifyRepository.save(file);
+		try {
+			operationLogService.saveOperationLog(OperationType.CREATE, "ETA Mesaj Tanımı oluşturuldu.", file.getContents().getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return notifyFile;
 	}
 
 	public NotifyTemplate del(NotifyTemplate file) {
 		NotifyTemplate existNotify = notifyRepository.findOne(file.getId());
-		operationLogService.saveOperationLog(OperationType.CREATE, "ETA Mesaj Tanımı silindi.", existNotify.getContents().getBytes());
 		notifyRepository.deleteById(file.getId());
+		try {
+			operationLogService.saveOperationLog(OperationType.CREATE, "ETA Mesaj Tanımı silindi.", existNotify.getContents().getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return file;
 	}
-	
+
 	public NotifyTemplate update(NotifyTemplate file) {
 		file.setModifyDate(new Date());
-		operationLogService.saveOperationLog(OperationType.CREATE, "ETA Mesaj Tanımı güncellendi.", file.getContents().getBytes());
-		return notifyRepository.save(file);
+		NotifyTemplate notifyFile = notifyRepository.save(file);
+		try {
+			operationLogService.saveOperationLog(OperationType.CREATE, "ETA Mesaj Tanımı güncellendi.", file.getContents().getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return notifyFile;
 	}
 }

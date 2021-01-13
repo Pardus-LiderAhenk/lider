@@ -61,8 +61,13 @@ public class ConkyService {
 		ArrayList<String> conky = new ArrayList<String>();
 		conky.add(file.getSettings());
 		conky.add(file.getContents());
-		operationLogService.saveOperationLog(OperationType.CREATE, "Sistem Gözlemcisi Tanımı oluşturuldu.", conky.toString().getBytes());
-		return conkyRepository.save(file);
+		ConkyTemplate conkyFile = conkyRepository.save(file);
+		try {
+			operationLogService.saveOperationLog(OperationType.CREATE, "Sistem Gözlemcisi Tanımı oluşturuldu.", conky.toString().getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return conkyFile;
 	}
 
 	public ConkyTemplate del(ConkyTemplate file) {
@@ -71,7 +76,11 @@ public class ConkyService {
 		conky.add(existFile.getSettings());
 		conky.add(existFile.getContents());
 		conkyRepository.deleteById(file.getId());
-		operationLogService.saveOperationLog(OperationType.DELETE, "Sistem Gözlemcisi Tanımı silindi.", conky.toString().getBytes());
+		try {
+			operationLogService.saveOperationLog(OperationType.DELETE, "Sistem Gözlemcisi Tanımı silindi.", conky.toString().getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return file;
 	}
 	
@@ -80,7 +89,12 @@ public class ConkyService {
 		ArrayList<String> conky = new ArrayList<String>();
 		conky.add(file.getSettings());
 		conky.add(file.getContents());
-		operationLogService.saveOperationLog(OperationType.UPDATE, "Sistem Gözlemcisi Tanımı güncellendi.", conky.toString().getBytes());
-		return conkyRepository.save(file);
+		ConkyTemplate conkyFile = conkyRepository.save(file);
+		try {
+			operationLogService.saveOperationLog(OperationType.UPDATE, "Sistem Gözlemcisi Tanımı güncellendi.", conky.toString().getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return conkyFile;
 	}
 }

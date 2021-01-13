@@ -41,12 +41,12 @@ import tr.org.lider.utils.RestResponseStatus;
 
 @Service
 public class TaskService {
-	
+
 	Logger logger = LoggerFactory.getLogger(TaskService.class);
-	
+
 	@Autowired
 	private LDAPServiceImpl ldapService;
-	
+
 	@Autowired
 	private ConfigurationService configService;
 
@@ -55,16 +55,16 @@ public class TaskService {
 
 	@Autowired
 	private PluginService pluginService;
-	
+
 	@Autowired
 	private CommandService commandService;
 
 	@Autowired
 	private ResponseFactoryService responseFactoryService;
-	
+
 	@Autowired
 	private TaskRepository taskRepository;
-	
+
 	@Autowired
 	private OperationLogService operationLogService; 
 
@@ -84,25 +84,28 @@ public class TaskService {
 				request.getCronExpression(), new Date(), null);
 
 		task = taskRepository.save(task);
-		
+
 		String logMessage = "[ "+ request.getEntryList().get(0).getUid() +" ] istemciye görev gönderildi";
 		if (targetEntries.size() > 1) {
 			logMessage = "[ "+ request.getEntryList().get(0).getDistinguishedName() + " ] istemci grubuna görev gönderildi.";
 		}
-		operationLogService.saveOperationLog(OperationType.EXECUTE_TASK, logMessage, task.getParameterMapBlob(), task.getId(), null, null);
-		
+		try {
+			operationLogService.saveOperationLog(OperationType.EXECUTE_TASK, logMessage, task.getParameterMapBlob(), task.getId(), null, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		// Task has an activation date, it will be sent to agent(s) on that date.
-		
+
 		List<String> uidList = new ArrayList<String>();
-		
+
 		for (LdapEntry entry : targetEntries) {
 			if (ldapService.isAhenk(entry)) {
 				uidList.add(entry.get(configService.getAgentLdapJidAttribute()));
 			}
 		}
-		
+
 		CommandImpl command=null;
-		
+
 		try {
 			command= new CommandImpl(null, null, task, request.getDnList(), request.getDnType(), uidList,findCommandOwnerJid(), 
 					((PluginTask) request).getActivationDate(), 
@@ -114,28 +117,28 @@ public class TaskService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		if(command!=null)
-		commandService.addCommand(command);
-		
+			commandService.addCommand(command);
+
 		if (targetEntries != null && !targetEntries.isEmpty()) {
-			
+
 			for (final LdapEntry entry : targetEntries) {
-				
+
 				boolean isAhenk = ldapService.isAhenk(entry);
-				
+
 				String uid = isAhenk ? entry.get(configService.getAgentLdapJidAttribute()) : null;
-				
+
 				logger.info("DN type: {}, UID: {}", entry.getType().toString(), uid);
-				
+
 				uid=uid.trim();
 
 				Boolean isOnline=messagingService.isRecipientOnline(getFullJid(uid));
-				
+
 				CommandExecutionImpl execution=	new CommandExecutionImpl(null, 
 						command, uid, entry.getType(), entry.getDistinguishedName(),
 						new Date(), null, isOnline);
-				
+
 				command.addCommandExecution(execution);
 
 				// Task message
@@ -147,18 +150,18 @@ public class TaskService {
 						continue;
 					}
 					logger.info("Sending task to agent with JID: {}", uid);
-					
+
 					String taskJsonString = null;
 					try {
 						taskJsonString = task.toJson();
 					} catch (Exception e) {
 						logger.error(e.getMessage(), e);
 					}
-					
+
 					FileServerConf fileServerConf=request.getPlugin().isUsesFileTransfer() ? configService.getFileServerConf(uid.toLowerCase()) : null;
-					 // uid=jid
+					// uid=jid
 					message= new ExecuteTaskMessageImpl(taskJsonString, uid, new Date(), fileServerConf);
-					
+
 					// TaskStatusUpdateListener in XMPPClientImpl class
 					try {
 						messagingService.sendMessage(message);
@@ -178,7 +181,7 @@ public class TaskService {
 		}
 		return responseFactoryService.createResponse(RestResponseStatus.OK,"Task Basarı ile Gonderildi.");
 	}
-	
+
 	private List<LdapEntry> getTargetList(PluginTask request) {
 		List<LdapEntry> targetEntries= new ArrayList<>();
 		List<LdapEntry> selectedtEntries= request.getEntryList();
@@ -195,21 +198,21 @@ public class TaskService {
 						if(member!=null && member.size()>0) {
 							targetEntries.add(member.get(0));
 						}
-						
-						
+
+
 					} catch (LdapException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-				
+
 			}
 			if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
-				
+
 			}
 		}
-		
-		
+
+
 		return targetEntries;
 	}
 
@@ -218,7 +221,7 @@ public class TaskService {
 		key.append(pluginName).append(":").append(pluginVersion).append(":").append(commandId);
 		return key.toString().toUpperCase(Locale.ENGLISH);
 	}
-	
+
 	public String getFullJid(String jid) {
 		String jidFinal = jid;
 		if (jid.indexOf("@") < 0) {
@@ -226,11 +229,11 @@ public class TaskService {
 		}
 		return jidFinal;
 	}
-	
-	
+
+
 	private String findCommandOwnerJid() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		
+
 		if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if ( principal instanceof UserDetails) {
@@ -238,12 +241,12 @@ public class TaskService {
 				logger.info(" task owner jid : "+userDetails.getLiderUser().getName());
 				return userDetails.getLiderUser().getName();
 			} 
-			
+
 		}
 		return null;
 	}
-	
-	
-	
-	
+
+
+
+
 }

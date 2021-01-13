@@ -40,7 +40,11 @@ public class ProfileService {
 
 	public ProfileImpl add(ProfileImpl profile) {
 		ProfileImpl existProfile = profileRepository.save(profile);
-		operationLogService.saveOperationLog(OperationType.CREATE, "Ayar(profil) oluşturuldu.", existProfile.getProfileDataBlob(), null, null, existProfile.getId());
+		try {
+			operationLogService.saveOperationLog(OperationType.CREATE, "Ayar(profil) oluşturuldu.", existProfile.getProfileDataBlob(), null, null, existProfile.getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return existProfile;
 	}
 
@@ -48,7 +52,11 @@ public class ProfileService {
 		ProfileImpl existProfile = findProfileByID(profile.getId());
 		existProfile.setDeleted(true);
 		existProfile.setModifyDate(new Date());
-		operationLogService.saveOperationLog(OperationType.DELETE, "Ayar(profil) silindi.", existProfile.getProfileDataBlob(), null, null, existProfile.getId());
+		try {
+			operationLogService.saveOperationLog(OperationType.DELETE, "Ayar(profil) silindi.", existProfile.getProfileDataBlob(), null, null, existProfile.getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return profileRepository.save(existProfile);
 	}
 	
@@ -58,8 +66,11 @@ public class ProfileService {
 		existProfile.setLabel(profile.getLabel());
 		existProfile.setDescription(profile.getDescription());
 		existProfile.setProfileData(profile.getProfileData());
-		operationLogService.saveOperationLog(OperationType.UPDATE, "Ayar(profil) güncellendi.", existProfile.getProfileDataBlob(), null, null, existProfile.getId());
-		
+		try {
+			operationLogService.saveOperationLog(OperationType.UPDATE, "Ayar(profil) güncellendi.", existProfile.getProfileDataBlob(), null, null, existProfile.getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		List<PolicyImpl> policies = policyProfileRepository.findAllByProfileId(profile.getId());
 	
 		for (PolicyImpl policy : policies) {

@@ -15,6 +15,7 @@ import tr.org.lider.repositories.ScriptRepository;
 
 @Service
 public class ScriptService {
+	
 
 	@Autowired
 	private ScriptRepository scriptRepository;
@@ -38,20 +39,34 @@ public class ScriptService {
 	}
 
 	public ScriptTemplate add(ScriptTemplate file) {
-		operationLogService.saveOperationLog(OperationType.CREATE, "Betik Tanımı oluşturuldu.", file.getContents().getBytes());
-		return scriptRepository.save(file);
+		ScriptTemplate scriptFile = scriptRepository.save(file);
+		try {
+			operationLogService.saveOperationLog(OperationType.CREATE, "Betik Tanımı oluşturuldu.", file.getContents().getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return scriptFile;
 	}
 
 	public ScriptTemplate del(ScriptTemplate file) {
 		ScriptTemplate existFile = scriptRepository.findOne(file.getId());
-		operationLogService.saveOperationLog(OperationType.DELETE, "Betik Tanımı silindi.", existFile.getContents().getBytes());
 		scriptRepository.deleteById(file.getId());
+		try {
+			operationLogService.saveOperationLog(OperationType.DELETE, "Betik Tanımı silindi.", existFile.getContents().getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return file;
 	}
 	
 	public ScriptTemplate update(ScriptTemplate file) {
 		file.setModifyDate(new Date());
-		operationLogService.saveOperationLog(OperationType.UPDATE, "Betik Tanımı güncellendi.", file.getContents().getBytes());
-		return scriptRepository.save(file);
+		ScriptTemplate scriptFile = scriptRepository.save(file);
+		try {
+			operationLogService.saveOperationLog(OperationType.UPDATE, "Betik Tanımı güncellendi.", file.getContents().getBytes());
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return scriptFile;
 	}
 }

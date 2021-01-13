@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import tr.org.lider.entities.OperationType;
 import tr.org.lider.entities.ScriptTemplate;
 import tr.org.lider.entities.ScriptType;
 import tr.org.lider.repositories.ScriptRepository;
@@ -17,6 +18,9 @@ public class ScriptService {
 
 	@Autowired
 	private ScriptRepository scriptRepository;
+	
+	@Autowired
+	private OperationLogService operationLogService;
 	
 	@PostConstruct
 	private void init() {
@@ -34,16 +38,20 @@ public class ScriptService {
 	}
 
 	public ScriptTemplate add(ScriptTemplate file) {
+		operationLogService.saveOperationLog(OperationType.CREATE, "Betik Tanımı oluşturuldu.", file.getContents().getBytes());
 		return scriptRepository.save(file);
 	}
 
 	public ScriptTemplate del(ScriptTemplate file) {
+		ScriptTemplate existFile = scriptRepository.findOne(file.getId());
+		operationLogService.saveOperationLog(OperationType.DELETE, "Betik Tanımı silindi.", existFile.getContents().getBytes());
 		scriptRepository.deleteById(file.getId());
 		return file;
 	}
 	
 	public ScriptTemplate update(ScriptTemplate file) {
 		file.setModifyDate(new Date());
+		operationLogService.saveOperationLog(OperationType.UPDATE, "Betik Tanımı güncellendi.", file.getContents().getBytes());
 		return scriptRepository.save(file);
 	}
 }

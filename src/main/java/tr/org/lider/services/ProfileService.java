@@ -6,11 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sun.xml.bind.v2.TODO;
-
+import tr.org.lider.entities.OperationType;
 import tr.org.lider.entities.PolicyImpl;
 import tr.org.lider.entities.ProfileImpl;
-import tr.org.lider.repositories.PolicyRepository;
 import tr.org.lider.repositories.ProfileRepository;
 import tr.org.lider.repositories.PolicyProfileRepository;
 
@@ -34,20 +32,23 @@ public class ProfileService {
 	private PolicyProfileRepository policyProfileRepository;
 	
 	@Autowired
-	private PolicyRepository policyRepository;
-
+	private OperationLogService operationLogService;
+	
 	public List<ProfileImpl> list(){
 		return profileRepository.findAll();
 	}
 
 	public ProfileImpl add(ProfileImpl profile) {
-		return profileRepository.save(profile);
+		ProfileImpl existProfile = profileRepository.save(profile);
+		operationLogService.saveOperationLog(OperationType.CREATE, "Ayar(profil) oluşturuldu.", existProfile.getProfileDataBlob(), null, null, existProfile.getId());
+		return existProfile;
 	}
 
 	public ProfileImpl del(ProfileImpl profile) {
 		ProfileImpl existProfile = findProfileByID(profile.getId());
 		existProfile.setDeleted(true);
 		existProfile.setModifyDate(new Date());
+		operationLogService.saveOperationLog(OperationType.DELETE, "Ayar(profil) silindi.", existProfile.getProfileDataBlob(), null, null, existProfile.getId());
 		return profileRepository.save(existProfile);
 	}
 	
@@ -57,6 +58,7 @@ public class ProfileService {
 		existProfile.setLabel(profile.getLabel());
 		existProfile.setDescription(profile.getDescription());
 		existProfile.setProfileData(profile.getProfileData());
+		operationLogService.saveOperationLog(OperationType.UPDATE, "Ayar(profil) güncellendi.", existProfile.getProfileDataBlob(), null, null, existProfile.getId());
 		
 		List<PolicyImpl> policies = policyProfileRepository.findAllByProfileId(profile.getId());
 	

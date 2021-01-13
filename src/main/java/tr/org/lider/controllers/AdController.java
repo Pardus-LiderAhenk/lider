@@ -634,7 +634,7 @@ public class AdController {
 			List<PolicyResponse> userPolicies=new ArrayList<PolicyResponse>();
 			// find policiy for user groups
 			for (LdapEntry ldapEntry : groups) {
-				List<PolicyResponse> policies= policyService.getPolicies4Group(ldapEntry.getDistinguishedName());
+				List<PolicyResponse> policies= policyService.getPoliciesForGroup(ldapEntry.getDistinguishedName());
 				userPolicies.addAll(policies);
 			}
 			return userPolicies;

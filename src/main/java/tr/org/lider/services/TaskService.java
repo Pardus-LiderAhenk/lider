@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.entities.CommandExecutionImpl;
 import tr.org.lider.entities.CommandImpl;
+import tr.org.lider.entities.OperationType;
 import tr.org.lider.entities.PluginTask;
 import tr.org.lider.entities.TaskImpl;
 import tr.org.lider.ldap.DNType;
@@ -64,6 +65,8 @@ public class TaskService {
 	@Autowired
 	private TaskRepository taskRepository;
 	
+	@Autowired
+	private OperationLogService operationLogService; 
 
 	public IRestResponse execute(PluginTask request) {
 
@@ -81,6 +84,12 @@ public class TaskService {
 				request.getCronExpression(), new Date(), null);
 
 		task = taskRepository.save(task);
+		
+		String logMessage = "[ "+ request.getEntryList().get(0).getUid() +" ] istemciye görev gönderildi";
+		if (targetEntries.size() > 1) {
+			logMessage = "[ "+ request.getEntryList().get(0).getDistinguishedName() + " ] istemci grubuna görev gönderildi.";
+		}
+		operationLogService.saveOperationLog(OperationType.EXECUTE_TASK, logMessage, task.getParameterMapBlob(), task.getId(), null, null);
 		
 		// Task has an activation date, it will be sent to agent(s) on that date.
 		

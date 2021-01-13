@@ -68,7 +68,7 @@ $(document).ready(function(){
 
 
 function getOpetarionType(type) {
-	var typeText = null;
+	var typeText = type;
 	if (type == "CREATE") {
 		typeText = "Oluşturma";
 	} else if (type == "READ") {
@@ -89,6 +89,8 @@ function getOpetarionType(type) {
 		typeText = "Parola Değiştir";
 	} else if (type == "MOVE") {
 		typeText = "Taşı";
+	} else if (type == "UNASSIGMENT_POLICY") {
+		typeText = "Politika Kaldır";
 	}
 	return typeText;
 }

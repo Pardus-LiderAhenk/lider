@@ -119,7 +119,7 @@ public class PolicyController {
 	@RequestMapping(method=RequestMethod.POST ,value = "/getPoliciesForGroup", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<PolicyResponse> getPolicies4Group(@RequestBody LdapEntry dn) {
 		logger.info("Getting executed policies for group. DN : " +dn);
-		return policyService.getPolicies4Group(dn.getDistinguishedName());
+		return policyService.getPoliciesForGroup(dn.getDistinguishedName());
 	}
 	
 	@RequestMapping(method=RequestMethod.POST ,value = "/unassignment", produces = MediaType.APPLICATION_JSON_VALUE)

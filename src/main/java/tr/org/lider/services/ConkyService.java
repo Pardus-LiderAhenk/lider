@@ -1,14 +1,14 @@
 package tr.org.lider.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tr.org.lider.entities.ConkyTemplate;
+import tr.org.lider.entities.OperationType;
 import tr.org.lider.repositories.ConkyRepository;
 
 @Service
@@ -16,6 +16,9 @@ public class ConkyService {
 
 	@Autowired
 	private ConkyRepository conkyRepository;
+	
+	@Autowired
+	private OperationLogService operationLogService;
 	
 	@PostConstruct
 	private void init() {
@@ -55,16 +58,29 @@ public class ConkyService {
 	}
 
 	public ConkyTemplate add(ConkyTemplate file) {
+		ArrayList<String> conky = new ArrayList<String>();
+		conky.add(file.getSettings());
+		conky.add(file.getContents());
+		operationLogService.saveOperationLog(OperationType.CREATE, "Sistem Gözlemcisi Tanımı oluşturuldu.", conky.toString().getBytes());
 		return conkyRepository.save(file);
 	}
 
 	public ConkyTemplate del(ConkyTemplate file) {
+		ConkyTemplate existFile = conkyRepository.findOne(file.getId());
+		ArrayList<String> conky = new ArrayList<String>();
+		conky.add(existFile.getSettings());
+		conky.add(existFile.getContents());
 		conkyRepository.deleteById(file.getId());
+		operationLogService.saveOperationLog(OperationType.DELETE, "Sistem Gözlemcisi Tanımı silindi.", conky.toString().getBytes());
 		return file;
 	}
 	
 	public ConkyTemplate update(ConkyTemplate file) {
 		file.setModifyDate(new Date());
+		ArrayList<String> conky = new ArrayList<String>();
+		conky.add(file.getSettings());
+		conky.add(file.getContents());
+		operationLogService.saveOperationLog(OperationType.UPDATE, "Sistem Gözlemcisi Tanımı güncellendi.", conky.toString().getBytes());
 		return conkyRepository.save(file);
 	}
 }

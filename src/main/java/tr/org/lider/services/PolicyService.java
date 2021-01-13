@@ -23,9 +23,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.entities.CommandExecutionImpl;
 import tr.org.lider.entities.CommandImpl;
+import tr.org.lider.entities.OperationType;
 import tr.org.lider.entities.PolicyImpl;
 import tr.org.lider.ldap.ILDAPService;
-import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.messaging.enums.DomainType;
 import tr.org.lider.models.PolicyExecutionRequestImpl;
@@ -56,7 +56,9 @@ public class PolicyService {
 	@Autowired
 	@Qualifier("AdImpl")
 	private ILDAPService adService;
-
+	
+	@Autowired
+	private OperationLogService operationLogService; 
 
 	@Autowired
 	private ConfigurationService configService;
@@ -72,6 +74,9 @@ public class PolicyService {
 		 */
 
 		List<LdapEntry> targetEntries= getTargetList(request.getDnList());
+		
+		String logMessage = "[ "+ request.getDnList().get(0) +" ] kullanıcı grubuna politika uygulandı.";
+		operationLogService.saveOperationLog(OperationType.EXECUTE_POLICY, logMessage, null, null, policy.getId(), null);
 
 		for (LdapEntry targetEntry : targetEntries) {
 			String uid=targetEntry.get(configService.getAgentLdapIdAttribute()); // group uid is cn value.
@@ -111,6 +116,8 @@ public class PolicyService {
 		policy.setCommandOwnerUid(null);
 		PolicyImpl existPolicy = policyRepository.save(policy);
 		existPolicy.setPolicyVersion(existPolicy.getId()+"-"+ 1);
+		String logMessage = "Politika oluşturuldu.";
+		operationLogService.saveOperationLog(OperationType.CREATE, logMessage, null, null, existPolicy.getId(), null);
 		return policyRepository.save(existPolicy);
 	}
 
@@ -118,6 +125,8 @@ public class PolicyService {
 		PolicyImpl existPolicy = policyRepository.findOne(policy.getId());
 		existPolicy.setDeleted(true);
 		existPolicy.setModifyDate(new Date());
+		String logMessage = "Politika silindi.";
+		operationLogService.saveOperationLog(OperationType.DELETE, logMessage, null, null, existPolicy.getId(), null);
 		return policyRepository.save(existPolicy);
 	}
 
@@ -130,6 +139,8 @@ public class PolicyService {
 		Integer newVersion = new Integer(oldVersion) + 1;
 		existPolicy.setPolicyVersion(policy.getId() + "-" + newVersion);
 		existPolicy.setModifyDate(new Date());
+		String logMessage = "Politika günllendi.";
+		operationLogService.saveOperationLog(OperationType.UPDATE, logMessage, null, null, existPolicy.getId(), null);
 		return policyRepository.save(existPolicy);
 	}
 
@@ -137,6 +148,8 @@ public class PolicyService {
 		PolicyImpl existPolicy = policyRepository.findOne(policy.getId());
 		existPolicy.setActive(true);
 		existPolicy.setModifyDate(new Date());
+		String logMessage = "Politika aktif edildi.";
+		operationLogService.saveOperationLog(OperationType.UPDATE, logMessage, null, null, existPolicy.getId(), null);
 		return policyRepository.save(existPolicy);
 	}
 
@@ -144,6 +157,8 @@ public class PolicyService {
 		PolicyImpl existPolicy = policyRepository.findOne(policy.getId());
 		existPolicy.setActive(false);
 		existPolicy.setModifyDate(new Date());
+		String logMessage = "Politika pasif edildi.";
+		operationLogService.saveOperationLog(OperationType.UPDATE, logMessage, null, null, existPolicy.getId(), null);
 		return policyRepository.save(existPolicy);
 	}
 
@@ -193,7 +208,7 @@ public class PolicyService {
 		return null;
 	}
 
-	public List<PolicyResponse> getPolicies4Group(String dn) {
+	public List<PolicyResponse> getPoliciesForGroup(String dn) {
 		List<Object[]> results = policyRepository.findPoliciesByGroupDn(dn);
 		List<PolicyResponse> resp= new ArrayList<PolicyResponse>();
 		for (Object[] objects : results) {
@@ -209,6 +224,8 @@ public class PolicyService {
 	public CommandImpl unassignmentCommandForUserPolicy(CommandImpl comImpl) {
 		CommandImpl existCommand = commandService.getCommand(comImpl.getId());
 		existCommand.setDeleted(true);
+		String logMessage = "[ "+ existCommand.getDnList().get(0) +" ] kullanıcı grubunun politikası kaldırıldı.";
+		operationLogService.saveOperationLog(OperationType.UNASSIGMENT_POLICY, logMessage, null, null, existCommand.getPolicy().getId(), null);
 		return commandService.updateCommand(existCommand);
 	}
 }

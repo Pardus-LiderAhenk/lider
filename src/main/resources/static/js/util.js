@@ -67,6 +67,7 @@ function renameAndOrderAttributeList(attributeList) {
 			"modifyTimestamp": "Düzenlenme Tarihi",
 			"creatorsName": "Oluşturan Kişi",
 			"member": "member",
+			"owner": "Son Oturum Açan Kullanıcı"
 	};
 	for (var k in orderedList) {
 		if(attributeList.hasOwnProperty(k)) {

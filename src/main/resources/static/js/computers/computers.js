@@ -6,7 +6,7 @@
  * 
  */
 
-// generic variables
+//generic variables
 var selectedRow= null;
 var selectedRowDataFromDB= null;
 var baseRootDnComputer=null;
@@ -21,7 +21,7 @@ var treeGridIdGlob = null;
 
 var selectedRowForMovingEntry;
 
-// when page loading getting system page info package and service management page hide
+//when page loading getting system page info package and service management page hide
 setSystemPluginPage();
 $("#systemPage").show();
 $("#packageManagementPage").hide();
@@ -48,49 +48,49 @@ $("#updateAgentInfo").hide();
 createComputerTree('lider/computer/getComputers',treeGridHolderDiv, false, false,
 		// row select
 		function(row, rootDnComputer){
-			selectedRow=row;
-			baseRootDnComputer=rootDnComputer;
-			addSelectedEntryToTable(selectedRow)
-//			if(selectedRow.online ==false){
-//				$('#deleteAgent').hide();
-//			}
-			if(selectedRow.online ==false){
-				$('#btnRenameAgent').hide();
-			}
-		},
-		//check action
-		function(checkedRows, row){
-		
-		},
-		//uncheck action
-		function(unCheckedRows, row){
-		
-		},
-		// post tree created
-		function(rootComputer , treeGridId){
-			$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
-			$('#'+ treeGridId).jqxTreeGrid('expandRow', rootComputer);
-			computerTreeCreated=true;
-			treeGridIdGlob=treeGridId;
-		}
+	selectedRow=row;
+	baseRootDnComputer=rootDnComputer;
+	addSelectedEntryToTable(selectedRow)
+//	if(selectedRow.online ==false){
+//	$('#deleteAgent').hide();
+//	}
+	if(selectedRow.online ==false){
+		$('#btnRenameAgent').hide();
+	}
+},
+//check action
+function(checkedRows, row){
+
+},
+//uncheck action
+function(unCheckedRows, row){
+
+},
+// post tree created
+function(rootComputer , treeGridId){
+	$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
+	$('#'+ treeGridId).jqxTreeGrid('expandRow', rootComputer);
+	computerTreeCreated=true;
+	treeGridIdGlob=treeGridId;
+}
 );
 
 //getting some setting params to use
 getConfigurationParams();
 function getConfigurationParams() {
 	$.ajax({ 
-	    type: 'GET', 
-	    url: "/lider/config/configurations",
-	    dataType: 'json',
-	    success: function (data) { 
-	    	if(data != null) {
-	    		//set ldap configuration
-	    		systemSettings=data;
-	    	}
-	    },
-	    error: function (data, errorThrown) {
-	    	$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
-	    }
+		type: 'GET', 
+		url: "/lider/config/configurations",
+		dataType: 'json',
+		success: function (data) { 
+			if(data != null) {
+				//set ldap configuration
+				systemSettings=data;
+			}
+		},
+		error: function (data, errorThrown) {
+			$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		}
 	});
 }
 
@@ -101,13 +101,13 @@ $(document).ready(function() {
 
 function onPresence2(presence)
 {
-	
+
 	var ptype = $(presence).attr('type');
 	var from = $(presence).attr('from');
 	var jid_id = jid_to_id(from);
 	var name = jid_to_name(from);
 	var source = jid_to_source(from);
-	
+
 	if (ptype === 'subscribe') {
 		$.notify("subscribe","warn");
 	} 
@@ -118,7 +118,7 @@ function onPresence2(presence)
 				var row = $('#'+ treeGridIdGlob).jqxTreeGrid('getRow', name);
 				row.online=false;
 				$('#'+ treeGridIdGlob).jqxTreeGrid('updateRow',  row.name , {name:name});
-				
+
 				if(selectedRow.name==name){
 					$("#agentOnlineStatus").attr("class","badge badge-danger");
 					$("#agentOnlineStatus").html("Çevrimdışı");
@@ -166,7 +166,7 @@ $('#btn-securityAndNetwork').click(function() {
 
 $('#btn-taskHistory').click(function() {
 	setTaskHistoryPage()
-	
+
 });
 $('#btn-installAhenk').click(function() {
 	setInstallAhenkPage();
@@ -189,23 +189,38 @@ $('#selectedAgentInfo').click(function(e){
 	for (var key in renamedList) {
 		if (renamedList.hasOwnProperty(key)) {
 			if(renamedList[key].length > 1) {
+				
 				for(var i = 0; i< renamedList[key].length; i++) {
+					var value = renamedList[key][i];
+					if (key == "Son Oturum Açan Kullanıcı") {
+						value = getUserLastLogin(renamedList[key][i]);
+						if (value == null) {
+							value = "Bilinmiyor";
+						}
+					}
 					html += '<tr>';
 					html += '<td>' + key + '</td>';
-					html += '<td>' + renamedList[key][i] + '</td>'; 
+					html += '<td>' + value + '</td>'; 
 					html += '</tr>';
 				}
 			} else {
+				var value = renamedList[key];
+				if (key == "Son Oturum Açan Kullanıcı") {
+					value = getUserLastLogin(renamedList[key]);
+					if (value == null) {
+						value = "Bilinmiyor";
+					}
+				}
 				html += '<tr>';
 				html += '<td>' + key + '</td>';
-				html += '<td>' + renamedList[key] + '</td>';
+				html += '<td>' + value + '</td>';
 				html += '</tr>';
 			}
 		}
 	}
 
 	html += '</table>';
-	
+
 	$('#entryLdapInfoHolder').html(html);
 });
 
@@ -229,7 +244,7 @@ $('#btnCheckSsh').click(function() {
 	var host=$('#ahenkIp4Install').val();
 	var user=$('#sshUserName4Install').val();
 	var password=$('#sshPassword4Install').val();
-	
+
 	if(host == ''){
 		$.notify("Lütfen bağlanılacak IP adresi giriniz.", "error");
 		return;
@@ -242,32 +257,32 @@ $('#btnCheckSsh').click(function() {
 		$.notify("Lütfen SSH parola giriniz.", "error");
 		return;
 	}
-	
+
 	checkSshConnection(host,user,password)
 });
 
 $('#btnInstallAhenk').click(function() {
-	
+
 	var host=$('#ahenkIp4Install').val();
 	var user=$('#sshUserName4Install').val();
 	var password=$('#sshPassword4Install').val();
 	var repoName=systemSettings.ahenkRepoAddress;
 	var repoKey=systemSettings.ahenkRepoKeyAddress;
-	
+
 	if(repoName == null){
 		$.notify("Lütfen Repo addresini kontrol ediniz.", "error");
 		return;
 	}
-	
+
 	if(repoKey == null){
 		$.notify("Lütfen Repo addresini kontrol ediniz.", "error");
 		return;
 	}
-	
-	
+
+
 	var repoKeyArr=repoKey.split('/');
 	var repoKeyName= repoKeyArr[repoKeyArr.length-1]
-	
+
 	if(host == ''){
 		$.notify("Lütfen bağlanılacak IP adresi giriniz.", "error");
 		return;
@@ -280,8 +295,8 @@ $('#btnInstallAhenk').click(function() {
 		$.notify("Lütfen SSH parola giriniz.", "error");
 		return;
 	}
-	
-	
+
+
 //	var cmdGetKeyring='sudo wget http://'+repoAddr+'/liderahenk-archive-keyring.asc && sudo apt-key add liderahenk-archive-keyring.asc &&  sudo rm liderahenk-archive-keyring.asc '
 	var cmdGetKeyring='sudo wget '+repoKey +' && sudo apt-key add '+repoKeyName+' &&  sudo rm '+repoKeyName;
 //	var cmdSetSourcesListPardus= 'sudo printf "\ndeb [arch=amd64] http://'+repoAddr+'/liderahenk-test testing main" | sudo tee -a /etc/apt/sources.list';
@@ -289,27 +304,27 @@ $('#btnInstallAhenk').click(function() {
 	var cmdInstallAddRepoTool= 'sudo apt install -y software-properties-common gnupg';
 	var cmdSetSourcesListPardus= 'sudo add-apt-repository "'+repoName+'"';
 	var cmdUpdate= 'sudo apt update'
-	var cmdInstallAhenk= 'sudo apt install -y ahenk'
-	
-	function cbResult(result){
+		var cmdInstallAhenk= 'sudo apt install -y ahenk'
+
+			function cbResult(result){
 		$.notify("Ahenk Kurulumu başarı ile gerçekleşti.", "success");
 	}
-	
+
 	function cbInstallAhenk(result){
 		setShhLog("Ahenk kurulumu başlatılıyor....")
 		executeRemoteSshCommand(host,user, password,cmdInstallAhenk,cbResult)
 	}
-		
+
 	function cbUpdate(result){
 		setShhLog("Repo update ediliyor....")
 		executeRemoteSshCommand(host,user, password,cmdUpdate,cbInstallAhenk)
 	}
-		
+
 	function setSourceList(result) {
 		setShhLog("Repo kurulumu başlatıldı....")
 		executeRemoteSshCommand(host,user, password,cmdSetSourcesListPardus,cbUpdate)
 	}
-	
+
 	function cbSetAddRepoTool(result){
 		setShhLog("Repo tool kuruluyor....")
 		executeRemoteSshCommand(host,user, password,cmdInstallAddRepoTool,setSourceList)
@@ -325,7 +340,7 @@ $('#btnRegisterAhenk').click(function() {
 	var domainUserName=$('#domainUserName').val();
 	var domainUserPassword=$('#domainUserPassword').val();
 	var domainName=$('#domainName').val();
-	
+
 	if(host == ''){
 		$.notify("Lütfen bağlanılacak IP adresi giriniz.", "error");
 		return;
@@ -346,12 +361,12 @@ $('#btnRegisterAhenk').click(function() {
 		$.notify("Lütfen Domain Kullanıcı Parola giriniz.", "error");
 		return;
 	}
-	
+
 	//var cmdRegisterAhenk= 'sudo /usr/bin/python3 /usr/share/ahenk/ahenkd.py start '+ systemSettings.xmppHost + ' '+ domainUserName + ' ' + domainUserPassword + ' ' + domainName;
-	
+
 	var cmdUpdate= 'sudo apt update'
-	var cmdInstallAhenk= 'sudo apt install -y ahenk'
-	var cmdStopAhenk= 'sudo systemctl stop ahenk.service';
+		var cmdInstallAhenk= 'sudo apt install -y ahenk'
+			var cmdStopAhenk= 'sudo systemctl stop ahenk.service';
 	var cmdRegisterAhenk= 'sudo /usr/bin/python3 /usr/share/ahenk/ahenkd.py start '+ systemSettings.xmppHost + ' '+ domainUserName + ' ' + domainUserPassword;
 
 	function cbResultRegister(result){
@@ -363,20 +378,20 @@ $('#btnRegisterAhenk').click(function() {
 		setShhLog("Ahenk Lider MYS sistemine kaydediliyor..")
 		executeRemoteSshCommand(host,user, password,cmdRegisterAhenk,cbResultRegister)
 	}
-	
+
 	function cbStopAhenk(result) {
 		setShhLog("Ahenk güncellemesi yapılıyor..")
 		executeRemoteSshCommand(host,user, password,cmdStopAhenk,cbRegisterAhenk)
 	}
-	
+
 	function cbInstallAhenk(result) {
 		setShhLog("Ahenk güncellemesi yapılıyor..")
 		executeRemoteSshCommand(host,user, password,cmdInstallAhenk,cbStopAhenk)
 	}
-	
+
 	setShhLog("Güncellemeler çekiliyor..")
 	executeRemoteSshCommand(host,user, password,cmdUpdate,cbInstallAhenk)
-	
+
 });
 
 $('#btnClearRemoteSshLog').click(function() {
@@ -385,7 +400,7 @@ $('#btnClearRemoteSshLog').click(function() {
 
 function setSystemPluginPage() {
 	showPageAndHideOthers('systemPage')
-	
+
 	$.ajax({
 		type : 'POST',
 		url : 'getPluginTaskList',
@@ -550,7 +565,7 @@ function setPackagePluginPage() {
 				}
 			});
 		}
-		
+
 		if(pluginTask.page == 'packages'){
 			$.ajax({
 				type : 'POST',
@@ -562,7 +577,7 @@ function setPackagePluginPage() {
 				}
 			});
 		}
-		
+
 		if(pluginTask.page == 'repositories'){
 			$.ajax({
 				type : 'POST',
@@ -590,7 +605,7 @@ function setPackagePluginPage() {
 
 function setServicePluginPage() {
 	showPageAndHideOthers('serviceManagementPage')
-	
+
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
 		if(pluginTask.page == 'service-list'){
@@ -609,7 +624,7 @@ function setServicePluginPage() {
 
 function setScriptPluginPage() {
 	showPageAndHideOthers('scriptManagementPage')
-	
+
 	for (var i = 0; i < pluginTaskList.length; i++) {
 		var pluginTask = pluginTaskList[i];
 		if(pluginTask.page == 'execute-script'){
@@ -624,7 +639,7 @@ function setScriptPluginPage() {
 			});
 		}
 	}
-	
+
 }
 
 function setSecurityAndNetworkPluginPage() {
@@ -979,7 +994,7 @@ function addNewGroup() {
 function addSelectedEntryToTable(row,rootDnComputer){
 	if(row.type=="AHENK"){
 //		var indexx=$.grep(selectedEntries, function(item){
-//			return item.entryUUID == row.entryUUID;
+//		return item.entryUUID == row.entryUUID;
 //		}).length
 
 		data={}
@@ -1008,9 +1023,9 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#updateAgentInfo").show();
 	}
 //	else if(row.type=="ORGANIZATIONAL_UNIT"){
-//		
-//		$("#agentDn").html(getEntryFolderName(selectedRow.distinguishedName));
-//		
+
+//	$("#agentDn").html(getEntryFolderName(selectedRow.distinguishedName));
+
 //	}
 	else{
 		$('#selectedAgentInfo').prop('title', row.distinguishedName);
@@ -1042,6 +1057,10 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#btnAddOu").show();
 		$("#btnDeleteOu").show();
 		$("#agentVersion").html("");
+		$("#userLastLogin").html("");
+		$("#userLastLoginRow").show();
+		$("#agentVersionRow").show();
+		$("#agentPhaseRow").show();
 	}
 }
 
@@ -1051,25 +1070,25 @@ function showSelectedEntries() {
 
 	var html= '<button class="btn btn-outline-light" > <span id="btnAgent" > </span> </button> ';
 	html += ' <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" class="dropdown-toggle-split dropdown-toggle btn btn-light"> '
-	html += ' <span class="sr-only">Toggle Dropdown</span></button>'
-	html += ' <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu" >'
-	var dnVal=""
-			for (var i = 0; i < selectedEntries.length; i++) {
-					var selDn = selectedEntries[0].distinguishedName
-					dnVal=selectedEntries[0].name;
-					var dn=selectedEntries[i].name;
-					html +='<button type="button" tabindex="0" class="dropdown-item"> ' +dn+' </button>'
-			}
+		html += ' <span class="sr-only">Toggle Dropdown</span></button>'
+			html += ' <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu" >'
+				var dnVal=""
+					for (var i = 0; i < selectedEntries.length; i++) {
+						var selDn = selectedEntries[0].distinguishedName
+						dnVal=selectedEntries[0].name;
+						var dn=selectedEntries[i].name;
+						html +='<button type="button" tabindex="0" class="dropdown-item"> ' +dn+' </button>'
+					}
 	html += ' </div> '	 
-	$('#selectedAgentList').html(html);
+		$('#selectedAgentList').html(html);
 	$("#selectedAgentInfo").html(dnVal);
 	$('#selectedAgentInfo').prop('title', selDn);
-	
+
 //	if(selectedEntries[0].type=='AHENK')
 //	{
-//		$("#agent_image").attr("src","img/person.png");
+//	$("#agent_image").attr("src","img/person.png");
 //	}
-	
+
 	$("#agentOnlineStatus").show()
 	if(selectedEntries[0].online)
 	{
@@ -1082,12 +1101,12 @@ function showSelectedEntries() {
 		$("#agentOnlineStatus").html("Çevrimdışı");
 		$("#agentStatusIcon").html('<i class="fa fa-toggle-off"></i> Durum');
 	}
-	
+
 	var agentJid = selectedEntries[0]['attributes'].uid;
 	var params = {
 			"agentJid" : agentJid
 	};
-	
+
 	$("#agentHostname").html("");
 	$("#agentIpAddr").html("");
 	$("#agentMac").html("");
@@ -1100,7 +1119,8 @@ function showSelectedEntries() {
 	$("#userDomain").html("");
 	$("#agentDn").html("");
 	$("#agentVersion").html("");
-	
+	$("#userLastLogin").html("");
+
 	$.ajax({ 
 		type: 'POST', 
 		url: 'select_agent_info/detail',
@@ -1108,35 +1128,37 @@ function showSelectedEntries() {
 		dataType: 'json',
 		success: function (data) {
 			selectedRowDataFromDB=data;
-			
+
 			var ipAddress= selectedRowDataFromDB.ipAddresses.replace(/\'/g, '');
-			
+
 			$("#selectedAgentDNSSHIP").val(ipAddress);
 			if(data.properties.length > 0) {
-				$("#agentVersion").html("Bilinmiyor");
-				$("#agentPhase").html("Bilinmiyor");
+				$("#agentVersionRow").hide();
+				$("#agentPhaseRow").hide();
 				$.each(data.properties, function(index, element) {
-
 					if (element.propertyName == "os.name") {
 						$("#agentOsName").html(element.propertyValue);
 					}
 					if (element.propertyName == "processor") {
 						$("#agentProcessor").html(element.propertyValue);
 					}
-//					if (element.propertyName == "sessions.userNames") {
-//						$("#agentUsername").html(element.propertyValue);
-//					}
 					if (element.propertyName == "os.name") {
 						$("#agentOsName").html(element.propertyValue);
 					}
 					if (element.propertyName == "agentVersion") {
-						$("#agentVersion").html(element.propertyValue);
+						if (element.propertyValue) {
+							$("#agentVersionRow").show();
+							$("#agentVersion").html(element.propertyValue);
+						}else {
+							$("#agentVersionRow").hide();
+						}
 					}
 					if (element.propertyName == "phase") {
-						var phase = "Bilinmiyor"
 						if (element.propertyValue){
-							phase = element.propertyValue;
-							$("#agentPhase").html(phase);
+							$("#agentPhaseRow").show();
+							$("#agentPhase").html(element.propertyValue);
+						} else {
+							$("#agentPhaseRow").hide();
 						}
 					}
 				});
@@ -1153,7 +1175,12 @@ function showSelectedEntries() {
 				$("#agentMac").html(data.macAddresses);
 				$("#agentCreateDate").html(data.createDate);
 				$('#agentDn').html(getEntryFolderName(selDn));
-				
+				if (getUserLastLogin(selectedRow.attributesMultiValues.owner) != null) {
+					$("#userLastLoginRow").show();
+					$("#userLastLogin").html(getUserLastLogin(selectedRow.attributesMultiValues.owner));
+				} else {
+					$("#userLastLoginRow").hide();
+				}
 			} else {
 				$("#agentHostname").html("");
 				$("#agentIpAddr").html("");
@@ -1166,6 +1193,7 @@ function showSelectedEntries() {
 				$("#userDomain").html("");
 				$("#agentDn").html("");
 				$("#agentVersion").html("");
+				$("#userLastLogin").html("");
 			}
 		}
 	});
@@ -1218,7 +1246,7 @@ function taskHistory() {
 
 						trElement += '<td>' + createDate + '</td>';
 						trElement += '<td>' + executionTime + '</td>';
-						
+
 						if(executionResult == "TASK_PROCESSED" || executionResult == "TASK_ERROR") {
 							var taskId = command.task.id;
 							trElement += '<td class="text-center"><a href="#executedTaskDetail" class="btn btn-sm text-center p-0 m-0" '
@@ -1275,12 +1303,12 @@ function showPageAndHideOthers(showPageId){
 	$("#taskHistoryPage").hide();
 	$("#sshPage").hide();
 	$("#installAhenkPage").hide();
-	
+
 	$('#' +showPageId).show();
 }
 
 function SHHConnect(){
-	
+
 	var sshUserName=$("#sshUserName").val();
 	var sshUserPassword=$("#sshUserPassword").val();
 	var ip=$("#selectedAgentDNSSHIP").val();
@@ -1299,7 +1327,7 @@ function SHHConnect(){
 			"password": sshUserPassword,
 			"username": sshUserName
 	};
-	
+
 	$.ajax({
 		type: 'POST', 
 		url: "/sendremote",
@@ -1316,100 +1344,100 @@ function SHHConnect(){
 function displaySSHConnection() {
 	$('#sshDisplay').show()
 	$('#btnSSHConnect').prop( "disabled", true );
-	 // Get display div from document
-    var display = document.getElementById("sshDisplay");
+	// Get display div from document
+	var display = document.getElementById("sshDisplay");
 
-    // Instantiate client, using an HTTP tunnel for communications.
-    var guac = new Guacamole.Client(
-        new Guacamole.HTTPTunnel("tunnel")
-    );
+	// Instantiate client, using an HTTP tunnel for communications.
+	var guac = new Guacamole.Client(
+			new Guacamole.HTTPTunnel("tunnel")
+	);
 
-    // Add client to display div
-    display.append(guac.getDisplay().getElement());
-    
-    // Error handler
-    guac.onerror = function(error) {
-    	$.notify("SSH bağlantısında hata oluştu", "warn");
-    };
-    // Connect
-    guac.connect();
-   
-    
-    // Disconnect on close
-    window.onunload = function() {
-        guac.disconnect();
-    }
-    
-    var mouse = new Guacamole.Mouse(guac.getDisplay().getElement());
-    
-    
-    mouse.onmousedown = 
-        mouse.onmouseup   =
-        mouse.onmousemove = function(mouseState) {
-            guac.sendMouseState(mouseState);
-        };
-    // Keyboard
-    var keyboard = new Guacamole.Keyboard(document);
+	// Add client to display div
+	display.append(guac.getDisplay().getElement());
 
-    keyboard.onkeydown = function (keysym) {
-        guac.sendKeyEvent(1, keysym);
-    };
+	// Error handler
+	guac.onerror = function(error) {
+		$.notify("SSH bağlantısında hata oluştu", "warn");
+	};
+	// Connect
+	guac.connect();
 
-    keyboard.onkeyup = function (keysym) {
-        guac.sendKeyEvent(0, keysym);
-    };
-    
-//    $("#sshUserName").click(function(e) {
-//
-//        // called when textfield is clicked (so it must be focussed)
-//
-//        keyboard.onkeydown = null;
-//        keyboard.onkeyup = null;
-//
-//    }).on("blur", function(e) {
-//
-//    // called when textfield it is unfocussed
-//
-//        keyboard.onkeydown = function(keysym) {
-//            guac.sendKeyEvent(1, keysym);
-//        };
-//        keyboard.onkeyup = function(keysym) {
-//            guac.sendKeyEvent(0, keysym);
-//        };
-//
-//    });
-    
-    $('#btnSSHDisconnect').click(function(e){
-    	 keyboard.onkeydown = null;
-         keyboard.onkeyup = null;
-		 
-         guac.disconnect();
-		 $('#sshDisplay').html("")
-		 $('#btnSSHConnect').prop( "disabled", false );
-    });
-    
-    $('.dizin').click(function(e){
-    	keyboard.onkeydown = null;
-    	keyboard.onkeyup = null;
-    	
-    	guac.disconnect();
-    	$('#sshDisplay').html("")
-    });
-    
-    $('.computerActions').click(function(e){
-    	keyboard.onkeydown = null;
-    	keyboard.onkeyup = null;
-    });
-    
-    $('#btn-ssh').click(function(e){
-    	  keyboard.onkeydown = function (keysym) {
-    	        guac.sendKeyEvent(1, keysym);
-    	    };
 
-    	    keyboard.onkeyup = function (keysym) {
-    	        guac.sendKeyEvent(0, keysym);
-    	    };
-    });
+	// Disconnect on close
+	window.onunload = function() {
+		guac.disconnect();
+	}
+
+	var mouse = new Guacamole.Mouse(guac.getDisplay().getElement());
+
+
+	mouse.onmousedown = 
+		mouse.onmouseup   =
+			mouse.onmousemove = function(mouseState) {
+		guac.sendMouseState(mouseState);
+	};
+	// Keyboard
+	var keyboard = new Guacamole.Keyboard(document);
+
+	keyboard.onkeydown = function (keysym) {
+		guac.sendKeyEvent(1, keysym);
+	};
+
+	keyboard.onkeyup = function (keysym) {
+		guac.sendKeyEvent(0, keysym);
+	};
+
+//	$("#sshUserName").click(function(e) {
+
+//	// called when textfield is clicked (so it must be focussed)
+
+//	keyboard.onkeydown = null;
+//	keyboard.onkeyup = null;
+
+//	}).on("blur", function(e) {
+
+//	// called when textfield it is unfocussed
+
+//	keyboard.onkeydown = function(keysym) {
+//	guac.sendKeyEvent(1, keysym);
+//	};
+//	keyboard.onkeyup = function(keysym) {
+//	guac.sendKeyEvent(0, keysym);
+//	};
+
+//	});
+
+	$('#btnSSHDisconnect').click(function(e){
+		keyboard.onkeydown = null;
+		keyboard.onkeyup = null;
+
+		guac.disconnect();
+		$('#sshDisplay').html("")
+		$('#btnSSHConnect').prop( "disabled", false );
+	});
+
+	$('.dizin').click(function(e){
+		keyboard.onkeydown = null;
+		keyboard.onkeyup = null;
+
+		guac.disconnect();
+		$('#sshDisplay').html("")
+	});
+
+	$('.computerActions').click(function(e){
+		keyboard.onkeydown = null;
+		keyboard.onkeyup = null;
+	});
+
+	$('#btn-ssh').click(function(e){
+		keyboard.onkeydown = function (keysym) {
+			guac.sendKeyEvent(1, keysym);
+		};
+
+		keyboard.onkeyup = function (keysym) {
+			guac.sendKeyEvent(0, keysym);
+		};
+	});
 }
 
 function executeRemoteSshCommand(host,user, password,command, callback) {
@@ -1475,10 +1503,10 @@ function setShhLog(message){
 
 function getAllAndOnlineAgents(searchDn) {
 	progress("computerTreeOnlineInfo","progressComputerTreeInfo",'show')
-	
+
 	var params = {
-				"searchDn" : searchDn,
-		};
+		"searchDn" : searchDn,
+	};
 	$.ajax({
 		type: 'POST', 
 		url: "/lider/computer/getAgentList",
@@ -1490,7 +1518,7 @@ function getAllAndOnlineAgents(searchDn) {
 			$('#btnOnlineAgent').append("")
 			$('#btnTotalAgent').html("Toplam İstemci Sayısı :"+data.agentListSize)
 			$('#btnOnlineAgent').html("Çevrimiçi İstemci Sayısı :"+data.onlineAgentList.length)
-			
+
 		},
 		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
 		}
@@ -1498,30 +1526,39 @@ function getAllAndOnlineAgents(searchDn) {
 }
 
 ///**
-// * getting all agent size and online agent list for show on page
-// * @param presence
-// * @returns
-// */
+//* getting all agent size and online agent list for show on page
+//* @param presence
+//* @returns
+//*/
 //getAllAgents();
 
 function getEntryFolderName(selDn) {
 	var dnArr=selDn.split(",");
 	var ous=""
-	for(i=0; i<dnArr.length; i++){
-		var dn=dnArr[i];
-		if(dn.startsWith("ou")){
-			var arr= dn.split("=");
-			if(arr.length>0){
-				if(arr[1] != 'Ahenkler'){
-					ous += arr[1]
-					if(i < dnArr.length){
-						ous +=" "
+		for(i=0; i<dnArr.length; i++){
+			var dn=dnArr[i];
+			if(dn.startsWith("ou")){
+				var arr= dn.split("=");
+				if(arr.length>0){
+					if(arr[1] != 'Ahenkler'){
+						ous += arr[1]
+						if(i < dnArr.length){
+							ous +=" "
+						}
 					}
 				}
 			}
 		}
-	}
 	return ous;
+}
+
+function getUserLastLogin(selDn) {
+	var userNameOfLastLogin = null;
+	var parserSelDn = selDn[0].split(",")[0];
+	if (parserSelDn.split("=")[0] == "uid") {
+		userNameOfLastLogin = parserSelDn.split("=")[1];
+	}
+	return userNameOfLastLogin;
 }
 
 /*
@@ -1529,7 +1566,7 @@ function getEntryFolderName(selDn) {
  */
 function btnSelectDNFromTreeClicked() {
 	getModalContent("modals/agent_info/select_ou", function content(data){
-		$('#genericModalHeader').html("Arama için bi klasör seçiniz");
+		$('#genericModalHeader').html("Aramak için bi klasör seçiniz");
 		$('#genericModalBodyRender').html(data);
 		generateTreeForOUSelection();
 	});
@@ -1541,22 +1578,22 @@ function btnSelectDNFromTreeClicked() {
  */
 function generateTreeForOUSelection() {
 	createComputerTree('lider/computer/getComputers','treeGridHolderDiv', true, false,
-		// row select
-		function(row, rootDnComputer){
-			selectedRowForMovingEntry = row
-			if(row.type == "ORGANIZATIONAL_UNIT")
-				$('#btnSelectOUForSearch').prop("disabled", false); 
-			else 
-				$('#btnSelectOUForSearch').prop("disabled", true); 
-		},
-		//check action
-		function(checkedRows, row){
-		
-		},
-		//uncheck action
-		function(unCheckedRows, row){
-		
-		}
+			// row select
+			function(row, rootDnComputer){
+		selectedRowForMovingEntry = row
+		if(row.type == "ORGANIZATIONAL_UNIT")
+			$('#btnSelectOUForSearch').prop("disabled", false); 
+		else 
+			$('#btnSelectOUForSearch').prop("disabled", true); 
+	},
+	//check action
+	function(checkedRows, row){
+
+	},
+	//uncheck action
+	function(unCheckedRows, row){
+
+	}
 	);
 }
 
@@ -1571,8 +1608,8 @@ function btnRenameAgentClicked() {
 }
 
 /*
-* update hostname on Lider database and send task to change it on ahenk
-*/
+ * update hostname on Lider database and send task to change it on ahenk
+ */
 function btnSaveRenameEntryClicked() {
 	if( $('#newHostname').val() == "" ) {
 		$.notify("Yeni istemci adı boş bırakılamaz", "error");
@@ -1635,13 +1672,13 @@ $('#deleteAgent').click(function(e){
 	}
 
 	var content = "Bu istemciyi silmek istediğinizden emin misiniz ? <br> Silme işlemi geri alınamaz ve " +
-			"bu işlem sonucunda veritabanında ve LDAP'ta bu istemciye ait tüm bilgiler silinecektir. Ayrıca istemci domainden çıkarılacaktır.";
-	
+	"bu işlem sonucunda veritabanında ve LDAP'ta bu istemciye ait tüm bilgiler silinecektir. Ayrıca istemci domainden çıkarılacaktır.";
+
 	if (selectedRow.online == false) {
 		content = "Bu istemciyi silmek istediğinizden emin misiniz ? <br> İstemcinin domainde olmadığından emin olunuz. <br> Silme işlemi geri alınamaz ve " +
 		"bu işlem sonucunda sadece veritabanında ve LDAP'ta bu istemciye ait tüm bilgiler silinecektir.";
 	}
-	
+
 	$.confirm({
 		title: 'Uyarı!',
 		content: content,
@@ -1683,27 +1720,27 @@ $('#btnAddOu').on('click',function(event) {
 	}
 	else{
 		getModalContent("modals/computer/addOuModal", function content(data){
-				$('#genericModalHeader').html("Klasör Yönetimi")
-				$('#genericModalBodyRender').html(data);
-				$('#ouInfo').html(selectedRow.ou +"/");
-				$('#addOu').on('click', function (event) {
-						var parentDn=selectedRow.distinguishedName; 
-						var parentName= selectedRow.ou;
-						var parentEntryUUID= selectedRow.entryUUID;
-						var ouName= $('#ouName').val();
-						$.ajax({
-							type : 'POST',
-							url : 'lider/user/addOu',
-							data: 'parentName='+parentDn +'&ou='+ouName,
-							dataType : 'json',
-							success : function(data) {
-								$.notify("Klasör Başarı İle Eklendi.", "success");
-								$('#genericModal').trigger('click');
-								$('#menuBtnComputers').trigger('click');
-							}
-						});
+			$('#genericModalHeader').html("Klasör Yönetimi")
+			$('#genericModalBodyRender').html(data);
+			$('#ouInfo').html(selectedRow.ou +"/");
+			$('#addOu').on('click', function (event) {
+				var parentDn=selectedRow.distinguishedName; 
+				var parentName= selectedRow.ou;
+				var parentEntryUUID= selectedRow.entryUUID;
+				var ouName= $('#ouName').val();
+				$.ajax({
+					type : 'POST',
+					url : 'lider/user/addOu',
+					data: 'parentName='+parentDn +'&ou='+ouName,
+					dataType : 'json',
+					success : function(data) {
+						$.notify("Klasör Başarı İle Eklendi.", "success");
+						$('#genericModal').trigger('click');
+						$('#menuBtnComputers').trigger('click');
+					}
 				});
-			} 
+			});
+		} 
 		);
 	}
 });
@@ -1713,7 +1750,7 @@ $('#btnDeleteOu').on('click',function(event) {
 	getModalContent("modals/computer/deleteOuModal", function content(data){
 		$('#genericModalHeader').html("Klasör Sil")
 		$('#genericModalBodyRender').html(data);
-		
+
 		$('#deleteOuBtn').on('click', function (event) {
 			deleteUserOu(selectedRow)
 		});
@@ -1724,13 +1761,13 @@ $('#btnDeleteOu').on('click',function(event) {
 function deleteUserOu(row) {
 	var dnList = [];
 	dnList.push({
-			distinguishedName :row.distinguishedName, 
-			entryUUID: row.entryUUID, 
-			name: row.name,
-			type: row.type,
-			uid: row.uid
-		});
-    $.ajax({
+		distinguishedName :row.distinguishedName, 
+		entryUUID: row.entryUUID, 
+		name: row.name,
+		type: row.type,
+		uid: row.uid
+	});
+	$.ajax({
 		type : 'POST',
 		url : 'lider/computer/deleteComputerOu',
 		data : JSON.stringify(dnList),
@@ -1746,9 +1783,9 @@ function deleteUserOu(row) {
 				$.notify("Seçilen klasörün alt klasör veya istemcileri bulunamkatdır. Silme işlemi için klasör boş olmalıdır.",{className: 'warn',position:"right top"}  );
 				$('#genericModal').trigger('click');
 			}
-			
+
 		},
-	    error: function (data, errorThrown) {
+		error: function (data, errorThrown) {
 			$.notify("Silme İşleminde Hata Oluştu.", "error");
 		}
 	});  
@@ -1769,16 +1806,16 @@ function jid_to_source(jid) {
 }
 
 //function addRoster() {
-//	$.ajax({
-//		type: 'POST', 
-//		url: "/lider/computer/addRoster",
-//		success: function(data) {
-//			console.log(data)
-//		},
-//		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
-//		}
-//	});
-//	
+//$.ajax({
+//type: 'POST', 
+//url: "/lider/computer/addRoster",
+//success: function(data) {
+//console.log(data)
+//},
+//error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {
+//}
+//});
+
 //}
 
 $('#updateAgentInfo').click(function(e){
@@ -1800,7 +1837,7 @@ $('#updateAgentInfo').click(function(e){
 				if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
 					$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
 				}
-				
+
 				getAgentInfo();
 			},
 			Hayır: function () {

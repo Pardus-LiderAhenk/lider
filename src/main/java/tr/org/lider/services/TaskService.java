@@ -85,7 +85,7 @@ public class TaskService {
 
 		task = taskRepository.save(task);
 
-		String logMessage = "[ "+ request.getEntryList().get(0).getUid() +" ] istemciye görev gönderildi";
+		String logMessage = "[ "+ request.getEntryList().get(0).get(configService.getAgentLdapJidAttribute()) +" ] istemciye görev gönderildi";
 		if (targetEntries.size() > 1) {
 			logMessage = "[ "+ request.getEntryList().get(0).getDistinguishedName() + " ] istemci grubuna görev gönderildi.";
 		}

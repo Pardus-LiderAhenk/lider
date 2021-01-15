@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
+import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import tr.org.lider.entities.AgentImpl;
@@ -117,7 +117,19 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 				if (isPropertyName(uid, "agentVersion") == false) {
 					agent.addProperty(new AgentPropertyImpl(null, agent, "agentVersion",
 							message.getAgentVersion().toString(), new Date()));
-				} 
+				}
+				
+				String user = "uid="+ userSession.getUsername();
+				try {
+					String filter="(&(uid="+ userSession.getUsername() +"))";
+					List<LdapEntry> usersEntrylist = ldapService.findSubEntries(configurationService.getUserLdapBaseDn(), filter,new String[] { "*" }, SearchScope.SUBTREE);
+					if (usersEntrylist != null && usersEntrylist.size() > 0) {
+						user = usersEntrylist.get(usersEntrylist.size()-1).getDistinguishedName();
+					}
+				} catch (LdapException e) {
+					e.printStackTrace();
+				}
+				ldapService.updateEntry(agent.getDn(), "owner", user);
 			}
 			// Merge records
 			agentRepository.save(agent);
@@ -126,7 +138,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 			if (message.getType() == AgentMessageType.LOGIN) {
 				List<LdapEntry> role = getUserRoleGroupList(configurationService.getUserLdapRolesDn(),
 						userSession.getUsername(), message.getHostname());
-	
+
 				if (role != null && role.size() > 0) {
 					Map<String, Object> params = new HashMap<>();
 					return new UserSessionResponseMessageImpl(message.getFrom(), params, userSession.getUsername(),
@@ -137,8 +149,10 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 				}
 			} else {
 				logger.info("Get message type is LOGUT from agent");
+				//				ldapService.updateEntry(agent.getDn(), "userLastLogin", "logout");
 				return null;
 			}
+
 		} else {
 			logger.warn("Couldn't find the agent with JID: {}", uid);
 			return null;
@@ -191,7 +205,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 	public void setLdapService(LDAPServiceImpl ldapService) {
 		this.ldapService = ldapService;
 	}
-	
+
 	public Boolean isPropertyName(String agentUid, String propertyName) {
 		Boolean isExist = false;
 		List<AgentImpl> agents =  agentRepository.findByJid(agentUid);

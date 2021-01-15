@@ -192,14 +192,14 @@ function getServiceListener(msg) {
 														+ '</td>';
 													html += '<td>'+ serviceName +'</td>';
 													html += '<td>'+ serviceStatus +'</td>';
-													html += '<td><select disabled class="custom-select" id="status_'+ sbSerName +'" name="' +  serviceName +'">'
+													html += '<td><select disabled class="custom-select custom-select-sm" id="status_'+ sbSerName +'" name="' +  serviceName +'">'
 													+ '<option value="null" selected>İşlem Seç</option>'
 													+ '<option value="START">Başlat</option>'
 													+ '<option value="STOP">Durdur</option>'
 													+ '</select>';
 													+ '</td>';
 													html += '<td>'+ startAuto +'</td>';
-													html += '<td><select disabled class="custom-select" id="auto_start_'+ sbSerName +'" name="' +  serviceName +'">'
+													html += '<td><select disabled class="custom-select custom-select-sm" id="auto_start_'+ sbSerName +'" name="' +  serviceName +'">'
 													+ '<option value="null" selected>İşlem Seç</option>'
 													+ '<option value="START">Aktif</option>'
 													+ '<option value="STOP">Pasif</option>'

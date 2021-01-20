@@ -66,8 +66,9 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 			// Add new user session info
 			UserSessionImpl userSession = new UserSessionImpl(null, null, message.getUsername(), message.getUserIp(),
 					getSessionEvent(message.getType()), new Date());
-
-			agent.addUserSession(userSession);
+			if (userSession.getUsername() != null) {
+				agent.addUserSession(userSession);
+			}
 			if (message.getType() == AgentMessageType.LOGIN
 					&& (message.getIpAddresses() == null || message.getIpAddresses().isEmpty())) {
 				logger.warn("Couldn't find IP addresses of the agent with JID: {}", uid);
@@ -115,21 +116,24 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 					}
 				}
 				if (isPropertyName(uid, "agentVersion") == false) {
-					agent.addProperty(new AgentPropertyImpl(null, agent, "agentVersion",
-							message.getAgentVersion().toString(), new Date()));
-				}
-				
-				String user = "uid="+ userSession.getUsername();
-				try {
-					String filter="(&(uid="+ userSession.getUsername() +"))";
-					List<LdapEntry> usersEntrylist = ldapService.findSubEntries(configurationService.getUserLdapBaseDn(), filter,new String[] { "*" }, SearchScope.SUBTREE);
-					if (usersEntrylist != null && usersEntrylist.size() > 0) {
-						user = usersEntrylist.get(usersEntrylist.size()-1).getDistinguishedName();
+					if (message.getAgentVersion()!= null) {
+						agent.addProperty(new AgentPropertyImpl(null, agent, "agentVersion",
+								message.getAgentVersion().toString(), new Date()));
 					}
-				} catch (LdapException e) {
-					e.printStackTrace();
 				}
-				ldapService.updateEntry(agent.getDn(), "owner", user);
+				if (userSession.getUsername() != null) {
+					String user = "uid="+ userSession.getUsername();
+					try {
+						String filter="(&(uid="+ userSession.getUsername() +"))";
+						List<LdapEntry> usersEntrylist = ldapService.findSubEntries(configurationService.getUserLdapBaseDn(), filter,new String[] { "*" }, SearchScope.SUBTREE);
+						if (usersEntrylist != null && usersEntrylist.size() > 0) {
+							user = usersEntrylist.get(usersEntrylist.size()-1).getDistinguishedName();
+						}
+					} catch (LdapException e) {
+						e.printStackTrace();
+					}
+					ldapService.updateEntry(agent.getDn(), "owner", user);
+				}
 			}
 			// Merge records
 			agentRepository.save(agent);

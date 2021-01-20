@@ -182,6 +182,9 @@ public class LDAPServiceImpl implements ILDAPService {
 	public void releaseConnection(LdapConnection ldapConnection) {
 		try {
 			pool.releaseConnection(ldapConnection);
+			if(pool != null) {
+				pool.close();
+			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -1616,6 +1619,8 @@ public class LDAPServiceImpl implements ILDAPService {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return ruleList;
+		} finally {
+			releaseConnection(connection);
 		}
 		return ruleList;
 	}
@@ -1668,6 +1673,8 @@ public class LDAPServiceImpl implements ILDAPService {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return ruleList;
+		} finally {
+			releaseConnection(connection);
 		}
 		return ruleList;
 	}
@@ -1720,6 +1727,8 @@ public class LDAPServiceImpl implements ILDAPService {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return ruleList;
+		} finally {
+			releaseConnection(connection);
 		}
 		return ruleList;
 	}
@@ -1952,7 +1961,7 @@ public class LDAPServiceImpl implements ILDAPService {
 	}
 
 	private void saveOLCRulesToConfig(OLCAccessRule rule) {
-		LdapConnection connection;
+		LdapConnection connection = null;
 		Entry entry = null;
 		ModifyRequest mr = new ModifyRequestImpl();
 		try {
@@ -1969,6 +1978,8 @@ public class LDAPServiceImpl implements ILDAPService {
 			}
 		} catch (LdapException e) {
 			logger.info("Error occured while adding olcAccesRule error: " + e.getMessage());
+		} finally {
+			releaseConnection(connection);
 		}
 	}
 
@@ -2013,6 +2024,8 @@ public class LDAPServiceImpl implements ILDAPService {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return false;
+		} finally {
+			releaseConnection(connection);
 		}
 		return false;
 	}
@@ -2036,6 +2049,8 @@ public class LDAPServiceImpl implements ILDAPService {
 		catch (Exception e) {
 			logger.error(e.getMessage());
 			return false;
+		} finally {
+			releaseConnection(connection);
 		}
 		return false;
 	}

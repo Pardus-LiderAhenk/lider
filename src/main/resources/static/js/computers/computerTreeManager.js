@@ -246,6 +246,7 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 					   if(showOnlyFolder==false){
 							searchHtml +='<option  value="uid"> ID </option> '+
 									'<option selected value="cn"> Ad </option> '+ 
+									'<option value="o"> Son Oturum </option> '+ 
 									'<option value="ou"> Klasör </option>';
 							searchHtml +='</select> '+
 							'    </div> '+ 

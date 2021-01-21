@@ -1516,8 +1516,9 @@ function getAllAndOnlineAgents(searchDn) {
 			progress("computerTreeOnlineInfo","progressComputerTreeInfo",'hide')
 			$('#btnTotalAgent').append("")
 			$('#btnOnlineAgent').append("")
-			$('#btnTotalAgent').html("Toplam İstemci Sayısı :"+data.agentListSize)
-			$('#btnOnlineAgent').html("Çevrimiçi İstemci Sayısı :"+data.onlineAgentList.length)
+			$('#btnTotalAgent').html("Toplam İstemci Sayısı &nbsp;&nbsp;&nbsp;&nbsp;: "+data.agentListSize)
+			$('#btnOnlineAgent').html("Çevrimiçi İstemci Sayısı&nbsp;&nbsp;: "+data.onlineAgentList.length);
+			$('#btnOfflineAgent').html("Çevrimdışı İstemci Sayısı: "+(data.agentListSize-data.onlineAgentList.length));
 
 		},
 		error: function (jqXHR, textStatus, chechkSshConnectionerrorThrown) {

@@ -193,7 +193,7 @@ $('#selectedAgentInfo').click(function(e){
 				for(var i = 0; i< renamedList[key].length; i++) {
 					var value = renamedList[key][i];
 					if (key == "Son Oturum Açan Kullanıcı") {
-						value = getUserLastLogin(renamedList[key][i]);
+//						value = getUserLastLogin(renamedList[key][i]);
 						if (value == null) {
 							value = "Bilinmiyor";
 						}
@@ -206,7 +206,7 @@ $('#selectedAgentInfo').click(function(e){
 			} else {
 				var value = renamedList[key];
 				if (key == "Son Oturum Açan Kullanıcı") {
-					value = getUserLastLogin(renamedList[key]);
+//					value = getUserLastLogin(renamedList[key]);
 					if (value == null) {
 						value = "Bilinmiyor";
 					}
@@ -1175,9 +1175,9 @@ function showSelectedEntries() {
 				$("#agentMac").html(data.macAddresses);
 				$("#agentCreateDate").html(data.createDate);
 				$('#agentDn').html(getEntryFolderName(selDn));
-				if (getUserLastLogin(selectedRow.attributesMultiValues.owner) != null) {
+				if (selectedRow.attributesMultiValues.o) {
 					$("#userLastLoginRow").show();
-					$("#userLastLogin").html(getUserLastLogin(selectedRow.attributesMultiValues.owner));
+					$("#userLastLogin").html(selectedRow.attributesMultiValues.o);
 				} else {
 					$("#userLastLoginRow").hide();
 				}

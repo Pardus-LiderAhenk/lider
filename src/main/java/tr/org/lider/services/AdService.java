@@ -145,6 +145,9 @@ public class AdService implements ILDAPService{
 	public void releaseConnection(LdapConnection ldapConnection) {
 		try {
 			pool.releaseConnection(ldapConnection);
+			if(pool != null) {
+				pool.close();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);

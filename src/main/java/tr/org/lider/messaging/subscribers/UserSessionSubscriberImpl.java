@@ -122,17 +122,7 @@ public class UserSessionSubscriberImpl implements IUserSessionSubscriber {
 					}
 				}
 				if (userSession.getUsername() != null) {
-					String user = "uid="+ userSession.getUsername();
-					try {
-						String filter="(&(uid="+ userSession.getUsername() +"))";
-						List<LdapEntry> usersEntrylist = ldapService.findSubEntries(configurationService.getUserLdapBaseDn(), filter,new String[] { "*" }, SearchScope.SUBTREE);
-						if (usersEntrylist != null && usersEntrylist.size() > 0) {
-							user = usersEntrylist.get(usersEntrylist.size()-1).getDistinguishedName();
-						}
-					} catch (LdapException e) {
-						e.printStackTrace();
-					}
-					ldapService.updateEntry(agent.getDn(), "owner", user);
+					ldapService.updateEntry(agent.getDn(), "o", userSession.getUsername());
 				}
 			}
 			// Merge records

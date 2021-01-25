@@ -41,6 +41,7 @@ import tr.org.lider.messaging.messages.ILiderMessage;
 import tr.org.lider.messaging.messages.IRegistrationResponseMessage;
 import tr.org.lider.messaging.messages.RegistrationMessageImpl;
 import tr.org.lider.messaging.messages.RegistrationResponseMessageImpl;
+import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.repositories.AgentRepository;
 import tr.org.lider.services.ConfigurationService;
 import tr.org.lider.services.RegistrationTemplateService;
@@ -60,6 +61,9 @@ public class DiyanetRegistrationSubscriberImpl implements IRegistrationSubscribe
 
 	@Autowired
 	private AgentRepository agentDao;
+
+	@Autowired
+	private XMPPClientImpl xmppClient;
 
 	@Autowired
 	private RegistrationTemplateService registrationTemplateService;
@@ -338,6 +342,8 @@ public class DiyanetRegistrationSubscriberImpl implements IRegistrationSubscribe
 						+ "  ldap version =" + respMessage.getLdapVersion()
 						);
 			}
+			xmppClient.addClientToRoster(jid + "@"+configurationService.getXmppServiceName());
+			logger.info("Agent {} added successfully as a member lider_sunucu roster", jid);
 			return respMessage;
 
 		} else if (AgentMessageType.UNREGISTER == message.getType()) {

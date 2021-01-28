@@ -36,7 +36,7 @@ function sendXmessageTask(params) {
 		message = "Zamanlanmış görev başarı ile gönderildi. Zamanlanmış görev parametreleri:  "+ scheduledParamXmessage;
 	}
 	if (selectedEntries[0].type == "AHENK" && selectedRow.online == true && scheduledParamXmessage == null) {
-		progress("divXMesaage","progressXMessage",'show');
+		progress("divXMessage","progressXMessage",'show');
 	}
 	if (selectedEntries[0].type == "AHENK" && selectedRow.online == false) {
 		$.notify("Görev başarı ile gönderildi, istemci çevrimiçi olduğunda uygulanacaktır.", "success");
@@ -88,7 +88,7 @@ function xmessageListener(msg) {
 		var responseMessage = xmppResponse.result.responseMessage;
 		if(xmppResponse.result.responseCode == "TASK_PROCESSED" || xmppResponse.result.responseCode == "TASK_ERROR") {
 			if (selectedEntries[0].type == "AHENK") {
-				progress("divXMesaage","progressXMessage",'hide');
+				progress("divXMessage","progressXMessage",'hide');
 				if (xmppResponse.commandClsId == "EXECUTE_XMESSAGE") {
 					var arrg = JSON.parse(xmppResponse.result.responseDataStr);
 					if (xmppResponse.result.responseCode == "TASK_PROCESSED") {
@@ -126,8 +126,13 @@ $('#sendTaskXmessage').click(function(e){
 		$.notify("Lütfen istemci seçiniz.", "error");
 		return;
 	}
-
 	var message = $('#xmessageContent').val();
+	if (message.includes("'")) {
+		message = message.replaceAll("'", "'\\''");
+	}
+	if (message.includes('"')) {
+		message = message.replaceAll('"', '"\\""');
+	}
 	if (pluginTask_Xmessage) {
 		pluginTask_Xmessage.dnList=dnlist;
 		pluginTask_Xmessage.entryList=selectedEntries;

@@ -10,6 +10,9 @@
 var table;
 var notifyTempList = [];
 var nId = null; // selected notify id
+var lineLimit = 20;
+var charLimit = 1200;
+var lineCountStatus = true;
 
 $(document).ready(function(){
 	$("#notifyDelBtn").hide();
@@ -17,6 +20,8 @@ $(document).ready(function(){
 	$("#notifyContentTemp").val("");
 	$("#notifyNameTemp").focus();
 	getNotifyTemp();
+	$("#notifyDefinitionCharCount").text("0/"+ charLimit);
+	$("#notifyDefinitionLineCount").text("0/"+ lineLimit);
 });
 
 function getNotifyTemp() {
@@ -87,7 +92,6 @@ $('#notifyTableTemp tbody').on( 'click', 'tr', function () {
 			$("#notifyDelBtn").hide();
 			$("#notifyCleanBtn").hide();
 			nId = null;
-
 		}
 		else {
 			table.$('tr.selected').removeClass('selected');
@@ -105,6 +109,7 @@ $('#notifyTableTemp tbody').on( 'click', 'tr', function () {
 				}
 			}
 		}
+		checkCharacterAndLineCount();
 	}
 } );
 
@@ -126,6 +131,10 @@ $('#notifySaveBtn').click(function(e){
 			};
 
 			if (nContent != "" && nName != "" && nTime != "") {
+				if (lineCountStatus == false) {
+					$.notify("Mesaj karakter veya satır sayısını aştınız.", "warn");
+					return;
+				}
 				if (checkedUpdatedNotifyName(nName, nId) == false) {
 					$.ajax({
 						type: 'POST', 
@@ -148,6 +157,7 @@ $('#notifySaveBtn').click(function(e){
 								$("#notifyContentTemp").val("");
 								$("#notifyDelBtn").hide();
 								$("#notifyCleanBtn").hide();
+								checkCharacterAndLineCount();
 							}else {
 								$.notify("Mesaj güncellenirken hata oluştu.", "error");
 							}
@@ -169,6 +179,10 @@ $('#notifySaveBtn').click(function(e){
 			};
 
 			if (nContent != "" && nName != "" && nTime != "") {
+				if (lineCountStatus == false) {
+					$.notify("Mesaj karakter veya satır sayısını aştınız.", "warn");
+					return;
+				}
 				if (checkedNotifyName(nName) == false) {
 					$.ajax({
 						type: 'POST', 
@@ -189,6 +203,7 @@ $('#notifySaveBtn').click(function(e){
 								$('#notifyTime').val("");
 								$("#notifyContentTemp").val("");
 								$("#notifySaveBtn").html("Kaydet");
+								checkCharacterAndLineCount();
 							}else {
 								$.notify("Mesaj kaydedilirken hata oluştu.", "error");
 							}
@@ -264,6 +279,7 @@ $('#notifyDelBtn').click(function(e){
 					$("#notifyDelBtn").hide();
 					$("#notifyCleanBtn").hide();
 					$("#notifyContentTemp").val("");
+					checkCharacterAndLineCount();
 				}else {
 					$.notify("Mesaj silinirken hata oluştu.", "error");
 				}
@@ -303,7 +319,71 @@ $('#notifyCleanBtn').click(function(e){
 		$('#notifyTime').val("");
 		$("#notifyContentTemp").val("");
 		$("#notifySaveBtn").html("Kaydet");
+		$("#notifyDefinitionCharCount").text("0/"+ charLimit);
+		$("#notifyDefinitionLineCount").text("0/"+ lineLimit);
 	}
 	$("#notifyNameTemp").focus();
 	$("#notifyDelBtn").hide();
 });
+
+//START -->> check character count and count line of notify definition content
+$("#notifyContentTemp").keyup(function(){
+	checkCharacterAndLineCount();
+});
+
+function checkCharacterAndLineCount() {
+	var textAreaTag = document.getElementById("notifyContentTemp");
+	var charMaxLength = textAreaTag.attributes.maxLength.value;
+	var char = textAreaTag.value.length;
+	var lines = textAreaTag.value.split("\n");
+	lineControl(lines, char);
+}
+
+function lineControl(lines, char) {
+	var softLineCount = 0;
+	var hardLineCount = 0;
+	var textAreaTag = document.getElementById("notifyContentTemp");
+	var charMaxLength = textAreaTag.attributes.maxLength.value;
+	var charOfLineLimit = charLimit / lineLimit; 
+
+	for (var i = 0; i < lines.length; i++) {
+		if (lines[i].length > charOfLineLimit) {
+			var quotient = Math.floor(char / charOfLineLimit);
+			var remainder = char % charOfLineLimit;
+			if (quotient > 0) {
+				if (remainder > 0) {
+					softLineCount = quotient;
+				} else {
+					softLineCount = quotient - 1;
+				}
+			}
+		}
+	}
+	hardLineCount = softLineCount + lines.length;
+	if (char == 0) {
+		textAreaTag.maxLength = textAreaTag.attributes.maxLength.value;
+		charMaxLength = charLimit;
+		hardLineCount = 0;
+	}
+	if (hardLineCount > lineLimit) {
+//		$("#notifyDefinitionLineCount").text("Mesaj satır sayısını aştınız.");
+		$("#notifyDefinitionLineCount").text(hardLineCount +"/"+ lineLimit);
+		document.getElementById("notifyDefinitionLineCount").style.color = 'red';
+		lineCountStatus = false;
+		if (char > charLimit) {
+			textAreaTag.maxLength = charLimit;
+			document.getElementById("notifyDefinitionCharCount").style.color = 'red';
+		} else {
+			textAreaTag.maxLength = char;
+			document.getElementById("notifyDefinitionCharCount").style.color = '#5a738e';
+		}
+	} else {
+		textAreaTag.maxLength = charLimit;
+		$("#notifyDefinitionLineCount").text(hardLineCount +"/"+ lineLimit);
+		document.getElementById("notifyDefinitionLineCount").style.color = '#5a738e';
+		document.getElementById("notifyDefinitionCharCount").style.color = '#5a738e';
+		lineCountStatus = true;
+	}
+	$("#notifyDefinitionCharCount").text(char +"/"+charMaxLength);
+}
+//STOP -->> check character count and count line of notify definition content

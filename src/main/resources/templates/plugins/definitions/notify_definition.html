@@ -7,7 +7,7 @@
 			<div class="page-title-subheading">Etkileşimli Tahtalar için tanımlamak istenilen
 					mesajlar Mesaj Adı, Mesaj Süresi ve Mesaj İçeriği girilerek
 					kaydedilir. Kayıtlı mesajlar listelenir ve Ekle, Sil,
-					Düzenle işlemleri yapılır.</div>
+					Düzenle işlemleri yapılır. Mesaj, 1200 karakterden veya 20 satırdan fazla olamamalıdır.</div>
 		<hr>
 		<div class="row">
 		<div class="col-lg-6">
@@ -60,13 +60,20 @@
 					</div>
 					<div class="form-group">
 						<label for="notifyContentTemp">Mesaj İçeriği</label>
-						<textarea class="form-control" id="notifyContentTemp" rows="18"></textarea>
+						<textarea class="form-control" id="notifyContentTemp" rows="18" maxlength="1200"></textarea>
+						<div>
+							<a>Katakter Sayısı: </a>
+							<a id="notifyDefinitionCharCount"></a>
+						</div>
+						<div>
+							<a>Satır Sayısı: </a>
+							<a id="notifyDefinitionLineCount" style="color: #5a738e;"></a>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-		
+		</div>
 	</div>
 </div>
 

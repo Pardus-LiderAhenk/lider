@@ -43,7 +43,15 @@
 						</div>
 						<div class="form-group">
 							<label for="notifyContent">Mesaj İçeriği</label>
-							<textarea class="form-control" id="notifyContent" rows="12"></textarea>
+							<textarea class="form-control" id="notifyContent" rows="12" maxlength="1200"></textarea>
+							<div>
+								<a style="color: #5a738e;">Katakter Sayısı: </a>
+								<a id="notifyCharCount" style="color: #5a738e;"></a>
+							</div>
+							<div>
+								<a style="color: #5a738e;">Satır Sayısı: </a>
+								<a id="notifyLineCount" style="color: #5a738e;"></a>
+							</div>
 						</div>
 						<div id="plugin-result-eta-notify"></div>
 					</div>
@@ -51,9 +59,9 @@
 			</div>
 		</div>
 		<div id="progressEtaNotify"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
-		    	<div style="position:absolute; ; top: 38%; left: 30%;"> 
+		    <div style="position:absolute; ; top: 38%; left: 30%;"> 
 		    	<img src="img/LoadingPage.gif" width="80" height="80"  /> <span> <b>   Görev Gönderildi.. Lütfen Bekleyiniz... </b> </span> 
-		    	</div>
+		    </div>
 		</div>
 	</div>
 </body>

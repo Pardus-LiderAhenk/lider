@@ -12,6 +12,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -59,6 +60,9 @@ public class OperationLogImpl implements Serializable {
 	@Column(name = "CREATE_DATE", nullable = false)
 	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss", timezone="Europe/Istanbul")
 	private Date createDate;
+	
+	@Transient
+	private String requestDataStr;
 
 	public OperationLogImpl() {
 	}
@@ -147,4 +151,11 @@ public class OperationLogImpl implements Serializable {
 		this.createDate = createDate;
 	}
 
+	public String getrequestDataStr() {
+		return requestDataStr;
+	}
+
+	public void setRequestDataStr(String responseDataStr) {
+		this.requestDataStr = responseDataStr;
+	}
 }

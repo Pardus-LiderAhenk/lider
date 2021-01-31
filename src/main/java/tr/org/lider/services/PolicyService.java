@@ -76,7 +76,7 @@ public class PolicyService {
 		List<LdapEntry> targetEntries= getTargetList(request.getDnList());
 		
 		String logMessage = "[ "+ request.getDnList().get(0) +" ] kullanıcı grubuna politika uygulandı.";
-		operationLogService.saveOperationLog(OperationType.EXECUTE_POLICY, logMessage, null, null, policy.getId(), null);
+		operationLogService.saveOperationLog(OperationType.EXECUTE_POLICY, logMessage, policy.getLabel().getBytes(), null, policy.getId(), null);
 
 		for (LdapEntry targetEntry : targetEntries) {
 			String uid=targetEntry.get(configService.getAgentLdapIdAttribute()); // group uid is cn value.
@@ -117,7 +117,7 @@ public class PolicyService {
 		PolicyImpl existPolicy = policyRepository.save(policy);
 		existPolicy.setPolicyVersion(existPolicy.getId()+"-"+ 1);
 		String logMessage = "Politika oluşturuldu.";
-		operationLogService.saveOperationLog(OperationType.CREATE, logMessage, null, null, existPolicy.getId(), null);
+		operationLogService.saveOperationLog(OperationType.CREATE, logMessage, existPolicy.getLabel().getBytes(), null, existPolicy.getId(), null);
 		return policyRepository.save(existPolicy);
 	}
 
@@ -126,7 +126,7 @@ public class PolicyService {
 		existPolicy.setDeleted(true);
 		existPolicy.setModifyDate(new Date());
 		String logMessage = "Politika silindi.";
-		operationLogService.saveOperationLog(OperationType.DELETE, logMessage, null, null, existPolicy.getId(), null);
+		operationLogService.saveOperationLog(OperationType.DELETE, logMessage, existPolicy.getLabel().getBytes(), null, existPolicy.getId(), null);
 		return policyRepository.save(existPolicy);
 	}
 
@@ -140,7 +140,7 @@ public class PolicyService {
 		existPolicy.setPolicyVersion(policy.getId() + "-" + newVersion);
 		existPolicy.setModifyDate(new Date());
 		String logMessage = "Politika günllendi.";
-		operationLogService.saveOperationLog(OperationType.UPDATE, logMessage, null, null, existPolicy.getId(), null);
+		operationLogService.saveOperationLog(OperationType.UPDATE, logMessage, existPolicy.getLabel().getBytes(), null, existPolicy.getId(), null);
 		return policyRepository.save(existPolicy);
 	}
 
@@ -149,7 +149,7 @@ public class PolicyService {
 		existPolicy.setActive(true);
 		existPolicy.setModifyDate(new Date());
 		String logMessage = "Politika aktif edildi.";
-		operationLogService.saveOperationLog(OperationType.UPDATE, logMessage, null, null, existPolicy.getId(), null);
+		operationLogService.saveOperationLog(OperationType.UPDATE, logMessage, existPolicy.getLabel().getBytes(), null, existPolicy.getId(), null);
 		return policyRepository.save(existPolicy);
 	}
 
@@ -158,7 +158,7 @@ public class PolicyService {
 		existPolicy.setActive(false);
 		existPolicy.setModifyDate(new Date());
 		String logMessage = "Politika pasif edildi.";
-		operationLogService.saveOperationLog(OperationType.UPDATE, logMessage, null, null, existPolicy.getId(), null);
+		operationLogService.saveOperationLog(OperationType.UPDATE, logMessage, existPolicy.getLabel().getBytes(), null, existPolicy.getId(), null);
 		return policyRepository.save(existPolicy);
 	}
 
@@ -182,7 +182,7 @@ public class PolicyService {
 				if(configService.getDomainType().equals(DomainType.ACTIVE_DIRECTORY)) {
 					member=adService.findSubEntries(dn, "(objectclass=*)", new String[] { "*" }, SearchScope.OBJECT);
 				}
-				else if(configService.getDomainType().equals(DomainType.LDAP)) {
+				else if(configService.getDomainType().equals(DomainType.LDAP) || configService.getDomainType().equals(DomainType.NONE)) {
 					member=ldapService.findSubEntries(dn, "(objectclass=*)", new String[] { "*" }, SearchScope.OBJECT);
 				}
 				if(member!=null && member.size()>0) {
@@ -225,7 +225,7 @@ public class PolicyService {
 		CommandImpl existCommand = commandService.getCommand(comImpl.getId());
 		existCommand.setDeleted(true);
 		String logMessage = "[ "+ existCommand.getDnList().get(0) +" ] kullanıcı grubunun politikası kaldırıldı.";
-		operationLogService.saveOperationLog(OperationType.UNASSIGMENT_POLICY, logMessage, null, null, existCommand.getPolicy().getId(), null);
+		operationLogService.saveOperationLog(OperationType.UNASSIGMENT_POLICY, logMessage, existCommand.getPolicy().getLabel().getBytes(), null, existCommand.getPolicy().getId(), null);
 		return commandService.updateCommand(existCommand);
 	}
 }

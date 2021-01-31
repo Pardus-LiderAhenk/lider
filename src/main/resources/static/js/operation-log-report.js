@@ -2,7 +2,7 @@
  * operation-log-report.js
  * 
  * This js contains pagination of operations logs and insert in on table,
- * exporting table data to excel file
+ * exporting table data to excel file and show selected log detail
  * 
  * Tuncay ÇOLAK
  * tuncay.colak@tubitak.gov.tr
@@ -25,7 +25,7 @@ var searchText = null;
 var field = null;
 
 //Operation Types
-//CREATE(1), READ(2), UPDATE(3), DELETE(4), LOGIN(5), LOGOUT(6), EXECUTE_TASK(7), EXECUTE_POLICY(8), CHANGE_PASSWORD(9), MOVE(10)
+//CREATE(1), READ(2), UPDATE(3), DELETE(4), LOGIN(5), LOGOUT(6), EXECUTE_TASK(7), EXECUTE_POLICY(8), CHANGE_PASSWORD(9), MOVE(10), UNASSIGMENT_POLICY(11)
 
 $(document).ready(function(){
 	$("#btnSelectUserDN").show();
@@ -113,7 +113,7 @@ function exportToExcel () {
 		'Oluşturulma Tarihi', 
 		'Mesaj',
 		'Kullanıcı DN', 
-		'İP Adresi'];
+		'IP Adresi'];
 	//give character number size for column width
 	var colLength = [];
 	for (var i = 0; i < header.length; i++) {
@@ -218,10 +218,11 @@ function getOperationLogs() {
 						html += '<td >' + row.logMessage + '</td>';
 						html += '<td >' + row.userId + '</td>';
 						html += '<td >' + requestIp + '</td>';
-//						html += '<td >' + row.taskId + '</td>';
-//						html += '<td >' + row.policyId + '</td>';
-//						html += '<td >' + row.profileId + '</td>';
-						html += '</tr>';
+						html += '<td class="text-center"><a href="#" class="edit" data-toggle="modal" '
+							+ 'onclick="selectedLogDetailClicked('+ row.id +')"'
+							+ '" data-toggle="modal" data-target="#genericModal">'
+							+ '<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>'
+							html += '</tr>';
 						num++;
 					}
 				}
@@ -464,3 +465,59 @@ function btnUseForLogSelectedUserDNClicked() {
 	$('#genericModal').trigger('click');
 }
 
+//open generic modal for selected log detail
+function selectedLogDetailClicked(logId) {
+	var params = {
+			"id": logId
+	};
+
+	$.ajax({ 
+		type: 'POST',
+		url: 'operation/selectedLog',
+		dataType: 'json',
+		data: params,
+		success: function (data) {
+			if (data != null || data.lenght > 0 ) {
+				var tableContent = '<tr><th style="width: 30%">Günce ID</th><td style="width: 70%">' + data.id + '</td></tr>';
+				tableContent += '<tr><th>Günce Tipi</th><td>' + getOpetarionType(data.crudType) + '</td></tr>';
+				tableContent += '<tr><th>Oluşturma Tarihi</th><td>' + data.createDate + '</td></tr>';
+				tableContent += '<tr><th>Mesaj</th><td>' + data.logMessage + '</td></tr>';
+				tableContent += '<tr><th>Kullanıcı DN</th><td>' + data.userId + '</td></tr>';
+				tableContent += '<tr><th>IP Adresi</th><td>' + data.requestIp + '</td></tr>';
+				if (data.profileId != null) {
+					tableContent += '<tr><th colspan="100%"><h6>Politika Ayar Detayı</h6></th></tr>';
+					tableContent += '<tr><th>Ayar ID</th><td>' + data.profileId + '</td></tr>';
+					$.each(jQuery.parseJSON(data.requestDataStr), function(key, value){
+						tableContent += '<tr><th>' + key + '</th><td>' + value + '</td></tr>';
+					});
+				} else if (data.crudType == "EXECUTE_TASK") {
+					tableContent += '<tr><th colspan="100%"><h6>Görev Çalıştırma Detayı</h6></th></tr>';
+					tableContent += '<tr><th>Görev ID</th><td>' + data.taskId + '</td></tr>';
+					$.each(jQuery.parseJSON(data.requestDataStr), function(key, value){
+						if (key == "password" || key == "RootPassword" || key == "admin-password" || key == "admin_password") {
+							value = value.replace(value, "*****");
+						}
+						tableContent += '<tr><th>' + key + '</th><td>' + value + '</td></tr>';
+					});
+				} else {
+					if (data.requestDataStr != null) {
+						if (data.crudType == "EXECUTE_POLICY" || data.crudType == "UNASSIGMENT_POLICY") {
+							tableContent += '<tr><th colspan="100%"><h6>Politika Detayı</h6></th></tr>';
+							tableContent += '<tr><th>Politika ID</th><td>' + data.policyId + '</td></tr>';
+							tableContent += '<tr><th>Politika Adı</th><td>' + data.requestDataStr + '</td></tr>';
+						} else {
+							tableContent += '<tr><th>Günce İçeriği</th><td>' + data.requestDataStr + '</td></tr>';
+						}
+					}
+				}
+				getModalContent("modals/reports/operation_logs/selected_log_datail", function content(data){
+					$('#genericModalHeader').html("Seçilen Sistem Güncesi Detayları");
+					$('#genericModalBodyRender').html(data);
+					$("#selectedLogDetailBody").empty();
+					$('#selectedLogDetailBody').append(tableContent);
+
+				});
+			}
+		}
+	});
+}

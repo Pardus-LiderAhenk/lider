@@ -122,6 +122,11 @@ public class OperationLogService {
 		return pagedResult;
 	}
 
+	
+	public OperationLogImpl getSelectedLogById(Long id) {
+		return operationLogRepository.findOne(id);
+	}
+	
 	public Page<OperationLogImpl> getOperationLogsByFilter(int pageNumber, int pageSize, String type, String field, String searchText, Optional<Date> startDate, Optional<Date> endDate) {
 		PageRequest pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("createDate").descending());
 		Page<OperationLogImpl> result = null;

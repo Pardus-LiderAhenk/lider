@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import tr.org.lider.entities.CommandExecutionResultImpl;
 import tr.org.lider.entities.OperationLogImpl;
 import tr.org.lider.entities.OperationType;
 import tr.org.lider.services.OperationLogService;
@@ -61,5 +62,15 @@ public class OperationLogController {
 		return logService.getOperationLogsByFilter(pageNumber, pageSize, operationType, field, searchText, startDate, endDate);
 	}
 	
+//	lider interface usage history by login console user
+	@Secured({"ROLE_ADMIN", "ROLE_OPERATION_LOG"})
+	@RequestMapping(method=RequestMethod.POST, value = "/selectedLog")
+	@ResponseBody
+	public OperationLogImpl selectedOpertaionLog(@RequestParam (value = "id") Long id ) {
+		OperationLogImpl log =  logService.getSelectedLogById(id);
+		if(log.getRequestData() != null)
+			log.setRequestDataStr(new String(log.getRequestData()));
+		return logService.getSelectedLogById(id);
+	}
 	
 }

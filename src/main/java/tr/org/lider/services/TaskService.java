@@ -84,10 +84,12 @@ public class TaskService {
 				request.getCronExpression(), new Date(), null);
 
 		task = taskRepository.save(task);
-
-		String logMessage = "[ "+ request.getEntryList().get(0).get(configService.getAgentLdapJidAttribute()) +" ] istemciye görev gönderildi";
+		
+		String logMessage = "";
 		if (targetEntries.size() > 1) {
 			logMessage = "[ "+ request.getEntryList().get(0).getDistinguishedName() + " ] istemci grubuna görev gönderildi.";
+		} else {
+			logMessage = "[ "+ request.getEntryList().get(0).get(configService.getAgentLdapJidAttribute()) +" ] istemciye görev gönderildi";
 		}
 		try {
 			operationLogService.saveOperationLog(OperationType.EXECUTE_TASK, logMessage, task.getParameterMapBlob(), task.getId(), null, null);

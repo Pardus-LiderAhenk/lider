@@ -501,7 +501,7 @@ function selectedLogDetailClicked(logId) {
 					});
 				} else {
 					if (data.requestDataStr != null) {
-						if (data.crudType == "EXECUTE_POLICY" || data.crudType == "UNASSIGMENT_POLICY") {
+						if (data.crudType == "EXECUTE_POLICY" || data.crudType == "UNASSIGMENT_POLICY" || data.policyId != null) {
 							tableContent += '<tr><th colspan="100%"><h6>Politika Detayı</h6></th></tr>';
 							tableContent += '<tr><th>Politika ID</th><td>' + data.policyId + '</td></tr>';
 							tableContent += '<tr><th>Politika Adı</th><td>' + data.requestDataStr + '</td></tr>';

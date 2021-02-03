@@ -8,7 +8,7 @@
 
 var liderConsoleInfo = null;
 var pageNumber = 1;
-var pageSize = 10;
+var pageSize = 20;
 var totalPages = 0;
 
 getLiderConsoleUser();
@@ -162,7 +162,7 @@ $('#btnUpdateConsoleUserPassword').on('click',function(event) {
 });
 
 $( "#newConsoleUserPassword,#newConsoleUserConfirmPassword " ).on( "copy cut paste drop", function() {
-    return false;
+	return false;
 });
 
 //updated password of lider console
@@ -197,12 +197,12 @@ function updatePasswordOfLiderConsole(dn) {
 		$.notify("Parolalar uyuşmamaktadır.","warn");
 		return;
 	}
-	
+
 	if (userPassword == oldPassword) {
 		$.notify("Yeni parola eski parola ile aynı olamaz.","warn");
 		return;
 	}
-	
+
 	if(userPassword.length < 6 || !ucaseFlag || !lcaseFlag || !digitsFlag){
 		$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
 		return;
@@ -309,7 +309,7 @@ function getSessionsOfLiderConsoleUser(ldapResult) {
 						}
 						var requestIp = row.requestIp;
 //						if (row.requestIp == "0:0:0:0:0:0:0:1") {
-//							requestIp = "localhost";
+//						requestIp = "localhost";
 //						}
 						html += '<tr>';
 						html += '<td class="text-center"> '+ (num) +' </td>';

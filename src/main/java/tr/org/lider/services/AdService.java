@@ -1,6 +1,5 @@
 package tr.org.lider.services;
 
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.Principal;
 import java.security.PrivateKey;
@@ -55,13 +54,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import tr.org.lider.LiderSecurityUserDetails;
 import tr.org.lider.ldap.DNType;
 import tr.org.lider.ldap.ILDAPService;
-import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
 import tr.org.lider.ldap.SearchFilterEnum;
@@ -491,20 +487,21 @@ public class AdService implements ILDAPService{
 					for (Iterator iterator = entry.getAttributes().iterator(); iterator.hasNext();) {
 						Attribute attr = (Attribute) iterator.next();
 						String attrName= attr.getUpId();
-						String value=attr.get().getString();
-
-						if(attr.size() > 1) {
-							Iterator<Value<?>> iter2 = entry.get(attrName).iterator();
-							String [] values = new String[attr.size()];
-							int counter = 0;
-							while (iter2.hasNext()) {
-								value = iter2.next().getValue().toString();
-								values[counter++] = value;
+						if(attr !=null && attr.get()!=null) {
+							String value=attr.get().getString();
+							if(attr.size() > 1) {
+								Iterator<Value<?>> iter2 = entry.get(attrName).iterator();
+								String [] values = new String[attr.size()];
+								int counter = 0;
+								while (iter2.hasNext()) {
+									value = iter2.next().getValue().toString();
+									values[counter++] = value;
+								}
+								attributesMultiValues.put(attrName, values);
+							} else {
+								attrs.put(attrName, value);
+								attributesMultiValues.put(attrName, new String[] {value});
 							}
-							attributesMultiValues.put(attrName, values);
-						} else {
-							attrs.put(attrName, value);
-							attributesMultiValues.put(attrName, new String[] {value});
 						}
 					}
 

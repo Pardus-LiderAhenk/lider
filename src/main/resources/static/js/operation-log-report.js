@@ -66,7 +66,6 @@ $(document).ready(function(){
 	});
 });
 
-
 function getOpetarionType(type) {
 	var typeText = type;
 	if (type == "CREATE") {
@@ -112,7 +111,7 @@ function exportToExcel () {
 		'Günce Tipi', 
 		'Oluşturulma Tarihi', 
 		'Mesaj',
-		'Kullanıcı DN', 
+		'Kullanıcı Adı', 
 		'IP Adresi'];
 	//give character number size for column width
 	var colLength = [];
@@ -482,7 +481,7 @@ function selectedLogDetailClicked(logId) {
 				tableContent += '<tr><th>Günce Tipi</th><td>' + getOpetarionType(data.crudType) + '</td></tr>';
 				tableContent += '<tr><th>Oluşturma Tarihi</th><td>' + data.createDate + '</td></tr>';
 				tableContent += '<tr><th>Mesaj</th><td>' + data.logMessage + '</td></tr>';
-				tableContent += '<tr><th>Kullanıcı DN</th><td>' + data.userId + '</td></tr>';
+				tableContent += '<tr><th>Kullanıcı Adı</th><td>' + data.userId + '</td></tr>';
 				tableContent += '<tr><th>IP Adresi</th><td>' + data.requestIp + '</td></tr>';
 				if (data.profileId != null) {
 					tableContent += '<tr><th colspan="100%"><h6>Politika Ayar Detayı</h6></th></tr>';
@@ -511,11 +510,10 @@ function selectedLogDetailClicked(logId) {
 					}
 				}
 				getModalContent("modals/reports/operation_logs/selected_log_datail", function content(data){
-					$('#genericModalHeader').html("Seçilen Sistem Güncesi Detayları");
+					$('#genericModalHeader').html("Seçilen Sistem Güncesi Detayı");
 					$('#genericModalBodyRender').html(data);
 					$("#selectedLogDetailBody").empty();
 					$('#selectedLogDetailBody').append(tableContent);
-
 				});
 			}
 		}

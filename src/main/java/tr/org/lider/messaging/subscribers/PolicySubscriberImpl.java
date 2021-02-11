@@ -232,18 +232,18 @@ public class PolicySubscriberImpl implements IPolicySubscriber {
 	private List<LdapEntry> findGroups(String userDn) throws LdapException {
 		List<LdapSearchFilterAttribute> filterAttributesList = new ArrayList<LdapSearchFilterAttribute>();
 		
-		filterAttributesList.add(new LdapSearchFilterAttribute("objectClass", "group", SearchFilterEnum.EQ));
-		filterAttributesList.add(new LdapSearchFilterAttribute("member", userDn, SearchFilterEnum.EQ));
-		
 		List<LdapEntry> groups=null;
 		if(configurationService.getDomainType().equals(DomainType.ACTIVE_DIRECTORY)) {
+			filterAttributesList.add(new LdapSearchFilterAttribute("objectClass", "group", SearchFilterEnum.EQ));
+			filterAttributesList.add(new LdapSearchFilterAttribute("member", userDn, SearchFilterEnum.EQ));
 			String baseDn=adService.getADDomainName();
 			groups = adService.search(baseDn, filterAttributesList, new String[] {"*"});
 		}
-		else{
-			groups=  ldapService.search(configurationService.getLdapRootDn(), filterAttributesList, new String[] {"*"});
+		else {
+			filterAttributesList.add(new LdapSearchFilterAttribute("objectClass", configurationService.getGroupLdapObjectClasses(), SearchFilterEnum.EQ));
+			filterAttributesList.add(new LdapSearchFilterAttribute("member", userDn, SearchFilterEnum.EQ));
+			groups = ldapService.search(configurationService.getLdapRootDn(), filterAttributesList, new String[] {"*"});
 		}
-		
 		return groups;
 	}
 }

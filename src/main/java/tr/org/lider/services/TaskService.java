@@ -67,6 +67,9 @@ public class TaskService {
 
 	@Autowired
 	private OperationLogService operationLogService; 
+	
+	@Autowired
+	private PluginTaskService pluginTaskService;
 
 	public IRestResponse execute(PluginTask request) {
 
@@ -82,14 +85,17 @@ public class TaskService {
 		// Create & persist task
 		TaskImpl task= new TaskImpl(null, request.getPlugin(), request.getCommandId(), request.getParameterMap(), false,
 				request.getCronExpression(), new Date(), null);
-
 		task = taskRepository.save(task);
-		
+		String commandIdForLog = task.getCommandClsId();
+		List<PluginTask> pluginTask = pluginTaskService.findPluginTaskByCommandID(task.getCommandClsId());
+		if (pluginTask != null && pluginTask.size() > 0) {
+			commandIdForLog = pluginTask.get(0).getName();
+		}
 		String logMessage = "";
 		if (targetEntries.size() > 1) {
-			logMessage = "[ "+ request.getEntryList().get(0).getDistinguishedName() + " ] istemci grubuna görev gönderildi.";
+			logMessage = "[ "+ request.getEntryList().get(0).getDistinguishedName() + " ] istemci grubuna [ " + commandIdForLog + " ] görevi gönderildi.";
 		} else {
-			logMessage = "[ "+ request.getEntryList().get(0).get(configService.getAgentLdapJidAttribute()) +" ] istemciye görev gönderildi";
+			logMessage = "[ "+ request.getEntryList().get(0).get(configService.getAgentLdapJidAttribute()) +" ] istemciye [ " + commandIdForLog + " ] görevi gönderildi.";
 		}
 		try {
 			operationLogService.saveOperationLog(OperationType.EXECUTE_TASK, logMessage, task.getParameterMapBlob(), task.getId(), null, null);

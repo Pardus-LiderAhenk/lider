@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import tr.org.lider.entities.PluginImpl;
 import tr.org.lider.entities.PluginTask;
 import tr.org.lider.repositories.PluginTaskRepository;
 
@@ -23,5 +24,9 @@ public class PluginTaskService {
 	
 	public List<PluginTask> findAll() {
 		return pluginTaskRepository.findAll(Sort.by("name"));
+	}
+	
+	public List<PluginTask>findPluginTaskByCommandID(String commandId) {
+		return pluginTaskRepository.findByCommandId(commandId);
 	}
 }

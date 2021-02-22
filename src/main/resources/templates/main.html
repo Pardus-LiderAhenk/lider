@@ -321,7 +321,7 @@
                                         </div>
                                     </div>
                                     
-                                    			<div class="btn-group"
+                                    <div class="btn-group"
 										th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
 			                        		or ${#lists.contains(roleNames, 'ROLE_SERVER_SETTINGS')} 
 			                        		or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')} 
@@ -336,6 +336,10 @@
 										
 										<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
 											 
+											 <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONSOLE_ACCESS_SETTINGS')}" 
+											 	class="nav-link dizin" href="#" data-page="settings_console_access" >
+				                               <span th:text="#{console.access.settings}"></span>
+				                            </a>	
 											 <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SERVER_SETTINGS')}" 
 											 	class="nav-link dizin" href="#" data-page="settings" >
 				                               <span th:text="#{server.settings}"></span>

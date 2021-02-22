@@ -12,10 +12,13 @@ $(document).ready(function(){
 .userInfo {
     font-size: 13px;
 }
+.tableResult {
+   height: 600px;
+}
 </style>
 	<div class="col-lg-3">
-					<div>
-							<button type="button" data-toggle="dropdown" id="btnFolderActions" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info"  style="margin: 10px;">
+					<div style="margin-top : 7px;" >
+							<button type="button" data-toggle="dropdown" id="btnFolderActions" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
                                             <span class="btn-icon-wrapper pr-2 opacity-7" >
                                                 <i class="fa fa-business-time fa-w-20"></i>
                                             </span>
@@ -58,6 +61,7 @@ $(document).ready(function(){
                               <a href="#" class="btn btn-info" id="btnAddUserModal" title="Kullanıcı Ekle" data-target="#genericModalLarge" data-toggle="modal">
                                     <i class="fa fa-user-plus"> &nbsp;</i>
                               </a>
+                 </div>
 				<div id="treeGridUserHolderDiv" style="margin-top: 7px;">
 					
 				</div>
@@ -66,148 +70,194 @@ $(document).ready(function(){
 			    		<img src="img/LoadingPage.gif" width="50" height="50"  /> <span> <b> Lütfen Bekleyiniz... </b> </span> 
 			    	</div>
 		  		</div>
-			</div>
+			
 	</div>
 
 	<div class="col-lg-9 white" style="height: 1200px;">
-									<div>
-										<div id="systemPage">
+										<div id="systemPage" style="margin-top: 14px;">
 											<div class="row">
-												<div class="x_panel">
-									                  <div class="x_content">
-									                    <div class="col-md-4 col-sm-4  profile_left">
+									                    <div class="col-md-3 col-sm-3">
 <!-- 									                      <div class="profile_img"> -->
 <!-- 									                        <div id="crop-avatar"> -->
 <!-- 									                          <img class="img-responsive avatar-view" src="images/user_icon.png" width="90" height="70" alt="Avatar" title="Change the avatar"> -->
 <!-- 									                        </div> -->
 <!-- 									                      </div> -->
-									                      <hr>
-									                      <h3 id="userName"></h3>
-									                      <hr>
-									
-									                      <ul class="list-unstyled user_data">
-									                        <li><i class="fa fa-address-card user-profile-icon"></i> &nbsp; <a class="userInfo" id="userId" href="#"></a>
-									                        </li>
-									                        <li><i class="fa fa-map-marker user-profile-icon"></i> &nbsp; <a class="userInfo"  id="userAddress" href="#"></a>
-									                        </li>
-									                        <li>
-									                          <i class="fas fa-phone user-profile-icon"></i> &nbsp; <a class="userInfo"  id="userPhone" href="#"></a>
-									                        </li>
-									                        <li>
-									                          <i class="fas fa-mail-bulk user-profile-icon"></i>  &nbsp;<a class="userInfo" id="userMail" href="#"></a>
-									                        </li>
-									                        <li>
-									                          <i class="fas fa-home user-profile-icon"></i>  &nbsp;<a class="userInfo" id="userHomeDirectory" href="#"></a>
-									                        </li>
-									                        <li>
-									                          <i class="fas fa-clock user-profile-icon"></i>  &nbsp;<a class="userInfo" id="userCreateDate" href="#"></a>
-									                        </li>
-									                        <li>
-									                          <i class="fas fa-info user-profile-icon"></i> &nbsp; &nbsp;<a class="userInfo" id="userAd" href="#"></a>
-									                        </li>
-									                      </ul>
-									                      <hr>
-									                       <a href="#" class="btn btn-success btn-sm" id="btnEditUserModal" title="Düzenle" data-target="#genericModal" data-toggle="modal">
-			                                                        <i class="fa fa-edit"> &nbsp; Düzenle</i>
-			                                               </a>
-									                       <a href="#" class="btn btn-info btn-sm" id="btnMoveUserModal" title="Taşı" data-target="#genericModal" data-toggle="modal">
-		                                                        <i class="fa fa-blind"> &nbsp; Taşı</i>
-		                                                   </a>
-									                       <a href="#" class="btn btn-info btn-sm" id="btnChangePasswordUserModal" title="Parola Düzenle" data-target="#genericModal" data-toggle="modal">
-		                                                        <i class="fas fa-user-lock"> &nbsp; Parola</i>
-		                                                   </a>
-									                       <a href="#" class="btn btn-danger btn-sm" id="btnDeleteUserModal" title="Sil" data-target="#genericModal" data-toggle="modal">
-		                                                        <i class="fa fa-minus-circle"> &nbsp; Sil</i>
-		                                                    </a>
+
+															<div class="x_panel">
+																<div class="x_title">
+																	 <a class="userInfo"  href="#"> <h2 class="" id="userName" ></h2> </a> 
+																		<div class="clearfix"></div>
+																</div>
+																<div class="x_content">
+												                      	<div class="list-group" id="list-tab" role="tablist">
+																	      <a class="list-group-item list-group-item-action active" id="btnEditUserGeneral" data-toggle="list" href="#generalInfo" role="tab" aria-controls="loginHistory"><i class="fa fa-address-card grey"> &nbsp; </i> Genel Bilgiler</a>
+																	      <a class="list-group-item list-group-item-action" id="btnResetPassword" data-toggle="list" href="#resetPassword" role="tab" aria-controls="loginHistory"><i class="fa fa-lock grey"> &nbsp; </i> Parola Sıfırla</a>
+																	      <a class="list-group-item list-group-item-action" id="btnLiderConsoleProfileTab" data-toggle="list" href="#loginHistory" role="tab" aria-controls="loginHistory"> <i class="fa fa-history grey"> &nbsp; </i>Login Geçmişi</a>
+																	      <a class="list-group-item list-group-item-action" id="btnChangePasswordLiderConsoleTab" data-toggle="list" href="#userGroups" role="tab" aria-controls="userGroups"> <i class="fa fa-users grey"> &nbsp; </i> Gruplar</a>
+																	      <a class="list-group-item list-group-item-action" id="btnGroupsOfLiderConsole" data-toggle="list" href="#sudoGroups" role="tab" aria-controls="sudoGroups"> <i class="fa fa-tasks grey"> &nbsp; </i> Yetki Grupları</a>
+																	      <a class="list-group-item list-group-item-action" id="btnLiderConsoleSessions" data-toggle="list" href="#passwordolicy" role="tab" aria-controls="passwordolicy"> <i class="fa fa-unlock-alt grey"> &nbsp; </i> Parola Politikası</a>
+																	      <a class="list-group-item list-group-item-action" id="btnGroupsOfLiderConsole" data-toggle="list" href="#policyHistory" role="tab" aria-controls="policyHistory"> <i class="fa fa-history grey"> &nbsp; </i> Politika Geçmişi</a>
+																	      <a class="list-group-item list-group-item-action" id="btnMoveUserModal" data-target="#genericModal" data-toggle="modal" role="tab" aria-controls="policyHistory"> <i class="fa fa-plane grey"> &nbsp; </i> Taşı</a>
+																	      <a class="list-group-item list-group-item-action" id="btnDeleteUserModal"  data-target="#genericModal" data-toggle="modal" role="tab" aria-controls="policyHistory"> <i class="fa fa-trash red"> &nbsp; </i> Sil</a>
+																	    </div>
+												                      	
+																</div>
+															</div>
 									                    </div>
-									                    <div class="col-md-8 col-sm-8 ">
-									                    
-									                     <div class="x_panel tile ">
+									                    <div class="col-md-9 col-sm-9 ">
+										                    <div class="tab-content" id="nav-tabContent">
+										                    	<div class="tab-pane fade show active" id="generalInfo" role="tabpanel" aria-labelledby="loginHistory">
+										                    			<div class="x_panel tile ">
+																	             <div class="x_title">
+																	             	<a class="userInfo"  href="#"><h2>Genel Bilgiler</h2> </a>
+																	                  <div class="clearfix"></div>
+																	              </div>
+																	              <div class="x_content">
+																	              	<div class="tableResult">
+<!-- 																	              		<div class="col-lg-4 col-md-4"> -->
+<!-- 																	              			 <ul class="list-unstyled user_data"> -->
+<!-- 																		                        <li> -->
+<!-- 																		                          <i class="fas fa-home user-profile-icon blue"></i>  &nbsp;<a class="userInfo" id="userHomeDirectory" href="#"></a> -->
+<!-- 																		                        </li> -->
+<!-- 																		                        <li> -->
+<!-- 																		                          <i class="fas fa-clock user-profile-icon blue"></i>  &nbsp;<a class="userInfo" id="userCreateDate" href="#"></a> -->
+<!-- 																		                        </li> -->
+<!-- 																		                        <li> -->
+<!-- 																		                          <i class="fas fa-info user-profile-icon blue"></i> &nbsp; &nbsp;<a class="userInfo" id="userAd" href="#"></a> -->
+<!-- 																		                        </li> -->
+<!-- 																                      		</ul> -->
+<!-- 																	              		</div> -->
+																	              		<div class="col-lg-12 col-md-12">
+																									<div class="form-group">
+																										<a  class="userInfo"  href="#">Kullanıcı ID</a> <input class="form-control" type="text"
+																											id="uidEdit" name="uid" placeholder="ID Giriniz..(uid) " disabled="disabled" />
+																									</div>
+																									<div class="form-group">
+																										<a  class="userInfo"  href="#">Kullanıcı Adı</a>  <input class="form-control" type="text"
+																											id="cnEdit" name="cn" placeholder="Ad Giriniz.." />
+																									</div>
+																									<div class="form-group">
+																										<a  class="userInfo"  href="#">Kullanıcı Soyadı</a>  <input class="form-control"
+																											type="text" id="snEdit" name="sn" placeholder="Soyad Giriniz.." />
+																									</div>
+																									<div class="form-group">
+																										<a  class="userInfo"  href="#">Mail Adresi</a> <input class="form-control"
+																											type="text" id="mailEdit" name="mailEdit" placeholder="Mail Adresi Giriniz.." />
+																									</div>
+																									<div class="form-group">
+																										<a  class="userInfo"  href="#">Telefon</a>  <input class="form-control"
+																											type="text" id="telephoneNumberEdit" name="telephoneNumber" placeholder="Telefon Giriniz.." />
+																									</div>
+																									<div class="form-group">
+																										<a  class="userInfo"  href="#">Adres</a>  
+																										<textarea cols="4" rows="4" class="form-control" id="homePostalAddressEdit" name="homePostalAddressEdit" placeholder="Adres Giriniz.."  > </textarea> 
+																									</div>
+																									
+																									<div class="form-group">
+																										<a href="#" class="btn btn-primary submit-button" id="editUserBtn"> <span>Güncelle</span>
+																										</a>
+																									</div>
+																	              		</div>
+															                      	</div>
+																			    </div>
+																		  </div>
+										                    	</div>
+										                    	<div class="tab-pane fade show" id="resetPassword" role="tabpanel" aria-labelledby="loginHistory">
+										                    			<div class="x_panel tile ">
+																	             <div class="x_title">
+																	                 <a class="userInfo"  href="#"><h2>Parola Sıfırla</h2> </a> 
+																	                  
+																	                  <div class="clearfix"></div>
+																	              </div>
+																	              <div class="x_content">
+																	              
+																	              <div class="form-group">
+																						<a  class="userInfo"  href="#">Yeni Parola</a>  <input class="form-control" type="password"
+																								id="newUserPassword" name="newUserPassword" placeholder="Yeni Parola " />
+																						</div>
+																						<div class="form-group">
+																							<a  class="userInfo"  href="#">Yeni Parola Onayla</a>  <input class="form-control"
+																								type="password" id="newConfirmPassword" name="newConfirmPassword"
+																								placeholder="Yeni Parola Onayla" />
+																						</div>
+																						<div class="form-group">
+																							<span class="text-secondary">Şifre en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.</span>
+																						</div>
+																						<div class="form-group">
+																						<a href="#" class="btn btn-primary submit-button pull-right" id="updateUserPasswordBtn">
+																							<span>Parola Güncelle</span>
+																						</a>
+																			    </div>
+																		  </div>
+										                    	</div>
+										                    	</div>
+										                    	<div class="tab-pane fade show" id="loginHistory" role="tabpanel" aria-labelledby="loginHistory">
+										                    			<div class="x_panel tile ">
+																	             <div class="x_title">
+																	                 <a class="userInfo"  href="#"><h2>Login Geçmişi</h2> </a> 
+																	                  
+																	                  <div class="clearfix"></div>
+																	              </div>
+																	              <div class="x_content">
+																	              
+																	              <div id="sessionListDiv" class="table-responsive tableResult" ></div>
+																			    </div>
+																		  </div>
+										                    	</div>
+										                    	<div class="tab-pane fade show " id="userGroups" role="tabpanel" aria-labelledby="userGroups">
+										                    			 <div class="x_panel tile ">
 															                <div class="x_title">
-															                  <h2>Login Geçmişi</h2>
-															                  <ul class="nav navbar-right panel_toolbox">
-															                    <li><a class="collapse-link" id="loginCollapseLink"><i class="fa fa-chevron-up"></i></a>
-															                    </li>
-															                    <li><a class="close-link"><i class="fa fa-minus"></i></a>
-															                    </li>
-															                  </ul>
+															                  <a class="userInfo"  href="#"><h2>Grup Listesi</h2> </a>  
+															                  
 															                  <div class="clearfix"></div>
 															                </div>
 															                <div class="x_content">
-															                  <div id="sessionListDiv"></div>
+															               			<div id="groupsDiv" class="table-responsive tableResult" style=""></div>
 															              </div>
-														  </div>
-									                    
-									                     <div class="x_panel tile ">
+														 				 </div>
+																 </div>
+										                    	<div class="tab-pane fade show " id="sudoGroups" role="tabpanel" aria-labelledby="sudoGroups">
+										                    			 <div class="x_panel tile ">
 															                <div class="x_title">
-															                  <h2>Grup Listesi</h2>
-															                  <ul class="nav navbar-right panel_toolbox">
-															                    <li><a class="collapse-link"  id="groupCollapseLink"><i class="fa fa-chevron-up"></i></a>
-															                    </li>
-															                    <li><a class="close-link"><i class="fa fa-minus"></i></a>
-															                    </li>
-															                  </ul>
+															                  <a class="userInfo"  href="#"><h2>Yetki Grupları</h2> </a>  
+															                 
 															                  <div class="clearfix"></div>
 															                </div>
 															                <div class="x_content">
-															               			<div id="groupsDiv"></div>
+															                <div id="rolesDiv" class="table-responsive tableResult" >Kullanıcının istemci yönetim yetki grubu bulunmamaktadir.</div>
 															              </div>
-														  </div>
-									                     <div class="x_panel tile ">
+														  				</div>
+																 </div>
+										                    	<div class="tab-pane fade show " id="passwordolicy" role="tabpanel" aria-labelledby="passwordolicy">
+										                    			<div class="x_panel tile ">
 															                <div class="x_title">
-															                  <h2>Parola Politikası</h2>
-															                  <ul class="nav navbar-right panel_toolbox">
-															                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-															                    </li>
-															                    <li><a class="close-link"><i class="fa fa-minus"></i></a>
-															                    </li>
-															                  </ul>
+															                  <a class="userInfo"  href="#"><h2>Parola Politikası</h2> </a> 
+															                 
 															                  <div class="clearfix"></div>
 															                </div>
 															                <div class="x_content">
-															                	<div class="col-md-6"> 
-															                	<button id="btnSetPasswordPolicyModal" type="button" data-target="#genericModal" data-toggle="modal" title="Politika Ata" class="btn-shadow btn btn-link">Parola Politikası Ata</button>
+															                	<div class="col-md-12"> 
+															                	<button class="btn btn-info pull-right" id="btnSetPasswordPolicyModal" type="button" data-target="#genericModal" data-toggle="modal" title="Politika Ata">Parola Politikası Ata</button>
 															                	</div>
 															                 	<span id="userPasswordPolicy"></span>
-																				<div id="userPolicyDetails"></div>
+																				<div id="userPolicyDetails" class="table-responsive tableResult" ></div>
 															              </div>
-														  </div>
-									                     <div class="x_panel tile ">
+														  				</div>
+																 </div>
+										                    	<div class="tab-pane fade show " id="policyHistory" role="tabpanel" aria-labelledby="policyHistory">
+										                    			  <div class="x_panel tile ">
 															                <div class="x_title">
-															                  <h2>Yetki Grupları</h2>
-															                  <ul class="nav navbar-right panel_toolbox">
-															                    <li><a class="collapse-link" id="sudoGroupCollapseLink"><i class="fa fa-chevron-up"></i></a>
-															                    </li>
-															                    <li><a class="close-link"><i class="fa fa-minus"></i></a>
-															                    </li>
-															                  </ul>
+															                  <a class="userInfo"  href="#"><h2>Politika Geçmişi</h2> </a>  
+															                 
 															                  <div class="clearfix"></div>
 															                </div>
 															                <div class="x_content">
-															                <div id="rolesDiv">Kullanıcının istemci yönetim yetki grubu bulunmamaktadir.</div>
+															                  <div id="policyHistoryDiv" class="table-responsive tableResult" > </div>
 															              </div>
-														  </div>
-									                    	
-									                     <div class="x_panel tile ">
-															                <div class="x_title">
-															                  <h2>Politika Geçmişi</h2>
-															                  <ul class="nav navbar-right panel_toolbox">
-															                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-															                    </li>
-															                    <li><a class="close-link"><i class="fa fa-minus"></i></a>
-															                    </li>
-															                  </ul>
-															                  <div class="clearfix"></div>
-															                </div>
-															                <div class="x_content">
-															                  <div id="policyHistoryDiv"> Kullanıcıya ait politika bulunmamaktadır.</div>
-															              </div>
-														  </div>
-									                    </div>
-									                  </div>
+														  				</div>
+																</div>
+										                    	</div>
+										                    </div>
                 							</div>
-												
 											</div>	
-										</div>
-									</div>
 	</div>

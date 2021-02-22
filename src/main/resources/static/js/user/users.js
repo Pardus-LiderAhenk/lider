@@ -16,49 +16,13 @@ getLastUser()
 $(document).ready(function(){
 	
 	hideUserButtons()
-	/*
-	 * create user tree select, check and uncheck action functions can be implemented if required
-	 * params div, onlyFolder, use Checkbox, select action , check action, uncheck action
-	 */
-	createUserTree(treeGridHolderDiv, false, false,
-			// row select
-			function(row, rootDnUser){
-				setUserActionButtons(row,rootDnUser);
-				if(row.type=='USER'){
-					selectedRowGen=row;
-					showAttributes(row);
-					showGroups(row);
-					showRoles(row);
-					fillUserInfo(row);
-					fillUserSessions(row);
-					
-				}
-				if(row.type=='ORGANIZATIONAL_UNIT'){
-					selectedFolder=row;
-				}
-			},
-			//check action
-			function(checkedRows, row){
-				
-			},
-			//uncheck action
-			function(unCheckedRows, row){
-				
-			},
-			// post tree created
-			function(root , treeGridId){
-				$('#'+ treeGridId).jqxTreeGrid('selectRow', root);
-				$('#'+ treeGridId).jqxTreeGrid('expandRow', root);
-			}
-	);
+	renderUserTree();
 	
 	$('#btnAddOuModal').on('click',function(event) {
 		if(selectedFolder==null){
 			$.notify("Lütfen Klasör Seçiniz","warn"  );
-			
 		}
 		else{
-		
 			getModalContent("modals/user/addOuModal", function content(data){
 					$('#genericModalHeader').html("Klasör Yönetimi")
 					$('#genericModalBodyRender').html(data);
@@ -120,32 +84,30 @@ $(document).ready(function(){
 					
 					userFolderInfo.append("Seçili Klasör : "+selectedFolder.name)
 					$('#addUserBtn').on('click',function(event) {
-						addUser(selectedFolder)
+						var parentEntryUUID= selectedFolder.entryUUID;
+						addUser(selectedFolder.distinguishedName,
+								function(data){
+										$('#genericModalLarge').trigger('click');
+										$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
+										$("#treeGridUserHolderDivGrid").jqxTreeGrid('expandRow' , parentEntryUUID);
+								}
+						)
 					});
 				} 
 			);
 		}
 	});
 	
-	$('#btnEditUserModal').on('click',function(event) {
-		getModalContent("modals//user/editUserModal", function content(data){
-				$('#genericModalHeader').html("Kullanıcı Düzenle")
-				$('#genericModalBodyRender').html(data);
-				
-				$('#uidEdit').val(selectedRowGen.attributes.uid)
-				$('#cnEdit').val(selectedRowGen.attributes.cn)
-				$('#snEdit').val(selectedRowGen.attributes.sn)
-				$('#telephoneNumberEdit').val(selectedRowGen.attributes.telephoneNumber)
-				$('#homePostalAddressEdit').val(selectedRowGen.attributes.homePostalAddress)
-				$('#userPasswordEdit').val(selectedRowGen.userPassword)
-				$('#mailEdit').val(selectedRowGen.attributes.mail)
-				
-				$('#editUserBtn').on('click',function(event) {
-					editUser(selectedRowGen.distinguishedName)
-				});
-				
-			} 
-		);
+//	$('#btnEditUserModal').on('click',function(event) {
+//		getModalContent("modals//user/editUserModal", function content(data){
+//				$('#genericModalHeader').html("Kullanıcı Düzenle")
+//				$('#genericModalBodyRender').html(data);
+//			} 
+//		);
+//	});
+	
+	$('#editUserBtn').on('click',function(event) {
+		editUser(selectedRowGen.distinguishedName)
 	});
 	
 	$('#btnDeleteUserModal').on('click',function(event) {
@@ -225,36 +187,38 @@ $(document).ready(function(){
 			$('#genericModalHeader').html("Parola Güncelle")
 			$('#genericModalBodyRender').html(data);
 			
-			$('#updateUserPasswordBtn').on('click',function(event) {
-				var userPassword  =$('#newUserPassword').val()
-				var confirmPassword  =$('#newConfirmPassword').val()
-				
-				var lowerCase = "abcdefghijklmnopqrstuvwxyz";
-				var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-				var digits = "0123456789";
-				var splChars = "+=.@*!_";
-				
-				var ucaseFlag = contains(userPassword, upperCase);
-			    var lcaseFlag = contains(userPassword, lowerCase);
-			    var digitsFlag = contains(userPassword, digits);
-			    var splCharsFlag = contains(userPassword, "*");
-			    if (splCharsFlag) {
-			    	$.notify("Parola * içermemelidir.","warn"  );
-					return;
-				}
-			    if(userPassword!=confirmPassword){
-					$.notify("Parolalar uyuşmamaktadır.","warn"  );
-					return;
-				}
-			    if(userPassword.length < 6 || !ucaseFlag || !lcaseFlag || !digitsFlag){
-			    	$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
-			    	return;
-			    }
-			    updateUserPassword(selectedRowGen.distinguishedName)
-			});
+			
 		});
 	});
 	
+	
+	$('#updateUserPasswordBtn').on('click',function(event) {
+		var userPassword  =$('#newUserPassword').val()
+		var confirmPassword  =$('#newConfirmPassword').val()
+		
+		var lowerCase = "abcdefghijklmnopqrstuvwxyz";
+		var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		var digits = "0123456789";
+		var splChars = "+=.@*!_";
+		
+		var ucaseFlag = contains(userPassword, upperCase);
+	    var lcaseFlag = contains(userPassword, lowerCase);
+	    var digitsFlag = contains(userPassword, digits);
+	    var splCharsFlag = contains(userPassword, "*");
+	    if (splCharsFlag) {
+	    	$.notify("Parola * içermemelidir.","warn"  );
+			return;
+		}
+	    if(userPassword!=confirmPassword){
+			$.notify("Parolalar uyuşmamaktadır.","warn"  );
+			return;
+		}
+	    if(userPassword.length < 6 || !ucaseFlag || !lcaseFlag || !digitsFlag){
+	    	$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
+	    	return;
+	    }
+	    updateUserPassword(selectedRowGen.distinguishedName)
+	});
 	/**
 	 * begin set password policy modal
 	 * 
@@ -300,8 +264,8 @@ $(document).ready(function(){
 	 */
 });
 
-function addUser(row) {
-	var parentDn=row.distinguishedName; 
+function addUser(parentName, resultCb) {
+	var parentDn=parentName; 
 	var uid=$('#uid').val();
 	var cn=$('#cn').val();
 	var sn=$('#sn').val();
@@ -310,7 +274,11 @@ function addUser(row) {
 	var telephoneNumber=$('#telephoneNumber').val();
 	var userPassword=$('#userPassword').val();
 	var confirm_password=$('#confirm_password').val();
-	
+	if(uid=='' || cn=='' || sn=='' || mail=='' || homePostalAddress==''	|| telephoneNumber=='' || userPassword=='' || confirm_password==''	)
+	{
+		$.notify("Lütfen Zorunlu alnları Doldurunuz!","warn");
+		return;
+	}
 	var lowerCase = "abcdefghijklmnopqrstuvwxyz";
 	var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	var digits = "0123456789";
@@ -324,9 +292,6 @@ function addUser(row) {
     	$.notify("Parola * içermemelidir.","warn");
 		return;
 	}
-    
-    var parentEntryUUID= row.entryUUID;
-    
     if(userPassword.length < 6 || !ucaseFlag || !lcaseFlag || !digitsFlag){
     	$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
     	return;
@@ -352,9 +317,7 @@ function addUser(row) {
 		dataType : 'json',
 		success : function(data) {
 			$.notify("Kullanıcı Başarı ile eklendi.",{className: 'success',position:"right top"}  );
-			$('#genericModalLarge').trigger('click');
-			$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
-			$("#treeGridUserHolderDivGrid").jqxTreeGrid('expandRow' , parentEntryUUID);
+			resultCb(data)
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Kullanıcı Eklenirken Hata Oluştu.", "error");
@@ -376,10 +339,7 @@ function deleteUsers(row) {
 	
 	dnList.push({
 			distinguishedName :row.distinguishedName, 
-			entryUUID: row.entryUUID, 
-			name: row.name,
 			type: row.type,
-			uid: row.uid
 		});
     $.ajax({
 		type : 'POST',
@@ -392,6 +352,7 @@ function deleteUsers(row) {
 			$('#genericModal').trigger('click');
 			if(ldapResult){
 				$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', row.entryUUID); 
+				getLastUser();
 			}
 		},
 	    error: function (data, errorThrown) {
@@ -420,6 +381,7 @@ function deleteUserOu(row) {
 			$('#genericModal').trigger('click');
 			if(ldapResult){
 				$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', row.entryUUID); 
+				getLastUser();
 			}
 		},
 	    error: function (data, errorThrown) {
@@ -474,7 +436,10 @@ function updateUserPassword(userId) {
 		dataType : 'json',
 		success : function(ldapResult) {
 			$.notify("Kullanıcı Parolası Başarı ile güncellendi.",{className: 'success',position:"right top"}  );
+			$('#newUserPassword').val("");
+			$('#newConfirmPassword').val("");
 			$('#genericModal').trigger('click');
+			
 		},
 		error: function (data, errorThrown) {
 			$.notify("Kullanıcı Parolası Güncellenirken Hata Oluştu.", "error");
@@ -564,8 +529,8 @@ function setUserActionButtons(row,rootDNUser){
 		  $("#btnEditUserModal").hide();
 		  $("#btnChangePasswordUserModal").hide();
 		  $("#btnSetPasswordPolicyModal").hide();
-		  $("#btnDeleteUserModal").hide();
-		  $("#btnMoveUserModal").hide();
+//		  $("#btnDeleteUserModal").hide();
+//		  $("#btnMoveUserModal").hide();
 		  $("#btnDisableUserModal").hide();
 		  
 		  if(row.entryUUID == rootDNUser){
@@ -587,9 +552,9 @@ function setUserActionButtons(row,rootDNUser){
 		$("#btnEditUserModal").hide();
 		$("#btnChangePasswordUserModal").hide();
 		$("#btnSetPasswordPolicyModal").hide();
-		$("#btnDeleteUserModal").hide();
+//		$("#btnDeleteUserModal").hide();
 		$("#btnAddUserModal").hide();
-//		$("#btnMoveUserModal").hide();
+		$("#btnMoveUserModal").hide();
 	  }
 }
 
@@ -780,110 +745,21 @@ function getLastUser() {
 		type : 'POST',
 		url : 'lider/user/getLastUser',
 		dataType: "json",
-		success : function(ldapResult) {
-			selectedRowGen=ldapResult;
-			fillUserInfo(ldapResult)
-			fillUserSessions(ldapResult)
-//			showAttributes(ldapResult);
-			showGroups(ldapResult);
-			showRoles(ldapResult);
+		success : function(row) {
+			setUserActionButtons(row,null)
+			selectedRowGen=row;
+			showAttributes(row);
+			showGroups(row);
+			showRoles(row);
+			fillUserInfo(row);
+			fillGeneralInfoForEdit();
+			fillUserSessions(row);
 			
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Kullanıcı Bulunamadı", "warn");
 		}
 	 }); 
-}
-
-function fillUserInfo(ldapResult) {
-	$('#userName').html("");
-	$('#userAddress').html("");
-	$('#userPhone').html("");
-	$('#userMail').html("");
-	$('#userAd').html("");
-	
-	$('#userId').html(ldapResult.attributes.uid);
-	$('#userName').html(ldapResult.cn +" "+ldapResult.sn);
-	$('#userAddress').html(ldapResult.attributes.homePostalAddress);
-	$('#userPhone').html(ldapResult.attributes.telephoneNumber);
-	$('#userCreateDate').html(ldapResult.createDateStr);
-	$('#userMail').html(ldapResult.attributes.mail);
-	$('#userHomeDirectory').html(ldapResult.attributes.homeDirectory);
-	$('#userDistinguishedName').html(ldapResult.distinguishedName);
-	$('#userAd').html(ldapResult.attributes.employeeType);
-//	$('#userPasswordPolicy').html();
-	
-	var policy=""
-	if(passwordPoliciesGen){
-			for (var k = 0; k < passwordPoliciesGen.length; k++) {
-		    	  var row = passwordPoliciesGen[k];
-		    	  if(row.distinguishedName==ldapResult.attributes.pwdPolicySubentry){
-		    		  policy=row
-		    	  }
-			}
-	}
-	var html='<table class="table">';
-	
-	html += '<thead>';
-	html += '<tr>';
-	if(policy)
-	html += '<th colspan= 2>'+policy.name+'</th>';
-	else
-		html += '<th colspan= 2></th>';
-	html += '</tr>';
-	html += '</thead>';
-    for (key in policy.attributes) {
-        if (policy.attributes.hasOwnProperty(key)) {
-            
-            if( (key =="pwdExpireWarning") 
-//            		|| (key =="cn") 
-            		|| (key =="pwdFailureCountInterval") 
-            		|| (key =="pwdGraceAuthNLimit") 
-            		|| (key =="pwdInHistory") 
-            		|| (key =="pwdLockout") 
-            		|| (key =="pwdLockoutDuration") 
-            		|| (key =="pwdMaxAge") 
-            		|| (key =="pwdMinAge") 
-            		|| (key =="pwdMaxFailure") 
-            		|| (key =="pwdMinLength") 
-            		|| (key =="pwdMustChange") 
-            		|| (key =="pwdSafeModify") 
-            		|| (key =="pwdCheckQuality") 
-            		){
-            	html += '<tr>';
-            	
-            	var keyStr="";
-            	var value="";
-            	if(key =="pwdExpireWarning"){keyStr="Parola Geçerlilik Süresi (Sn)"}
-            	if(key =="pwdFailureCountInterval"){keyStr="Hatalı Parola Deneme Sayısı"}
-            	if(key =="pwdGraceAuthNLimit"){keyStr="Eski Parola Geçerlilik Süresi (sn)"}
-            	if(key =="pwdInHistory"){keyStr="Eski Parola Deneme Sayısı"}
-            	if(key =="pwdLockout"){keyStr="Hesabı Kilitle"}
-            	if(key =="pwdLockoutDuration"){keyStr="Hesap Kilitlenme Süresi(sn)"}
-            	if(key =="pwdMaxAge"){keyStr="Parola Geçerlilik Süresi (sn)"}
-            	if(key =="pwdMinAge"){keyStr="Parola Değiştirme Süresi (sn)"}
-            	if(key =="pwdMaxFailure"){keyStr="Hatalı Giriş Sayısı"}
-            	if(key =="pwdMinLength"){keyStr="Parola Uzunluğu"}
-            	if(key =="pwdMustChange"){keyStr="Parolayı Değiştirsin"}
-            	if(key =="pwdSafeModify"){keyStr="Parola değişikliğini sisteme gönder"}
-            	
-            	if(key =="pwdCheckQuality"){
-            		keyStr="Şifre Kalite Kontrolü"
-            		if(policy.attributes[key]==1){
-            			value=""
-            		}
-            	
-            	}
-	            html += '<td>' + keyStr + '</td>';
-	            html += '<td>' + policy.attributes[key] + '</td>';
-	            html += '</tr>';
-            }
-        }
-    } 
-    html += '</table>';
-    $("#userPolicyDetails").html("")
-    $("#userPolicyDetails").html(html)
-	
 }
 
 function getFormattedDate(date) {
@@ -929,7 +805,7 @@ function fillUserSessions(ldapResult) {
 				$("#sessionListDiv").html(html);
 			}
 			else{
-				$("#sessionListDiv").html("<span>Kullanıcı Henüz herhangi bir istemciye login olmamıştır </span>");
+				$("#sessionListDiv").html("");
 			}
 			
 		},
@@ -1004,4 +880,152 @@ function fillPasswordPolicyDiv() {
 		        $("#policyDetail").html(html)
 		});
 	}	
+}
+
+function fillGeneralInfoForEdit(){
+	$('#uidEdit').val("")
+	$('#cnEdit').val("")
+	$('#snEdit').val("")
+	$('#telephoneNumberEdit').val("")
+	$('#homePostalAddressEdit').val("")
+	$('#userPasswordEdit').val("")
+	$('#mailEdit').val("")
+	
+	$('#uidEdit').val(selectedRowGen.attributes.uid)
+	$('#cnEdit').val(selectedRowGen.attributes.cn)
+	$('#snEdit').val(selectedRowGen.attributes.sn)
+	$('#telephoneNumberEdit').val(selectedRowGen.attributes.telephoneNumber)
+	$('#homePostalAddressEdit').val(selectedRowGen.attributes.homePostalAddress)
+	$('#userPasswordEdit').val(selectedRowGen.userPassword)
+	$('#mailEdit').val(selectedRowGen.attributes.mail)
+}
+
+function fillUserInfo(ldapResult) {
+	$('#userName').html("");
+	$('#userAddress').html("");
+	$('#userPhone').html("");
+	$('#userMail').html("");
+	$('#userAd').html("");
+	
+	$('#userId').html(ldapResult.attributes.uid);
+	$('#userName').html(ldapResult.cn +" "+ldapResult.sn);
+	$('#userAddress').html(ldapResult.attributes.homePostalAddress);
+	$('#userPhone').html(ldapResult.attributes.telephoneNumber);
+	$('#userCreateDate').html(ldapResult.createDateStr);
+	$('#userMail').html(ldapResult.attributes.mail);
+	$('#userHomeDirectory').html(ldapResult.attributes.homeDirectory);
+	$('#userDistinguishedName').html(ldapResult.distinguishedName);
+	$('#userAd').html(ldapResult.attributes.employeeType);
+	
+//	$('#userPasswordPolicy').html();
+	
+	
+	
+	var policy=""
+	if(passwordPoliciesGen){
+			for (var k = 0; k < passwordPoliciesGen.length; k++) {
+		    	  var row = passwordPoliciesGen[k];
+		    	  if(row.distinguishedName==ldapResult.attributes.pwdPolicySubentry){
+		    		  policy=row
+		    	  }
+			}
+	}
+	var html='<table class="table">';
+	
+	html += '<thead>';
+	html += '<tr>';
+	if(policy)
+	html += '<th colspan= 2>'+policy.name+'</th>';
+	else
+		html += '<th colspan= 2></th>';
+	html += '</tr>';
+	html += '</thead>';
+    for (key in policy.attributes) {
+        if (policy.attributes.hasOwnProperty(key)) {
+            
+            if( (key =="pwdExpireWarning") 
+//            		|| (key =="cn") 
+            		|| (key =="pwdFailureCountInterval") 
+            		|| (key =="pwdGraceAuthNLimit") 
+            		|| (key =="pwdInHistory") 
+            		|| (key =="pwdLockout") 
+            		|| (key =="pwdLockoutDuration") 
+            		|| (key =="pwdMaxAge") 
+            		|| (key =="pwdMinAge") 
+            		|| (key =="pwdMaxFailure") 
+            		|| (key =="pwdMinLength") 
+            		|| (key =="pwdMustChange") 
+            		|| (key =="pwdSafeModify") 
+            		|| (key =="pwdCheckQuality") 
+            		){
+            	html += '<tr>';
+            	
+            	var keyStr="";
+            	var value="";
+            	if(key =="pwdExpireWarning"){keyStr="Parola Geçerlilik Süresi (Sn)"}
+            	if(key =="pwdFailureCountInterval"){keyStr="Hatalı Parola Deneme Sayısı"}
+            	if(key =="pwdGraceAuthNLimit"){keyStr="Eski Parola Geçerlilik Süresi (sn)"}
+            	if(key =="pwdInHistory"){keyStr="Eski Parola Deneme Sayısı"}
+            	if(key =="pwdLockout"){keyStr="Hesabı Kilitle"}
+            	if(key =="pwdLockoutDuration"){keyStr="Hesap Kilitlenme Süresi(sn)"}
+            	if(key =="pwdMaxAge"){keyStr="Parola Geçerlilik Süresi (sn)"}
+            	if(key =="pwdMinAge"){keyStr="Parola Değiştirme Süresi (sn)"}
+            	if(key =="pwdMaxFailure"){keyStr="Hatalı Giriş Sayısı"}
+            	if(key =="pwdMinLength"){keyStr="Parola Uzunluğu"}
+            	if(key =="pwdMustChange"){keyStr="Parolayı Değiştirsin"}
+            	if(key =="pwdSafeModify"){keyStr="Parola değişikliğini sisteme gönder"}
+            	
+            	if(key =="pwdCheckQuality"){
+            		keyStr="Şifre Kalite Kontrolü"
+            		if(policy.attributes[key]==1){
+            			value=""
+            		}
+            	
+            	}
+	            html += '<td>' + keyStr + '</td>';
+	            html += '<td>' + policy.attributes[key] + '</td>';
+	            html += '</tr>';
+            }
+        }
+    } 
+    html += '</table>';
+    $("#userPolicyDetails").html("")
+    $("#userPolicyDetails").html(html)
+	
+}
+
+function renderUserTree() {
+	createUserTree(treeGridHolderDiv, false, false,
+			// row select
+			function(row, rootDnUser){
+				setUserActionButtons(row,rootDnUser);
+				if(row.type=='USER'){
+					selectedRowGen=row;
+					showAttributes(row);
+					showGroups(row);
+					showRoles(row);
+					fillUserInfo(row);
+					fillGeneralInfoForEdit();
+					fillUserSessions(row);
+					
+				}
+				if(row.type=='ORGANIZATIONAL_UNIT'){
+					selectedFolder=row;
+				}
+			},
+			//check action
+			function(checkedRows, row){
+				
+			},
+			//uncheck action
+			function(unCheckedRows, row){
+				
+			},
+			// post tree created
+			function(root , treeGridId){
+				$('#'+ treeGridId).jqxTreeGrid('selectRow', root);
+				$('#'+ treeGridId).jqxTreeGrid('expandRow', root);
+			}
+	);
+	
 }

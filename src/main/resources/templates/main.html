@@ -368,19 +368,19 @@
 								           		class="nav-link dizin " href="#" data-page="plugins/definitions/registration_template">
 								           		<span th:text="#{registration.templates}"></span>
 								           	</a>		
-									          <div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).ACTIVE_DIRECTORY} ">
-									          	<div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}"
-							          				class="dropdown-divider"></div>
-								          		 <a class="nav-link dizin" 
-										        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}" 
-										        	href="#" data-page="users" >
-										       	           <span th:text="#{console.user.operations}"></span>
-					                           	</a>
-									          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}" 
-									          		class="nav-link dizin" href="#" data-page="user_groups">
-									          		<span th:text="#{console.group.management.user}"></span>
-									          	</a>
-									         </div>
+<!-- 									        <div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).ACTIVE_DIRECTORY} "> -->
+<!-- 									          	<div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}" -->
+<!-- 							          				class="dropdown-divider"></div> -->
+<!-- 								          		 <a class="nav-link dizin"  -->
+<!-- 										        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}"  -->
+<!-- 										        	href="#" data-page="users" > -->
+<!-- 										       	           <span th:text="#{console.user.operations}"></span> -->
+<!-- 					                           	</a> -->
+<!-- 									          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}"  -->
+<!-- 									          		class="nav-link dizin" href="#" data-page="user_groups"> -->
+<!-- 									          		<span th:text="#{console.group.management.user}"></span> -->
+<!-- 									          	</a> -->
+<!-- 									         </div> -->
 										</div>
 									</div>
 						

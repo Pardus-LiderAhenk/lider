@@ -36,7 +36,8 @@ public class RoleService {
 		roleList.add(new RoleImpl("Çalıştırılan Görevler Raporu", "ROLE_EXECUTED_TASK", 82));
 		roleList.add(new RoleImpl("Sistem Güncesi Raporu", "ROLE_OPERATION_LOG", 84));
 		
-		roleList.add(new RoleImpl("Sunucu Ayarları", "ROLE_SERVER_SETTINGS", 90));
+		roleList.add(new RoleImpl("Arayüz Erişim Ayarları", "ROLE_CONSOLE_ACCESS_SETTINGS", 90));
+		roleList.add(new RoleImpl("Sunucu Ayarları", "ROLE_SERVER_SETTINGS", 95));
 		roleList.add(new RoleImpl("Sistem Gözlemcisi Tanımları", "ROLE_CONKY_DEFINITION", 100));
 		roleList.add(new RoleImpl("Betik Tanımları", "ROLE_SCRIPT_DEFINITION", 110));
 		roleList.add(new RoleImpl("ETA Mesaj Tanımları", "ROLE_ETA_MESSAGE_DEFINITION", 120));

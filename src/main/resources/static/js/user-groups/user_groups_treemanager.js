@@ -72,7 +72,7 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 	/**
 	 * create search area
 	 */
-	createSearch(treeHolderDiv,treeGridId,showOnlyFolder);
+	(treeHolderDiv,treeGridId,showOnlyFolder);
 	
 	
 	/**
@@ -458,13 +458,13 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 	});
 }
 
-function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
+function (treeHolderDiv,treeGridId, showOnlyFolder) {
 	var srcInputId= treeHolderDiv+"srcInput";
 	var srcBtnId= treeHolderDiv+"srcBtn";
 	var srcSelectId= treeHolderDiv+"srcSelect";
 	var searchHtml=	 '<div class="input-group"> '+
 			'    <div class="input-group-prepend">  '+
-			'       <select class="form-control " style="font-family: cursive; font-size: 12px;" id="'+srcSelectId+'" > ';
+			'       <select class="form-control " style="font-size: 12px;" id="'+srcSelectId+'" > ';
 	       
 		   if(showOnlyFolder==false){
 				searchHtml +='<option  value="uid"> ID </option> '+

@@ -195,7 +195,7 @@ function createUserSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 	var searchHtml=	
 			' <div class="input-group"> '+
 			'    <div class="input-group-prepend">  '+
-			'       <select class="form-control " style="font-family: cursive; font-size: 12px;" id="'+srcSelectId+'" > ';
+			'       <select class="form-control " style="font-size: 12px;" id="'+srcSelectId+'" > ';
 	       
 		   if(showOnlyFolder==false){
 				searchHtml +='<option selected value="uid"> ID </option> '+

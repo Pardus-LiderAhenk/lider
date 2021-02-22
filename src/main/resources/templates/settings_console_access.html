@@ -1,0 +1,198 @@
+<script type="text/javascript" src="js/user-groups/user_groups_treemanager.js"></script>
+<script type="text/javascript" src="js/user-groups/user_groups.js"></script>
+<script src="js/settings-console-access.js"></script>
+
+<style>
+.menuList {
+	list-style: none;
+}
+.group-member-div {
+    height: 500px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+</style>
+
+<div class="main-card mb-3 card h-100 " style="margin: 18px;" id="divSettings">
+	<div class="card-body">
+		<h5 class="card-title">Arayüz Kullanıcıları ve Erişim Ayarları</h5>
+		<ul class="nav nav-tabs" id="tabs">
+			<li class="nav-item"><a data-toggle="tab" href="#tab-users"
+				onclick="tabConsoleSettingsClicked()" class="active nav-link">Arayüz
+					Kullanıcı Yönetimi</a></li>
+			<li class="nav-item"><a data-toggle="tab"
+				href="#tab-ldap-access-rules" onclick="tabLDAPAccessRulesClicked()"
+				class="nav-link">Arayüz Kullanıcısı Dizin Erişim Ayarları</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="tab-users" role="tabpanel">
+				<div class="col-12">
+					<div class="form-row">
+						<div class="col-6">
+							<div class="mr-5">
+								<div class="col-12 p-0 m-0 mb-2">
+									<div class="form-row">
+										<div class="col-5">
+											<h6>Mevcut Konsol Kullanıcıları</h6>
+										</div>
+										<div class="col-7">
+											<button class="btn btn-danger pull-right ml-1"
+												id="btnDeleteConsoleUser" type="button"
+												onclick="btnDeleteUserClicked()">Kullanıcının
+												Konsol Yetkisini Sil</button>
+											<button class="btn btn-primary pull-right"
+												id="btnAddNewConsoleUser" data-toggle="modal"
+												data-target="#genericModalLarge" type="button"
+												onclick="btnAddNewConsoleUserClicked()">Konsol
+												Kullanıcısı Ekle</button>
+										</div>
+									</div>
+								</div>
+								<div class="table-responsive" style="height: 500px !important; overflow: auto;">
+									<table class="table table-bordered table-hover">
+										<thead>
+											<tr>
+												<th style="width: 10%">#</th>
+												<th style="width: 20%">UID</th>
+												<th style="width: 70%">Kayıt DN</th>
+											</tr>
+										</thead>
+										<tbody id="existingUsers">
+											<tr>
+												<td colspan="100%" class="text-center">Sonuç Bulunamadı</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="mr-1">
+								<div class="col-12 p-0 m-0 mb-2">
+									<div class="form-row">
+										<div class="col-9">
+											<h6 id="headerForSelectedUserRoles"></h6>
+										</div>
+										<div class="col-3">
+											<button class="btn btn-primary pull-right"
+												id="btnEditUserRoles" type="button"
+												onclick="btnEditUserRolesClicked()">Değişiklikleri
+												Kaydet</button>
+										</div>
+									</div>
+								</div>
+								<div class="table-responsive" style="height: 550px;"> 
+									<table class="table table-bordered table-hover" >
+										<thead>
+											<tr>
+												<th style="width: 10%">#</th>
+												<th style="width: 90%">Rol Adı</th>
+												<th style="width: 10%"></th>
+											</tr>
+										</thead>
+										<tbody id="userRoles">
+											<tr>
+												<td colspan="100%" class="text-center">Sonuç Bulunamadı</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane" id="tab-ldap-access-rules" role="tabpanel">
+				<div class="col-md-12">
+					<div class="form-row">
+						<div class="col-md-3">
+							<div>
+							<button type="button" class="btn btn-info mb-2" id="btnGroupTreeRefresh">
+											 Yenile
+										</button>
+							</div>
+							<div id="treeGridUserGroupsDiv" >
+								<div id="treeGridUserGroups"></div>
+							</div>
+						</div>
+
+						<div class="col-md-9">
+							<div class="row">
+								<div class="col-12 text-center">
+									<label id="labelSelectOneUserGroupAlert">LDAP Erişim
+										kısıtı eklemek, düzenlemek ya da silmek için bir kullanıcı
+										grubu seçiniz</label>
+								</div>
+								<div class="col-3" id="groupMembersHeaderDiv">
+									<h6>Grup Üyeleri</h6>
+								</div>
+								<div class="col-9" id="operationDropDownDiv">
+									<div class="d-block dropdown">
+										<button type="button" data-toggle="dropdown"
+											aria-haspopup="true" aria-expanded="false"
+											class="btn-shadow dropdown-toggle btn btn-info pull-right mb-2">
+											<span class="btn-icon-wrapper pr-2"> </span> Yeni Erişim
+											Yetkisi Ekle
+										</button>
+										<div tabindex="-1" id="operationDropDownSetting" role="menu"
+											aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+											<a class="dropdown-item" href="#" data-toggle="modal"
+												data-target="#genericModal"
+												onclick="dropdownButtonClickedSetting('addOLCRulesToComputersTree')">İstemciler</a>
+											<a class="dropdown-item" href="#" data-toggle="modal"
+												data-target="#genericModal"
+												onclick="dropdownButtonClickedSetting('addOLCRulesToUsersTree')">Kullanıcılar</a>
+											<a class="dropdown-item" href="#" data-toggle="modal"
+												data-target="#genericModal"
+												onclick="dropdownButtonClickedSetting('addOLCRulesToComputerGroupsTree')">İstemci
+												Grupları</a> <a class="dropdown-item" href="#"
+												data-toggle="modal" data-target="#genericModal"
+												onclick="dropdownButtonClickedSetting('addOLCRulesToUserGroupsTree')">Kullanıcı
+												Grupları</a> <a class="dropdown-item" href="#"
+												data-toggle="modal" data-target="#genericModal"
+												onclick="dropdownButtonClickedSetting('addOLCRulesToRoleGroupsTree')">Rol
+												Grupları</a>
+										</div>
+									</div>
+								</div>
+								<div class="col-4 group-member-div" id="groupMembersDiv">
+									<table class="mb-0 table table-bordered">
+										<thead>
+											<tr>
+												<th style="width: 15%" class="text-center">#</th>
+												<th style="width: 85%">Üye DN</th>
+											</tr>
+										</thead>
+										<tbody id="bodyMembers">
+											<tr>
+												<td colspan="100%" class="text-center">Üye bulunamadı</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<div class="col-8" id="olcRulesTableDiv">
+									<table class="table table-bordered table-hover">
+										<thead>
+											<tr>
+												<th style="width: 8%">#</th>
+												<th style="width: 64%">Erişim Yetkisi Verilen DN</th>
+												<th style="width: 20%" class="text-center">Yetki</th>
+												<th style="width: 8%" class="text-center"></th>
+											</tr>
+										</thead>
+										<tbody id="olcRulesTable">
+											<tr>
+												<td colspan="100%" class="text-center p-3">Sonuç
+													Bulunamadı</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

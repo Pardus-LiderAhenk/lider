@@ -1,6 +1,10 @@
 package tr.org.lider.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.message.SearchScope;
@@ -16,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import tr.org.lider.LiderSecurityUserDetails;
+import tr.org.lider.entities.OperationType;
 import tr.org.lider.entities.RoleImpl;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
@@ -28,6 +34,7 @@ import tr.org.lider.messaging.enums.Protocol;
 import tr.org.lider.messaging.messages.XMPPClientImpl;
 import tr.org.lider.models.ConfigParams;
 import tr.org.lider.services.ConfigurationService;
+import tr.org.lider.services.OperationLogService;
 import tr.org.lider.services.RoleService;
 
 /**
@@ -52,6 +59,9 @@ public class SettingsController {
 
 	@Autowired
 	private LDAPServiceImpl ldapService;
+	
+	@Autowired
+	private OperationLogService operationLogService;
 
 	@Autowired
 	private RoleService roleService;
@@ -329,4 +339,70 @@ public class SettingsController {
 		return true;
 	}
 
+	/**
+	 * 
+	 * add console user from settings
+	 * edip.yildiz
+	 * @param selectedEntry from 
+	 * @return
+	 */
+	@RequestMapping(method=RequestMethod.POST, value = "/addConsoleUserBtn",produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public LdapEntry addConsoleUserBtn(LdapEntry user) {
+		try {
+			String gidNumber="6000";
+			int randomInt = (int)(1000000.0 * Math.random());
+			String uidNumber= Integer.toString(randomInt);
+			String home="/home/"+user.getUid();
+
+			Map<String, String[]> attributes = new HashMap<String, String[]>();
+			attributes.put("objectClass", new String[] { "top", "posixAccount",
+					"person","pardusLider","pardusAccount","organizationalPerson","inetOrgPerson"});
+			attributes.put("cn", new String[] { user.getCn() });
+			attributes.put("mail", new String[] { user.getMail() });
+			attributes.put("gidNumber", new String[] { gidNumber });
+			attributes.put("homeDirectory", new String[] { home });
+			attributes.put("sn", new String[] { user.getSn() });
+			attributes.put("uid", new String[] { user.getUid() });
+			attributes.put("uidNumber", new String[] { uidNumber });
+			attributes.put("loginShell", new String[] { "/bin/bash" });
+			attributes.put("userPassword", new String[] { user.getUserPassword() });
+			attributes.put("homePostalAddress", new String[] { user.getHomePostalAddress() });
+			if(user.getTelephoneNumber()!=null && user.getTelephoneNumber()!="")
+				attributes.put("telephoneNumber", new String[] { user.getTelephoneNumber() });
+
+			if(user.getParentName()==null || user.getParentName().equals("")) {
+				user.setParentName(configurationService.getUserLdapBaseDn());
+			}
+			
+			String rdn="uid="+user.getUid()+","+user.getParentName();
+
+			ldapService.addEntry(rdn, attributes);
+			
+			user.setAttributesMultiValues(attributes);
+			user.setDistinguishedName(user.getUid());
+
+			logger.info("User created successfully RDN ="+rdn);
+			user = ldapService.findSubEntries(rdn, "(objectclass=*)", new String[] {"*"}, SearchScope.OBJECT).get(0);
+			
+			return user;
+		} catch (LdapException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@RequestMapping(value = "/addMemberToGroup")
+	public Boolean addMemberToGroup(HttpServletRequest request, LdapEntry selectedEntry) {
+		logger.info("Adding {} to group. Group info {} ", selectedEntry.getDistinguishedName(),selectedEntry.getParentName());
+		try {
+			ldapService.updateEntryAddAtribute(selectedEntry.getParentName(), "member", selectedEntry.getDistinguishedName());
+			operationLogService.saveOperationLog(OperationType.CREATE,"Gruba üye eklendi. Üye: "+selectedEntry.getDistinguishedName(),null);
+		} catch (LdapException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	
 }

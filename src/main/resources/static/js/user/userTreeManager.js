@@ -181,7 +181,7 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 								});  
 					      }
 					 }); 
-					
+					if(postTreeCreatedAction!=null)
 					postTreeCreatedAction(rootDNUser , treeGridId)
 		}
 	});

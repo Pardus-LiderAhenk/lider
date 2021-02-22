@@ -133,6 +133,10 @@ public class UserController {
 			if(selectedEntry.getTelephoneNumber()!=null && selectedEntry.getTelephoneNumber()!="")
 				attributes.put("telephoneNumber", new String[] { selectedEntry.getTelephoneNumber() });
 
+			if(selectedEntry.getParentName()==null || selectedEntry.getParentName().equals("")) {
+				selectedEntry.setParentName(configurationService.getUserLdapBaseDn());
+			}
+			
 			String rdn="uid="+selectedEntry.getUid()+","+selectedEntry.getParentName();
 
 			ldapService.addEntry(rdn, attributes);
@@ -398,6 +402,7 @@ public class UserController {
 			String filter="(&(objectClass=inetOrgPerson)(createTimestamp>=20200301000000Z))";
 			
 			List<LdapEntry> usersEntrylist = ldapService.findSubEntries(globalUserOu, filter,new String[] { "*" }, SearchScope.SUBTREE);
+			if(usersEntrylist.size()>0)
 			lastUser= usersEntrylist.get(usersEntrylist.size()-1);
 			
 			logger.info("last user : "+lastUser);

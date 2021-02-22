@@ -3,7 +3,6 @@
 <script type="text/javascript" src="js/user-groups/user_groups.js"></script>
 
 <style>
-<!--
 .table tbody tr.selectpolicytable td {
   background-color: #85C1E9;
 }
@@ -15,33 +14,14 @@
     overflow-y: auto;
     overflow-x: auto;
 }
--->
 </style>
 
-<div class="col-lg-3">
-	
-	<div class="d-block dropdown" style="margin: 5px;" >
-	 	<div id="ouOperations">
-			<button type="button" data-toggle="dropdown" aria-haspopup="true"
-				aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
-				<span class="btn-icon-wrapper pr-2"> <i
-					class="fa fa-bars fa-w-20"></i>
-				</span> Klasör İşlemleri
-			</button>
-			
-			<a href="#" class="btn btn-info" id="btnCreateNewUserGroup" title="Kullanıcı Grubu Ekle" data-target="#genericModal" data-toggle="modal">
-	                                                        <i class="fa fa-users"> &nbsp;</i> </a>
-			
-			<div tabindex="-1" id="operationDropDown" role="menu"
-				aria-hidden="true" class="dropdown-menu dropdown-menu-left">
-				
-				
-			</div>
-		</div>
-	</div>
-	
+<div class="col-lg-3" style="margin-top: 12px;">
 	<div id="treeGridUserGroupsDiv">
 		<div id="treeGridUserGroups"></div>
+	</div>
+	<div class="col-lg-12" >
+		<button  class="btn btn-link btn-sm pull-right" id="btnTreeRefresh" title="Yenile" style="color:white;  font-weight: bold;"> <i class="fas fa-sync primary" ></i> </button> 
 	</div>
 </div>
 	<div class="col-lg-9 green">
@@ -54,9 +34,7 @@
 							<button  class="btn"> </button>
 						</div>
 					</div>
-					<div class="col-lg-2" >
-<!-- 						<a class="nav-link  pull-right"> <i class="nav-link-icon fas fa-info-circle"> </i> &nbsp; <span > </span> </a> -->
-					</div>
+					
 				</div>
 					<hr>
 						<div>
@@ -66,32 +44,6 @@
 										<div class="main-card mb-3 card"  >
 											<div class="card-header">
 												<div class="col-lg-4"> GRUP ÜYELERİ </div>
-												<div class="col-lg-8 pull-right">
-													<div class="pull-right" id="userGroupButtonActions">	
-														<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info btn-sm"><span class="btn-icon-wrapper pr-2"><i class="fa fa-cogs fa-w-20"></i></span>Grup Yönetimi</button>
-															<div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
-										                   		<ul class="nav flex-column">
-							 									<li class="nav-item">
-							 										<a href="#"  class="nav-link" id="addMemberUserGroupBtn" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-plus"></i> <span>
-							                                     	Gruba Kullanıcı Ekle</span></a>
-							                                        
-							                                     </li>
-							                                     <li class="nav-item">
-							                                    	 <a href="#" class="nav-link"  id="editUserGroupBtn" title="İstemci Grubunu Düzenle" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-edit"></i> <span>
-							                                    	  Grup Adını Düzenle</span></a> 
-							                                      </li>
-							                                      <li class="nav-item">
-							                                      	<a href="#" class="nav-link" id="moveUserGroupBtn" title="İstemci Grubunu Taşı" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-car"></i><span>
-							                                     	  Grubu Taşı</span> </a>
-							                                      </li>     
-							                                      <li class="nav-item">
-							                                     	 <a href="#" class="nav-link" id="deleteUserGroupBtn" title="İstemci Grubunu Sil" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-minus"></i> 
-							                                    	 <span>Grubu Sil</span></a> 
-							                                	</li>                                          
-										                	</ul>
-														</div>
-													</div>
-												</div>
 											</div>
 											<div class="card-body">
 												<div class="allow-scroll"> 
@@ -167,62 +119,3 @@
 						</div>
 					</div>
 				</div>
-
-
-<!-- <div class="col-lg-10 white main-card mb-3 card" style="height: 1200px;"> -->
-<!-- 	<div class="card-body"> -->
-<!-- 		<ul class="nav nav-tabs"> -->
-<!-- 			<li class="nav-item"><a role="tab" class="nav-link active" -->
-<!-- 				id="entry-info" data-toggle="tab" href="#tab-entry-info"> <span>Kayıt -->
-<!-- 						Bilgisi</span> -->
-<!-- 			</a></li> -->
-<!-- 			<li class="nav-item"><a role="tab" class="nav-link" -->
-<!-- 				id="member-info" data-toggle="tab" href="#tab-member-info"> <span>Grup -->
-<!-- 						Üyeleri</span> -->
-<!-- 			</a></li> -->
-<!-- 		</ul> -->
-<!-- 		<div class="tab-content"> -->
-<!-- 			<div class="tab-pane active" id="tab-entry-info" role="tabpanel"> -->
-<!-- 				<p id="selectedDnInfo" class="mb-0"></p> -->
-<!-- 				<div id="ldapAttrInfoHolder"></div> -->
-<!-- 			</div> -->
-<!-- 			<div class="tab-pane" id="tab-member-info" role="tabpanel"> -->
-<!-- 				<p id="memberTabSelectedDNInfo" class="mb-0"></p> -->
-<!-- 				<div> -->
-<!-- 					<table class="mb-0 table table-bordered"> -->
-<!-- 						<thead> -->
-<!-- 							<tr> -->
-<!-- 								<th style="width: 10%" class="text-center">#</th> -->
-<!-- 								<th style="width: 80%">Üye DN</th> -->
-<!-- 								<th style="width: 10%"></th> -->
-<!-- 							</tr> -->
-<!-- 						</thead> -->
-<!-- 						<tbody id="bodyMembers"> -->
-<!-- 							<tr> -->
-<!-- 								<td colspan="100%" class="text-center">Üye bulunamadı</td> -->
-<!-- 							</tr> -->
-<!-- 						</tbody> -->
-<!-- 					</table> -->
-<!-- 				</div> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
-<!-- 	</div> -->
-<!-- </div> -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

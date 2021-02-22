@@ -265,7 +265,7 @@ public class UserGroupsController {
 		//to return newly added entry with its details
 		LdapEntry entry;
 		if(selectedOUDN == null || selectedOUDN.equals("")) {
-			newGroupDN = "cn=" +  groupName +","+ configurationService.getAhenkGroupLdapBaseDn();
+			newGroupDN = "cn=" +  groupName +","+ configurationService.getUserGroupLdapBaseDn();
 		} else {
 			newGroupDN = "cn=" +  groupName +","+ selectedOUDN;
 		}

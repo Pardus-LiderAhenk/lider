@@ -1128,9 +1128,8 @@ function showSelectedEntries() {
 		dataType: 'json',
 		success: function (data) {
 			selectedRowDataFromDB=data;
-
-			var ipAddress= selectedRowDataFromDB.ipAddresses.replace(/\'/g, '');
-
+			var ipAddress= data.ipAddresses.replace(/\'/g, '');
+			var macAddress = data.macAddresses.replace(/\'/g, '');
 			$("#selectedAgentDNSSHIP").val(ipAddress);
 			if(data.properties.length > 0) {
 				$("#agentVersionRow").hide();
@@ -1171,8 +1170,8 @@ function showSelectedEntries() {
 					}
 				}
 				$("#agentHostname").html(data.hostname);
-				$("#agentIpAddr").html(data.ipAddresses);
-				$("#agentMac").html(data.macAddresses);
+				$("#agentIpAddr").html(ipAddress);
+				$("#agentMac").html(macAddress);
 				$("#agentCreateDate").html(data.createDate);
 				$('#agentDn').html(getEntryFolderName(selDn));
 				if (selectedRow.attributesMultiValues.o) {

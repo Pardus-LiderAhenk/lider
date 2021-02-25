@@ -93,28 +93,28 @@
 	
 	<div class="tab-pane " id="tab-existUser" role="tabpanel">
 			<div class="col-8" id="existUserDiv">
-				<div class="col-lg-12 pull-right">
-							<button type="button" class="btn btn-sm btn-danger pull-right"	id="btnDeleteConsoleUserClicked"
-							onclick="btnDeleteConsoleUserClicked()" title="Arayüz Kullanıcısı Sil"><i class="fa fa-trash"></i> </button>
-					</div>
-					
-				<div class="col-lg-12 pull-right">
-					</div>
+				
 				<div id="selectConsoleUserTreeDiv">
 <!-- 					<div id="selectConsoleUserTreeGrid"></div> -->
 				</div>
-				<div class="col-12">
-					<div>
-						<b id="alreadyConsoleUser"></b>
-					</div>
+				
+				<div>
+						
 				</div>
-				<div class="col-lg-12">
-					<div class="col-lg-12">
-							<button type="button" class="btn btn-sm btn-primary pull-right"	id="btnGiveConsoleAccessToSelectedUser"
-							onclick="btnGiveConsoleAccessToSelectedUserClicked()" disabled>Kullanıcıya	Arayüz Kullanma Yetkisi Ver</button>
-					</div>
+				<div class="form-row">
+										<div class="col-6">
+											<b id="alreadyConsoleUser"></b>
+										</div>
+										<div class="col-6">
+											<button type="button" class="btn btn-danger pull-right ml-1"	id="btnDeleteConsoleUserClicked"
+													onclick="btnDeleteConsoleUserClicked()" style="margin-top: 5px;" title="Arayüz Kullanıcısı Sil" >Arayüz Kullanıcısı Sil </button>
+													
+											<button type="button" class="btn btn-primary pull-right" style="margin-top: 5px;" 	id="btnGiveConsoleAccessToSelectedUser"
+													onclick="btnGiveConsoleAccessToSelectedUserClicked()" disabled="disabled" >Arayüz Kullanma Yetkisi Ver</button>
+										</div>
+									</div>
+					
 				</div>
-			</div>
 	</div>
 	
 	<div class="tab-pane " id="tab-accessDirectory" role="tabpanel">

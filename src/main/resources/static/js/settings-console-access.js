@@ -389,20 +389,20 @@ function btnDeleteUserClicked() {
 		    data: params,
 		    success: function (data, textStatus, jqXHR) { 
 		    	if(data != null) {
-		    		$.notify("Kullanıcının konsol yetkileri başarıyla silindi.", "success");
+		    		$.notify("Kullanıcının arayüz yetkileri başarıyla silindi.", "success");
 					users = data;
 					userTableSelectedTrIndex = "";
 					userTableSelectedEntryDN = "";
 					setConsoleUsersTable();
 		    	} else {
-		    		$.notify("Kullanıcının konsol yetkileri alınırken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    		$.notify("Kullanıcının arayüz yetkileri alınırken hata oluştu. Lütfen tekrar deneyiniz.", "error");
 		    	}
 		    },
 		    error: function (jqXHR, textStatus, errorThrown) {
 		    	if(jqXHR.status == 401) {
 		    		window.location.replace("/logout");
 		    	} else {
-		    		$.notify("Kullanıcının konsol yetkileri alınırken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		    		$.notify("Kullanıcının arayüz yetkileri alınırken hata oluştu. Lütfen tekrar deneyiniz.", "error");
 		    	}
 		    },
 			complete: function() {
@@ -452,7 +452,7 @@ function showUserDetail(index, dn) {
 
 function btnAddNewConsoleUserClicked() {
 	getModalContent("modals/settings/select_console_user", function content(data){
-		$('#genericModalLargeHeader').html("Konsol Kullanıcısı Ekle");
+		$('#genericModalLargeHeader').html("Arayüz Kullanıcısı Ekle");
 		$('#genericModalLargeBodyRender').html(data);
 		generateTreeForAssigningLiderConsoleUser();
 		generateTreeForAssigningDirectoryAccess();
@@ -546,7 +546,7 @@ function generateTreeForAssigningLiderConsoleUser() {
 						}
 					}
 					if(isUserAlreadyConsoleUser) {
-						$('#alreadyConsoleUser').html("<br>Seçili kullanıcının konsol yetkisi bulunmaktadır. Lütfen başka bir kullanıcı seçiniz.");
+						$('#alreadyConsoleUser').html("<br>Seçili kullanıcının Arayüz yetkisi bulunmaktadır. Lütfen başka bir kullanıcı seçiniz.");
 						$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', true);
 					} else {
 						$('#alreadyConsoleUser').html("");

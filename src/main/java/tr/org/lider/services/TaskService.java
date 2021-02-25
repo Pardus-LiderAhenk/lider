@@ -92,7 +92,7 @@ public class TaskService {
 			commandIdForLog = pluginTask.get(0).getName();
 		}
 		String logMessage = "";
-		if (targetEntries.size() > 1) {
+		if (request.getEntryList().get(0).getType().equals(DNType.GROUP)) {
 			logMessage = "[ "+ request.getEntryList().get(0).getDistinguishedName() + " ] istemci grubuna [ " + commandIdForLog + " ] görevi gönderildi.";
 		} else {
 			logMessage = "[ "+ request.getEntryList().get(0).get(configService.getAgentLdapJidAttribute()) +" ] istemciye [ " + commandIdForLog + " ] görevi gönderildi.";

@@ -110,6 +110,7 @@ public class ComputerController {
 		} catch (LdapException e) {
 			e.printStackTrace();
 		}
+		Collections.sort(subEntries);
 		return subEntries;
 	}
 

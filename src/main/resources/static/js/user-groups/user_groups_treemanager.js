@@ -356,12 +356,32 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 			 });
 
 			 $('.btnMoveOu').on('click', function (event) {
+				 selectedRowForMoveOld=selectedRow;
 				 getModalContent("modals/groups/user_groups/moveentry", function content(data){
 						$('#genericModalHeader').html("Kayıt Taşı");
 						$('#genericModalBodyRender').html(data);
-						generateTreeToMoveEntry();
+						
+						getModalContent("modals/groups/user_groups/moveentry", function content(data){
+							$('#genericModalHeader').html("Kayıt Taşı");
+							$('#genericModalBodyRender').html(data);
+							createUserGroupTree('lider/user_groups/getGroups','moveEntryTreeDiv', true, false,
+									// row select
+									function(row, rootDnComputer,treeGridIdName){
+										destinationDNToMoveRecordGlob = row.distinguishedName;
+										selectedRowForMove=row;
+									},
+									//check action
+									function(checkedRows, row){
+									},
+									//uncheck action
+									function(unCheckedRows, row){
+									},
+									function(rootComputer , treeGridId){
+									}
+							);
+							//generateTreeToMoveEntry();
+						});
 					});
-				 
 			 });
 
 			 $('.btnDeleteOu').on('click', function (event) {

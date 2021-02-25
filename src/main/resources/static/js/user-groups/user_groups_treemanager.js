@@ -39,29 +39,29 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 	/**
 	 * Create popup menu div
 	 */
-	var baseUserGroupDnMenuDiv=' <div id="baseUserGroupDnMenuDiv" style="display: none;" >'+
+	var baseUserGroupDnMenuDiv=' <div id="baseUserGroupDnMenuDiv" style="display: none;">'+
 		'<ul>'+
-		'<li> <a href="#"  class="btn btn-info btnCreateNewOu" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-folder-plus blue">&nbsp;</i> Yeni Klasör Oluştur</a> </li>  '+ 
-		'<li> <a href="#" class="btn btn-info btnCreateNewUserGroup" id="btnCreateNewUserGroup" title="Kullanıcı Grubu Ekle" data-target="#genericModal" data-toggle="modal">   <i class="fa fa-users blue"> &nbsp;</i>  Kullanıcı Grubu Ekle </a></li>  '+
+		'<a href="#"  class="btn  btnCreateNewOu" data-toggle="modal" data-target="#genericModal">  <li> <i class="fa fa-folder-plus blue">&nbsp;</i> Yeni Klasör Oluştur </li> </a> '+ 
+		'<a href="#" class="btn  btnCreateNewUserGroup" id="btnCreateNewUserGroup" title="Kullanıcı Grubu Ekle" data-target="#genericModal" data-toggle="modal">   <li>  <i class="fa fa-users blue"> &nbsp;</i>  Kullanıcı Grubu Ekle </li> </a> '+
 		'</ul>'+
 		'</div>';
 	
 	var folderPopUpMenuDiv=' <div id="folderPopUpMenuDiv" style="display: none;" >'+
 	'<ul>'+
-	'<li> <a href="#" class="btn btn-info btnCreateNewUserGroup" id="btnCreateNewUserGroup" title="Kullanıcı Grubu Ekle" data-target="#genericModal" data-toggle="modal">   <i class="fa fa-users blue"> &nbsp;</i>Kullanıcı Grubu Ekle  </a></li>  '+
-	'<li> <a href="#"  class="btn btn-info btnCreateNewOu" data-toggle="modal" data-target="#genericModal"> <i class="fa fa-folder-plus blue">&nbsp;</i>Yeni Klasör Oluştur</a> </li>  '+  
-	'<li> <a href="#" class="btn btn-info btnRenameOu" data-toggle="modal" data-target="#genericModal" > <i class="fa fa-edit blue">&nbsp;</i>Klasör Adı Değiştir</a> </li> '+ 
-	'<li> <a href="#" class="btn btn-info btnMoveOu" data-toggle="modal" data-target="#genericModal" > <i class="fa fa-arrow-right blue">&nbsp;</i>Klasör Taşı</a>   </li> '+
-	'<li> <a href="#" class="btn btn-info btnDeleteOu" data-toggle="modal" data-target="#genericModal" > <i class="fa fa-trash red">&nbsp; &nbsp;</i>Klasörü Sil</a>  </li> '+
+	'<a href="#" class="btn btnCreateNewUserGroup" id="btnCreateNewUserGroup" title="Kullanıcı Grubu Ekle" data-target="#genericModal" data-toggle="modal">  <li>  <i class="fa fa-users blue"> &nbsp;</i>Kullanıcı Grubu Ekle  </li>  </a> '+
+	'<a href="#"  class="btn btnCreateNewOu" data-toggle="modal" data-target="#genericModal"> <li>  <i class="fa fa-folder-plus blue"> &nbsp;</i>Yeni Klasör Oluştur</li>  </a> '+  
+	'<a href="#" class="btn btnRenameOu" data-toggle="modal" data-target="#genericModal" >  <li>  <i class="fa fa-edit blue">&nbsp;</i>Klasör Adı Değiştir </li> </a>'+ 
+	'<a href="#" class="btn btnMoveOu" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-arrow-right blue">&nbsp;</i>Klasör Taşı   </li> </a>'+
+	'<a href="#" class="btn btnDeleteOu" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-trash red">&nbsp; &nbsp;</i>Klasörü Sil </li> </a>'+
 	'</ul>'+
 	'</div>';
 	
 	var groupPopUpMenuDiv=' <div id="groupPopUpMenuDiv" style="display: none;" >'+
 		'<ul>'+
-		'<li> <a href="#"  class="btn btn-info addMemberUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <i class="fa fa-user-plus blue">&nbsp;</i>Kullanıcı Ekle  </a></li>  '+  
-		'<li> <a href="#"  class="btn btn-info editUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <i class="fa fa-edit blue">&nbsp;</i>Grubu Düzenle </a> </li> '+ 
-		'<li> <a href="#"  class="btn btn-info moveUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <i class="fa fa-arrow-right blue">&nbsp;</i>Grubu Taşı </a>  </li> '+
-		'<li> <a href="#"  class="btn btn-info deleteUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <i class="fa fa-trash red">&nbsp;</i>Grubu Sil</a></li> '+ 
+		' <a href="#"  class="btn addMemberUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-user-plus blue">&nbsp;</i>Kullanıcı Ekle  </li> </a> '+  
+		' <a href="#"  class="btn editUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-edit blue">&nbsp;</i>Grubu Düzenle  </li> </a>'+ 
+		' <a href="#"  class="btn moveUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-arrow-right blue">&nbsp;</i>Grubu Taşı  </li> </a>'+
+		' <a href="#"  class="btn deleteUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp;</i>Grubu Sil </li> </a>'+ 
 		'</ul>'+
 		'</div>';
 	

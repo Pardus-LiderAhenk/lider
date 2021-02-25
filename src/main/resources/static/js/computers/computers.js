@@ -1048,6 +1048,8 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#agentPhase").html("");
 		$("#userDomain").html("");
 		$("#agentDn").html("");
+		$("#agentVersion").html("");
+		$("#userLastLogin").html("");
 		$("#updateAgentInfo").hide();
 		$("#selectedAgentDN").text("");
 		$("#selectedAgentDNSSH").text("");
@@ -1056,8 +1058,6 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		getAllAndOnlineAgents(selectedRow.distinguishedName);
 		$("#btnAddOu").show();
 		$("#btnDeleteOu").show();
-		$("#agentVersion").html("");
-		$("#userLastLogin").html("");
 		$("#userLastLoginRow").show();
 		$("#agentVersionRow").show();
 		$("#agentPhaseRow").show();

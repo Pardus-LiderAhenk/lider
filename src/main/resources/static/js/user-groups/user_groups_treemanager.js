@@ -188,25 +188,25 @@ function createUserGroupTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox
 		                    var scrollTop = $(window).scrollTop();
 		                    var scrollLeft = $(window).scrollLeft();
 		                    if(row.type==null){
-		                    	groupMenu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+		                    	groupMenu.jqxMenu('close', parseInt(event.args.originalEvent.clientX) + 20 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
 		                    }
 		                    else if(row.level==0){ // this is for root dn
 		                    	groupMenu.jqxMenu('close');
 		                    	folderMenu.jqxMenu('close');
-		                    	baseUserGroupDnMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+		                    	baseUserGroupDnMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 20 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
 		                    }
 		                    else if(row.type=="ORGANIZATIONAL_UNIT"){
 		                    	groupMenu.jqxMenu('close');
 		                    	baseUserGroupDnMenu.jqxMenu('close');
-		                    	folderMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+		                    	folderMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 20 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
 		                    }
 		                    else if(row.type=="GROUP"){
 		                    	folderMenu.jqxMenu('close');
 		                    	baseUserGroupDnMenu.jqxMenu('close');
-		                    	groupMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+		                    	groupMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 20 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
 		                    }
 		                    else{
-		                    	baseUserGroupDnMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 100 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+		                    	baseUserGroupDnMenu.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 20 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
 		                    }
 		                    return false;
 		                }

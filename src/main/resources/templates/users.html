@@ -65,6 +65,9 @@ $(document).ready(function(){
 				<div id="treeGridUserHolderDiv" style="margin-top: 7px;">
 					
 				</div>
+				<div class="col-lg-12" >
+						<button  class="btn btn-link btn-sm pull-right" id="btnTreeRefresh" title="Yenile" style="color:white;  font-weight: bold;"> <i class="fas fa-sync primary" ></i> </button> 
+					</div>
 				<div id="progressUserTree"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
 			    	<div style="position:absolute; top: -50%; left: 30%;" > 
 			    		<img src="img/LoadingPage.gif" width="50" height="50"  /> <span> <b> Lütfen Bekleyiniz... </b> </span> 
@@ -97,8 +100,8 @@ $(document).ready(function(){
 																	      <a class="list-group-item list-group-item-action" id="btnGroupsOfLiderConsole" data-toggle="list" href="#sudoGroups" role="tab" aria-controls="sudoGroups"> <i class="fa fa-tasks grey"> &nbsp; </i> Yetki Grupları</a>
 																	      <a class="list-group-item list-group-item-action" id="btnLiderConsoleSessions" data-toggle="list" href="#passwordolicy" role="tab" aria-controls="passwordolicy"> <i class="fa fa-unlock-alt grey"> &nbsp; </i> Parola Politikası</a>
 																	      <a class="list-group-item list-group-item-action" id="btnGroupsOfLiderConsole" data-toggle="list" href="#policyHistory" role="tab" aria-controls="policyHistory"> <i class="fa fa-history grey"> &nbsp; </i> Politika Geçmişi</a>
-																	      <a class="list-group-item list-group-item-action" id="btnMoveUserModal" data-target="#genericModal" data-toggle="modal" role="tab" aria-controls="policyHistory"> <i class="fa fa-random grey"> &nbsp; </i> Taşı</a>
-																	      <a class="list-group-item list-group-item-action" id="btnDeleteUserModal"  data-target="#genericModal" data-toggle="modal" role="tab" aria-controls="policyHistory"> <i class="fa fa-trash red"> &nbsp; </i> Sil</a>
+																	      <a class="list-group-item list-group-item-action btnMoveUserModal" id="btnMoveUserModal" data-target="#genericModal" data-toggle="modal" role="tab" aria-controls="policyHistory"> <i class="fa fa-random grey"> &nbsp; </i> Taşı</a>
+																	      <a class="list-group-item list-group-item-action btnDeleteUserModal" id="btnDeleteUserModal"  data-target="#genericModal" data-toggle="modal" role="tab" aria-controls="policyHistory"> <i class="fa fa-trash red"> &nbsp; </i> Sil</a>
 																	    </div>
 												                      	
 																</div>

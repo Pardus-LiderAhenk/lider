@@ -18,179 +18,20 @@ $(document).ready(function(){
 	hideUserButtons()
 	renderUserTree();
 	
-	$('#btnAddOuModal').on('click',function(event) {
-		if(selectedFolder==null){
-			$.notify("Lütfen Klasör Seçiniz","warn"  );
-		}
-		else{
-			getModalContent("modals/user/addOuModal", function content(data){
-					$('#genericModalHeader').html("Klasör Yönetimi")
-					$('#genericModalBodyRender').html(data);
-					$('#ouInfo').html(selectedFolder.name +"/");
-					$('#addOu').on('click', function (event) {
-							var parentDn=selectedFolder.distinguishedName; 
-							var parentName= selectedFolder.name;
-							var parentEntryUUID= selectedFolder.entryUUID;
-							
-							var ouName= $('#ouName').val();
-							$.ajax({
-								type : 'POST',
-								url : 'lider/user/addOu',
-								data: 'parentName='+parentDn +'&ou='+ouName,
-								dataType : 'json',
-								success : function(data) {
-									
-									$.notify("Klasör Başarı İle Eklendi.", "success");
-								     
-									$('#genericModal').trigger('click');
-									$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
-									$("#treeGridUserHolderDivGrid").jqxTreeGrid('expandRow' , parentEntryUUID);
-								}
-							});
-					});
-				} 
-			);
-		}
+	$('#btnTreeRefresh').on('click',function(event) {
+		renderUserTree();
 	});
-	// Create ou for selected parent node. Ou modal will be open for all releated pages..
-	$('#btnDeleteOuModal').on('click',function(event) {
-		getModalContent("modals/user/deleteOuModal", function content(data){
-			$('#genericModalHeader').html("Klasör Sil")
-			$('#genericModalBodyRender').html(data);
-			
-			$('#deleteOuBtn').on('click', function (event) {
-				deleteUserOu(selectedFolder)
-			});
-		} 
-		);
-	});
-	
-	$('#btnAddUserModal').on('click',function(event) {
-		if(selectedFolder==null){
-			$.notify("Lütfen Klasör Seçiniz","warn"  );
-		}
-		else{
-			getModalContent("modals/user/addUserModal", function content(data){
-					$('#genericModalLargeHeader').html("Kullanıcı Ekle")
-					$('#genericModalLargeBodyRender').html(data);
-					
-					$('#ouName').val("")
-					$('#uid').val("")
-					$('#cn').val("")
-					$('#sn').val("")
-					$('#userPassword').val("")
-					$('#confirm_password').val("")
-					$('#addUserBtn').removeClass('disabled');
-					
-					userFolderInfo.append("Seçili Klasör : "+selectedFolder.name)
-					$('#addUserBtn').on('click',function(event) {
-						var parentEntryUUID= selectedFolder.entryUUID;
-						addUser(selectedFolder.distinguishedName,
-								function(data){
-										$('#genericModalLarge').trigger('click');
-										$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
-										$("#treeGridUserHolderDivGrid").jqxTreeGrid('expandRow' , parentEntryUUID);
-								}
-						)
-					});
-				} 
-			);
-		}
-	});
-	
-//	$('#btnEditUserModal').on('click',function(event) {
-//		getModalContent("modals//user/editUserModal", function content(data){
-//				$('#genericModalHeader').html("Kullanıcı Düzenle")
-//				$('#genericModalBodyRender').html(data);
-//			} 
-//		);
-//	});
 	
 	$('#editUserBtn').on('click',function(event) {
 		editUser(selectedRowGen.distinguishedName)
-	});
-	
-	$('#btnDeleteUserModal').on('click',function(event) {
-		
-		getModalContent("modals/user/deleteUserModal", function content(data){
-				$('#genericModalHeader').html("Kullanıcı Sil")
-				$('#genericModalBodyRender').html(data);
-				
-				$('#userInfoDelete').html(selectedRowGen.name);
-				
-				$('#deleteUserBtn').on('click',function(event) {
-					deleteUsers(selectedRowGen)
-				});
-		});
-	});
-	
-	$('#btnMoveUserModal').on('click',function(event) {
-		
-		getModalContent("modals/user/moveUserModal", function content(data){
-			$('#genericModalHeader').html("Kullanıcı Taşı")
-			$('#genericModalBodyRender').html(data);
-			
-			$('#infoUserMove').html(selectedRowGen.name);
-			// params div, disableuser, useCheckBox, select function
-			var selectedOu=null;
-			createUserTree("userTree4MoveDiv", true, false,
-					// row select
-					function(row, rootDnUser){
-						selectedOu=row;
-					},
-					//check action
-					function(checkedRows, row){
-						
-					},
-					//uncheck action
-					function(unCheckedRows, row){
-						
-					}
-			);
-			$('#moveUserBtn').on('click',function(event) {
-				moveUser(selectedRowGen,selectedOu)
-			});
-		});
-	});
-	
-	$('#btnMoveOuModal').on('click',function(event) {
-		
-		getModalContent("modals/user/moveFolderModal", function content(data){
-			$('#genericModalHeader').html("Klasör Taşı")
-			$('#genericModalBodyRender').html(data);
-			
-			$('#infoUserFolderMove').html(selectedRowGen.name);
-			// params div, disableuser, useCheckBox, select function
-			var selectedOu=null;
-			createUserTree("userTree4MoveFolderDiv", true, false,
-			// row select
-			function(row, rootDnUser){
-				selectedOu=row;
-			},
-			//check action
-			function(checkedRows, row){
-				
-			},
-			//uncheck action
-			function(unCheckedRows, row){
-				
-			}
-			);
-			$('#moveUserFolderBtn').on('click',function(event) {
-				moveUserFolder(selectedFolder,selectedOu)
-			});
-		});
 	});
 	
 	$('#btnChangePasswordUserModal').on('click',function(event) {
 		getModalContent("modals/user/changePasswordUserModal", function content(data){
 			$('#genericModalHeader').html("Parola Güncelle")
 			$('#genericModalBodyRender').html(data);
-			
-			
 		});
 	});
-	
 	
 	$('#updateUserPasswordBtn').on('click',function(event) {
 		var userPassword  =$('#newUserPassword').val()
@@ -461,8 +302,9 @@ function moveUser(selectedEntry, ou) {
 	            $.notify("Kayıt taşındı.", "success");
 	            if(selectedEntry){
 	            	$('#genericModal').trigger('click');
-					$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', selectedEntry.entryUUID); 
-					$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , selectedEntry.entryUUID , selectedEntry , 'last' , ou.entryUUID);
+//					$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', selectedEntry.entryUUID); 
+//					$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , selectedEntry.entryUUID , selectedEntry , 'last' , ou.entryUUID);
+	            	renderUserTree();
 				}
 		    },
 		    error: function (data, errorThrown) {
@@ -485,8 +327,10 @@ function moveUserFolder(selectedEntry, ou) {
 			$.notify("Kayıt taşındı.", "success");
 			if(selectedEntry){
             	$('#genericModal').trigger('click');
-				$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', selectedEntry.entryUUID); 
-				$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , selectedEntry.entryUUID , selectedEntry , 'last' , ou.entryUUID);
+//				$("#treeGridUserHolderDivGrid").jqxTreeGrid('deleteRow', selectedEntry.entryUUID); 
+//				$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , selectedEntry.entryUUID , selectedEntry , 'last' , ou.entryUUID);
+            	
+            	renderUserTree();
 			}
 		},
 		error: function (data, errorThrown) {
@@ -995,6 +839,8 @@ function fillUserInfo(ldapResult) {
 }
 
 function renderUserTree() {
+	$('#'+treeGridHolderDiv).html("");
+	
 	createUserTree(treeGridHolderDiv, false, false,
 			// row select
 			function(row, rootDnUser){

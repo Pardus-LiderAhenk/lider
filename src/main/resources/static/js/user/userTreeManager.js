@@ -14,6 +14,40 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 	 * create search area
 	 */
 	createUserSearch(treeHolderDiv,treeGridId,showOnlyFolder);
+	
+	
+	/**
+	 * Create popup menu div
+	 */
+	var baseDnMenuDiv=' <div id="baseDnMenuDiv" style="display: none;">'+
+		'<ul>'+
+		'<a href="#"  class="btn  btnAddOuModal" data-toggle="modal" data-target="#genericModal">  <li> <i class="fa fa-folder-plus blue">&nbsp;</i> Yeni Klasör Oluştur </li> </a> '+ 
+		'<a href="#" class="btn  btnAddUserModal"  title="Kullanıcı Ekle" data-target="#genericModalLarge" data-toggle="modal">   <li>  <i class="fa fa-users blue"> &nbsp;</i>  Kullanıcı Ekle </li> </a> '+
+		'</ul>'+
+		'</div>';
+	
+	var folderPopUpMenuDiv=' <div id="folderPopUpMenuDiv" style="display: none;" >'+
+	'<ul>'+
+	'<a href="#" class="btn btnAddUserModal"  title="Kullanıcı Ekle" data-target="#genericModalLarge" data-toggle="modal">  <li>  <i class="fa fa-users blue"> &nbsp;</i>Kullanıcı Ekle  </li>  </a> '+
+	'<a href="#"  class="btn btnAddOuModal" data-toggle="modal" data-target="#genericModal"> <li>  <i class="fa fa-folder-plus blue"> &nbsp;</i>Yeni Klasör Oluştur</li>  </a> '+  
+//	'<a href="#" class="btn btnRenameOu" data-toggle="modal" data-target="#genericModal" >  <li>  <i class="fa fa-edit blue">&nbsp;</i>Klasör Adı Değiştir </li> </a>'+ 
+	'<a href="#" class="btn btnMoveOuModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-arrow-right blue">&nbsp;</i>Klasör Taşı   </li> </a>'+
+	'<a href="#" class="btn btnDeleteOuModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-trash red">&nbsp; &nbsp;</i>Klasörü Sil </li> </a>'+
+	'</ul>'+
+	'</div>';
+	
+	var userPopUpMenuDiv=' <div id="userPopUpMenuDiv" style="display: none;" >'+
+		'<ul>'+
+		' <a href="#"  class="btn btnMoveUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-arrow-right blue">&nbsp;</i> Kullanıcı Taşı  </li> </a>'+
+		' <a href="#"  class="btn btnDeleteUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp;</i> Kullanıcı Sil </li> </a>'+ 
+		'</ul>'+
+		'</div>';
+	
+	$('#'+treeHolderDiv).append(baseDnMenuDiv);
+	$('#'+treeHolderDiv).append(folderPopUpMenuDiv);
+	$('#'+treeHolderDiv).append(userPopUpMenuDiv);
+	
+	
 	/**
 	 * get root dn for user and set treegrid tree
 	 */
@@ -110,6 +144,65 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 				     ]
 				 });
 				 
+				 var baseDnMenuDiv=$("#baseDnMenuDiv").jqxMenu({ width: 250, height: 90, autoOpenPopup: false, mode: 'popup' });
+				 var folderPopUpMenuDiv=$("#folderPopUpMenuDiv").jqxMenu({ width: 250, height: 180, autoOpenPopup: false, mode: 'popup' });
+				 var userPopUpMenuDiv=$("#userPopUpMenuDiv").jqxMenu({ width: 250, height: 90, autoOpenPopup: false, mode: 'popup' });
+				 
+				 	$('#'+treeGridId).on('contextmenu', function () {
+		                return false;
+		            });
+			
+				    $('#'+treeGridId).on('rowClick', function (event) {
+		            	var args = event.args;
+		                var row = args.row;
+		                if ( args.originalEvent.button == 2) {
+		                    var scrollTop = $(window).scrollTop();
+		                    var scrollLeft = $(window).scrollLeft();
+		                    if(row.type==null){
+		                    	if(baseDnMenuDiv!=null)
+			                		baseDnMenuDiv.jqxMenu('close');
+			                	if(folderPopUpMenuDiv!=null)
+			                		folderPopUpMenuDiv.jqxMenu('close');
+			                	if(userPopUpMenuDiv!=null)
+			                		userPopUpMenuDiv.jqxMenu('close');
+		                    }
+		                    else if(row.level==0){ // this is for root dn
+		                    	folderPopUpMenuDiv.jqxMenu('close');
+		                    	userPopUpMenuDiv.jqxMenu('close');
+		                    	baseDnMenuDiv.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 20 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+		                    }
+		                    else if(row.type=="ORGANIZATIONAL_UNIT"){
+		                    	userPopUpMenuDiv.jqxMenu('close');
+		                    	baseDnMenuDiv.jqxMenu('close');
+		                    	folderPopUpMenuDiv.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 20 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+		                    }
+		                    else if(row.type=="USER"){
+		                    	baseDnMenuDiv.jqxMenu('close');
+		                    	folderPopUpMenuDiv.jqxMenu('close');
+		                    	userPopUpMenuDiv.jqxMenu('open', parseInt(event.args.originalEvent.clientX) + 20 + scrollLeft, parseInt(event.args.originalEvent.clientY) + 5 + scrollTop);
+		                    }
+		                    else{
+		                    	if(baseDnMenuDiv!=null)
+			                		baseDnMenuDiv.jqxMenu('close');
+			                	if(folderPopUpMenuDiv!=null)
+			                		folderPopUpMenuDiv.jqxMenu('close');
+			                	if(userPopUpMenuDiv!=null)
+			                		userPopUpMenuDiv.jqxMenu('close');
+		                    }
+		                    return false;
+		                }
+		                else{
+		                	if(baseDnMenuDiv!=null)
+		                		baseDnMenuDiv.jqxMenu('close');
+		                	if(folderPopUpMenuDiv!=null)
+		                		folderPopUpMenuDiv.jqxMenu('close');
+		                	if(userPopUpMenuDiv!=null)
+		                		userPopUpMenuDiv.jqxMenu('close');
+		                }
+		            });
+				 
+				 
+				 
 				 $('#'+treeGridId).on('rowSelect', function (event) {
 				        var args = event.args;
 					    var row = args.row;
@@ -182,7 +275,169 @@ function createUserTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectActio
 					      }
 					 }); 
 					if(postTreeCreatedAction!=null)
-					postTreeCreatedAction(rootDNUser , treeGridId)
+					postTreeCreatedAction(rootDNUser , treeGridId);
+					
+					/**
+					  * POP UP MENU  operations START
+					  */
+					
+					$('.btnAddUserModal').on('click',function(event) {
+						if(selectedFolder==null){
+							$.notify("Lütfen Klasör Seçiniz","warn"  );
+						}
+						else{
+							getModalContent("modals/user/addUserModal", function content(data){
+									$('#genericModalLargeHeader').html("Kullanıcı Ekle")
+									$('#genericModalLargeBodyRender').html(data);
+									
+									$('#ouName').val("")
+									$('#uid').val("")
+									$('#cn').val("")
+									$('#sn').val("")
+									$('#userPassword').val("")
+									$('#confirm_password').val("")
+									$('#addUserBtn').removeClass('disabled');
+									
+									userFolderInfo.append("Seçili Klasör : "+selectedFolder.name)
+									$('#addUserBtn').on('click',function(event) {
+										var parentEntryUUID= selectedFolder.entryUUID;
+										addUser(selectedFolder.distinguishedName,
+												function(data){
+														$('#genericModalLarge').trigger('click');
+														$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
+														$("#treeGridUserHolderDivGrid").jqxTreeGrid('expandRow' , parentEntryUUID);
+												}
+										)
+									});
+								} 
+							);
+						}
+					});
+					
+					
+					
+					$('.btnAddOuModal').on('click',function(event) {
+						if(selectedFolder==null){
+							$.notify("Lütfen Klasör Seçiniz","warn"  );
+						}
+						else{
+							getModalContent("modals/user/addOuModal", function content(data){
+									$('#genericModalHeader').html("Klasör Yönetimi")
+									$('#genericModalBodyRender').html(data);
+									$('#ouInfo').html(selectedFolder.name +"/");
+									$('#addOu').on('click', function (event) {
+											var parentDn=selectedFolder.distinguishedName; 
+											var parentName= selectedFolder.name;
+											var parentEntryUUID= selectedFolder.entryUUID;
+											
+											var ouName= $('#ouName').val();
+											$.ajax({
+												type : 'POST',
+												url : 'lider/user/addOu',
+												data: 'parentName='+parentDn +'&ou='+ouName,
+												dataType : 'json',
+												success : function(data) {
+													
+													$.notify("Klasör Başarı İle Eklendi.", "success");
+												     
+													$('#genericModal').trigger('click');
+													$('#treeGridUserHolderDivGrid').jqxTreeGrid('addRow' , data.name , data , 'last' , parentEntryUUID);
+													$("#treeGridUserHolderDivGrid").jqxTreeGrid('expandRow' , parentEntryUUID);
+												}
+											});
+									});
+								} 
+							);
+						}
+					});
+					
+					
+					// Create ou for selected parent node. Ou modal will be open for all releated pages..
+					$('.btnDeleteOuModal').on('click',function(event) {
+						getModalContent("modals/user/deleteOuModal", function content(data){
+							$('#genericModalHeader').html("Klasör Sil")
+							$('#genericModalBodyRender').html(data);
+							
+							$('#deleteOuBtn').on('click', function (event) {
+								deleteUserOu(selectedFolder)
+							});
+						} 
+						);
+					});
+					
+					$('.btnMoveOuModal').on('click',function(event) {
+						
+						getModalContent("modals/user/moveFolderModal", function content(data){
+							$('#genericModalHeader').html("Klasör Taşı")
+							$('#genericModalBodyRender').html(data);
+							
+							$('#infoUserFolderMove').html(selectedRowGen.name);
+							// params div, disableuser, useCheckBox, select function
+							var selectedOu=null;
+							createUserTree("userTree4MoveFolderDiv", true, false,
+							// row select
+							function(row, rootDnUser){
+								selectedOu=row;
+							},
+							//check action
+							function(checkedRows, row){
+								
+							},
+							//uncheck action
+							function(unCheckedRows, row){
+								
+							}
+							);
+							$('#moveUserFolderBtn').on('click',function(event) {
+								moveUserFolder(selectedFolder,selectedOu)
+							});
+						});
+					});
+					
+					
+					$('.btnMoveUserModal').on('click',function(event) {
+						
+						getModalContent("modals/user/moveUserModal", function content(data){
+							$('#genericModalHeader').html("Kullanıcı Taşı")
+							$('#genericModalBodyRender').html(data);
+							
+							$('#infoUserMove').html(selectedRowGen.name);
+							// params div, disableuser, useCheckBox, select function
+							var selectedOu=null;
+							createUserTree("userTree4MoveDiv", true, false,
+									// row select
+									function(row, rootDnUser){
+										selectedOu=row;
+									},
+									//check action
+									function(checkedRows, row){
+										
+									},
+									//uncheck action
+									function(unCheckedRows, row){
+										
+									}
+							);
+							$('#moveUserBtn').on('click',function(event) {
+								moveUser(selectedRowGen,selectedOu)
+							});
+						});
+					});
+					
+					$('.btnDeleteUserModal').on('click',function(event) {
+						
+						getModalContent("modals/user/deleteUserModal", function content(data){
+								$('#genericModalHeader').html("Kullanıcı Sil")
+								$('#genericModalBodyRender').html(data);
+								
+								$('#userInfoDelete').html(selectedRowGen.name);
+								
+								$('#deleteUserBtn').on('click',function(event) {
+									deleteUsers(selectedRowGen)
+								});
+						});
+					});
+					
 		}
 	});
 }

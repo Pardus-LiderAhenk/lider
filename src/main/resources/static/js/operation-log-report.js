@@ -305,157 +305,32 @@ function btnSelectUserDNFromTreeClicked() {
 	getModalContent("modals/reports/operation_logs/select_user", function content(data){
 		$('#genericModalHeader').html("Aramak için bir kullanıcı seçiniz");
 		$('#genericModalBodyRender').html(data);
-		generateTreeForUserSelection();
-	});
-}
-
-function generateTreeForUserSelection(){
-	$.ajax({
-		type : 'POST',
-		url : 'lider/user/getUsers',
-		dataType : 'json',
-		success : function(data) {
-			var source =
-			{
-					dataType: "json",
-					dataFields: [
-						{ name: "name", type: "string" },
-						{ name: "online", type: "string" },
-						{ name: "uid", type: "string" },
-						{ name: "type", type: "string" },
-						{ name: "cn", type: "string" },
-						{ name: "ou", type: "string" },
-						{ name: "parent", type: "string" },
-						{ name: "distinguishedName", type: "string" },
-						{ name: "hasSubordinates", type: "string" },
-						{ name: "expandedUser", type: "string" },
-						{ name: "entryUUID", type: "string" },
-						{ name: "attributes", type: "array" },
-						{ name: "attributesMultiValues", type: "array" },
-						{ name: "childEntries", type: "array" }
-						],
-						hierarchy:
-						{
-							root: "childEntries"
-						},
-						localData: data,
-						id: "entryUUID"
-			};
-			//create user tree grid
-			selectUserForFilter(source);
-		},
-		error: function (data, errorThrown) {
-			$.notify("Kullanıcılar getirilirken hata oluştu.", "error");
-		}
-	});
-}
-
-function selectUserForFilter(source) {
-	$("#selectUserDNTreeGrid").jqxTreeGrid('destroy');
-	$("#selectUserDNTreeDiv").append('<div id="selectUserDNTreeGrid"></div> ');
-	var dataAdapter = new $.jqx.dataAdapter(source, {
-		loadComplete: function () {
-		}
-	});
-
-	var getLocalization = function () {
-		var localizationobj = {};
-		localizationobj.filterSearchString = "Ara :";
-		return localizationobj;
-	};
-	// create jqxTreeGrid.
-	$("#selectUserDNTreeGrid").jqxTreeGrid(
-			{
-				width: '100%',
-				source: dataAdapter,
-				altRows: true,
-				sortable: true,
-				columnsResize: true,
-				filterable: true,
-				hierarchicalCheckboxes: true,
-				pageable: true,
-				pagerMode: 'default',
-				checkboxes: false,
-				selectionMode: "singleRow",
-				filterMode: "simple",
-				localization: getLocalization(),
-				pageSize: 50,
-				pageSizeOptions: ['15', '25', '50'],
-				icons: function (rowKey, dataRow) {
-					var level = dataRow.level;
-					if(dataRow.type == "USER"){
-						return "img/checked-user-32.png";
-					}
-					else return "img/folder.png";
-				},
-				ready: function () {
-					var allrows =$("#selectUserDNTreeGrid").jqxTreeGrid('getRows');
-					if(allrows.length==1){
-						var row=allrows[0];
-						if(row.childEntries==null ){
-							$("#selectUserDNTreeGrid").jqxTreeGrid('addRow', row.entryUUID+"1", {}, 'last', row.entryUUID);
+		
+		createUserTree("selectUserDNTreeDiv",false,false,
+				function(row, rootDnUser){
+						selectedUserDN = row.distinguishedName;
+						if(row.type == "ORGANIZATIONAL_UNIT") {
+							$('#btnSelectedUserForLog').prop('disabled', true);
+						} else {
+							//check if user already has role for console
+							var selectedRows = $("#selectUserDNTreeGrid").jqxTreeGrid('getSelection');
+							$('#btnSelectedUserForLog').prop('disabled', false);
 						}
-					}
-					$("#selectUserDNTreeGrid").jqxTreeGrid('collapseAll'); 
-				}, 
-				rendered: function () {
 				},
-				columns: [{ text: "Kullanıcılar", align: "center", dataField: "name", width: '100%' }]  	
-			});
-
-	$('#selectUserDNTreeGrid').on('rowExpand', function (event) {
-		var args = event.args;
-		var row = args.row;
-		if(row.expandedUser == "FALSE") {
-			var nameList=[];
-			for (var m = 0; m < row.records.length; m++) {
-				var childRow = row.records[m];
-				nameList.push(childRow.uid);      
-			}
-
-			for (var k = 0; k < nameList.length; k++) {
-				// get a row.
-				var childRowname = nameList[k];
-				$("#selectUserDNTreeGrid").jqxTreeGrid('deleteRow', childRowname); 
-			}  
-			$.ajax({
-				type : 'POST',
-				url : 'lider/user/getOuDetails',
-				data : 'uid=' + row.distinguishedName + '&type=' + row.type
-				+ '&name=' + row.name + '&parent=' + row.parent,
-				dataType : 'text',
-				success : function(ldapResult) {
-					var childs = jQuery.parseJSON(ldapResult);
-					for (var m = 0; m < childs.length; m++) {
-						// get a row.
-						var childRow = childs[m];
-						$("#selectUserDNTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID, childRow, 'last', row.entryUUID);
-						if(childRow.hasSubordinates=="TRUE"){
-							$("#selectUserDNTreeGrid").jqxTreeGrid('addRow', childRow.entryUUID+"1" , {}, 'last', childRow.entryUUID); 
-						}
-						$("#selectUserDNTreeGrid").jqxTreeGrid('collapseRow', childRow.entryUUID);
-					}
-					row.expandedUser = "TRUE";
+				//check action
+				function(checkedRows, row){
+					
 				},
-				error: function (data, errorThrown) {
-					$.notify("Klasör bilgisi getirilirken hata oluştu.", "error");
+				//uncheck action
+				function(unCheckedRows, row){
+					
+				},
+				// post tree created
+				function(root , treeGridId){
+					$('#'+ treeGridId).jqxTreeGrid('selectRow', root);
+					$('#'+ treeGridId).jqxTreeGrid('expandRow', root);
 				}
-			});
-		}
-	});
-
-	$('#selectUserDNTreeGrid').on('rowSelect', function (event) {
-		var args = event.args;
-		var row = args.row;
-		selectedUserDN = row.distinguishedName;
-
-		if(row.type == "ORGANIZATIONAL_UNIT") {
-			$('#btnSelectedUserForLog').prop('disabled', true);
-		} else {
-			//check if user already has role for console
-			var selectedRows = $("#selectUserDNTreeGrid").jqxTreeGrid('getSelection');
-			$('#btnSelectedUserForLog').prop('disabled', false);
-		}
+		)
 	});
 }
 

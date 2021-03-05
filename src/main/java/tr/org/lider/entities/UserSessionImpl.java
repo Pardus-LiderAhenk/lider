@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Entity class for user login/logout events.
  *
  */
-@JsonIgnoreProperties({ "agent" })
+@JsonIgnoreProperties({ "agent" ,"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "C_AGENT_USER_SESSION")
 public class UserSessionImpl implements Serializable{
@@ -52,7 +52,7 @@ public class UserSessionImpl implements Serializable{
 	@Column(name = "USER_SESSION_ID", unique = true, nullable = false)
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "AGENT_ID", nullable = false)
 	private AgentImpl agent; // bidirectional
 

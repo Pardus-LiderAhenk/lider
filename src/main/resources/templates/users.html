@@ -1,6 +1,4 @@
 <script type="text/javascript" src="js/user/users.js"></script>
-<script type="text/javascript" src="js/user/ouManager.js"></script>
-<script type="text/javascript" src="js/custom.js"></script>
 <script type="text/javascript" >
 
 $(document).ready(function(){
@@ -16,54 +14,8 @@ $(document).ready(function(){
    height: 600px;
 }
 </style>
-	<div class="col-lg-3">
-					<div style="margin-top : 7px;" >
-							<button type="button" data-toggle="dropdown" id="btnFolderActions" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
-                                            <span class="btn-icon-wrapper pr-2 opacity-7" >
-                                                <i class="fa fa-business-time fa-w-20"></i>
-                                            </span>
-                                            Klasör İşlemleri
-                        	</button>
-                        	<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
-                                            <ul class="nav flex-column">
-                                                <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnAddOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
-                                                        <i class="fa fa-folder-open"> &nbsp;</i>
-                                                        <span>
-                                                            Klasör Ekle
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnDeleteOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
-                                                        <i class="fa fa-minus"> &nbsp;</i>
-                                                        <span>
-                                                            Klasör Sil
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a href="#" class="nav-link" id="btnMoveOuModal" data-target="#genericModal" data-toggle="modal" data-parentnode="users" >
-                                                        <i class="fa fa-random"> &nbsp;</i>
-                                                        <span>
-                                                            Klasör Taşı
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                   
-                                                </li>
-                                                
-                                                <li class="nav-item">
-                                                </li>
-                                            </ul>
-                              </div>
-                              <a href="#" class="btn btn-info" id="btnAddUserModal" title="Kullanıcı Ekle" data-target="#genericModalLarge" data-toggle="modal">
-                                    <i class="fa fa-user-plus"> &nbsp;</i>
-                              </a>
-                 </div>
+	<div class="col-lg-3" >
 				<div id="treeGridUserHolderDiv" style="margin-top: 7px;">
-					
 				</div>
 				<div class="col-lg-12" >
 						<button  class="btn btn-link btn-sm pull-right" id="btnTreeRefresh" title="Yenile" style="color:white;  font-weight: bold;"> <i class="fas fa-sync primary" ></i> </button> 
@@ -73,35 +25,52 @@ $(document).ready(function(){
 			    		<img src="img/LoadingPage.gif" width="50" height="50"  /> <span> <b> Lütfen Bekleyiniz... </b> </span> 
 			    	</div>
 		  		</div>
-			
+		  		<div id="userMenuDiv">
+		  					<div id="baseDnUserMenuDiv" style="display: none;">
+								<ul>
+									<a href="#"  class="btn " id="btnAddOuModalBaseDn" data-toggle="modal" data-target="#genericModal">  <li> <i class="fa fa-folder-plus blue">&nbsp;</i> Yeni Klasör Oluştur </li> </a>  
+									<a href="#" class="btn " id="btnAddUserModalBaseDn" data-target="#genericModalLarge" data-toggle="modal">   <li>  <i class="fa fa-users blue"> &nbsp;</i>  Kullanıcı Ekle </li> </a> 
+								</ul>
+							</div>
+							
+							 <div id="userFolderPopUpMenuDiv" style="display: none;" >
+								<ul>
+								<a href="#" class="btn " id="btnAddUserModal" data-target="#genericModalLarge" data-toggle="modal">  <li>  <i class="fa fa-users blue"> &nbsp;</i>Kullanıcı Ekle  </li>  </a> 
+								<a href="#"  class="btn " id="btnAddOuModal" data-toggle="modal" data-target="#genericModal"> <li>  <i class="fa fa-folder-plus blue"> &nbsp;</i>Yeni Klasör Oluştur</li>  </a>   
+<!-- 								<a href="#" class="btn btnRenameOu" data-toggle="modal" data-target="#genericModal" >  <li>  <i class="fa fa-edit blue">&nbsp;</i>Klasör Adı Değiştir </li> </a>  -->
+								<a href="#" class="btn" id="btnMoveOuUserModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-random blue">&nbsp;</i>Klasör Taşı   </li> </a>
+								<a href="#" class="btn " id="btnDeleteUserOuModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-trash red">&nbsp; &nbsp;</i>Klasörü Sil </li> </a>
+								</ul>
+							</div>'
+							
+							 <div id="userPopUpMenuDiv" style="display: none;" >
+								<ul>
+								 <a href="#"  class="btn " id="btnMoveUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-random blue">&nbsp;</i> Kullanıcı Taşı  </li> </a>
+								 <a href="#"  class="btn " id="btnDeleteUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp;</i> Kullanıcı Sil </li> </a> 
+								</ul>
+							</div>';
+		  		</div>
 	</div>
-
 	<div class="col-lg-9 white" style="height: 1200px;">
 										<div id="systemPage" style="margin-top: 14px;">
 											<div class="row">
 									                    <div class="col-md-3 col-sm-3">
-<!-- 									                      <div class="profile_img"> -->
-<!-- 									                        <div id="crop-avatar"> -->
-<!-- 									                          <img class="img-responsive avatar-view" src="images/user_icon.png" width="90" height="70" alt="Avatar" title="Change the avatar"> -->
-<!-- 									                        </div> -->
-<!-- 									                      </div> -->
-
 															<div class="x_panel">
 																<div class="x_title">
-																	 <a class="userInfo"  href="#"> <h2 class="" id="userName" ></h2> </a> 
+																	 <a class="userInfo"  href="#"> <h6 class="" id="userName" ></h6> </a> 
 																		<div class="clearfix"></div>
 																</div>
 																<div class="x_content">
 												                      	<div class="list-group" id="list-tab" role="tablist">
 																	      <a class="list-group-item list-group-item-action active" id="btnEditUserGeneral" data-toggle="list" href="#generalInfo" role="tab" aria-controls="loginHistory"><i class="fa fa-address-card grey"> &nbsp; </i> Genel Bilgiler</a>
 																	      <a class="list-group-item list-group-item-action" id="btnResetPassword" data-toggle="list" href="#resetPassword" role="tab" aria-controls="loginHistory"><i class="fa fa-lock grey"> &nbsp; </i> Parola Sıfırla</a>
-																	      <a class="list-group-item list-group-item-action" id="btnLiderConsoleProfileTab" data-toggle="list" href="#loginHistory" role="tab" aria-controls="loginHistory"> <i class="fa fa-history grey"> &nbsp; </i>Login Geçmişi</a>
+<!-- 																	      <a class="list-group-item list-group-item-action" id="btnLiderConsoleProfileTab" data-toggle="list" href="#loginHistory" role="tab" aria-controls="loginHistory"> <i class="fa fa-history grey"> &nbsp; </i>Oturum Geçmişi</a> -->
 																	      <a class="list-group-item list-group-item-action" id="btnChangePasswordLiderConsoleTab" data-toggle="list" href="#userGroups" role="tab" aria-controls="userGroups"> <i class="fa fa-users grey"> &nbsp; </i> Gruplar</a>
-																	      <a class="list-group-item list-group-item-action" id="btnGroupsOfLiderConsole" data-toggle="list" href="#sudoGroups" role="tab" aria-controls="sudoGroups"> <i class="fa fa-tasks grey"> &nbsp; </i> Yetki Grupları</a>
-																	      <a class="list-group-item list-group-item-action" id="btnLiderConsoleSessions" data-toggle="list" href="#passwordolicy" role="tab" aria-controls="passwordolicy"> <i class="fa fa-unlock-alt grey"> &nbsp; </i> Parola Politikası</a>
-																	      <a class="list-group-item list-group-item-action" id="btnGroupsOfLiderConsole" data-toggle="list" href="#policyHistory" role="tab" aria-controls="policyHistory"> <i class="fa fa-history grey"> &nbsp; </i> Politika Geçmişi</a>
-																	      <a class="list-group-item list-group-item-action btnMoveUserModal" id="btnMoveUserModal" data-target="#genericModal" data-toggle="modal" role="tab" aria-controls="policyHistory"> <i class="fa fa-random grey"> &nbsp; </i> Taşı</a>
-																	      <a class="list-group-item list-group-item-action btnDeleteUserModal" id="btnDeleteUserModal"  data-target="#genericModal" data-toggle="modal" role="tab" aria-controls="policyHistory"> <i class="fa fa-trash red"> &nbsp; </i> Sil</a>
+<!-- 																	      <a class="list-group-item list-group-item-action" id="btnGroupsOfLiderConsole" data-toggle="list" href="#sudoGroups" role="tab" aria-controls="sudoGroups"> <i class="fa fa-tasks grey"> &nbsp; </i> Yetki Grupları</a> -->
+<!-- 																	      <a class="list-group-item list-group-item-action" id="btnLiderConsoleSessions" data-toggle="list" href="#passwordolicy" role="tab" aria-controls="passwordolicy"> <i class="fa fa-unlock-alt grey"> &nbsp; </i> Parola Politikası</a> -->
+<!-- 																	      <a class="list-group-item list-group-item-action" id="btnGroupsOfLiderConsole" data-toggle="list" href="#policyHistory" role="tab" aria-controls="policyHistory"> <i class="fa fa-history grey"> &nbsp; </i> Politika Geçmişi</a> -->
+<!-- 																	      <a class="list-group-item list-group-item-action btnMoveUserModal" id="btnMoveUserModal" data-target="#genericModal" data-toggle="modal" role="tab" aria-controls="policyHistory"> <i class="fa fa-random grey"> &nbsp; </i> Taşı</a> -->
+<!-- 																	      <a class="list-group-item list-group-item-action btnDeleteUserModal" id="btnDeleteUserModal"  data-target="#genericModal" data-toggle="modal" role="tab" aria-controls="policyHistory"> <i class="fa fa-trash red"> &nbsp; </i> Sil</a> -->
 																	    </div>
 												                      	
 																</div>
@@ -132,32 +101,32 @@ $(document).ready(function(){
 <!-- 																	              		</div> -->
 																	              		<div class="col-lg-12 col-md-12">
 																									<div class="form-group">
-																										<a  class="userInfo"  href="#">Kullanıcı ID</a> <input class="form-control" type="text"
+																										<a  class="userInfo"  href="#">Kullanıcı ID</a> <input class="form-control form-control-sm" type="text"
 																											id="uidEdit" name="uid" placeholder="ID Giriniz..(uid) " disabled="disabled" />
 																									</div>
 																									<div class="form-group">
-																										<a  class="userInfo"  href="#">Kullanıcı Adı</a>  <input class="form-control" type="text"
+																										<a  class="userInfo"  href="#">Kullanıcı Adı</a>  <input class="form-control form-control-sm" type="text"
 																											id="cnEdit" name="cn" placeholder="Ad Giriniz.." />
 																									</div>
 																									<div class="form-group">
-																										<a  class="userInfo"  href="#">Kullanıcı Soyadı</a>  <input class="form-control"
+																										<a  class="userInfo"  href="#">Kullanıcı Soyadı</a>  <input class="form-control form-control-sm"
 																											type="text" id="snEdit" name="sn" placeholder="Soyad Giriniz.." />
 																									</div>
 																									<div class="form-group">
-																										<a  class="userInfo"  href="#">Mail Adresi</a> <input class="form-control"
+																										<a  class="userInfo"  href="#">Mail Adresi</a> <input class="form-control form-control-sm"
 																											type="text" id="mailEdit" name="mailEdit" placeholder="Mail Adresi Giriniz.." />
 																									</div>
 																									<div class="form-group">
-																										<a  class="userInfo"  href="#">Telefon</a>  <input class="form-control"
+																										<a  class="userInfo"  href="#">Telefon</a>  <input class="form-control form-control-sm"
 																											type="text" id="telephoneNumberEdit" name="telephoneNumber" placeholder="Telefon Giriniz.." />
 																									</div>
 																									<div class="form-group">
 																										<a  class="userInfo"  href="#">Adres</a>  
-																										<textarea cols="4" rows="4" class="form-control" id="homePostalAddressEdit" name="homePostalAddressEdit" placeholder="Adres Giriniz.."  > </textarea> 
+																										<textarea cols="4" rows="4" class="form-control form-control-sm" id="homePostalAddressEdit" name="homePostalAddressEdit" placeholder="Adres Giriniz.."  > </textarea> 
 																									</div>
 																									
 																									<div class="form-group">
-																										<a href="#" class="btn btn-primary submit-button" id="editUserBtn"> <span>Güncelle</span>
+																										<a href="#" class="btn btn-primary btn-sm submit-button" id="editUserBtn"> <span>Güncelle</span>
 																										</a>
 																									</div>
 																	              		</div>
@@ -169,44 +138,68 @@ $(document).ready(function(){
 										                    			<div class="x_panel tile ">
 																	             <div class="x_title">
 																	                 <a class="userInfo"  href="#"><h2>Parola Sıfırla</h2> </a> 
-																	                  
 																	                  <div class="clearfix"></div>
 																	              </div>
 																	              <div class="x_content">
-																	              
-																	              <div class="form-group">
-																						<a  class="userInfo"  href="#">Yeni Parola</a>  <input class="form-control" type="password"
-																								id="newUserPassword" name="newUserPassword" placeholder="Yeni Parola " />
+																	              		<div class="col-lg-12">
+																	              		      <div class="item form-group">
+																			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="userPassword"> <a  class="userInfo"  href="#"> Yeni Parola </a> <span class="required">*</span>
+																			                        </label>
+																			                        <div class="col-md-9 col-sm-9 ">
+																				                        <div class="input-group mb-3">
+																				                            <input class="form-control form-control-sm" type="password" id="newUserPassword" name="newUserPassword"	/>
+																				                         	<div class="input-group-append">
+																												<button id="newConsoleUserPasswordShowBtn" type="button" onclick="showNewPassword()" class="btn btn-info btn-sm"><i class="fas fa-eye-slash"></i></button>
+																											</div>
+																				                        </div>
+																		                        </div>
+																			                 </div>
+																			                 
+																							 <div class="item form-group">
+																								 
+																			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="confirm_password"><a  class="userInfo"  href="#">Yeni Parola Onayla</a> <span class="required">*</span>
+																			                        </label>
+																			                        <div class="col-md-9 col-sm-9 ">
+																			                        <div class="input-group mb-3">
+																			                         <input class="form-control form-control-sm" type="password" id="newConfirmPassword" name="newConfirmPassword"	 />
+																			                         <div class="input-group-append">
+																											<button id="newConsoleUserConfirmPasswordShowBtn" type="button" onclick="showNewConfirmPassword()"	class="btn btn-info btn-sm"><i class="fas fa-eye-slash"></i></button>
+																										</div>
+																			                        </div>
+																		                        </div>
+																			                 </div>
+
+															 								<div class="item form-group">
+																			                        <div class="col-md-3 col-sm-3 "></div>
+																			                        <div class="col-md-9 col-sm-9 ">
+																			                         <span class="text-secondary">Şifre en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.</span>
+																			                        </div>
+																			                 </div>
+																			                 
+																			                 <div class="col-lg-12">
+																									<div class="form-group pull-right">
+																											<button class="btn btn-sm btn-primary submit-button"  id="updateUserPasswordBtn">
+																												<span>Parola Sıfırla</span>
+																											</button>
+																									</div>
+																							</div>
 																						</div>
-																						<div class="form-group">
-																							<a  class="userInfo"  href="#">Yeni Parola Onayla</a>  <input class="form-control"
-																								type="password" id="newConfirmPassword" name="newConfirmPassword"
-																								placeholder="Yeni Parola Onayla" />
-																						</div>
-																						<div class="form-group">
-																							<span class="text-secondary">Şifre en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.</span>
-																						</div>
-																						<div class="form-group">
-																						<a href="#" class="btn btn-primary submit-button pull-right" id="updateUserPasswordBtn">
-																							<span>Parola Güncelle</span>
-																						</a>
-																			    </div>
-																		  </div>
+																		  		</div>
 										                    	</div>
 										                    	</div>
-										                    	<div class="tab-pane fade show" id="loginHistory" role="tabpanel" aria-labelledby="loginHistory">
-										                    			<div class="x_panel tile ">
-																	             <div class="x_title">
-																	                 <a class="userInfo"  href="#"><h2>Login Geçmişi</h2> </a> 
+<!-- 										                    	<div class="tab-pane fade show" id="loginHistory" role="tabpanel" aria-labelledby="loginHistory"> -->
+<!-- 										                    			<div class="x_panel tile "> -->
+<!-- 																	             <div class="x_title"> -->
+<!-- 																	                 <a class="userInfo"  href="#"><h2>Oturum Geçmişi</h2> </a>  -->
 																	                  
-																	                  <div class="clearfix"></div>
-																	              </div>
-																	              <div class="x_content">
+<!-- 																	                  <div class="clearfix"></div> -->
+<!-- 																	              </div> -->
+<!-- 																	              <div class="x_content"> -->
 																	              
-																	              <div id="sessionListDiv" class="table-responsive tableResult" ></div>
-																			    </div>
-																		  </div>
-										                    	</div>
+<!-- 																	              <div id="sessionListDiv" class="table-responsive tableResult" ></div> -->
+<!-- 																			    </div> -->
+<!-- 																		  </div> -->
+<!-- 										                    	</div> -->
 										                    	<div class="tab-pane fade show " id="userGroups" role="tabpanel" aria-labelledby="userGroups">
 										                    			 <div class="x_panel tile ">
 															                <div class="x_title">
@@ -219,18 +212,18 @@ $(document).ready(function(){
 															              </div>
 														 				 </div>
 																 </div>
-										                    	<div class="tab-pane fade show " id="sudoGroups" role="tabpanel" aria-labelledby="sudoGroups">
-										                    			 <div class="x_panel tile ">
-															                <div class="x_title">
-															                  <a class="userInfo"  href="#"><h2>Yetki Grupları</h2> </a>  
+<!-- 										                    	<div class="tab-pane fade show " id="sudoGroups" role="tabpanel" aria-labelledby="sudoGroups"> -->
+<!-- 										                    			 <div class="x_panel tile "> -->
+<!-- 															                <div class="x_title"> -->
+<!-- 															                  <a class="userInfo"  href="#"><h2>Yetki Grupları</h2> </a>   -->
 															                 
-															                  <div class="clearfix"></div>
-															                </div>
-															                <div class="x_content">
-															                <div id="rolesDiv" class="table-responsive tableResult" >Kullanıcının istemci yönetim yetki grubu bulunmamaktadir.</div>
-															              </div>
-														  				</div>
-																 </div>
+<!-- 															                  <div class="clearfix"></div> -->
+<!-- 															                </div> -->
+<!-- 															                <div class="x_content"> -->
+<!-- 															                <div id="rolesDiv" class="table-responsive tableResult" >Kullanıcının istemci yönetim yetki grubu bulunmamaktadir.</div> -->
+<!-- 															              </div> -->
+<!-- 														  				</div> -->
+<!-- 																 </div> -->
 										                    	<div class="tab-pane fade show " id="passwordolicy" role="tabpanel" aria-labelledby="passwordolicy">
 										                    			<div class="x_panel tile ">
 															                <div class="x_title">
@@ -247,18 +240,18 @@ $(document).ready(function(){
 															              </div>
 														  				</div>
 																 </div>
-										                    	<div class="tab-pane fade show " id="policyHistory" role="tabpanel" aria-labelledby="policyHistory">
-										                    			  <div class="x_panel tile ">
-															                <div class="x_title">
-															                  <a class="userInfo"  href="#"><h2>Politika Geçmişi</h2> </a>  
+<!-- 										                    	<div class="tab-pane fade show " id="policyHistory" role="tabpanel" aria-labelledby="policyHistory"> -->
+<!-- 										                    			  <div class="x_panel tile "> -->
+<!-- 															                <div class="x_title"> -->
+<!-- 															                  <a class="userInfo"  href="#"><h2>Politika Geçmişi</h2> </a>   -->
 															                 
-															                  <div class="clearfix"></div>
-															                </div>
-															                <div class="x_content">
-															                  <div id="policyHistoryDiv" class="table-responsive tableResult" > </div>
-															              </div>
-														  				</div>
-																</div>
+<!-- 															                  <div class="clearfix"></div> -->
+<!-- 															                </div> -->
+<!-- 															                <div class="x_content"> -->
+<!-- 															                  <div id="policyHistoryDiv" class="table-responsive tableResult" > </div> -->
+<!-- 															              </div> -->
+<!-- 														  				</div> -->
+<!-- 																</div> -->
 										                    	</div>
 										                    </div>
                 							</div>

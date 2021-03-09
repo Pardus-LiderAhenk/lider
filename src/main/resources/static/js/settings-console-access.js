@@ -33,6 +33,7 @@ $(document).ready(function () {
 	$('#groupMembersHeaderDiv').hide();
 	$('#groupMembersDiv').hide();
 	tabConsoleSettingsClicked();
+	
 	$('#btnGroupTreeRefresh').click(function(){
 		createMainTree();
 	});
@@ -53,35 +54,35 @@ function dropdownButtonClickedSetting(operation) {
 		getModalContent("modals/settings/select_entry_from_tree_for_olc", function content(data){
 			$('#genericModalHeader').html("Erişim Yetkisi Ekleme");
 			$('#genericModalBodyRender').html(data);
-			$('#olcAccessInfoAlert').html('<b>"' + selectedDNOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
+			$('#olcAccessInfoAlert').html('<b>"' + selectedNameOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
 			generateTreeForSelectingOUToAddOLCRule('lider/computer/getComputers', 'lider/computer/getOuDetails', 'Bilgisayarlar');
 		});
 	} else if(operation == "addOLCRulesToUsersTree") {
 		getModalContent("modals/settings/select_entry_from_tree_for_olc", function content(data){
 			$('#genericModalHeader').html("Erişim Yetkisi Ekleme");
 			$('#genericModalBodyRender').html(data);
-			$('#olcAccessInfoAlert').html('<b>"' + selectedDNOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
+			$('#olcAccessInfoAlert').html('<b>"' + selectedNameOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
 			generateTreeForSelectingOUToAddOLCRule('lider/user/getUsers', 'lider/user/getOuDetails', 'Kullanıcılar');
 		});
 	} else if(operation == "addOLCRulesToComputerGroupsTree") {
 		getModalContent("modals/settings/select_entry_from_tree_for_olc", function content(data){
 			$('#genericModalHeader').html("Erişim Yetkisi Ekleme");
 			$('#genericModalBodyRender').html(data);
-			$('#olcAccessInfoAlert').html('<b>"' + selectedDNOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
+			$('#olcAccessInfoAlert').html('<b>"' + selectedNameOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
 			generateTreeForSelectingOUToAddOLCRule('lider/computer_groups/getGroups', 'lider/computer_groups/getOuDetails', 'İstemci Grupları');
 		});
 	} else if(operation == "addOLCRulesToUserGroupsTree") {
 		getModalContent("modals/settings/select_entry_from_tree_for_olc", function content(data){
 			$('#genericModalHeader').html("Erişim Yetkisi Ekleme");
 			$('#genericModalBodyRender').html(data);
-			$('#olcAccessInfoAlert').html('<b>"' + selectedDNOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
+			$('#olcAccessInfoAlert').html('<b>"' + selectedNameOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
 			generateTreeForSelectingOUToAddOLCRule('lider/user_groups/getGroups', 'lider/user_groups/getOuDetails', 'Kullanıcı Grupları');
 		});
 	} else if(operation == "addOLCRulesToRoleGroupsTree") {
 		getModalContent("modals/settings/select_entry_from_tree_for_olc", function content(data){
 			$('#genericModalHeader').html("Erişim Yetkisi Ekleme");
 			$('#genericModalBodyRender').html(data);
-			$('#olcAccessInfoAlert').html('<b>"' + selectedDNOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
+			$('#olcAccessInfoAlert').html('<b>"' + selectedNameOfUserGroupsTree + '"</b> grubunun tüm üyeleri seçeceğiniz klasör ve bu klasörün altındaki tüm klasör ve kayıtlara erişim sağlayacaktır');
 			generateTreeForSelectingOUToAddOLCRule('lider/sudo_groups/getGroups', 'lider/sudo_groups/getOuDetails', 'Rol Grupları');
 		});
 	}
@@ -92,8 +93,11 @@ function dropdownButtonClickedSetting(operation) {
  * create user groups tree to assign LDAP OLC access rules.
  */
 function createMainTree() {
+	
 	$("#treeGridUserGroupsDiv").html("");
+	
 	var treeGridHolderDiv= "treeGridUserGroupsDiv";
+	
 	createUserGroupTree('lider/user_groups/getGroups',treeGridHolderDiv, false, false,
 			// row select
 			function(row, rootDnComputer,treeGridIdName){
@@ -156,7 +160,9 @@ function createMainTree() {
 			function(rootComputer , treeGridId){
 				$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
 				$('#'+ treeGridId).jqxTreeGrid('expandRow', rootComputer);
-			}
+			},
+			// create pop up menu 
+			true
 	);
 }
 
@@ -471,9 +477,6 @@ function btnAddNewConsoleUserClicked() {
 		});
 		
 		$('#btnAddToGroupSelectedUser').click(function() {
-			console.log(savedNewConsoleUser)
-			console.log(selectedGroupdNewConsoleUser)
-			
 			if(selectedGroupdNewConsoleUser==null){
 				$.notify("Lütfen Grup Seçiniz",{className: 'success',position:"right top"}  );
 				return;
@@ -528,8 +531,10 @@ function generateTreeForAssigningLiderConsoleUser() {
 				selectedName = row.name;
 				
 				if(row.type == "ORGANIZATIONAL_UNIT") {
+					$('#addConsoleUserBtn').prop('disabled', false);
 					$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', true);
 					$('#alreadyConsoleUser').html("");
+					$('#selectedDnForNewUser').html(selectedDN);
 				}
 				else if(row.type == "USER"){
 					savedNewConsoleUser=row;
@@ -546,12 +551,14 @@ function generateTreeForAssigningLiderConsoleUser() {
 						}
 					}
 					if(isUserAlreadyConsoleUser) {
-						$('#alreadyConsoleUser').html("<br>Seçili kullanıcının Arayüz yetkisi bulunmaktadır. Lütfen başka bir kullanıcı seçiniz.");
+						$('#alreadyConsoleUser').html("<br>Kullanıcının Arayüz yetkisi bulunmaktadır.");
 						$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', true);
 					} else {
 						$('#alreadyConsoleUser').html("");
 						$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', false);
 					}
+					
+					$('#addConsoleUserBtn').prop('disabled', true);
 				}
 			},
 			//check action
@@ -566,7 +573,8 @@ function generateTreeForAssigningLiderConsoleUser() {
 			function(root , treeGridId){
 				$('#'+ treeGridId).jqxTreeGrid('selectRow', root);
 				$('#'+ treeGridId).jqxTreeGrid('expandRow', root);
-			}
+			},
+			false
 	);
 }
 function generateTreeForAssigningDirectoryAccess() {
@@ -619,7 +627,9 @@ function generateTreeForAssigningDirectoryAccess() {
 			function(rootComputer , treeGridId){
 				$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
 				$('#'+ treeGridId).jqxTreeGrid('expandRow', rootComputer);
-			}
+			},
+			// create pop up menu 
+			false
 	);
 }
 
@@ -713,6 +723,7 @@ function btnGiveConsoleAccessToNewUserClicked() {
 		return;
 	}
     var params = {
+    		"parentName" :selectedDN,
 			"uid" : uid,
 			"cn": cn,
 			"sn": sn,
@@ -734,7 +745,7 @@ function btnGiveConsoleAccessToNewUserClicked() {
 			$(".accessDirectoryTab").click();
 		},
 	    error: function (data, errorThrown) {
-			$.notify("Kullanıcı Eklenirken Hata Oluştu.", "error");
+			$.notify("Dizine erişiminiz bulunmamaktadır. Lütfen Dizin Erişiminizi Kontrol Ediniz.", "error");
 		}
 	});  
 }
@@ -784,9 +795,6 @@ function btnEditUserRolesClicked() {
 }
 
 
-
-
-
 function setRolesTable() {
 	var trElement = "";
 	$.each(roles, function(index, element) {
@@ -812,7 +820,7 @@ function generateTreeForSelectingOUToAddOLCRule(treeHeadURL, treeExpandURL, tree
 	var treeHolderDiv='olcTreeDiv';
 	var treeGridId=treeHolderDiv+"Grid";
 	
-	createSearch(treeHolderDiv,treeGridId,false);
+	createOlcRuleSearch(treeHolderDiv,treeGridId,false);
 	
 	var rootEntryUUID;
 	$.ajax({
@@ -967,7 +975,7 @@ function generateTreeForSelectingOUToAddOLCRule(treeHeadURL, treeExpandURL, tree
 	});
 }
 
-function createSearchAreaForOLCTree(treeHolderDiv,treeGridId, showOnlyFolder) {
+function createOlcRuleSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 	var srcInputId= treeHolderDiv+"srcInput";
 	var srcBtnId= treeHolderDiv+"srcBtn";
 	var srcSelectId= treeHolderDiv+"srcSelect";
@@ -1048,4 +1056,321 @@ function contains(rootPassword, allowedChars) {
              }
          }
      return false;
+}
+
+function showNewPassword() {
+	if ($('#userPassword').attr('type') == "text") {
+		$("#userPassword").attr("type","password");
+		$("#newConsoleUserPasswordShowBtn").html('<i class="fas fa-eye-slash"></i>');
+	} else {
+		$("#userPassword").attr("type","text");
+		$("#newConsoleUserPasswordShowBtn").html('<i class="fas fa-eye"></i>');
+	}
+}
+
+function showNewConfirmPassword() {
+	if ($('#confirm_password').attr('type') == "text") {
+		$("#confirm_password").attr("type","password");
+		$("#newConsoleUserConfirmPasswordShowBtn").html('<i class="fas fa-eye-slash"></i>');
+	} else {
+		$("#confirm_password").attr("type","text");
+		$("#newConsoleUserConfirmPasswordShowBtn").html('<i class="fas fa-eye"></i>');
+	}
+}
+
+/*
+ * this function triggered by delete button on DeleteGroupModal
+ */
+function btnDeleteGroupClicked() {
+	var params = {
+			"dn": selectedRow.distinguishedName,
+	};
+	$.ajax({ 
+		type: 'POST', 
+		url: '/lider/user_groups/deleteEntry',
+		dataType: 'json',
+		data: params,
+		success: function (data) {
+			$('#'+treeGridId).jqxTreeGrid('deleteRow', selectedRow.entryUUID);
+			$('#'+treeGridId).jqxTreeGrid('selectRow', rootComputer);
+			$.notify("Kullanıcı grubu başarıyla silindi.", "success");
+//			clearAndHide();
+		},
+		error : function(jqXHR, textStatus, errorThrown) {
+			if(jqXHR != null && jqXHR.responseJSON != null && jqXHR.responseJSON[0] != null && jqXHR.responseJSON[0] != "")
+				$.notify("Kullanıcı grubu silinirken hata oluştu: " + jqXHR.responseJSON[0], "error");
+			else
+				$.notify("Kullanıcı grubu silinirken hata oluştu.", "error");
+		},
+		complete : function() {
+			$("#genericModal").trigger('click');
+			$("#genericModalLarge").trigger('click');
+		}
+	});
+}
+
+
+function btnDeleteOUClicked() {
+	var params = {
+			"dn": selectedRow.distinguishedName,
+	};
+	$.ajax({ 
+		type: 'POST', 
+		url: '/lider/user_groups/deleteEntry',
+		dataType: 'json',
+		data: params,
+		success: function (data) {
+			$('#'+treeGridId).jqxTreeGrid('deleteRow', selectedRow.entryUUID);
+			$('#'+treeGridId).jqxTreeGrid('selectRow', rootComputer);
+			$('#genericModal').trigger('click');
+			$.notify("Klasör başarıyla silindi.", "success");
+		},
+		error: function (data, errorThrown) {
+			$.notify("Klasör silinirken hata oluştu.", "error");
+		}
+	});
+}
+
+/*
+ * this function triggered by edit button on EditGroupModal
+ */
+function btnEditGroupNameClicked() {
+	var newOuName = $("#groupName").val();
+	if(newOuName == "") {
+		$.notify("Grup adı giriniz.", "error");
+	} else {
+		if(newOuName == selectedName) {
+			$('#genericModal').trigger('click');
+			return;
+		} 
+		var params = {
+				"oldDN" : selectedRow.distinguishedName,
+				"newName": "cn=" + newOuName
+		};
+		$.ajax({
+			type: 'POST', 
+			url: '/lider/user_groups/rename/entry',
+			dataType: 'json',
+			data: params,
+			success: function (data) {
+				$.notify("Grup adı düzenlendi.", "success");
+				$('#genericModal').trigger('click');
+				$('#'+ treeHolderDivGlob).html("");
+				createMainTree();
+				
+			},
+			error: function (data, errorThrown) {
+				$.notify("Grup adı düzenlenirken hata oluştu.", "error");
+			}
+		});
+	}
+}
+
+/*
+ * edit organizational unit name
+ */
+function btnEditOUNameClicked() {
+	var newOuName = $("#ouName").val();
+	if(newOuName == "") {
+		$.notify("Klasör adı giriniz.", "error");
+	} else {
+		if(newOuName == selectedName) {
+			$('#genericModal').trigger('click');
+			return;
+		} 
+		var params = {
+				"oldDN" : selectedDN,
+				"newName": "ou=" + newOuName
+		};
+		$.ajax({
+			type: 'POST', 
+			url: '/lider/user_groups/rename/entry',
+			dataType: 'json',
+			data: params,
+			success: function (data) {
+				$.notify("Klasör adı düzenlendi.", "success");
+				$('#genericModal').trigger('click');
+				createMainTree();
+			},
+			error: function (data, errorThrown) {
+				$.notify("Klasör adı düzenlenirken hata oluştu.", "error");
+			}
+		});
+	}
+}
+
+function btnMoveEntryClicked() {
+	if(selectedRowForMoveOld.distinguishedName == destinationDNToMoveRecordGlob) {
+		$.notify("Kayıt kendi altına taşınamaz.", "error");
+	}
+	else if(selectedRowForMoveOld.parent.distinguishedName != destinationDNToMoveRecordGlob) {
+		var params = {
+				"sourceDN" : selectedRowForMoveOld.distinguishedName,
+				"destinationDN": destinationDNToMoveRecordGlob
+		};
+		$.ajax({ 
+			type: 'POST', 
+			url: '/lider/user_groups/move/entry',
+			dataType: 'json',
+			data: params,
+			success: function (data) {
+				$.notify("Seçili Grup başarı ile taşındı.", "success");
+				$('#genericModal').trigger('click');
+//				clearAndHide();
+				createMainTree();
+			},
+			error: function (data, errorThrown) {
+				$.notify("Kayıt taşınırken hata oluştu.", "error");
+			}
+		});
+	} else {
+		$.notify("Kayıt aynı yere taşınamaz.", "error");
+	}
+}
+
+
+
+/*
+ * create, delete operations for Organizational Unit
+ */
+function btnCreateNewOUClicked() {
+	var ouName = $("#ouName").val();
+	if(ouName == "") {
+		$.notify("Klasör adı giriniz.", "error");
+	} else {
+		var params = {
+				"parentName" : selectedRow.distinguishedName,
+				"ou": ouName,
+				"type": 'ORGANIZATIONAL_UNIT',
+				"distinguishedName": 'ou=' + ouName + ',' + selectedRow.distinguishedName,
+				"name": ouName
+		};
+		$.ajax({ 
+			type: 'POST', 
+			url: '/lider/user_groups/addOu',
+			dataType: 'json',
+			data: params,
+			success: function (data) {
+				// add new empty row.
+//				$('#'+treeGridId).jqxTreeGrid('addRow', data.entryUUID, data, 'first', selectedEntryUUID);
+//				$('#'+treeGridId).jqxTreeGrid('expandRow', selectedEntryUUID);
+//				$('#'+treeGridId).jqxTreeGrid('selectRow', data.entryUUID);
+//				createUserGroupTree(searchPathGlob,treeHolderDivGlob,showOnlyFolderGlob,useCheckBoxGlob, rowSelectActionGlob, rowCheckActionGlob, rowUncheckActionGlob, postTreeCreatedActionGlob);
+				$('#genericModal').trigger('click');
+				createMainTree();
+				$.notify("Klasör oluşturuldu.", "success");
+			},
+			error: function (data, errorThrown) {
+				$.notify("Klasör oluşturulurken hata oluştu.", "error");
+			}
+		});
+	}
+}
+
+function rowCheckAndUncheckOperationForCreatingUserGroup(checkedRows,row) {
+	if(row.entryUUID != null) {
+		checkedOUList = [];
+		checkedUsers = [];
+		if(checkedRows.length > 0){
+			for (var k = 0; k < checkedRows.length; k++) {
+				var rowCheck = checkedRows[k]
+				if(rowCheck.type == "USER") {
+					checkedUsers.push({
+						distinguishedName: rowCheck.distinguishedName, 
+						entryUUID: rowCheck.entryUUID, 
+						name: rowCheck.name,
+						type: rowCheck.type,
+						uid: rowCheck.uid
+					});
+				} 
+
+				if(rowCheck.type == "ORGANIZATIONAL_UNIT" && rowCheck.expandedUser == "FALSE") {
+					checkedOUList.push({
+						distinguishedName: rowCheck.distinguishedName, 
+						entryUUID: rowCheck.entryUUID, 
+						name: rowCheck.name,
+						type: rowCheck.type,
+						uid: rowCheck.uid
+					});
+				}
+			}
+			if(checkedOUList.length > 0) {
+				$.ajax({
+					url : 'lider/user_groups/getUsersUnderOU',
+					type : 'POST',
+					data: JSON.stringify(checkedOUList),
+					dataType: "json",
+					contentType: "application/json",
+					success : function(data) {
+						var ahenks = data;
+						$.each(data, function(index, element) {
+							var isExists = false;
+							for(var i = 0; i < checkedUsers.length; i++) {
+								if(element.entryUUID == checkedUsers[i].entryUUID) {
+									isExists = true;
+								}
+							}
+							if(isExists == false) {
+								checkedUsers.push({
+									distinguishedName: element.distinguishedName, 
+									entryUUID: element.entryUUID, 
+									name: element.name,
+									type: element.type,
+									uid: element.uid
+								});
+							}
+						});
+					},
+					error: function (data, errorThrown) {
+						$.notify("Kullanıcıler getirilirken hata oluştu.", "error");
+					},
+					complete: function() {
+						$('#selectedUserCountCreateNewUserGroup').html(checkedUsers.length);
+					}
+				});
+			} else {
+				$('#selectedUserCountCreateNewUserGroup').html(checkedUsers.length);
+			}
+
+		} else {
+			$('#selectedUserCountCreateNewUserGroup').html(checkedUsers.length);
+		}
+	}
+}
+
+function btnCreateUserGroupClicked() {
+	if($('#userGroupsNewUserGroupName').val() == "") {
+		$.notify("Lütfen grup adı giriniz.", "error");
+		return;
+	} else if(checkedUsers.length == 0) {
+		$.notify("Grup oluşturabilmek için en az bir kullanıcı seçmelisiniz.", "error");
+		return;
+	}
+	var selectedRows = $("#createNewUserGroupTreeDivGrid").jqxTreeGrid('getSelection');
+	var selectedDNList = [];
+	for (var i = 0; i < checkedUsers.length; i++) {
+		selectedDNList.push(checkedUsers[i].distinguishedName);
+	}
+	var params = {
+			"groupName" : $('#userGroupsNewUserGroupName').val(),
+			"checkedList": selectedDNList,
+			"selectedOUDN" : selectedDN
+	};
+	$.ajax({ 
+		type: 'POST', 
+		url: "/lider/user_groups/createNewGroup",
+		dataType: 'json',
+		data: params,
+		success: function (data) { 
+			$.notify("Grup oluşturuldu ve kullanıcılar bu gruba dahil edildi.", "success");
+			//after user group is added get newly added group detail from service
+			//add this group to main tree
+			$('#'+treeGridId).jqxTreeGrid('addRow', data.entryUUID, data, 'last', selectedEntryUUID);
+			$('#'+treeGridId).jqxTreeGrid('expandRow', selectedEntryUUID);
+			$('#genericModal').trigger('click');
+		},
+		error: function (data, errorThrown) {
+			$.notify("Yeni kullanıcı grubu oluştururken hata oluştu.", "error");
+		}
+	});
 }

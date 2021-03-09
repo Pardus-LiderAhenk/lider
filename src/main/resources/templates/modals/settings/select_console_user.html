@@ -1,9 +1,8 @@
 <!-- Start Add Users To Existing User Group or Create New User -->
 <ul class="nav nav-tabs" id="tabs">
-	<li class="nav-item"><a data-toggle="tab" href="#tab-newUser"
-		class="active nav-link newConsoleUserTab"> <i class="fa fa-user"></i> Yeni Arayüz Kullanıcısı Oluştur</a></li>
+	
 	<li class="nav-item"><a data-toggle="tab" href="#tab-existUser"
-		class="nav-link existConsoleUserTab"> <i class="fa fa-users"></i> Mevcut Kullanıcılara Erişim Yetkisi Ver</a></li>
+		class="nav-link active existConsoleUserTab"> <i class="fa fa-users"></i> Mevcut Kullanıcılara Erişim Yetkisi Ver</a></li>
 		
 	<li class="nav-item"><a data-toggle="tab" href="#tab-accessDirectory"
 		class=" nav-link accessDirectoryTab"> <i class="fa fa-list-ul"></i> Dizin Erişim Yetkisi Ver</a></li>
@@ -11,110 +10,148 @@
 </ul>
 
 <div class="tab-content">
-	<div class="tab-pane active" id="tab-newUser" role="tabpanel">
-				 <div class="col-lg-6">
-					 			<div class="item form-group">
+<!-- 	<div class="tab-pane " id="tab-newUser" role="tabpanel"> -->
+<!-- 				 <div class="col-lg-6"> -->
+					 	
+<!-- 			   </div>     -->
+				
+<!-- 	</div> -->
+	
+	<div class="tab-pane active" id="tab-existUser" role="tabpanel">
+			<div class="col-lg-6" id="existUserDiv">
+				<div id="selectConsoleUserTreeDiv">
+<!-- 					<div id="selectConsoleUserTreeGrid"></div> -->
+				</div>
+					<div id="userMenuDiv">
+			  					<div id="baseDnMenuDiv" style="display: none;">
+									<ul>
+										<a href="#"  class="btn btnAddOuModal" data-toggle="modal" data-target="#genericModal">  <li> <i class="fa fa-folder-plus blue">&nbsp;</i> Yeni Klasör Oluştur </li> </a>  
+										<a href="#" class="btn btnAddUserModal" data-target="#genericModalLarge" data-toggle="modal">   <li>  <i class="fa fa-users blue"> &nbsp;</i>  Kullanıcı Ekle </li> </a> 
+									</ul>
+								</div>
+								
+								 <div id="folderPopUpMenuDiv" style="display: none;" >
+									<ul>
+									<a href="#" class="btn btnAddUserModal"  data-target="#genericModalLarge" data-toggle="modal">  <li>  <i class="fa fa-users blue"> &nbsp;</i>Kullanıcı Ekle  </li>  </a> 
+									<a href="#"  class="btn btnAddOuModal" data-toggle="modal" data-target="#genericModal"> <li>  <i class="fa fa-folder-plus blue"> &nbsp;</i>Yeni Klasör Oluştur</li>  </a>   
+	<!-- 								<a href="#" class="btn btnRenameOu" data-toggle="modal" data-target="#genericModal" >  <li>  <i class="fa fa-edit blue">&nbsp;</i>Klasör Adı Değiştir </li> </a>  -->
+									<a href="#" class="btn" id="btnMoveOuUserModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-random blue">&nbsp;</i>Klasör Taşı   </li> </a>
+									<a href="#" class="btn btnDeleteOuModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-trash red">&nbsp; &nbsp;</i>Klasörü Sil </li> </a>
+									</ul>
+								</div>'
+								
+								 <div id="userPopUpMenuDiv" style="display: none;" >
+									<ul>
+									 <a href="#"  class="btn " id="btnMoveUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-random blue">&nbsp;</i> Kullanıcı Taşı  </li> </a>
+									 <a href="#"  class="btn btnDeleteUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp;</i> Kullanıcı Sil </li> </a> 
+									</ul>
+								</div>';
+			  		</div>
+				
+				<div class="form-row">
+						<div class="col-lg-6">
+							<span id="alreadyConsoleUser"></span>
+						</div>
+						<div class="col-lg-6">
+							<button type="button" class="btn btn-danger pull-right ml-1" id="btnDeleteConsoleUserClicked" onclick="btnDeleteConsoleUserClicked()" style="margin-top: 5px;" title="Arayüz Kullanıcısı Sil" >Arayüz Kullanıcısı Sil </button>
+							<button type="button" class="btn btn-primary pull-right" style="margin-top: 5px;" id="btnGiveConsoleAccessToSelectedUser" onclick="btnGiveConsoleAccessToSelectedUserClicked()" disabled="disabled" >Arayüz Kullanma Yetkisi Ver</button>
+						</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+								<div class="item form-group">
+			                        <label class="col-form-label col-md-12 col-sm-12 label-align" id="selectedDnForNewUser" for="uid"><span class="required">*</span>
+			                        </label>
+			                      </div>
+								<div class="item form-group">
 			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="uid">Kimlik (ID) <span class="required">*</span>
 			                        </label>
-			                        <div class="col-md-6 col-sm-6 ">
-			                          <input class="form-control" type="text" id="uid" name="uid"  />
+			                        <div class="col-md-9 col-sm-9 ">
+			                          <input class="form-control form-control-sm" type="text" id="uid" name="uid"  />
 			                        </div>
 			                      </div>
 			                      <div class="item form-group">
 			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="cn">Kullanıcı Adı <span class="required">*</span>
 			                        </label>
-			                        <div class="col-md-6 col-sm-6 ">
-			                          <input class="form-control" type="text"	id="cn" name="cn"  />
+			                        <div class="col-md-9 col-sm-9 ">
+			                          <input class="form-control form-control-sm" type="text"	id="cn" name="cn"  />
 			                        </div>
 			                      </div>
 			                      <div class="item form-group">
 			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="last-name">Kullanıcı Soyadı <span class="required">*</span>
 			                        </label>
-			                        <div class="col-md-6 col-sm-6 ">
-			                          <input class="form-control" type="text" id="sn" name="sn" />
+			                        <div class="col-md-9 col-sm-9 ">
+			                          <input class="form-control form-control-sm" type="text" id="sn" name="sn" />
 			                        </div>
 			                      </div>
 			                      <div class="item form-group">
 			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="mail">Mail Adresi <span class="required">*</span>
 			                        </label>
-			                        <div class="col-md-6 col-sm-6 ">
-			                          <input class="form-control" type="text" id="mail" name="mail"  />
+			                        <div class="col-md-9 col-sm-9 ">
+			                          <input class="form-control form-control-sm" type="text" id="mail" name="mail"  />
 			                        </div>
 			                      </div>
 			                      <div class="item form-group">
 			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="telephoneNumber">Telefon <span class="required">*</span>
 			                        </label>
-			                        <div class="col-md-6 col-sm-6 ">
+			                        <div class="col-md-9 col-sm-9 ">
 <!-- 			                          <input class="form-control" type="text"	id="telephoneNumber" name="telephoneNumber" 	 /> -->
-			                          <input class="form-control" type="text" name="telephoneNumber" id="telephoneNumber"  
+			                          <input class="form-control form-control-sm" type="text" name="telephoneNumber" id="telephoneNumber"  
 			                          required="required" title="e.g (123) 456-7890" pattern="^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$">
 			                        </div>
 			                      </div>
 			                      <div class="item form-group">
-			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="homePostalAddress">Adres <span class="required"></span>
+			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="homePostalAddress">Adres <span class="required">*</span>
 			                        </label>
-			                        <div class="col-md-6 col-sm-6 ">
-			                         <textarea class="form-control" id="homePostalAddress" name="homePostalAddress"  rows="4"		cols="4"></textarea>
+			                        <div class="col-md-9 col-sm-9 ">
+			                         <textarea class="form-control form-control-sm" id="homePostalAddress" name="homePostalAddress"  rows="4"		cols="4"></textarea>
 			                        </div>
 			                      </div>
-			   </div>    
-			   
-			   <div class="col-lg-6">
-							 <div class="item form-group">
-			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="userPassword">Parola <span class="required">*</span>
-			                        </label>
-			                        <div class="col-md-6 col-sm-6 ">
-			                         <input class="form-control" type="password" id="userPassword" name="userPassword"	/>
-			                        </div>
-			                 </div>
-							 <div class="item form-group">
-			                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="confirm_password">Parola Onayla <span class="required">*</span>
-			                        </label>
-			                        <div class="col-md-6 col-sm-6 ">
-			                         <input class="form-control" type="password" id="confirm_password" name="confirm_password"	 />
-			                        </div>
-			                 </div>
-							 <div class="item form-group">
-			                        <div class="col-md-3 col-sm-3 "></div>
-			                        <div class="col-md-6 col-sm-6 ">
-			                         <span class="text-secondary">Şifre en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.</span>
-			                        </div>
-			                 </div>
-			                 
-			 	</div>
-				<div class="col-lg-12">
-						<div class="form-group pull-right">
-								<a href="#" class="btn btn-primary submit-button" id="addConsoleUserBtn" onclick="btnGiveConsoleAccessToNewUserClicked()">
-									<span>Yeni Arayüz Kullanıcısı Ekle</span>
-								</a>
-						</div>
-				</div>
-	</div>
-	
-	<div class="tab-pane " id="tab-existUser" role="tabpanel">
-			<div class="col-8" id="existUserDiv">
-				
-				<div id="selectConsoleUserTreeDiv">
-<!-- 					<div id="selectConsoleUserTreeGrid"></div> -->
-				</div>
-				
-				<div>
-						
-				</div>
-				<div class="form-row">
-										<div class="col-6">
-											<b id="alreadyConsoleUser"></b>
-										</div>
-										<div class="col-6">
-											<button type="button" class="btn btn-danger pull-right ml-1"	id="btnDeleteConsoleUserClicked"
-													onclick="btnDeleteConsoleUserClicked()" style="margin-top: 5px;" title="Arayüz Kullanıcısı Sil" >Arayüz Kullanıcısı Sil </button>
-													
-											<button type="button" class="btn btn-primary pull-right" style="margin-top: 5px;" 	id="btnGiveConsoleAccessToSelectedUser"
-													onclick="btnGiveConsoleAccessToSelectedUserClicked()" disabled="disabled" >Arayüz Kullanma Yetkisi Ver</button>
-										</div>
+			                      
+			                      
+			                       <div class="item form-group">
+				                        
+					                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="userPassword">Parola <span class="required">*</span>
+					                        </label>
+					                        <div class="col-md-9 col-sm-9 ">
+						                        <div class="input-group mb-3">
+						                            <input class="form-control form-control-sm" type="password" id="userPassword" name="userPassword"	/>
+						                         	<div class="input-group-append">
+														<button id="newConsoleUserPasswordShowBtn" type="button" onclick="showNewPassword()" class="btn btn-info btn-sm"><i class="fas fa-eye-slash"></i></button>
+													</div>
+						                        </div>
+				                        </div>
+					                 </div>
+					                 
+									 <div class="item form-group">
+										 
+					                        <label class="col-form-label col-md-3 col-sm-3 label-align" for="confirm_password">Parola Onayla <span class="required">*</span>
+					                        </label>
+					                        <div class="col-md-9 col-sm-9 ">
+					                        <div class="input-group mb-3">
+					                         <input class="form-control form-control-sm" type="password" id="confirm_password" name="confirm_password"	 />
+					                         <div class="input-group-append">
+													<button id="newConsoleUserConfirmPasswordShowBtn" type="button" onclick="showNewConfirmPassword()"	class="btn btn-info btn-sm"><i class="fas fa-eye-slash"></i></button>
+												</div>
+					                        </div>
+				                        </div>
+					                 </div>
+					                 
+									 <div class="item form-group">
+					                        <div class="col-md-3 col-sm-3 "></div>
+					                        <div class="col-md-9 col-sm-9 ">
+					                         <span class="text-secondary">Şifre en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.</span>
+					                        </div>
+					                 </div>
+					                 <div class="col-lg-12">
+											<div class="form-group pull-right">
+													<button class="btn btn-primary submit-button"  id="addConsoleUserBtn" onclick="btnGiveConsoleAccessToNewUserClicked()">
+														<span>Yeni Arayüz Kullanıcısı Ekle</span>
+													</button>
+											</div>
 									</div>
-					
-				</div>
+			
+			</div>
 	</div>
 	
 	<div class="tab-pane " id="tab-accessDirectory" role="tabpanel">

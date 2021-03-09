@@ -390,7 +390,6 @@ function getConfigurationParams() {
 }
 
 function setAttributes(data) {
-	console.log(data)
 	//set LDAP configuration
 	$('#ldapServerAddress').val(data.ldapServer);
 	$('#ldapServerPort').val(data.ldapPort);

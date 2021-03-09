@@ -35,8 +35,6 @@
            var guac = new Guacamole.Client(
                 new Guacamole.HTTPTunnel("tunnel")
             );
-
-            console.log(guac)
             if(guac == null){
             	$.notify("Uzak Masaüstü sunucusunda hata oluştu", "warn");
             }else{
@@ -45,7 +43,6 @@
                 
                 // Error handler
                 guac.onerror = function(error) {
-                	console.log(error)
                 	$.notify("Uzak Masaüstü sunucusunda hata oluştu", "warn");
                 };
 

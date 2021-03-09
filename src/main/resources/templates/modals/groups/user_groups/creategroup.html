@@ -9,8 +9,35 @@
 	<div class="card-header-title ml-2 mt-2"><span class="ml-2">Kullanıcılar</span></div>
 	
     <div class="col-12" id="createNewUserGroupTreeDiv">
-	    <div id="createNewUserGroupTreeGrid"></div>
+<!-- 	    <div id="createNewUserGroupTreeGrid"></div> -->
     </div>
+    
+    	<div id="userMenuDiv">
+		  					<div id="baseDnUserMenuDiv" style="display: none;">
+								<ul>
+									<a href="#"  class="btn btnAddOuModal" data-toggle="modal" data-target="#genericModal">  <li> <i class="fa fa-folder-plus blue">&nbsp;</i> Yeni Klasör Oluştur </li> </a>  
+									<a href="#" class="btn btnAddUserModal" data-target="#genericModalLarge" data-toggle="modal">   <li>  <i class="fa fa-users blue"> &nbsp;</i>  Kullanıcı Ekle </li> </a> 
+								</ul>
+							</div>
+							
+							 <div id="userFolderPopUpMenuDiv" style="display: none;" >
+								<ul>
+								<a href="#" class="btn btnAddUserModal"  data-target="#genericModalLarge" data-toggle="modal">  <li>  <i class="fa fa-users blue"> &nbsp;</i>Kullanıcı Ekle  </li>  </a> 
+								<a href="#"  class="btn btnAddOuModal" data-toggle="modal" data-target="#genericModal"> <li>  <i class="fa fa-folder-plus blue"> &nbsp;</i>Yeni Klasör Oluştur</li>  </a>   
+<!-- 								<a href="#" class="btn btnRenameOu" data-toggle="modal" data-target="#genericModal" >  <li>  <i class="fa fa-edit blue">&nbsp;</i>Klasör Adı Değiştir </li> </a>  -->
+								<a href="#" class="btn" id="btnMoveOuUserModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-random blue">&nbsp;</i>Klasör Taşı   </li> </a>
+								<a href="#" class="btn btnDeleteOuModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-trash red">&nbsp; &nbsp;</i>Klasörü Sil </li> </a>
+								</ul>
+							</div>'
+							
+							 <div id="userPopUpMenuDiv" style="display: none;" >
+								<ul>
+								 <a href="#"  class="btn " id="btnMoveUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-random blue">&nbsp;</i> Kullanıcı Taşı  </li> </a>
+								 <a href="#"  class="btn btnDeleteUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp;</i> Kullanıcı Sil </li> </a> 
+								</ul>
+							</div>';
+		  		</div>
+    
 	<div class="col-12">
 		<div><i>*Grup oluşturmak için en az bir kullanıcı seçmelisiniz.</i></div><br>
     </div>

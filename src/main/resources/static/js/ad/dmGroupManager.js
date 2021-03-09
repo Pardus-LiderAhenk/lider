@@ -93,7 +93,6 @@ function getActivePolicies() {
 		dataType : 'json',
 		success : function(data) {
 			policyList = data
-			console.log(policyList)
 			if (data != null && data.length > 0) {
 				if ($("#bodyPolicyRow").length > 0) {
 					$("#bodyPolicyRow").remove();

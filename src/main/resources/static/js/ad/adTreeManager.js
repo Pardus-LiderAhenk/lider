@@ -13,7 +13,7 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 	/**
 	 * create search area
 	 */
-	createSearch(treeHolderDiv,treeGridId,showOnlyFolder);
+	createAdSearch(treeHolderDiv,treeGridId,showOnlyFolder);
 	/**
 	 * get root dn for user and set treegrid tree
 	 */
@@ -22,8 +22,6 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 		url : 'ad/getDomainEntry',
 		dataType : 'json',
 		success : function(data) {
-			console.log(data)
-			
 			$('#'+treeHolderDiv).append('<div id="'+treeGridId+'"></div> ')
 			 var source = {
 			      dataType: "json",
@@ -102,7 +100,6 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 			    	 if(allrows.length==1){
 			    		 var row=allrows[0];
 			    		 firstRow=row;
-			    		 console.log(row)
 			    		 if(row.childEntries==null ){
 			    			 $('#'+treeGridId).jqxTreeGrid('addRow', row.uid+"1", {}, 'last', row.uid);
 			    		 }
@@ -128,8 +125,6 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 	            $('#'+treeGridId).on('rowClick', function (event) {
 	                var args = event.args;
 	                var row = args.row;
-	                console.log(row)
-	               
 	                if ( args.originalEvent.button == 2) {
 	                    var scrollTop = $(window).scrollTop();
 	                    var scrollLeft = $(window).scrollLeft();
@@ -202,7 +197,6 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 									dataType : 'text',
 									success : function(ldapResult) {
 										var childs = jQuery.parseJSON(ldapResult);
-										console.log(childs)
 										 for (var m = 0; m < childs.length; m++) {
 											 	// get a row.
 									          	var childRow = childs[m];
@@ -229,7 +223,7 @@ function createTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, 
 	
 }
 
-function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
+function createAdSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 	
 	var srcInputId= treeHolderDiv+"srcInput";
 	var srcBtnId= treeHolderDiv+"srcBtn";

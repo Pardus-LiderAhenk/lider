@@ -861,6 +861,7 @@ function btnAddToExistingGroupClicked() {
 function btnAddToNewGroupClicked() {
 	var groupName = $('input[name=newAgentGroupName]').val();
 	if(groupName != "") {
+		$.LoadingOverlay("show", {image: "",text: "Grup oluşturuluyor..."});
 		var selectedAgentDN = [];
 		for(var i = 0; i < selectedEntries.length; i++) {
 			selectedAgentDN.push(selectedEntries[i].distinguishedName);
@@ -870,7 +871,6 @@ function btnAddToNewGroupClicked() {
 				"groupName": $('input[name=newAgentGroupName]').val(),
 				"checkedList": selectedAgentDN
 		};
-
 		$.ajax({ 
 			type: 'POST', 
 			url: "/lider/computer/createNewAgentGroup",
@@ -878,10 +878,12 @@ function btnAddToNewGroupClicked() {
 			data: params,
 			success: function (data) { 
 				$.notify("Yeni grup oluşturuldu ve istemciler gruba eklendi.", "success");
-				$('#genericModal').trigger('click');
 			},
 			error: function (data, errorThrown) {
 				$.notify("Yeni grup oluşturulurken hata oluştu." + $('input[name=newAgentGroupName]').val() + " oluşturulamadı.", "error");
+			}, complete: function() {
+    			//$.LoadingOverlay("hide", true);
+				$('#genericModal').trigger('click');
 			}
 		});
 	} else {
@@ -949,6 +951,7 @@ function addAgentsToExistingGroup() {
 	}
 	var selected = $("#selectGroupDN").children("option:selected").val();
 	if(selected != "") {
+		$.LoadingOverlay("show", {image: "",text: "İstemciler gruba ekleniyor..."});
 		var params = {
 				"groupDN" : $("#selectGroupDN").children("option:selected").val(),
 				"checkedList": selectedAgentDN
@@ -959,10 +962,13 @@ function addAgentsToExistingGroup() {
 			dataType: 'json',
 			data: params,
 			success: function (data) { 
-				$.notify("Selected gents are added to group successfully.", "success");
+				$.notify("Seçili istemciler gruba eklendi.", "success");
 			},
 			error: function (data, errorThrown) {
 				$.notify("Something went wrong.", "error");
+			}, complete: function() {
+    			$.LoadingOverlay("hide", true);
+				$('#genericModal').trigger('click');
 			}
 		});
 	}
@@ -987,6 +993,10 @@ function addNewGroup() {
 		},
 		error: function (data, errorThrown) {
 			$.notify("Error occured while adding new group. Group Name " + $('input[name=groupName]').val() + " could not be added.", "error");
+		},
+		complete: function() {
+			$.LoadingOverlay("hide", true);
+			$('#genericModal').trigger('click');
 		}
 	});
 }
@@ -1046,7 +1056,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#agentProcessor").html("");
 		$("#agentOsName").html("");
 		$("#agentPhase").html("");
-		$("#userDomain").html("");
+//		$("#userDomain").html("");
 		$("#agentDn").html("");
 		$("#agentVersion").html("");
 		$("#userLastLogin").html("");
@@ -1061,6 +1071,7 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#userLastLoginRow").show();
 		$("#agentVersionRow").show();
 		$("#agentPhaseRow").show();
+		$("#userDomainRow").show();
 	}
 }
 
@@ -1112,11 +1123,10 @@ function showSelectedEntries() {
 	$("#agentMac").html("");
 	$("#agentCreateDate").html("");
 	$("#agentOsName").html("");
-//	$("#agentUsername").html("");
 	$("#agentProcessor").html("");
 	$("#agentOsName").html("");
 	$("#agentPhase").html("");
-	$("#userDomain").html("");
+//	$("#userDomain").html("");
 	$("#agentDn").html("");
 	$("#agentVersion").html("");
 	$("#userLastLogin").html("");
@@ -1127,8 +1137,8 @@ function showSelectedEntries() {
 		data: params,
 		dataType: 'json',
 		success: function (data) {
-			selectedRowDataFromDB=data;
-			var ipAddress= data.ipAddresses.replace(/\'/g, '');
+			selectedRowDataFromDB = data;
+			var ipAddress = data.ipAddresses.replace(/\'/g, '');
 			var macAddress = data.macAddresses.replace(/\'/g, '');
 			$("#selectedAgentDNSSHIP").val(ipAddress);
 			if(data.properties.length > 0) {
@@ -1162,13 +1172,18 @@ function showSelectedEntries() {
 					}
 				});
 				userDomain = data.userDirectoryDomain;
-				$("#userDomain").html("Bilinmiyor");
-				if (userDomain) {
-					$("#userDomain").html(userDomain);
-					if (userDomain == "NONE") {
-						$("#userDomain").html("Bilinmiyor");
-					}
-				}
+//				$("#userDomain").html(data.userDirectoryDomain);
+//				if (userDomain) {
+//					$("#userDomain").html(userDomain);
+//					if (userDomain == "NONE") {
+//						$("#userDomainRow").hide();
+//						$("#userDomain").html("Bilinmiyor");
+//					} else {
+//						$("#userDomainRow").show();
+//					}
+//				} else {
+//					$("#userDomainRow").hide();
+//				}
 				$("#agentHostname").html(data.hostname);
 				$("#agentIpAddr").html(ipAddress);
 				$("#agentMac").html(macAddress);
@@ -1501,7 +1516,7 @@ function setShhLog(message){
 }
 
 function getAllAndOnlineAgents(searchDn) {
-	progress("computerTreeOnlineInfo","progressComputerTreeInfo",'show')
+//	progress("computerTreeOnlineInfo","progressComputerTreeInfo",'show')
 
 	var params = {
 		"searchDn" : searchDn,
@@ -1512,7 +1527,7 @@ function getAllAndOnlineAgents(searchDn) {
 		dataType: 'json',
 		data: params,
 		success: function(data) {
-			progress("computerTreeOnlineInfo","progressComputerTreeInfo",'hide')
+//			progress("computerTreeOnlineInfo","progressComputerTreeInfo",'hide')
 			$('#btnTotalAgent').append("")
 			$('#btnOnlineAgent').append("")
 			$('#btnTotalAgent').html("Toplam İstemci Sayısı &nbsp;&nbsp;&nbsp;&nbsp;: "+data.agentListSize)
@@ -1566,7 +1581,7 @@ function getUserLastLogin(selDn) {
  */
 function btnSelectDNFromTreeClicked() {
 	getModalContent("modals/agent_info/select_ou", function content(data){
-		$('#genericModalHeader').html("Aramak için bi klasör seçiniz");
+		$('#genericModalHeader').html("Aramak için bir klasör seçiniz");
 		$('#genericModalBodyRender').html(data);
 		generateTreeForOUSelection();
 	});
@@ -1751,14 +1766,14 @@ $('#btnDeleteOu').on('click',function(event) {
 		$('#genericModalHeader').html("Klasör Sil")
 		$('#genericModalBodyRender').html(data);
 
-		$('#deleteOuBtn').on('click', function (event) {
-			deleteUserOu(selectedRow)
+		$('#deleteComputerOuBtn').on('click', function (event) {
+			deleteComputerOu(selectedRow)
 		});
 	} 
 	);
 });
 
-function deleteUserOu(row) {
+function deleteComputerOu(row) {
 	var dnList = [];
 	dnList.push({
 		distinguishedName :row.distinguishedName, 
@@ -1780,7 +1795,7 @@ function deleteUserOu(row) {
 				$('#menuBtnComputers').trigger('click');
 			}
 			else{
-				$.notify("Seçilen klasörün alt klasör veya istemcileri bulunamkatdır. Silme işlemi için klasör boş olmalıdır.",{className: 'warn',position:"right top"}  );
+				$.notify("Seçilen klasörün alt klasör veya istemcileri bulunmaktadır. Silme işlemi için klasör boş olmalıdır.",{className: 'warn',position:"right top"}  );
 				$('#genericModal').trigger('click');
 			}
 

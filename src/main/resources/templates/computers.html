@@ -1,8 +1,6 @@
 <script type="text/javascript"  src="js/guacamole-common-js/all.min.js"></script>
-<script type="text/javascript" src="js/computers/computerTreeManager.js"></script>
 <script type="text/javascript" src="js/computers/computers.js"></script>
-
-	
+<link rel="stylesheet" href="css/computers.css">
 		<div class="col-lg-3" >
 			<div id="computerTreeDivMain"> 
 				<!-- 			<div style="margin-top: 15px; margin-left: 15px"> -->
@@ -27,11 +25,11 @@
 						<br>
 					<button  class="btn btn-link btn-sm " id="btnOfflineAgent" style="color: #F38178; font-weight: bold;">   </button>
 				</div>
-				<div id="progressComputerTreeInfo"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
-			    	<div style="position:absolute; ; top: -5%; left: 30%;"> 
-			    		<img src="img/LoadingPage.gif" width="50" height="50"  /> <span> <b> Lütfen Bekleyiniz... </b> </span> 
-			    	</div>
-		  		</div>
+<!-- 				<div id="progressComputerTreeInfo"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;"> -->
+<!-- 			    	<div style="position:absolute; ; top: -5%; left: 30%;">  -->
+<!-- 			    		<img src="img/LoadingPage.gif" width="50" height="50"  /> <span> <b> Lütfen Bekleyiniz... </b> </span>  -->
+<!-- 			    	</div> -->
+<!-- 		  		</div> -->
 			</div>
 		</div>
 		<div class="col-lg-9 green">
@@ -50,7 +48,7 @@
 							<button role="tab" class="btn btn-info btn-sm " id="btn-ssh" data-toggle="tab"><i class="fa fa-terminal"></i> SSH</button>
 							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-securityAndNetwork" data-toggle="tab"><i class="fa fa-network-wired"></i> Güvenlik</button>
 							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-taskHistory" data-toggle="tab"><i class="fa fa-history"></i> Geçmiş</button>
-							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-installAhenk" data-toggle="tab"><i class="fas fa-download"></i> Ahenk Kur</button>
+<!-- 							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-installAhenk" data-toggle="tab"><i class="fas fa-download"></i> Ahenk Kur</button> -->
 						</div>
 					</div>
 <!-- 					<div class="col-lg-2" > -->
@@ -78,11 +76,11 @@
 													<button id="btnAddOu" type="button" title="Alt Klasör Ekle"  data-target="#genericModal" data-toggle="modal" class="btn-sm btn-shadow btn btn-info btn-sm">
 														<i class="fa fa-folder-open"></i>
 													</button>
-													<button id="btnRenameAgent" type="button" title="Yeniden adlandır"  data-target="#genericModal"
-														 onclick="btnRenameAgentClicked()"
-														data-toggle="modal" class="btn-sm btn-shadow btn btn-info btn-sm">
-														<i class="fa fa-edit"></i>
-													</button>
+<!-- 													<button id="btnRenameAgent" type="button" title="Yeniden adlandır"  data-target="#genericModal" -->
+<!-- 														 onclick="btnRenameAgentClicked()" -->
+<!-- 														data-toggle="modal" class="btn-sm btn-shadow btn btn-info btn-sm"> -->
+<!-- 														<i class="fa fa-edit"></i> -->
+<!-- 													</button> -->
 													<button id="deleteAgent" type="button" title="Kaydı Sil" class="btn-sm btn-shadow btn btn-danger btn-sm">
 														<i class="fa fa-trash"></i>
 													</button>
@@ -106,10 +104,10 @@
 															<td><i class="fas fa-layer-group"></i> Bulunduğu Dizin</td>
 															<td id="agentDn"></td>
 														</tr>
-														<tr>
-															<td><i class="fas fa-sitemap"></i> Kullanıcı Domain</td>
-															<td id="userDomain"></td>
-														</tr>
+<!-- 														<tr id="userDomainRow"> -->
+<!-- 															<td><i class="fas fa-sitemap"></i> Kullanıcı Domain</td> -->
+<!-- 															<td id="userDomain"></td> -->
+<!-- 														</tr> -->
 														<tr>
 															<td><i class="fa fa-laptop"></i> İşletim Sistemi</td>
 															<td id="agentOsName"></td>

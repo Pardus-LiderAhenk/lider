@@ -15,7 +15,6 @@ createTree(treeGridHolderDiv, false, false,
 		// row select
 		function(row, rootDn){
 			selectedRow=row;
-			console.log(row)
 			if(row.type=="USER"){
 				var childs=[]
 				childs.push(row)
@@ -37,7 +36,6 @@ createTree(treeGridHolderDiv, false, false,
 		function(rootDN, treeGridId,firstRow, error){
 			treeGridIdGlob=treeGridId
 			if(error != null ){
-				console.log(error)
 				$.notify("Lütfen AD bağlantı ayarlarınızı kontrol ediniz.", "error");
 				$('#treeMenu').hide();
 			}else{
@@ -50,7 +48,6 @@ createTree(treeGridHolderDiv, false, false,
 
 $('#btnAdUserReplication').on('click', function (event) {
 	var selecteds= entryTable.rows( { selected: true } )
-	console.log(selecteds)
 	
 	getModalContent("modals/ad/adUserSync", function content(data){
 		$('#genericModalLargeHeader').html("AD Kullanıcı Senkronizasyonu");
@@ -69,7 +66,14 @@ $('#btnAdUserReplication').on('click', function (event) {
 				//uncheck action
 				function(unCheckedRows, row){
 					
-				}
+				},
+				// post tree created
+				function(root , treeGridId){
+					$('#'+ treeGridId).jqxTreeGrid('selectRow', root);
+					$('#'+ treeGridId).jqxTreeGrid('expandRow', root);
+				},
+				//create pop up
+				false
 		);
 		// selected AD users adding modal
 		for (var i = 0; i < selectedADUserEntries.length; i++) {
@@ -90,7 +94,6 @@ $('#btnAdUserReplication').on('click', function (event) {
 
 $('#btnAdGroupReplication').on('click', function (event) {
 	var selecteds= entryTable.rows( { selected: true } )
-	console.log(selecteds)
 	getModalContent("modals/ad/adGroupSync", function content(data){
 		$('#genericModalLargeHeader').html("AD Group Senkronizasyonu");
 		$('#genericModalLargeBodyRender').html(data);
@@ -111,12 +114,12 @@ $('#btnAdGroupReplication').on('click', function (event) {
 				// post tree created
 				function(rootComputer , treeGridId){
 //					$('#'+ treeGridId).jqxTreeGrid('selectRow', rootComputer);
-				}
+				},
+				false
 		);
 		// selected AD groups adding modal
 		for (var i = 0; i < selectedADGroupEntries.length; i++) {
 			var entry=selectedADGroupEntries[i]
-			console.log(entry)
 			var html = '<tr id="'+ entry.attributesMultiValues.objectGUID +'">';
 			var imgPath="";
 			if(entry.type=="GROUP"){	imgPath="img/entry_group.gif"; }
@@ -138,7 +141,6 @@ $('#btnAdGroupReplication').on('click', function (event) {
 	});
 });
 $('#btnAdUserAddModal').on('click', function (event) {
-	console.log(treeMenuSelection)
 	getModalContent("modals/ad/adUserAdd", function content(data){
 		$('#genericModalLargeHeader').html("Active Directory Kullanıcı Ekle");
 		$('#genericModalLargeBodyRender').html(data);
@@ -212,20 +214,14 @@ $("#adChildSearchTxt").keyup(function() {
 });
 
 $("#treeMenu").on('itemclick', function (event) {
-	console.log(treeGridIdGlob)
     var args = event.args;
-    console.log(args)
     var selection = $('#'+treeGridIdGlob).jqxTreeGrid('getSelection');
-    console.log(selection)
     var rowid = selection[0].uid
     treeMenuSelection=selection[0];
 });
 $("#treeMenuGroup").on('itemclick', function (event) {
-	console.log(treeGridIdGlob)
 	var args = event.args;
-	console.log(args)
 	var selection = $('#'+treeGridIdGlob).jqxTreeGrid('getSelection');
-	console.log(selection)
 	var rowid = selection[0].uid
 	treeMenuSelection=selection[0];
 });
@@ -328,7 +324,6 @@ function setChildsToTable(childs) {
 	selectedADUserEntries=[]
 	selectedADGroupEntries=[]
 	entryTable.on( 'select', function ( e, dt, type, indexes ) {
-		console.log(indexes)
 		for( var a = 0; a < indexes.length; a++){
 			var index=indexes[a];
 			var selectedEntry= childs[index];
@@ -386,8 +381,6 @@ function setChildsToTable(childs) {
 	
 	entryTable.on('dblclick', 'tr', function () {
 	    var data = entryTable.row(this).data();
-	    console.log(data)
-	    console.log(data.DT_RowId)
 	    var dtSelectedRw=null
 	    for (var k = 0; k < childs.length; k++) {
 	    	var child=childs[k]
@@ -395,15 +388,11 @@ function setChildsToTable(childs) {
 	    		dtSelectedRw=child;
 	    	}
 	    }
-	    console.log(dtSelectedRw);
-	    
 	    $('#adInfoDet').html(dtSelectedRw.distinguishedName); 
-	    
 	    var members = "";
 		//to print members at different tab
 	    for (var key in dtSelectedRw.attributesMultiValues) {
 			if (dtSelectedRw.attributesMultiValues.hasOwnProperty(key) ) {
-				console.log(key)
 				for(var i = 0; i< dtSelectedRw.attributesMultiValues[key].length; i++) {
 					members += '<tr>';
 					members += '<td>' +key + '</td>';
@@ -447,7 +436,6 @@ function btnSyncGroupAd2LdapClicked() {
 		dataType: "json",
 		contentType: "application/json",
 		success: function(result) {
-			console.log(result)
 			if(result){
 				$.notify("Kullanıcı başarı ile LDAP a aktarıldı.", "success");
 			}else{
@@ -458,7 +446,6 @@ function btnSyncGroupAd2LdapClicked() {
 		},
 		error: function(result) {
 			$.notify(result, "error");
-			console.log(result)
 		}
 	});
 }
@@ -516,7 +503,6 @@ function addUser(treeMenuSelection) {
 		data : params,
 		dataType : 'json',
 		success : function(data) {
-			console.log(data)
 			$.notify("Kullanıcı Başarı ile eklendi.",{className: 'success',position:"right top"}  );
 			$('#genericModalLarge').trigger('click');
 		},

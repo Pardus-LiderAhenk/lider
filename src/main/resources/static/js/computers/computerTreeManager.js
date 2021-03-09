@@ -13,7 +13,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 	/**
 	 * create search area
 	 */
-	createSearch(treeHolderDiv,treeGridId,showOnlyFolder);
+	createComputerSearch(treeHolderDiv,treeGridId,showOnlyFolder);
 	/**
 	 * get root dn for user and set treegrid tree
 	 */
@@ -232,8 +232,7 @@ function createComputerTree(searchPath,treeHolderDiv,showOnlyFolder,useCheckBox,
 		}
 	});
 }
-function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
-	
+function createComputerSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 	var srcInputId= treeHolderDiv+"srcInput";
 	var srcBtnId= treeHolderDiv+"srcBtn";
 	var srcBtnOnlineClients= treeHolderDiv+"srcOnlineUsers";
@@ -244,10 +243,10 @@ function createSearch(treeHolderDiv,treeGridId, showOnlyFolder) {
 						'       <select class="form-control " style="font-size: 12px;" id="'+srcSelectId+'" > ';
 				       
 					   if(showOnlyFolder==false){
-							searchHtml +='<option  value="uid"> ID </option> '+
-									'<option selected value="cn"> Ad </option> '+ 
-									'<option value="o"> Son Oturum </option> '+ 
-									'<option value="ou"> Klasör </option>';
+							searchHtml +=
+									'<option selected value="cn">MAC</option> '+ 
+									'<option  value="uid">JID</option> '+ 
+									'<option value="ou">Klasör</option>';
 							searchHtml +='</select> '+
 							'    </div> '+ 
 							'    <input placeholder="" id='+srcInputId+' type="text" class="form-control"> '+ 

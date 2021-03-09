@@ -219,24 +219,24 @@ function createMembersList(row) {
 				if (row.attributesMultiValues.hasOwnProperty(key) && key == "member") {
 					if(row.attributesMultiValues[key].length > 1) {
 						for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
-							members += '<tr>';
-							members += '<td class="text-center">' + (i + 1) + '</td>';
-							members += '<td> <img id="agent_image" alt="" src="img/linux.png"  width="16px;" height="16px;"> ' + row.attributesMultiValues[key][i] + '</td>';
-							members += '<td class="text-center">' 
+							members += '<tr class="p-1 m-0">';
+							members += '<td class="text-center p-1 m-0">' + (i + 1) + '</td>';
+							members += '<td class="p-1 m-0">' + row.attributesMultiValues[key][i] + '</td>';
+							members += '<td class="text-center p-1 m-0">' 
 								+ '<button onclick="deleteMemberFromTabList(\'' + row.attributesMultiValues[key][i] + '\')"' 
-								+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">' 
-								+ '<i class="pe-7s-trash btn-icon-wrapper"> </i></button>' 
+								+ ' class="btn btn-sm btn-outline-danger">' 
+								+ '<i class="fas fa-trash"> </i></button>' 
 								+ '</td>';
 							members += '</tr>';
 						}
 					} else {
-						members += '<tr>';
-						members += '<td class="text-center">1</td>';
-						members += '<td>' + row.attributesMultiValues[key] + '</td>';
-						members += '<td class="text-center">' 
+						members += '<tr class="p-1 m-0">';
+						members += '<td class="text-center p-1 m-0">1</td>';
+						members += '<td class="p-1 m-0">' + row.attributesMultiValues[key] + '</td>';
+						members += '<td class="text-center p-1 m-0">' 
 							+ '<button onclick="deleteMemberFromTabList(\'' + row.attributesMultiValues[key] + '\')"' 
-							+ 'class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">' 
-							+ '<i class="pe-7s-trash btn-icon-wrapper"> </i></button>' 
+							+ ' class="btn btn-sm btn-outline-danger">' 
+							+ '<i class="fas fa-trash"> </i></button>'
 							+ '</td>';
 						members += '</tr>';
 					}

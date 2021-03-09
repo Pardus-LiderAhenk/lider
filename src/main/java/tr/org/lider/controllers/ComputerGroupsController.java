@@ -1,6 +1,7 @@
 package tr.org.lider.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,9 @@ import org.apache.directory.api.ldap.model.message.SearchScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +25,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import tr.org.lider.ldap.DNType;
 import tr.org.lider.ldap.LDAPServiceImpl;
 import tr.org.lider.ldap.LdapEntry;
 import tr.org.lider.ldap.LdapSearchFilterAttribute;
@@ -145,77 +152,118 @@ public class ComputerGroupsController {
 	//add new group and add selected agents
 	@RequestMapping(method=RequestMethod.POST ,value = "/createNewAgentGroup", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public LdapEntry createNewAgentGroup(@RequestParam(value = "selectedOUDN", required=false) String selectedOUDN,
-			@RequestParam(value = "groupName", required=true) String groupName,
-			@RequestParam(value = "checkedList[]", required=true) String[] checkedList) {
+	public ResponseEntity<?> createNewAgentGroup(@RequestBody Map<String, String> params) {
 		String newGroupDN = "";
 		//to return newly added entry with its details
 		LdapEntry entry;
-		if(selectedOUDN == null || selectedOUDN.equals("")) {
-			newGroupDN = "cn=" +  groupName +","+ configurationService.getAhenkGroupLdapBaseDn();
+		if(params.containsKey("selectedOUDN") && !params.get("selectedOUDN").equals("")) {
+			newGroupDN = "cn=" +  params.get("groupName") +","+ params.get("selectedOUDN");
 		} else {
-			newGroupDN = "cn=" +  groupName +","+ selectedOUDN;
+			newGroupDN = "cn=" +  params.get("groupName") +","+ configurationService.getAhenkGroupLdapBaseDn();
+		}
+		ObjectMapper mapper = new ObjectMapper();
+		List<LdapEntry> entries = new ArrayList<>();
+		try {
+			entries = Arrays.asList(mapper.readValue(params.get("checkedEntries"), LdapEntry[].class));
+		} catch (JsonProcessingException e) {
+			logger.error("Error occured while mapping checked entry list to object");
+		}
+		List<LdapEntry> agents = new ArrayList<>();
+		List<LdapEntry> directories = new ArrayList<>();
+		
+		for (LdapEntry ldapEntry : entries) {
+			if(ldapEntry.getType().equals(DNType.AHENK)) {
+				agents.add(ldapEntry);
+			}
+		}
+		
+		for (LdapEntry ldapEntry : entries) {
+			Boolean hasParentChecked = false;
+			for (LdapEntry entryTemp : entries) {
+				if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT) && entryTemp.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
+					if(!ldapEntry.getDistinguishedName().equals(entryTemp.getDistinguishedName()) 
+							&& ldapEntry.getDistinguishedName().contains(entryTemp.getDistinguishedName())) {
+						hasParentChecked = true;
+						break;
+					}
+				}
+			}
+			if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)  && !hasParentChecked) {
+				directories.add(ldapEntry);
+			}
+		}
+
+		List<LdapEntry> allAgents = getAhenksUnderOUs(directories, agents);
+		if(allAgents.size() == 0) {
+			return new ResponseEntity<String>("Seçili klasörlerde istemci bulunamadı. Lütfen en az bir istemci seçiniz.", HttpStatus.NOT_ACCEPTABLE);
 		}
 		Map<String, String[]> attributes = new HashMap<String,String[]>();
 		attributes.put("objectClass", new String[] {"groupOfNames", "top", "pardusLider"} );
 		attributes.put("liderGroupType", new String[] {"AHENK"} );
 		try {
-			//when single dn comes spring boot takes it as multiple arrays
-			//so dn must be joined with comma
-			//if member dn that will be added to group is cn=agent1,ou=Groups,dn=liderahenk,dc=org
-			//spring boot gets this param as array which has size 4
-			Boolean checkedArraySizeIsOne = true;
-			for (int i = 0; i < checkedList.length; i++) {
-				if(checkedList[i].contains(",")) {
-					checkedArraySizeIsOne = false;
-					break;
-				}
-			}
-			if(checkedArraySizeIsOne ) {
-				attributes.put("member", new String[] {String.join(",", checkedList)} );
-			} else {
-				attributes.put("member", checkedList );
-			}
+			String [] allAgentDNs = allAgents.stream().map(LdapEntry::getDistinguishedName).toArray(String[]::new);
+			attributes.put("member", allAgentDNs);
 			ldapService.addEntry(newGroupDN , attributes);
 			entry = ldapService.getEntryDetail(newGroupDN);
 		} catch (LdapException e) {
-			System.out.println("Error occured while adding new group.");
+			logger.error("Error occured while adding new group.");
 			return null;
 		}
-		return entry;
+		return new ResponseEntity<LdapEntry>(entry, HttpStatus.OK);
 	}
 	
-	//add agents to existing group
-	@RequestMapping(method=RequestMethod.POST ,value = "/group/existing", produces = MediaType.APPLICATION_JSON_VALUE)
-	public LdapEntry addAgentsToExistingGroup(@RequestParam(value="groupDN") String groupDN,
-			@RequestParam(value = "checkedList[]", required=true) String[] checkedList) {
-		LdapEntry entry;
-		try {
-			//when single dn comes spring boot takes it as multiple arrays
-			//so dn must be joined with comma
-			//if member dn that will be added to group is cn=agent1,ou=Groups,dn=liderahenk,dc=org
-			//spring boot gets this param as array which has size 4
-			Boolean checkedArraySizeIsOne = true;
-			for (int i = 0; i < checkedList.length; i++) {
-				if(checkedList[i].contains(",")) {
-					checkedArraySizeIsOne = false;
-					break;
+	//add agents to existing group from agent info page
+		@RequestMapping(method=RequestMethod.POST ,value = "/group/existing", produces = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<?> addAgentsToExistingGroup(@RequestBody Map<String, String> params) {
+			LdapEntry entry;
+			ObjectMapper mapper = new ObjectMapper();
+			List<LdapEntry> entries = new ArrayList<>();
+			try {
+				entries = Arrays.asList(mapper.readValue(params.get("checkedEntries"), LdapEntry[].class));
+			} catch (JsonProcessingException e) {
+				logger.error("Error occured while mapping checked entry list to object");
+			}
+			List<LdapEntry> agents = new ArrayList<>();
+			List<LdapEntry> directories = new ArrayList<>();
+			
+			for (LdapEntry ldapEntry : entries) {
+				if(ldapEntry.getType().equals(DNType.AHENK)) {
+					agents.add(ldapEntry);
 				}
 			}
-			if(checkedArraySizeIsOne ) {
-				ldapService.updateEntryAddAtribute(groupDN, "member", String.join(",", checkedList));
-			} else {
-				for (int i = 0; i < checkedList.length; i++) {
-					ldapService.updateEntryAddAtribute(groupDN, "member", checkedList[i]);
+			
+			for (LdapEntry ldapEntry : entries) {
+				Boolean hasParentChecked = false;
+				for (LdapEntry entryTemp : entries) {
+					if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT) && entryTemp.getType().equals(DNType.ORGANIZATIONAL_UNIT)) {
+						if(!ldapEntry.getDistinguishedName().equals(entryTemp.getDistinguishedName()) 
+								&& ldapEntry.getDistinguishedName().contains(entryTemp.getDistinguishedName())) {
+							hasParentChecked = true;
+							break;
+						}
+					}
+				}
+				if(ldapEntry.getType().equals(DNType.ORGANIZATIONAL_UNIT)  && !hasParentChecked) {
+					directories.add(ldapEntry);
 				}
 			}
-			entry = ldapService.getEntryDetail(groupDN);
-		} catch (LdapException e) {
-			System.out.println("Error occured while adding new group.");
-			return null;
+
+			List<LdapEntry> allAgents = getAhenksUnderOUs(directories, agents);
+			if(allAgents.size() == 0) {
+				return new ResponseEntity<String>("Seçili klasörlerde istemci bulunamadı. Lütfen en az bir istemci seçiniz.", HttpStatus.NOT_ACCEPTABLE);
+			}
+			try {
+				String [] allAgentDNs = allAgents.stream().map(LdapEntry::getDistinguishedName).toArray(String[]::new);
+				for (int i = 0; i < allAgentDNs.length; i++) {
+					ldapService.updateEntryAddAtribute(params.get("groupDN"), "member", allAgentDNs[i]);
+				}
+				entry = ldapService.getEntryDetail(params.get("groupDN"));
+			} catch (LdapException e) {
+				logger.error("Error occured while adding new group.");
+				return null;
+			}
+			return new ResponseEntity<LdapEntry>(entry, HttpStatus.OK);
 		}
-		return entry;
-	}
 	
 	//get members of group
 	@RequestMapping(method=RequestMethod.POST ,value = "/group/members", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -288,6 +336,29 @@ public class ComputerGroupsController {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public List<LdapEntry> getAhenksUnderOUs(List<LdapEntry> directories, List<LdapEntry> ahenks) {
+		for (LdapEntry ldapEntry : directories) {
+			try {
+				List<LdapEntry> retList = ldapService.findSubEntries(ldapEntry.getDistinguishedName(), "(objectclass=pardusDevice)", new String[] { "*" }, SearchScope.SUBTREE);
+				for (LdapEntry ldapEntry2 : retList) {
+					boolean isExist=false;
+					for (LdapEntry ldapEntryAhenk : ahenks) {
+						if(ldapEntry2.getEntryUUID().equals(ldapEntryAhenk.getEntryUUID())) {
+							isExist=true;
+							break;
+						}
+					}
+					if(!isExist) {
+						ahenks.add(ldapEntry2);
+					}
+				}
+			} catch (LdapException e) {
+				e.printStackTrace();
+			}
+		}
+		return ahenks;
 	}
 	
 }

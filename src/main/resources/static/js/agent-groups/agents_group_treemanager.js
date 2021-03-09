@@ -358,7 +358,8 @@ function btnCreateAgentGroupClicked() {
 		$.notify("Grup oluşturabilmek için klasör veya istemci seçiniz.", "error");
 		return;
 	}
-	$.LoadingOverlay("show", {image: "", text: "Grup oluşturuluyor..."});
+	//$.LoadingOverlay("show", {image: "", text: "Grup oluşturuluyor..."});
+	progressForLoad('mainBody','show');
 	var params = {
 		"selectedOUDN" : selectedRow.distinguishedName,
 	    "groupName" : $('#agentGroupsNewAgentGroupName').val(),
@@ -383,7 +384,8 @@ function btnCreateAgentGroupClicked() {
 				$.notify("Yeni istemci grubu oluştururken hata oluştu.", "error");
 	    }, 
 		complete: function() {
-			$.LoadingOverlay("hide", true);
+			//$.LoadingOverlay("hide", true);
+			progressForLoad('mainBody','hide');
 //			progress('mainBody',null,'hide');
 			$('#genericModal').trigger('click');
 		}

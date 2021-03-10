@@ -159,13 +159,83 @@ $(document).ready(function(){
 					// post tree created
 					function(rootDn , treeGridId){
 						$('#'+ treeGridId).jqxTreeGrid('selectRow', rootDn);
-						$('#'+ treeGridId).jqxTreeGrid('expandRow', rootDn);
+//						$('#'+ treeGridId).jqxTreeGrid('expandRow', rootDn);
 					}
 			);
 		});
 	});
 	
 });
+
+function rowCheckAndUncheckOperationToAddMembersToExistingGroup(checkedRows) {
+    checkedOUList = [];
+    checkedAgents = [];
+	if(checkedRows.length > 0){
+		for (var k = 0; k < checkedRows.length; k++) {
+			var rowCheck = checkedRows[k]
+			if(rowCheck.type == "AHENK") {
+				checkedAgents.push({
+					distinguishedName: rowCheck.distinguishedName, 
+					entryUUID: rowCheck.entryUUID, 
+					name: rowCheck.name,
+					type: rowCheck.type,
+					uid: rowCheck.uid
+				});
+			} 
+			
+			if(rowCheck.type == "ORGANIZATIONAL_UNIT" && rowCheck.expandedUser == "FALSE") {
+				checkedOUList.push({
+					distinguishedName: rowCheck.distinguishedName, 
+					entryUUID: rowCheck.entryUUID, 
+					name: rowCheck.name,
+					type: rowCheck.type,
+					uid: rowCheck.uid
+				});
+			}
+		}
+		//get agents under checkboxes from service and add them to agent list also
+		if(checkedOUList.length > 0) {
+			$.ajax({
+				url : 'lider/computer_groups/getAhenks',
+				type : 'POST',
+				data: JSON.stringify(checkedOUList),
+				dataType: "json",
+				contentType: "application/json",
+				success : function(data) {
+					var ahenks = data;
+					$.each(data, function(index, element) {
+						var isExists = false;
+						for(var i = 0; i < checkedAgents.length; i++) {
+							
+							if(element.entryUUID == checkedAgents[i].entryUUID) {
+								isExists = true;
+							}
+						}
+						if(isExists == false) {
+							checkedAgents.push({
+								distinguishedName: element.distinguishedName, 
+								entryUUID: element.entryUUID, 
+								name: element.name,
+								type: element.type,
+								uid: element.uid
+							});
+						}
+					});
+				},
+			    error: function (data, errorThrown) {
+			    	$.notify("İstemci bilgileri getirilirken hata oluştu.", "error");
+			    },
+				complete: function() {
+					$('#selectedAgentCount').html(checkedAgents.length);
+				}
+			});
+		} else {
+			$('#selectedAgentCount').html(checkedAgents.length);
+		}
+	} else {
+		$('#selectedAgentCount').html(checkedAgents.length);
+	}
+}
 
 function renderComputerGroupTree() {
 	$('#'+treeGridHolderDiv).html("");
@@ -428,10 +498,45 @@ function openCreateGroupModal() {
 		 // post tree created
 		 function(root , treeGridId){
 			 $('#'+ treeGridId).jqxTreeGrid('selectRow', root);
-			 $('#'+ treeGridId).jqxTreeGrid('expandRow', root);
+//			 $('#'+ treeGridId).jqxTreeGrid('expandRow', root);
 		 }
 		 );
 	 });
 }
 
+function rowCheckAndUncheckOperationForCreatingGroup(checkedRows,row) {
+	checkedEntries = [];
+	var checkedRows = $("#createNewAgentGroupTreeDivGrid").jqxTreeGrid('getCheckedRows');
+	if(checkedRows.length > 0){
+		for (var i = 0; i < checkedRows.length; i++) {
+			if(checkedRows[i].distinguishedName != null) {
+				checkedEntries.push({
+					distinguishedName: checkedRows[i].distinguishedName, 
+					entryUUID: checkedRows[i].entryUUID, 
+					name: checkedRows[i].name,
+					type: checkedRows[i].type,
+					uid: checkedRows[i].uid
+				});	
+			}
+		}
+	}
+}
+
+function rowCheckAndUncheckOperationToAddMembersToExistingGroup(checkedRows) {
+	checkedEntries = [];
+	var checkedRows = $("#addMembersToExistingAgentGroupTreeDivGrid").jqxTreeGrid('getCheckedRows');
+	if(checkedRows.length > 0){
+		for (var i = 0; i < checkedRows.length; i++) {
+			if(checkedRows[i].distinguishedName != null) {
+				checkedEntries.push({
+					distinguishedName: checkedRows[i].distinguishedName, 
+					entryUUID: checkedRows[i].entryUUID, 
+					name: checkedRows[i].name,
+					type: checkedRows[i].type,
+					uid: checkedRows[i].uid
+				});	
+			}
+		}
+	}
+}
 

@@ -79,7 +79,7 @@ function createAgentGroupTree(treeHolderDiv,showOnlyFolder,useCheckBox, rowSelec
 					 width: '100%',
 					 height: 590,
 					 source: dataAdapter,
-				     altRows: true,
+//				     altRows: true,
 				     sortable: true,
 				     columnsResize: true,
 			         filterable: false,
@@ -567,43 +567,6 @@ function btnEditGroupNameClicked() {
 		});
 	}
 }
-
-function rowCheckAndUncheckOperationForCreatingGroup(checkedRows,row) {
-	checkedEntries = [];
-	var checkedRows = $("#createNewAgentGroupTreeDivGrid").jqxTreeGrid('getCheckedRows');
-	if(checkedRows.length > 0){
-		for (var i = 0; i < checkedRows.length; i++) {
-			if(checkedRows[i].distinguishedName != null) {
-				checkedEntries.push({
-					distinguishedName: checkedRows[i].distinguishedName, 
-					entryUUID: checkedRows[i].entryUUID, 
-					name: checkedRows[i].name,
-					type: checkedRows[i].type,
-					uid: checkedRows[i].uid
-				});	
-			}
-		}
-	}
-}
-
-function rowCheckAndUncheckOperationToAddMembersToExistingGroup(checkedRows) {
-	checkedEntries = [];
-	var checkedRows = $("#addMembersToExistingAgentGroupTreeDivGrid").jqxTreeGrid('getCheckedRows');
-	if(checkedRows.length > 0){
-		for (var i = 0; i < checkedRows.length; i++) {
-			if(checkedRows[i].distinguishedName != null) {
-				checkedEntries.push({
-					distinguishedName: checkedRows[i].distinguishedName, 
-					entryUUID: checkedRows[i].entryUUID, 
-					name: checkedRows[i].name,
-					type: checkedRows[i].type,
-					uid: checkedRows[i].uid
-				});	
-			}
-		}
-	}
-}
-
 
 /*
  * delete group member from tab list

@@ -7,10 +7,14 @@
 
 var treeGridHolderDiv="treeGridUserHolderDiv"
 var selectedRowGen=null;
+var systemSettings=null;
 
 $(document).ready(function(){
 	renderUserTree();
 	getLastUser();
+	
+	//getting some setting params to use
+	getConfigurationParams();
 	
 	$('#btnTreeRefresh').on('click',function(event) {
 		renderUserTree();
@@ -286,34 +290,61 @@ function fillGeneralInfoTab(row) {
 }
 
 function fillGroupListTab(row) {
-	var memberHtml='<table class="table table-striped table-bordered " id="attrMemberTable">';
-	memberHtml +='<thead> <tr><th style="width: 90%" > Kullanıcı Grup Adı </th> <th style="width: 10%;" > </th></tr> </thead>';
-	var isGroupExist=false;
-	for (key in row.attributesMultiValues) {
-		if (row.attributesMultiValues.hasOwnProperty(key)) {
-			if((key == "memberOf")){
-				if(row.attributesMultiValues[key].length > 1) {
-					isGroupExist=true;
-					for(var i = 0; i< row.attributesMultiValues[key].length; i++) {
-						memberHtml += '<tr>';
-						memberHtml += '<td>' + row.attributesMultiValues[key][i] + '</td>'; 
-						memberHtml += '<td> <div class="text-center"> <button class="btn btn-sm deleteMember mr-2 btn-icon btn-icon-only btn-outline-danger" title="Gruptan Çıkar" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' >  <i class="pe-7s-trash btn-icon-wrapper"></i>  </button> </div> </td>'; 
-						memberHtml += '</tr>';
-					}
-				} else {
-					isGroupExist=true;
-					memberHtml += '<tr>';
-					memberHtml += '<td>' + row.attributesMultiValues[key] + '</td>';
-					memberHtml += '<td> <div class="text-center">  <button class="btn btn-sm deleteMember mr-2 btn-icon btn-icon-only btn-outline-danger" title="Gruptan Çıkar" data-user='+row.name +' data-value='+row.attributesMultiValues[key][i]+' > <i class="pe-7s-trash btn-icon-wrapper"></i>  </button>  </div> </td>'; 
-					memberHtml += '</tr>';
-				}
-			}
-		}
-	} 
-	memberHtml +='</table>';
 	
-	$('#groupsDiv').html(memberHtml);
+	var params = {
+			"searchDn" : systemSettings.groupLdapBaseDn,
+			"key" : 'member',
+			"value": row.distinguishedName
+	};
+	
+	$.ajax({
+		type : 'POST',
+		url : 'lider/ldap/searchEntry',
+		data : params,
+		dataType: "json",
+		success : function(ldapResult) {
+			var memberHtml='<table class="table table-striped table-bordered " id="attrMemberTable">';
+			memberHtml +='<thead> <tr><th style="width: 90%" > Kullanıcı Grup Adı </th> <th style="width: 10%;" > </th></tr> </thead>';
+			
+			for (var i = 0; i < ldapResult.length; i++) {
+		    	 var entry = ldapResult[i];
+		    	memberHtml += '<tr>'
+		    	memberHtml += '<td>'+entry.distinguishedName+ '</td>'
+		    	memberHtml += '<td> <div class="text-center">  <button class="btn btn-sm  mr-2 btn-icon btn-icon-only btn-outline-danger deleteMember " title="Gruptan Çıkar"  data-value='+entry.distinguishedName+' > <i class="pe-7s-trash btn-icon-wrapper"></i>  </button>  </div>  </td>'
+		    	memberHtml += '</tr>'
+			}
+			$('#groupsDiv').html(memberHtml);
+			$('.deleteMember').on('click',function() {
+				var userDn = selectedRowGen.distinguishedName;
+				var groupDn = $(this).data('value');
+				var params = {
+						"dn" : groupDn,
+						"attribute" : "member",
+						"value": userDn
+				};
+				$.ajax({
+					type : 'POST',
+					url : 'lider/user/removeAttributeWithValue',
+					data : params,
+					dataType: "json",
+					success : function(ldapResult) {
+						fillGroupListTab(selectedRowGen);
+					},
+				    error: function (data, errorThrown) {
+						$.notify("Grupta en az bir üye bulunmalıdır.", "error");
+					}
+				 }); 
+				
+			});
+			
+		},
+	    error: function (data, errorThrown) {
+			$.notify("Hata Oluştu.", "error");
+		}
+	 }); 
 }
+
+
 
 function getFormattedDate(date) {
 	
@@ -497,5 +528,22 @@ function fillUserSessions(ldapResult) {
 	    error: function (data, errorThrown) {
 		}
 	 }); 
+}
+
+function getConfigurationParams() {
+	$.ajax({ 
+		type: 'GET', 
+		url: "/lider/config/configurations",
+		dataType: 'json',
+		success: function (data) { 
+			if(data != null) {
+				//set ldap configuration
+				systemSettings=data;
+			}
+		},
+		error: function (data, errorThrown) {
+			$.notify("Ayarlar getirilirken hata oluştu. Lütfen tekrar deneyiniz.", "error");
+		}
+	});
 }
 

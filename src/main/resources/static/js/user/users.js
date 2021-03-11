@@ -257,8 +257,8 @@ function getLastUser() {
 
 function clear(row) {
 	$('#userName').html(row.cn +" "+row.sn);
-	$('#newUserPassword').html("");
-	$('#newConfirmPassword').html("");
+	$('#newUserPassword').val("");
+	$('#newConfirmPassword').val("");
 }
 
 function contains(rootPassword, allowedChars) {

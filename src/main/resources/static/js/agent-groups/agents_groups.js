@@ -267,7 +267,7 @@ function renderComputerGroupTree() {
 
 function createMembersList(row) {
 	if(row.type == "GROUP") {
-		progressForLoad('agentGroupsSystemPage','show');
+		progressForLoad('membersOfGroupCard','show');
 		data={}
 		data.type=row.type;
 		data.entryUUID=row.entryUUID;
@@ -313,7 +313,7 @@ function createMembersList(row) {
 				}
 			}
 			$('#bodyMembers').html(members);
-			progressForLoad('agentGroupsSystemPage','hide');
+			progressForLoad('membersOfGroupCard','hide');
 	} else {
 		selectedEntries=[]
 		

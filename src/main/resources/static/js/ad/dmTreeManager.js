@@ -6,6 +6,8 @@
  * @param callback
  * @returns
  */
+
+
 function createDMTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction, rowCheckAction, rowUncheckAction , postAdTreeCreatedAction ) {
 	var rootDN = null;
 	var firstRow=null
@@ -115,11 +117,11 @@ function createDMTree( treeHolderDiv,showOnlyFolder,useCheckBox, rowSelectAction
 			 });
 				 
 			// create context menu
-			 	var contextDomain=$("#treeMenuDomain").jqxMenu({ width: 250, height: 120, autoOpenPopup: false, mode: 'popup' });;
-         		var contextMenu=$("#treeMenuContainer").jqxMenu({ width: 250, height: 88, autoOpenPopup: false, mode: 'popup' });;
-	            var contextMenuGroup = $("#treeMenuGroup").jqxMenu({ width: 250, height:88, autoOpenPopup: false, mode: 'popup' });
-	            var contextMenuUser = $("#treeMenuUser").jqxMenu({ width: 250, height:88, autoOpenPopup: false, mode: 'popup' });
-	            var contextMenuOu = $("#treeMenuOu").jqxMenu({ width: 250, height:144, autoOpenPopup: false, mode: 'popup' });
+			 	var contextDomain=$("#treeMenuDomain").jqxMenu({ width: 250, autoOpenPopup: false, mode: 'popup' });;
+         		var contextMenu=$("#treeMenuContainer").jqxMenu({ width: 250,  autoOpenPopup: false, mode: 'popup' });;
+	            var contextMenuGroup = $("#treeMenuGroup").jqxMenu({ width: 250,  autoOpenPopup: false, mode: 'popup' });
+	            var contextMenuUser = $("#treeMenuUser").jqxMenu({ width: 200,  autoOpenPopup: false, mode: 'popup' });
+	            var contextMenuOu = $("#treeMenuOu").jqxMenu({ width: 250,  autoOpenPopup: false, mode: 'popup' });
 		
 	           
 	            $('#'+treeGridId).on('contextmenu', function () {

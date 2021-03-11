@@ -61,6 +61,31 @@ $(document).ready(function(){
 		openAddUserModal()
 	});
 	
+	$('#updateUserPasswordBtn').on('click',function(event) {
+		var userPassword  =$('#newUserPassword').val()
+		var confirmPassword  =$('#newConfirmPassword').val()
+		
+		var lowerCase = "abcdefghijklmnopqrstuvwxyz";
+		var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		var digits = "0123456789";
+//		var splChars = "+=.@*!_";
+		
+		var ucaseFlag = contains(userPassword, upperCase);
+	    var lcaseFlag = contains(userPassword, lowerCase);
+	    var digitsFlag = contains(userPassword, digits);
+//	    var splCharsFlag = contains(userPassword, splChars);
+	    if(userPassword!=confirmPassword){
+			$.notify("Parolalar uyuşmamaktadır.","warn"  );
+			return
+		}
+	   // if(userPassword.length < 8 || !ucaseFlag || !lcaseFlag || !digitsFlag || !splCharsFlag){
+	    if(userPassword.length < 6 || !ucaseFlag || !lcaseFlag || !digitsFlag ){
+	    	$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.","warn");
+	    	return
+	    }
+	    updateUserPassword(selectedRowGen.distinguishedName)
+	});
+	
 	$('#btnMoveUserModal').on('click',function(event) {
 		
 		getModalContent("modals/user/moveUserModal", function content(data){
@@ -187,9 +212,10 @@ function renderUserTree() {
 					selectedRowGen=row;
 			
 					if(row.type=='USER'){
-						$('#userName').html(row.cn +" "+row.sn);
+						clear(row);
 						fillGeneralInfoTab(row);
 						fillGroupListTab(row);
+						fillUserSessions(row);
 					}
 				},
 				//check action
@@ -214,7 +240,7 @@ function getLastUser() {
 		url : 'lider/user/getLastUser',
 		dataType: "json",
 		success : function(row) {
-			$('#userName').html(row.cn +" "+row.sn);
+			clear(row);
 			selectedRowGen=row;
 			fillGeneralInfoTab(row);
 			fillGroupListTab(row);
@@ -223,6 +249,12 @@ function getLastUser() {
 			$.notify("Kullanıcı Bulunamadı", "warn");
 		}
 	 }); 
+}
+
+function clear(row) {
+	$('#userName').html(row.cn +" "+row.sn);
+	$('#newUserPassword').html("");
+	$('#newConfirmPassword').html("");
 }
 
 function contains(rootPassword, allowedChars) {
@@ -398,5 +430,72 @@ function openAddUserOuModal() {
 			} 
 		);
 	}
+}
+
+function updateUserPassword(userId) {
+	var params = {
+			"distinguishedName" :	userId,
+			"userPassword" : $('#newUserPassword').val(),
+	};
+	$.ajax({
+		type : 'POST',
+		url : 'lider/user/updateUserPassword',
+		data : params,
+		dataType : 'json',
+		success : function(ldapResult) {
+			$.notify("Kullanıcı Parolası Başarı ile güncellendi.",{className: 'success',position:"right top"}  );
+			$('#genericModal').trigger('click');
+		},
+		error: function (data, errorThrown) {
+			$.notify("Kullanıcı Parolası Güncellenirken Hata Oluştu.", "error");
+		}
+	});  
+}
+
+function fillUserSessions(ldapResult) {
+	$.ajax({
+		type : 'POST',
+		url : 'lider/user/getUserSessions',
+		data: 'uid='+ldapResult.attributes.uid,
+		dataType: "json",
+		success : function(sessionList) {
+			
+			$("#sessionListDiv").html("");
+			if(sessionList.length>0){
+				var html='<table class="table">';
+				html += '<thead>';
+				html += '<th style="width: 10%" ></th>';
+				html += '<th style="width: 30%" >HOSTNAME</th>';
+				html += '<th style="width: 30%" >IP</th>';
+				html += '<th style="width: 30%" >DURUM</th>';
+				html += '<th style="width: 30%" >TARİH</th>';
+				html += '</thead>';
+				
+				for (var m = 0; m < sessionList.length; m++) {
+					var row = sessionList[m];
+					
+					html += '<tr>';
+					html += '<td > <img src="img/linux.png" class="avatar" alt="Avatar"> </td>';
+			        html += '<td >' + row.agent.hostname + '</td>';
+			        html += '<td >' + row.agent.ipAddresses + '</td>';
+			        var eventStr=""
+			        if(row.sessionEvent=='LOGIN') {eventStr="Oturum Açıldı"}
+			        if(row.sessionEvent=='LOGOUT') {eventStr="Oturum Kapatıldı"}
+			        html += '<td >' + eventStr + '</td>';
+			        html += '<td >' + getFormattedDate(row.createDate) + '</td>';
+					html += '</tr>';
+					
+				}
+				html += '</table>';
+				$("#sessionListDiv").html(html);
+			}
+			else{
+				$("#sessionListDiv").html("");
+			}
+			
+		},
+	    error: function (data, errorThrown) {
+		}
+	 }); 
 }
 

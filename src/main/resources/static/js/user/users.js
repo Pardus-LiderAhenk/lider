@@ -310,7 +310,7 @@ function fillGroupListTab(row) {
 		    	 var entry = ldapResult[i];
 		    	memberHtml += '<tr>'
 		    	memberHtml += '<td>'+entry.distinguishedName+ '</td>'
-		    	memberHtml += '<td> <div class="text-center">  <button class="btn btn-sm  mr-2 btn-icon btn-icon-only btn-outline-danger deleteMember " title="Gruptan Çıkar"  data-value='+entry.distinguishedName+' > <i class="pe-7s-trash btn-icon-wrapper"></i>  </button>  </div>  </td>'
+		    	memberHtml += '<td> <div class="text-center">  <button class="btn btn-sm  mr-2 btn-icon btn-icon-only btn-outline-danger deleteMember " title="Gruptan Çıkar"  data-value="'+entry.distinguishedName+'" > <i class="pe-7s-trash btn-icon-wrapper"></i>  </button>  </div>  </td>'
 		    	memberHtml += '</tr>'
 			}
 			$('#groupsDiv').html(memberHtml);

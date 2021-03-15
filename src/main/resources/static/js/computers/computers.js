@@ -1132,8 +1132,8 @@ function createSelectedAgentInfoTable(data) {
 	}
 	tableElement += '<tr><th><i class="fa fa-laptop"></i> İşletim Sistemi</th><td id="agentOsName">'+ osName +'</td></tr>';
 	tableElement += '<tr><th><i class="fa fa-microchip"></i> İşlemci</th><td id="agentProcessor">'+ processor +'</td></tr>';
-	tableElement += '<tr><th><i class="fa fa-network-wired"></i> İP Adresi</th><td id="agentIpAddr">'+ ipAddress +'</td></tr>';
-	tableElement += '<tr><th><i class="fa fa-ethernet"></i> Mac Adresi</th><td id="agentMac">'+ macAddress +'</td></tr>';
+	tableElement += '<tr><th><i class="fa fa-network-wired"></i> IP Adresi</th><td id="agentIpAddr">'+ ipAddress +'</td></tr>';
+	tableElement += '<tr><th><i class="fa fa-ethernet"></i> MAC Adresi</th><td id="agentMac">'+ macAddress +'</td></tr>';
 	if (phase != null) {
 		tableElement += '<tr><th><i class="fas fa-list-ol"></i> Faz</th><td id=agentPhase>'+ phase +'</td></tr>';
 	}
@@ -1162,12 +1162,14 @@ function createTableForSelectedOu() {
 	var tableElement = "";
 	tableElement += '<tr><th id="agentStatusIcon" style="width: 40%"><i class="fas fa-toggle-off"></i> Durum</th><td style="width: 60%">  <span class="badge badge-danger" id="agentOnlineStatus" ></span></td></tr>';
 	tableElement += '<tr><th><i class="fa fa-laptop-code"></i> Bilgisayar Adı</th><td id="agentHostname"></td></tr>';
-	tableElement += '<tr><th><i class="fas fa-layer-group"></i> Bulunduğu Dizin</th><td id="agentDn">'+ getEntryFolderName(selectedRow.distinguishedName) +'</td></tr>';
+	if (getEntryFolderName(selectedRow.distinguishedName)) {
+		tableElement += '<tr><th><i class="fas fa-layer-group"></i> Bulunduğu Dizin</th><td id="agentDn">'+ getEntryFolderName(selectedRow.distinguishedName) +'</td></tr>';	
+	}
 	tableElement += '<tr><th><i class="fas fa-sitemap"></i> Kullanıcı Domain</th><<td id="userDomain"></td></tr>';
 	tableElement += '<tr><th><i class="fa fa-laptop"></i> İşletim Sistemi</th><td id="agentOsName"></td></tr>';
 	tableElement += '<tr><th><i class="fa fa-microchip"></i> İşlemci</th><td id="agentProcessor"></td></tr>';
-	tableElement += '<tr><th><i class="fa fa-network-wired"></i> İP Adresi</th><td id="agentIpAddr"></td></tr>';
-	tableElement += '<tr><th><i class="fa fa-ethernet"></i> Mac Adresi</th><td id="agentMac"></td></tr>';
+	tableElement += '<tr><th><i class="fa fa-network-wired"></i> IP Adresi</th><td id="agentIpAddr"></td></tr>';
+	tableElement += '<tr><th><i class="fa fa-ethernet"></i> MAC Adresi</th><td id="agentMac"></td></tr>';
 //	tableElement += '<tr><th><i class="fas fa-list-ol"></i> Faz</th><td id=agentPhase></td></tr>';
 	tableElement += '<tr><th><i class="fas fa-code-branch"></i> Ahenk Versiyonu</th><td id=agentVersion></td></tr>';
 	tableElement += '<tr><th><i class="fas fa-user"></i> Son Oturum</th><td id=userLastLogin></td></tr>';

@@ -1,8 +1,6 @@
 package tr.org.lider.controllers;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
@@ -24,10 +22,12 @@ public class SelectedAgentInfoController {
 
 	//get agent detail by agentJid
 	@RequestMapping(method=RequestMethod.POST ,value = "/detail", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Optional<AgentImpl> findAgentByJIDRest(@RequestParam (value = "agentJid") String agentJid) {
+	public AgentImpl findAgentByJIDRest(@RequestParam (value = "agentJid") String agentJid) {
 		List<AgentImpl> agent = agentService.findAgentByJid(agentJid);
-		Long agentId = agent.get(0).getId();
-		return agentService.findAgentByID(agentId);
+		if (agent != null && agent.size() > 0) {
+			return agent.get(0);
+		} else {
+			return null;
+		}
 	}
-
 }

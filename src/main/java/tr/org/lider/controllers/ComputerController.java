@@ -561,7 +561,7 @@ public class ComputerController {
 	}
 
 	@RequestMapping(method=RequestMethod.POST ,value = "/update_agent_info", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Boolean updateAgentInfo(@RequestParam(value="ipAddresses", required=true) String ipAddresses,
+	public AgentImpl updateAgentInfo(@RequestParam(value="ipAddresses", required=true) String ipAddresses,
 			@RequestParam(value="hostname", required=true) String hostname,
 			@RequestParam(value="agentVersion", required=true) String agentVersion,
 			@RequestParam(value="macAddresses", required=true) String macAddresses,
@@ -609,7 +609,7 @@ public class ComputerController {
 						phase.toString(), new Date()));
 			} 
 			agentRepository.save(agent);
-			return true;
+			return agent;
 		} else {
 			return null;
 		}

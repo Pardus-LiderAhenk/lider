@@ -3,20 +3,12 @@
 <link rel="stylesheet" href="css/computers.css">
 		<div class="col-lg-3" >
 			<div id="computerTreeDivMain"> 
-				<!-- 			<div style="margin-top: 15px; margin-left: 15px"> -->
-				<!-- 				<button id="btnAddAgents" type="button"	class=" btn btn-info" title="İstemcileri Ekle"> Ekle </button> -->
-				<!-- 				<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle"> Çevrimiçi </button> -->
-				<!--  			<button id="addOnlyOnlineAgents" type="button"	class=" btn btn-info" title="Online İstemcileri Ekle">  <i class="pe-7s-folder"> </i> </button> -->
-				<!-- 			</div> -->
-				<!-- 			<hr> -->
-				
 				<div id="computerTreeDiv" style="margin-top: 7px;"></div>
 				<div id="progressComputerTree"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
 			    	<div style="position:absolute; top: -50%; left: 30%;" > 
 			    		<img src="img/LoadingPage.gif" width="50" height="50"  /> <span> <b> Lütfen Bekleyiniz... </b> </span> 
 			    	</div>
 		  		</div>
-				
 				<div id="computerTreeOnlineInfo">
 					<button  class="btn btn-link btn-sm " id="btnTotalAgent" style="color: #CDFAF9; font-weight: bold;">  </button> 
 					<button  class="btn btn-link btn-sm " id="btnTotalAgentRefresh" style="color: white; font-weight: bold;"> <i class="fas fa-sync primary" ></i> </button> 
@@ -25,11 +17,6 @@
 						<br>
 					<button  class="btn btn-link btn-sm " id="btnOfflineAgent" style="color: #F38178; font-weight: bold;">   </button>
 				</div>
-<!-- 				<div id="progressComputerTreeInfo"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;"> -->
-<!-- 			    	<div style="position:absolute; ; top: -5%; left: 30%;">  -->
-<!-- 			    		<img src="img/LoadingPage.gif" width="50" height="50"  /> <span> <b> Lütfen Bekleyiniz... </b> </span>  -->
-<!-- 			    	</div> -->
-<!-- 		  		</div> -->
 			</div>
 		</div>
 		<div class="col-lg-9 green">
@@ -37,9 +24,6 @@
 				<div class="row" style="margin-top: 15px;">
 					<div class="col-lg-12">
 						<div>
-<!-- 							<img id="agent_image" alt="" src="img/linux.png"> -->
-<!-- 							<button  class="btn btn-link agent-offline btn-sm " id="selectedAgentInfo" data-target="#entryLdapInfoModal" data-toggle="modal">  Lütfen İstemci Seçiniz.</button> -->
-							
 							<button  class="btn btn-sm"> </button>
 							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-system" data-toggle="tab"><i class="fa fa-sliders-h"></i> Sistem</button>
 							<button role="tab" class="btn btn-info btn-sm computerActions " id="btn-package" data-toggle="tab"><i class="nav-link-icon fas fa-cubes"> </i> Paket</button>
@@ -51,9 +35,6 @@
 							<button role="tab" class="btn btn-info btn-sm computerActions" id="btn-installAhenk" data-toggle="tab"><i class="fas fa-download"></i> Ahenk Kur</button>
 						</div>
 					</div>
-<!-- 					<div class="col-lg-2" > -->
-<!-- 						<a class="nav-link  pull-right"> <i class="nav-link-icon fas fa-info-circle"> </i> &nbsp; <span > </span> </a> -->
-<!-- 					</div> -->
 				</div>
 					<hr>
 					<div>
@@ -90,56 +71,8 @@
 												</div>
 											</div>
 											<div class="card-body">
-												<table class="table table-striped table-hover table-bordered" style="line-height: 1">
-													<tbody>
-														<tr>
-															<td id="agentStatusIcon"><i class="fas fa-toggle-on"></i> Durum</td>
-															<td>  <span class="badge badge-danger" id="agentOnlineStatus" ></span>  </td>
-														</tr>
-														<tr>
-															<td><i class="fa fa-laptop-code"></i> Bilgisayar Adı</td>
-															<td id="agentHostname"></td>
-														</tr>
-														<tr>
-															<td><i class="fas fa-layer-group"></i> Bulunduğu Dizin</td>
-															<td id="agentDn"></td>
-														</tr>
-														<tr id="userDomainRow">
-															<td><i class="fas fa-sitemap"></i> Kullanıcı Domain</td>
-															<td id="userDomain"></td>
-														</tr>
-														<tr>
-															<td><i class="fa fa-laptop"></i> İşletim Sistemi</td>
-															<td id="agentOsName"></td>
-														</tr>
-														<tr>
-															<td><i class="fa fa-microchip"></i> İşlemci</td>
-															<td id="agentProcessor"></td>
-														</tr>
-														<tr>
-															<td><i class="fa fa-network-wired"></i> İP Adresi</td>
-															<td id="agentIpAddr"></td>
-														</tr>
-														<tr>
-															<td><i class="fa fa-ethernet"></i> MAC Adresi</td>
-															<td id="agentMac"></td>
-														</tr>
-														<tr id="agentPhaseRow">
-															<td><i class="fas fa-list-ol"></i> Faz</td>
-															<td id=agentPhase></td>
-														</tr>
-														<tr id="agentVersionRow">
-															<td><i class="fas fa-code-branch"></i> Ahenk Versiyonu</td>
-															<td id=agentVersion></td>
-														</tr>
-														<tr id="userLastLoginRow">
-															<td><i class="fas fa-user"></i> Son Oturum</td>
-															<td id=userLastLogin></td>
-														</tr>
-														<tr>
-															<td><i class="fa fa-calendar-alt"></i> Oluşturma Tarihi</td>
-															<td id=agentCreateDate></td>
-														</tr>
+												<table class="table table-striped table-hover table-bordered" style="line-height: 1" id="selectedAgentInfoTable">
+													<tbody id="selectedAgentInfoBody">
 													</tbody>
 												</table>
 											</div>
@@ -227,8 +160,7 @@
 							    </div>
 						    </div>
 					  </div>
-					  
-				  <div id="installAhenkPage" style="min-height: 750px;">
+				  	<div id="installAhenkPage" style="min-height: 750px;">
 							<div class="col-lg-12">
 								<div class="col-lg-12"> 
 									<div class="form-row">
@@ -276,9 +208,6 @@
 							<div class="col-lg-12">
 								<div class="col-lg-12"> 
 									<div class="form-row">
-<!-- 										<div class="col-md-12"> -->
-<!-- 										<span class="nav-link">Ahenk kurulan istemciyi sisteme kayıt edebilir, istemciye giriş yapacak kullanıcıların bulunduğu dizini seçebilirsiniz. </span> -->
-<!-- 										</div> -->
 										<div class="col-md-3">
 											<div class="position-relative form-group">
 												<input type="text" class="form-control form-control-sm" id="domainUserName" placeholder="Yetkili Domain Kullanıcı Adı giriniz...">
@@ -289,14 +218,6 @@
 												<input type="password" class="form-control form-control-sm" id="domainUserPassword" placeholder="Yetkili Kullanıcı Parola giriniz..." >
 											</div>
 										</div>
-<!-- 										<div class="col-md-2"> -->
-<!-- 											<div class="position-relative form-group"> -->
-<!-- 												<select	class="form-control form-control-sm" id="domainName"> -->
-<!-- 													<option value="AD" selected>Active Directory</option> -->
-<!-- 													<option value="LDAP">LDAP</option> -->
-<!-- 												</select> -->
-<!-- 											</div> -->
-<!-- 										</div> -->
 										<div class="col-md-3">
 											<div class="position-relative form-group">
 													<button id="btnRegisterAhenk" type="button" class="btn-shadow btn btn-info btn-sm" title="MYS Kayıt"><i class="fa fa-sign-in-alt"> MYS Sistemine Kayıt</i></button>
@@ -313,7 +234,6 @@
 							    </div>
 						    </div>
 					  </div>
-					  
 					  <div id="securityAndNetworkManagementPage" style="min-height: 750px;">
 					 	 <div class="row">
 							<div class="col-lg-7">
@@ -324,36 +244,32 @@
 							</div>
 					  	</div>
 					  </div>
-					  
 					  <div id="taskHistoryPage" style="min-height: 750px;">
 						<div id="selectedAgentInfoSection"> <b id="selectedAgentDN"></b></div>
 						<hr>
 						<div><button class="btn btn-info" id="getTaskHistoryBtn" data-toggle="tab"><i class="fa fa-history"></i> Geçmiş Görevleri Getir</button></div>
-						
 						<br>
-						
 						<div  style="background-color: white; padding: 10px; "> 
-						<table class="table table-striped table-bordered table-xs">
-							<caption style="caption-side:top; text-align: center;"> Geçmiş Görev Listesi</caption>
-							<thead>
-								<tr class="p-0 m-0">
-									<th style="width: 20%">Görev Adı</th>
-									<th style="width: 18%">Sonuç</th>
-									<th style="width: 20%">Gönderen</th>
-									<th style="width: 16%">Oluşturulma Tarihi</th>
-									<th style="width: 16%">Çalıştırılma Tarihi</th>
-									<th class="text-center" style="width: 6%"></th>
-								</tr>
-							</thead>
-							<tbody id="taskHistoryTable">
-								<tr>
-									<td colspan="6" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td>
-								</tr>
-							</tbody>
-						</table></div>
-						
-					  </div>
-					  
-					</div>
+							<table class="table table-striped table-bordered table-xs">
+								<caption style="caption-side:top; text-align: center;"> Geçmiş Görev Listesi</caption>
+								<thead>
+									<tr class="p-0 m-0">
+										<th style="width: 20%">Görev Adı</th>
+										<th style="width: 18%">Sonuç</th>
+										<th style="width: 20%">Gönderen</th>
+										<th style="width: 16%">Oluşturulma Tarihi</th>
+										<th style="width: 16%">Çalıştırılma Tarihi</th>
+										<th class="text-center" style="width: 6%"></th>
+									</tr>
+								</thead>
+								<tbody id="taskHistoryTable">
+									<tr>
+										<td colspan="6" class="text-center">Görev tarihçesini görüntelemek için sadece bir adet istemci seçiniz.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					 </div>
+				</div>
 			</div>
 		</div>

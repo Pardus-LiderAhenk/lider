@@ -1085,11 +1085,11 @@ function showSelectedEntries() {
 				$("#selectedAgentDNSSHIP").val(ipAddress);
 				createSelectedAgentInfoTable(data);
 			} else {
-				$.notify("İtemci bilgileri bulunamadı", "error");
+				$.notify("İstemci bilgileri bulunamadı", "error");
 			}
 		},
 		error: function (data, errorThrown) {
-			$.notify("İtemci bilgileri bulunamadı", "error");
+			$.notify("İstemci bilgileri bulunamadı", "error");
 		}
 	});
 }

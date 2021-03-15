@@ -211,7 +211,10 @@ $('#sendTaskEtaNotify').click(function(e){
 			strDate = sDay + "-" + sMonth + "-" + sYear;
 		}
 	}
-	var sendNotifyContent = $("#notifySelectBox option:selected").text() + "\n" + $("#notifyContent").val();
+	var sendNotifyContent = $("#notifyContent").val();
+	if ($("#notifySelectBox option:selected").val() != "NA") {
+		sendNotifyContent = $("#notifySelectBox option:selected").text() + "\n" + $("#notifyContent").val();
+	}
 	if (sendNotifyContent.includes("'")) {
 		sendNotifyContent = sendNotifyContent.replaceAll("'", "'\\''");
 	}
@@ -235,33 +238,32 @@ $('#sendTaskEtaNotify').click(function(e){
 	}
 
 //	if selected message/notify. Default select box "Mesaj seçiniz... value = NA"
-	if ($('#notifySelectBox :selected').val() != "NA") {
-		if (lineCountStatus == false) {
-			$.notify("Mesaj karakter veya satır sayısını aştınız.", "warn");
-			return;
-		}
-		var content = "Görev Gönderilecek, emin misiniz?";
-		if (scheduledParamEtaNotify != null) {
-			content = "Zamanlanmış görev gönderilecek, emin misiniz?";
-		}
-		$.confirm({
-			title: 'Uyarı!',
-			content: content,
-			theme: 'light',
-			buttons: {
-				Evet: function () {
-					sendNotifyTask(params);
-					scheduledParamEtaNotify = null;
-				},
-				Hayır: function () {
-				}
-			}
-		});
-	}else {
-		$.notify("Lütfen mesaj seçiniz, daha sonra Çalıştır butonuna tıklayınız.", "warn");
+	if (lineCountStatus == false) {
+		$.notify("Mesaj karakter veya satır sayısını aştınız.", "warn");
+		return;
 	}
+	if ($('#notifyTime').val() == "" || sendNotifyContent == "") {
+		$.notify("Mesaj içeriği ve süresi boş bırakılamaz.", "warn");
+		return;
+	}
+	var content = "Görev Gönderilecek, emin misiniz?";
+	if (scheduledParamEtaNotify != null) {
+		content = "Zamanlanmış görev gönderilecek, emin misiniz?";
+	}
+	$.confirm({
+		title: 'Uyarı!',
+		content: content,
+		theme: 'light',
+		buttons: {
+			Evet: function () {
+				sendNotifyTask(params);
+				scheduledParamEtaNotify = null;
+			},
+			Hayır: function () {
+			}
+		}
+	});
 });
-
 
 $('#notifySize').change(function(){
 	var textAreaTag = document.getElementById("notifyContent");

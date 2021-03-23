@@ -80,7 +80,12 @@ public class AdService implements ILDAPService{
 	public LdapConnection getConnection() throws LdapException {
 		LdapConnection connection = null;
 		try {
-			String host = configurationService.getAdIpAddress();
+			/**
+			 * Hosts can contain two or more IP address
+			 * if hosts contains comma get first index for host ip address
+			 */
+			String host=configurationService.getAdIpAddress().split(",")[0];
+			
 			String port = configurationService.getAdPort();
 			String userName = configurationService.getAdAdminUserFullDN();
 			String password = configurationService.getAdAdminPassword();

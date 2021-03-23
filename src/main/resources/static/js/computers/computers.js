@@ -1032,53 +1032,27 @@ function addSelectedEntryToTable(row,rootDnComputer){
 		$("#btnDeleteOu").hide();
 		$("#updateAgentInfo").show();
 	}
-//	else if(row.type=="ORGANIZATIONAL_UNIT"){
-
-//	$("#agentDn").html(getEntryFolderName(selectedRow.distinguishedName));
-
-//	}
 	else{
 		$('#selectedAgentInfo').prop('title', row.distinguishedName);
-		$("#agentStatusIcon").html('<i class="fa fa-toggle-off"></i> Durum');
 		$("#btnRenameAgent").hide();
 		$("#moveAgent").hide();
 		$("#deleteAgent").hide();
 		selectedEntries=[]
 		$("#selectedAgentInfo").html("Lütfen İstemci Seçiniz."); 
 		$("#selectedAgentInfo").html(selectedRow.ou); 
-		$("#agentOnlineStatus").hide()
-		$("#agentHostname").html("");
-		$("#agentIpAddr").html("");
-		$("#agentMac").html("");
-		$("#agentCreateDate").html("");
-		$("#agentOsName").html("");
-//		$("#agentUsername").html("");
-		$("#agentProcessor").html("");
-		$("#agentOsName").html("");
-		$("#agentPhase").html("");
-//		$("#userDomain").html("");
-		$("#agentDn").html("");
-		$("#agentVersion").html("");
-		$("#userLastLogin").html("");
 		$("#updateAgentInfo").hide();
-		$("#selectedAgentDN").text("");
 		$("#selectedAgentDNSSH").text("");
 		$("#selectedAgentDNSSHIP").text("");
-		$("#agentDn").html(getEntryFolderName(selectedRow.distinguishedName));
 		getAllAndOnlineAgents(selectedRow.distinguishedName);
 		$("#btnAddOu").show();
 		$("#btnDeleteOu").show();
-		$("#userLastLoginRow").show();
-		$("#agentVersionRow").show();
-		$("#agentPhaseRow").show();
-		$("#userDomainRow").show();
+		createTableForSelectedOu();
 	}
 }
 
 function showSelectedEntries() {
-
 	$("#selectedAgentList").show();
-
+	createTableForSelectedOu();
 	var html= '<button class="btn btn-outline-light" > <span id="btnAgent" > </span> </button> ';
 	html += ' <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" class="dropdown-toggle-split dropdown-toggle btn btn-light"> '
 		html += ' <span class="sr-only">Toggle Dropdown</span></button>'
@@ -1094,15 +1068,84 @@ function showSelectedEntries() {
 		$('#selectedAgentList').html(html);
 	$("#selectedAgentInfo").html(dnVal);
 	$('#selectedAgentInfo').prop('title', selDn);
+	var agentJid = selectedEntries[0]['attributes'].uid;
+	var params = {
+			"agentJid" : agentJid
+	};
 
-//	if(selectedEntries[0].type=='AHENK')
-//	{
-//	$("#agent_image").attr("src","img/person.png");
-//	}
+	$.ajax({ 
+		type: 'POST', 
+		url: 'select_agent_info/detail',
+		data: params,
+		dataType: 'json',
+		success: function (data) {
+			if (data != null) {
+				selectedRowDataFromDB = data;
+				var ipAddress = data.ipAddresses.replace(/\'/g, '');
+				$("#selectedAgentDNSSHIP").val(ipAddress);
+				createSelectedAgentInfoTable(data);
+			} else {
+				$.notify("İstemci bilgileri bulunamadı", "error");
+			}
+		},
+		error: function (data, errorThrown) {
+			$.notify("İstemci bilgileri bulunamadı", "error");
+		}
+	});
+}
 
-	$("#agentOnlineStatus").show()
-	if(selectedEntries[0].online)
-	{
+function createSelectedAgentInfoTable(data) {
+	$("#selectedAgentInfoBody").empty();
+	var ipAddress = data.ipAddresses.replace(/\'/g, '');
+	var macAddress = data.macAddresses.replace(/\'/g, '');
+	var phase = null;
+	var agentVersion = null;
+	var hostname = null;
+	var processor = null;
+	var osName = null;
+	$.each(data.properties, function(index, element) {
+		if (element.propertyName == "os.name") {
+			osName = element.propertyValue;
+		}
+		if (element.propertyName == "processor") {
+			processor = element.propertyValue;
+		}
+		if (element.propertyName == "agentVersion") {
+			if (element.propertyValue) {
+				agentVersion = element.propertyValue;
+			}
+		}
+		if (element.propertyName == "phase") {
+			if (element.propertyValue){
+				phase = element.propertyValue;
+			}
+		}
+	});
+	var tableElement = "";
+	tableElement += '<tr><th id="agentStatusIcon" style="width: 40%"><i class="fas fa-toggle-on"></i> Durum</th><td style="width: 60%">  <span class="badge badge-danger" id="agentOnlineStatus" ></span></td></tr>';
+	tableElement += '<tr><th><i class="fa fa-laptop-code"></i> Bilgisayar Adı</th><td id="agentHostname">'+ data.hostname +'</td></tr>';
+	tableElement += '<tr><th><i class="fas fa-layer-group"></i> Bulunduğu Dizin</th><td id="agentDn">'+ getEntryFolderName(selectedEntries[0].distinguishedName) +'</td></tr>';
+	if (data.userDirectoryDomain == "NONE") {
+		tableElement += '<tr><th><i class="fas fa-sitemap"></i> Kullanıcı Domain</th><<td id="userDomain">Bilinmiyor</td></tr>';
+	} else {
+		tableElement += '<tr><th><i class="fas fa-sitemap"></i> Kullanıcı Domain</th><<td id="userDomain">'+ data.userDirectoryDomain +'</td></tr>';
+	}
+	tableElement += '<tr><th><i class="fa fa-laptop"></i> İşletim Sistemi</th><td id="agentOsName">'+ osName +'</td></tr>';
+	tableElement += '<tr><th><i class="fa fa-microchip"></i> İşlemci</th><td id="agentProcessor">'+ processor +'</td></tr>';
+	tableElement += '<tr><th><i class="fa fa-network-wired"></i> IP Adresi</th><td id="agentIpAddr">'+ ipAddress +'</td></tr>';
+	tableElement += '<tr><th><i class="fa fa-ethernet"></i> MAC Adresi</th><td id="agentMac">'+ macAddress +'</td></tr>';
+	if (phase != null) {
+		tableElement += '<tr><th><i class="fas fa-list-ol"></i> Faz</th><td id=agentPhase>'+ phase +'</td></tr>';
+	}
+	if (agentVersion != null) {
+		tableElement += '<tr><th><i class="fas fa-code-branch"></i> Ahenk Versiyonu</th><td id=agentVersion>'+ agentVersion +'</td></tr>';
+	}
+	if (selectedRow.attributesMultiValues.o) {
+		tableElement += '<tr><th><i class="fas fa-user"></i> Son Oturum</th><td id=userLastLogin>'+ selectedRow.attributesMultiValues.o +'</td></tr>';
+	}
+	tableElement += '<tr><th><i class="fa fa-calendar-alt"></i> Oluşturma Tarihi</th><td id=agentCreateDate>'+ data.createDate +'</td></tr>';
+	$('#selectedAgentInfoBody').append(tableElement);
+	if(selectedEntries[0].online){
 		$("#agentOnlineStatus").attr("class","badge badge-success");
 		$("#agentOnlineStatus").html("Çevrimiçi");
 		$("#agentStatusIcon").html('<i class="fas fa-toggle-on"></i> Durum');
@@ -1112,105 +1155,26 @@ function showSelectedEntries() {
 		$("#agentOnlineStatus").html("Çevrimdışı");
 		$("#agentStatusIcon").html('<i class="fa fa-toggle-off"></i> Durum');
 	}
+}
 
-	var agentJid = selectedEntries[0]['attributes'].uid;
-	var params = {
-			"agentJid" : agentJid
-	};
-
-	$("#agentHostname").html("");
-	$("#agentIpAddr").html("");
-	$("#agentMac").html("");
-	$("#agentCreateDate").html("");
-	$("#agentOsName").html("");
-	$("#agentProcessor").html("");
-	$("#agentOsName").html("");
-	$("#agentPhase").html("");
-//	$("#userDomain").html("");
-	$("#agentDn").html("");
-	$("#agentVersion").html("");
-	$("#userLastLogin").html("");
-
-	$.ajax({ 
-		type: 'POST', 
-		url: 'select_agent_info/detail',
-		data: params,
-		dataType: 'json',
-		success: function (data) {
-			selectedRowDataFromDB = data;
-			var ipAddress = data.ipAddresses.replace(/\'/g, '');
-			var macAddress = data.macAddresses.replace(/\'/g, '');
-			$("#selectedAgentDNSSHIP").val(ipAddress);
-			if(data.properties.length > 0) {
-				$("#agentVersionRow").hide();
-				$("#agentPhaseRow").hide();
-				$.each(data.properties, function(index, element) {
-					if (element.propertyName == "os.name") {
-						$("#agentOsName").html(element.propertyValue);
-					}
-					if (element.propertyName == "processor") {
-						$("#agentProcessor").html(element.propertyValue);
-					}
-					if (element.propertyName == "os.name") {
-						$("#agentOsName").html(element.propertyValue);
-					}
-					if (element.propertyName == "agentVersion") {
-						if (element.propertyValue) {
-							$("#agentVersionRow").show();
-							$("#agentVersion").html(element.propertyValue);
-						}else {
-							$("#agentVersionRow").hide();
-						}
-					}
-					if (element.propertyName == "phase") {
-						if (element.propertyValue){
-							$("#agentPhaseRow").show();
-							$("#agentPhase").html(element.propertyValue);
-						} else {
-							$("#agentPhaseRow").hide();
-						}
-					}
-				});
-				userDomain = data.userDirectoryDomain;
-//				$("#userDomain").html(data.userDirectoryDomain);
-//				if (userDomain) {
-//					$("#userDomain").html(userDomain);
-//					if (userDomain == "NONE") {
-//						$("#userDomainRow").hide();
-//						$("#userDomain").html("Bilinmiyor");
-//					} else {
-//						$("#userDomainRow").show();
-//					}
-//				} else {
-//					$("#userDomainRow").hide();
-//				}
-				$("#agentHostname").html(data.hostname);
-				$("#agentIpAddr").html(ipAddress);
-				$("#agentMac").html(macAddress);
-				$("#agentCreateDate").html(data.createDate);
-				$('#agentDn').html(getEntryFolderName(selDn));
-				if (selectedRow.attributesMultiValues.o) {
-					$("#userLastLoginRow").show();
-					$("#userLastLogin").html(selectedRow.attributesMultiValues.o);
-				} else {
-					$("#userLastLoginRow").hide();
-				}
-			} else {
-				$("#agentHostname").html("");
-				$("#agentIpAddr").html("");
-				$("#agentMac").html("");
-				$("#agentCreateDate").html("");
-				$("#agentOsName").html("");
-//				$("#agentUsername").html("");
-				$("#agentProcessor").html("");
-				$("#agentOsName").html("");
-				$("#userDomain").html("");
-				$("#agentDn").html("");
-				$("#agentVersion").html("");
-				$("#userLastLogin").html("");
-			}
-		}
-	});
+function createTableForSelectedOu() {
+	$("#selectedAgentInfoBody").empty();
+	var tableElement = "";
+	tableElement += '<tr><th id="agentStatusIcon" style="width: 40%"><i class="fas fa-toggle-off"></i> Durum</th><td style="width: 60%">  <span class="badge badge-danger" id="agentOnlineStatus" ></span></td></tr>';
+	tableElement += '<tr><th><i class="fa fa-laptop-code"></i> Bilgisayar Adı</th><td id="agentHostname"></td></tr>';
+	if (getEntryFolderName(selectedRow.distinguishedName)) {
+		tableElement += '<tr><th><i class="fas fa-layer-group"></i> Bulunduğu Dizin</th><td id="agentDn">'+ getEntryFolderName(selectedRow.distinguishedName) +'</td></tr>';	
+	}
+	tableElement += '<tr><th><i class="fas fa-sitemap"></i> Kullanıcı Domain</th><<td id="userDomain"></td></tr>';
+	tableElement += '<tr><th><i class="fa fa-laptop"></i> İşletim Sistemi</th><td id="agentOsName"></td></tr>';
+	tableElement += '<tr><th><i class="fa fa-microchip"></i> İşlemci</th><td id="agentProcessor"></td></tr>';
+	tableElement += '<tr><th><i class="fa fa-network-wired"></i> IP Adresi</th><td id="agentIpAddr"></td></tr>';
+	tableElement += '<tr><th><i class="fa fa-ethernet"></i> MAC Adresi</th><td id="agentMac"></td></tr>';
+//	tableElement += '<tr><th><i class="fas fa-list-ol"></i> Faz</th><td id=agentPhase></td></tr>';
+	tableElement += '<tr><th><i class="fas fa-code-branch"></i> Ahenk Versiyonu</th><td id=agentVersion></td></tr>';
+	tableElement += '<tr><th><i class="fas fa-user"></i> Son Oturum</th><td id=userLastLogin></td></tr>';
+	tableElement += '<tr><th><i class="fa fa-calendar-alt"></i> Oluşturma Tarihi</th><td id=agentCreateDate></td></tr>';
+	$('#selectedAgentInfoBody').append(tableElement);
 }
 
 function taskHistory() {
@@ -1937,17 +1901,8 @@ function updateAgentInfo(arrg) {
 		dataType: 'json',
 		data: params,
 		success: function (data) {
-			if (data == true) {
-				$("#agentHostname").html(arrg.hostname);
-				$("#agentIpAddr").html(arrg.ipAddresses);
-				$("#agentMac").html(arrg.macAddresses);
-				$("#agentVersion").html(arrg.agentVersion);
-				if (processor) {
-					$("#agentProcessor").html(processor);
-				}
-				if (phase) {
-					$("#agentPhase").html(phase);
-				}
+			if (data != null) {
+				createSelectedAgentInfoTable(data);
 				$.notify("Ahenk bilgileri güncellendi.", "success");
 			} else {
 				$.notify("Ahenk bilgileri güncellenirken hata oluştu.", "error");

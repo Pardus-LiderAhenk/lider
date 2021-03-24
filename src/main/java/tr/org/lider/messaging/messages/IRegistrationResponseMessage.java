@@ -89,4 +89,7 @@ public interface IRegistrationResponseMessage extends ILiderMessage {
 	
 	public void setDirectoryServer(String directoryServer);
 
+	public Boolean getDynamicDNSUpdate();
+
+	public void setDynamicDNSUpdate(Boolean dynamicDNSUpdate);
 }

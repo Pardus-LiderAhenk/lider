@@ -483,6 +483,14 @@ public class ConfigurationService {
 		return false;
 	}
 	
+	public Boolean getAllowDynamicDNSUpdate() {
+		String allowDynamicDNSUpdateStr = env.getProperty("dynamic.dns.update");
+		if( allowDynamicDNSUpdateStr != null && !allowDynamicDNSUpdateStr.isEmpty()) {
+			return Boolean.parseBoolean(allowDynamicDNSUpdateStr);
+		}
+		return false;
+	}
+	
 	public String getPardusRepoAddress() {
 		if(getConfigParams().getPardusRepoAddress() == null || getConfigParams().getPardusRepoAddress().equals("")) {
 			return "http://depo.pardus.org.tr/pardus";

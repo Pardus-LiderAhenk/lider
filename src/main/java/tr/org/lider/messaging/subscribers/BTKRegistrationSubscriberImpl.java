@@ -322,7 +322,7 @@ public class BTKRegistrationSubscriberImpl implements IRegistrationSubscriber {
 						+ "  ldap version =" + respMessage.getLdapVersion()
 						);
 			}
-			respMessage.setDynamicDNSUpdate(configurationService.getAllowDynamicDNSUpdate());
+			//respMessage.setDynamicDNSUpdate(configurationService.getAllowDynamicDNSUpdate());
 			xmppClient.addClientToRoster(jid + "@" + configurationService.getXmppServiceName());
 			return respMessage;
 

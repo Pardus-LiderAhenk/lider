@@ -68,7 +68,7 @@ public class RegistrationResponseMessageImpl implements IRegistrationResponseMes
 
 	private Boolean disableLocalUser;
 	
-	//private Boolean dynamicDNSUpdate;
+	private Boolean dynamicDNSUpdate;
 
 	
 	public RegistrationResponseMessageImpl(StatusCode status, String message, String agentDn, String recipient,
@@ -225,12 +225,12 @@ public class RegistrationResponseMessageImpl implements IRegistrationResponseMes
 		this.directoryServer = directoryServer;
 	}
 
-//	public Boolean getDynamicDNSUpdate() {
-//		return dynamicDNSUpdate;
-//	}
-//
-//	public void setDynamicDNSUpdate(Boolean dynamicDNSUpdate) {
-//		this.dynamicDNSUpdate = dynamicDNSUpdate;
-//	}
+	public Boolean getDynamicDNSUpdate() {
+		return dynamicDNSUpdate;
+	}
+
+	public void setDynamicDNSUpdate(Boolean dynamicDNSUpdate) {
+		this.dynamicDNSUpdate = dynamicDNSUpdate;
+	}
 
 }

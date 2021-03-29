@@ -316,7 +316,7 @@ public class DefaultRegistrationSubscriberImpl implements IRegistrationSubscribe
 						);
 			}
 			
-			//respMessage.setDynamicDNSUpdate(configurationService.getAllowDynamicDNSUpdate());
+			respMessage.setDynamicDNSUpdate(configurationService.getAllowDynamicDNSUpdate());
 			xmppClient.addClientToRoster(jid + "@"+configurationService.getXmppServiceName());
 			return respMessage;
 			

@@ -342,7 +342,7 @@ public class DiyanetRegistrationSubscriberImpl implements IRegistrationSubscribe
 						+ "  ldap version =" + respMessage.getLdapVersion()
 						);
 			}
-			//respMessage.setDynamicDNSUpdate(configurationService.getAllowDynamicDNSUpdate());
+			respMessage.setDynamicDNSUpdate(configurationService.getAllowDynamicDNSUpdate());
 			xmppClient.addClientToRoster(jid + "@"+configurationService.getXmppServiceName());
 			logger.info("Agent {} added successfully as a member lider_sunucu roster", jid);
 			return respMessage;

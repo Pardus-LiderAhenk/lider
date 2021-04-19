@@ -215,7 +215,9 @@ public class UserController {
 			if(!"".equals(selectedEntry.getHomePostalAddress())){
 				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "homePostalAddress", selectedEntry.getHomePostalAddress());
 			}
-			
+			if(!"".equals(selectedEntry.getUserPassword())){
+				ldapService.updateEntry(selectedEntry.getDistinguishedName(), "userPassword", selectedEntry.getUserPassword());
+			}
 			
 			selectedEntry = ldapService.findSubEntries(selectedEntry.getDistinguishedName(), "(objectclass=*)", new String[] {"*"}, SearchScope.OBJECT).get(0);
 

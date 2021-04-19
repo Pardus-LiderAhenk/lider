@@ -38,14 +38,14 @@
 									<a href="#" class="btn" id="btnMoveOuUserModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-random blue">&nbsp;</i>Klasör Taşı   </li> </a>
 									<a href="#" class="btn btnDeleteOuModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-trash red">&nbsp; &nbsp;</i>Klasörü Sil </li> </a>
 									</ul>
-								</div>'
+								</div>
 								
 								 <div id="userPopUpMenuDiv" style="display: none;" >
 									<ul>
 									 <a href="#"  class="btn " id="btnMoveUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-random blue">&nbsp;</i> Kullanıcı Taşı  </li> </a>
 									 <a href="#"  class="btn btnDeleteUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp;</i> Kullanıcı Sil </li> </a> 
 									</ul>
-								</div>';
+								</div>
 			  		</div>
 				
 				<div class="form-row">
@@ -145,8 +145,11 @@
 					                 </div>
 					                 <div class="col-lg-12">
 											<div class="form-group pull-right">
-													<button class="btn btn-primary submit-button"  id="addConsoleUserBtn" onclick="btnGiveConsoleAccessToNewUserClicked()">
+													<button class="btn btn-primary submit-button"  id="addConsoleUserBtn" onclick="btnAddNewUserClicked()">
 														<span>Yeni Arayüz Kullanıcısı Ekle</span>
+													</button>
+													<button class="btn btn-primary submit-button" style="display: none;" id="updateConsoleUserBtn" onclick="btnUpdateUserClicked()">
+														<span>Bilgileri Güncelle</span>
 													</button>
 											</div>
 									</div>

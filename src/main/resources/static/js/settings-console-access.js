@@ -535,10 +535,15 @@ function generateTreeForAssigningLiderConsoleUser() {
 					$('#btnGiveConsoleAccessToSelectedUser').prop('disabled', true);
 					$('#alreadyConsoleUser').html("");
 					$('#selectedDnForNewUser').html(selectedDN);
+					$('#updateConsoleUserBtn').hide();
+					$('#removeInfoConsoleUserBtn').hide();
+					$('#addConsoleUserBtn').show();
+					$('#uid').prop('disabled', false);
+					clearUserInfoForm()
+					
 				}
 				else if(row.type == "USER"){
 					savedNewConsoleUser=row;
-				
 					//check if user already has role for console
 					var selectedRows = $("#selectConsoleUserTreeDivGrid").jqxTreeGrid('getSelection');
 					var selectedRowData=selectedRows[0];
@@ -559,6 +564,12 @@ function generateTreeForAssigningLiderConsoleUser() {
 					}
 					
 					$('#addConsoleUserBtn').prop('disabled', true);
+					$('#uid').prop('disabled', true);
+					$('#addConsoleUserBtn').hide();
+					$('#updateConsoleUserBtn').show();
+					$('#removeInfoConsoleUserBtn').show();
+					clearUserInfoForm()
+					fillUserInfoForUpdate(savedNewConsoleUser)
 				}
 			},
 			//check action
@@ -686,7 +697,31 @@ function btnDeleteConsoleUserClicked() {
 	});  
 }
 
-function btnGiveConsoleAccessToNewUserClicked() {
+function fillUserInfoForUpdate(userInfo){
+	$('#uid').val(userInfo.attributes.uid);
+	$('#cn').val(userInfo.attributes.cn);
+	$('#sn').val(userInfo.attributes.sn);
+	$('#mail').val(userInfo.attributes.mail);
+	$('#homePostalAddress').val(userInfo.attributes.homePostalAddress);
+	$('#telephoneNumber').val(userInfo.attributes.telephoneNumber);
+	$('#userPassword').val(userInfo.attributes.userPassword);
+	$('#confirm_password').val(userInfo.attributes.userPassword);
+	
+}
+
+function clearUserInfoForm(){
+	$('#uid').val("");
+	$('#cn').val("");
+	$('#sn').val("");
+	$('#mail').val("");
+	$('#homePostalAddress').val("");
+	$('#telephoneNumber').val("");
+	$('#userPassword').val("");
+	$('#confirm_password').val("");
+	
+}
+
+function btnAddNewUserClicked() {
 	var uid=$('#uid').val();
 	var cn=$('#cn').val();
 	var sn=$('#sn').val();
@@ -698,7 +733,7 @@ function btnGiveConsoleAccessToNewUserClicked() {
 	
 	if(uid=='' || cn=='' || sn=='' || mail=='' || homePostalAddress==''	|| telephoneNumber=='' || userPassword=='' || confirm_password==''	)
 	{
-		$.notify("Lütfen Zorunlu alnları Doldurunuz!","warn");
+		$.notify("Lütfen Zorunlu alanları Doldurunuz!","warn");
 		return;
 	}
 	var lowerCase = "abcdefghijklmnopqrstuvwxyz";
@@ -746,6 +781,73 @@ function btnGiveConsoleAccessToNewUserClicked() {
 		},
 	    error: function (data, errorThrown) {
 			$.notify("Dizine erişiminiz bulunmamaktadır. Lütfen Dizin Erişiminizi Kontrol Ediniz.", "error");
+		}
+	});  
+}
+
+function btnUpdateUserClicked() {
+	var uid=$('#uid').val();
+	var cn=$('#cn').val();
+	var sn=$('#sn').val();
+	var mail=$('#mail').val();
+	var homePostalAddress=$('#homePostalAddress').val();
+	var telephoneNumber=$('#telephoneNumber').val();
+	var userPassword=$('#userPassword').val();
+	var confirm_password=$('#confirm_password').val();
+	
+	if(uid=='' || cn=='' || sn=='' || mail=='' || homePostalAddress==''	|| telephoneNumber=='' || userPassword=='' || confirm_password==''	)
+	{
+		$.notify("Lütfen Zorunlu alanları Doldurunuz!","warn");
+		return;
+	}
+	var lowerCase = "abcdefghijklmnopqrstuvwxyz";
+	var upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	var digits = "0123456789";
+	var splChars = "+=.@*!_";
+	
+	var ucaseFlag = contains(userPassword, upperCase);
+    var lcaseFlag = contains(userPassword, lowerCase);
+    var digitsFlag = contains(userPassword, digits);
+    var splCharsFlag = contains(userPassword, "*");
+    if (splCharsFlag) {
+    	$.notify("Parola * içermemelidir.","warn");
+		return;
+	}
+    if(userPassword.length < 6 || !ucaseFlag || !lcaseFlag || !digitsFlag){
+    	$.notify("Parola en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.","warn");
+    	return;
+    }
+    if(userPassword!=confirm_password){
+		$.notify("Parolalar Uyuşmamaktadır.",{className: 'warn',position:"right top"}  );
+		return;
+	}
+	/**
+		get selected user distinguishedName for updates
+	 */
+	
+     var params = {
+    		"distinguishedName" :savedNewConsoleUser.distinguishedName,
+			"uid" : uid,
+			"cn": cn,
+			"sn": sn,
+			"userPassword": userPassword,
+			"telephoneNumber": telephoneNumber,
+			"homePostalAddress": homePostalAddress,
+			"mail": mail
+	};
+	
+    $.ajax({
+		type : 'POST',
+		url : 'lider/user/editUser',
+		data : params,
+		dataType : 'json',
+		success : function(data) {
+			$.notify("Kullanıcı Başarı ile güncellendi.",{className: 'success',position:"right top"}  );
+			selectedDN=data.distinguishedName;
+			savedNewConsoleUser=data;
+		},
+	    error: function (data, errorThrown) {
+			$.notify("Güncelleme Başarısız.", "error");
 		}
 	});  
 }

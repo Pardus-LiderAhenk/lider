@@ -38,10 +38,10 @@ function addOptionsToRemoteAccessSelect() {
 		value : "yes",
 	}));
 
-	$('#remoteAccessSelect').append($('<option>', {
-		text: "Sadece bildirim aktif et",
-		value : "no",
-	}));
+//	$('#remoteAccessSelect').append($('<option>', {
+//		text: "Sadece bildirim aktif et",
+//		value : "no",
+//	}));
 	if (systemSettings.allowVNCConnectionWithoutPermission) {
 		$('#remoteAccessSelect').append($('<option>', {
 			text: "Kullanıcı izni ve bildirim yok",

@@ -32,7 +32,7 @@
 		<hibernate.entity.manager.version>4.3.6.Final</hibernate.entity.manager.version>
 		<geronimo.transaction.version>3.1.1</geronimo.transaction.version>
 		<aries.transaction.blueprint.version>1.0.1</aries.transaction.blueprint.version>
-		<commons.io.version>2.4</commons.io.version>
+		<commons.io.version>2.7</commons.io.version>
 		<commons.collections.version>3.2.1</commons.collections.version>
 		<commons.lang.version>2.6</commons.lang.version>
 		<commons.dbcp.version>1.4</commons.dbcp.version>

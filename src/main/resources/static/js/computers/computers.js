@@ -1583,6 +1583,22 @@ function btnRenameAgentClicked() {
 	getModalContent("modals/computer/renameComputer", function content(data){
 		$('#genericModalHeader').html("İstemci adını değiştirme");
 		$('#genericModalBodyRender').html(data);
+		
+//		var content = "Görev Gönderilecek, emin misiniz?";
+//		$.confirm({
+//			title: 'Uyarı!',
+//			content: content,
+//			theme: 'light',
+//			buttons: {
+//				Evet: function () {
+////					getResourceUsage();
+////					scheduledParamResUsage=null;
+//				},
+//				Hayır: function () {
+//				}
+//			}
+//		});
+		
 	});
 }
 
@@ -1604,7 +1620,8 @@ function btnSaveRenameEntryClicked() {
 		dataType: 'json',
 		data: params,
 		success: function (data) {
-			$.notify("İstemci adı başarıyla değiştirildi.", "success");
+
+			$.notify("Bilgisayar ismi makina yeniden başlatıldığında değişecektir", "success");
 			$('#genericModal').trigger('click');
 			$('#menuBtnComputers').trigger('click');
 		},

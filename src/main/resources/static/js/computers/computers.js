@@ -1621,7 +1621,7 @@ function btnSaveRenameEntryClicked() {
 		data: params,
 		success: function (data) {
 
-			$.notify("Bilgisayar ismi makina yeniden başlatıldığında değişecektir", "success");
+			$.notify("Bilgisayar ismi makine yeniden başlatıldığında değişecektir", "success");
 			$('#genericModal').trigger('click');
 			$('#menuBtnComputers').trigger('click');
 		},

@@ -187,7 +187,13 @@ function exportToExcel () {
 				'Başarılı', 
 				'Gönderildi',
 	  			'Hata', 
-				'Zamanlı Çalıştırılan'];
+				'Zamanlı Çalıştırılan',
+				'Parametreler',
+				'İçerik'];
+	var subHeader = ['',
+				'', 
+				'Bilgisayar Adı', 
+				'Sonuç'];
 	//give character number size for column width
 	var colLength = [];
 	for (var i = 0; i < header.length; i++) {
@@ -195,19 +201,19 @@ function exportToExcel () {
 	}
 	wsData[0] = header;
 	var commandListData = [];
+	var commandExecutionsListData = [];
 	$.each(commandList, function(index, command) {
 		var pluginName = "";
 		var pluginTaskName = "";
 		var successfullTaskCount = 0;
 		var failedTaskCount = 0;
-		
 		$.each(command.commandExecutions, function(k, commandExecutions) {
 			if(commandExecutions.commandExecutionResults != null && commandExecutions.commandExecutionResults.length != 0) {
 				if(commandExecutions.commandExecutionResults[0].responseCode == "TASK_PROCESSED") {
 					successfullTaskCount++;
 				}
-				if(commandExecutions.commandExecutionResults[0].responseCode == "TASK_ERROR") {
-					failedTaskCount++
+				else if(commandExecutions.commandExecutionResults[0].responseCode == "TASK_ERROR") {
+					failedTaskCount++;
 				}
 			}
 		});
@@ -217,19 +223,40 @@ function exportToExcel () {
 				pluginName = item.plugin.description;
 			}
 		});
-    	commandListData = [index+1, 
-							pluginName, 
-							pluginTaskName, 
-							command.createDate, 
-							command.commandOwnerUid, 
-							command.uidList.length,
-				 			successfullTaskCount, 
-							command.uidList.length - successfullTaskCount - failedTaskCount, 
-							failedTaskCount, 
-							command.task.cronExpression == null ? 'Hayır' : 'Evet'];
+		if(command.task.commandClsId == 'EXECUTE_SCRIPT') {
+			var sentParams = "";
+			if(command.task.parameterMap != null || command.task.parameterMap != '') {
+				sentParams = command.task.parameterMap;
+			}
+	    	commandListData = [index+1, 
+								pluginName, 
+								pluginTaskName, 
+								command.createDate, 
+								command.commandOwnerUid, 
+								command.uidList.length,
+					 			successfullTaskCount, 
+								command.uidList.length - successfullTaskCount - failedTaskCount, 
+								failedTaskCount, 
+								command.task.cronExpression == null ? 'Hayır' : 'Evet',
+								sentParams['SCRIPT_PARAMS'],
+								sentParams['SCRIPT_CONTENTS'].replace(/\n/g, " ")
+								];
+		} else {
+	    	commandListData = [index+1, 
+								pluginName, 
+								pluginTaskName, 
+								command.createDate, 
+								command.commandOwnerUid, 
+								command.uidList.length,
+					 			successfullTaskCount, 
+								command.uidList.length - successfullTaskCount - failedTaskCount, 
+								failedTaskCount, 
+								command.task.cronExpression == null ? 'Hayır' : 'Evet'];
+		}
+
     	
     	//if column element character length is bigger than before update it
-    	for (var i = 0; i < commandListData.length; i++) {
+    	for (var i = 0; i < commandListData.length-2; i++) {
     		if(commandListData[i] != "") {
         		if(String(commandListData[i]).length > colLength[i]){
         			colLength[i] = String(commandListData[i]).length + 3;
@@ -237,6 +264,25 @@ function exportToExcel () {
     		}
     	}
     	wsData.push(commandListData);
+		//add command executions to array
+		wsData.push(subHeader);
+		var counter = 1;
+		$.each(command.commandExecutions, function(k, commandExecutions) {
+			if(commandExecutions.commandExecutionResults != null && commandExecutions.commandExecutionResults.length != 0) {
+				if(commandExecutions.commandExecutionResults[0].responseCode == "TASK_PROCESSED") {
+					commandExecutionsListData = ['', counter++, commandExecutions.uid, 'Başarılı', 
+						commandExecutions.commandExecutionResults[0].responseMessage];
+				}
+				else if(commandExecutions.commandExecutionResults[0].responseCode == "TASK_ERROR") {
+					commandExecutionsListData = ['', counter++, commandExecutions.uid, 'Başarısız', 
+						commandExecutions.commandExecutionResults[0].responseMessage];
+				}
+			} else {
+				commandExecutionsListData = ['', counter++, commandExecutions.uid, 'Gönderildi'];
+			}
+			
+			wsData.push(commandExecutionsListData);
+		});
     });
 	//set column widths
 	var wscols = [];
@@ -291,6 +337,7 @@ function reloadTable(pNumber, pSize, taskCommand) {
 	    dataType: 'json',
 	    data: params,
 	    success: function (data) { 
+			console.log(data)
 	    	if(data.content.length > 0) {
 	    		commandList = data.content;
 		    	pagination(pNumber,data.totalPages);

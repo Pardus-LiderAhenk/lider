@@ -52,7 +52,7 @@
 		<springsource.jstl>1.2.0.v20110728</springsource.jstl>
 		<spring.framework.version>3.1.1.RELEASE</spring.framework.version>
 		<commons.fileupload>1.2.2</commons.fileupload>
-		<shiro.version>1.2.4</shiro.version>
+		<shiro.version>1.6.0</shiro.version>
 		<servlet.api.version>2.5</servlet.api.version>
 		<servicemix.specs>2.4.0</servicemix.specs>
 		<jersey.client>1.18.1</jersey.client>

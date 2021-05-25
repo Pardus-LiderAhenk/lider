@@ -12,7 +12,6 @@ Business layer of Lider V2.0 is Spring framework. It contains core functionaliti
 
 ## Documentation
 
-* See [Lider wiki](https://github.com/Pardus-LiderAhenk/lider/wiki) to get started!
 * https://www.liderahenk.org/
 
 
@@ -24,9 +23,6 @@ We encourage contributions to the project. To contribute:
 * Make your commits with clean, understandable comments
 * Perform a pull request
 
-## Changelog
-
-See [changelog](https://github.com/Pardus-LiderAhenk/lider/wiki/Changelog) to learn what we have been up to.
 
 ## Roadmap
 #### 2022

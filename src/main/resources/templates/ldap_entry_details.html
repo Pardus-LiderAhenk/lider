@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<!-- Page JS Plugins CSS -->
+<link rel="stylesheet" href="assets/js/plugins/slick/slick.min.css" />
+<link rel="stylesheet"
+	href="assets/js/plugins/slick/slick-theme.min.css" />
+
+<!-- AppUI CSS stylesheets -->
+<link rel="stylesheet" id="css-font-awesome"
+	href="assets/css/font-awesome.css" />
+<link rel="stylesheet" id="css-ionicons" href="assets/css/ionicons.css" />
+<link rel="stylesheet" id="css-bootstrap"
+	href="assets/css/bootstrap.css" />
+<link rel="stylesheet" id="css-app" href="assets/css/app.css" />
+<link rel="stylesheet" id="css-app-custom"
+	href="assets/css/app-custom.css" />
+
+<!-- Page JS Plugins CSS -->
+<link rel="stylesheet"
+	href="assets/js/plugins/bootstrap-datepicker/bootstrap-datepicker3.min.css" />
+<link rel="stylesheet"
+	href="assets/js/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css" />
+<link rel="stylesheet" href="assets/js/plugins/select2/select2.min.css" />
+<link rel="stylesheet"
+	href="assets/js/plugins/select2/select2-bootstrap.css" />
+<link rel="stylesheet"
+	href="assets/js/plugins/dropzonejs/dropzone.min.css" />
+<link rel="stylesheet"
+	href="assets/js/plugins/jquery-tags-input/jquery.tagsinput.min.css" />
+
+
+<link rel='stylesheet'
+	href='//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css'>
+<link rel="stylesheet" type="text/css" href="css/jquery.treegrid.css" />
+<link rel="stylesheet" type="text/css" href="css/metisMenu.css" />
+<link rel="stylesheet" type="text/css" href="css/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<script src="assets/js/core/jquery.min.js"></script>
+<script src="assets/js/core/bootstrap.min.js"></script>
+<script src="assets/js/core/jquery.slimscroll.min.js"></script>
+<script src="assets/js/core/jquery.scrollLock.min.js"></script>
+<script src="assets/js/core/jquery.placeholder.min.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/app-custom.js"></script>
+
+ <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script> 
+	<script type="text/javascript" src="js/bootstrap.min.js"></script> 
+<script type="text/javascript" src="js/jquery.treegrid.js"></script>
+<script type="text/javascript" src="js/metisMenu.min.js"></script>
+<script type="text/javascript" src="js/sb-admin-2.js"></script>
+<script type="text/javascript" src="js/strophe.js"></script>
+
+<script src="js/jquery.dataTables.min.js"></script>
+<!-- <script type="text/javascript"	src=js/main.js"></script> -->
+<script>
+	$(document).ready(function() {
+
+		$('#ss').bind('click', function() {
+
+			alert("ssss");
+
+		});
+		
+							$('#attributeModal').on('show.bs.modal',
+											function(event) {
+										
+												var button = $(event.relatedTarget)      
+											
+												var dn = button.data('id') 
+												
+												alert(dn);
+						
+												var modal = $(this)
+						
+									});
+									
+
+	});
+</script>
+</head>
+
+<body>
+
+			<div class="row">
+
+					<div class="col-lg-12">
+
+							<div class="card">
+									<div class="card-header  bg-teal bg-inverse">
+										<h6 th:text="${selectedEntry.parentName}"></h6>
+													
+									</div>
+									<div class="card-block">
+											<table class="table table-bordered" id="subEntryTable" style="font-size: 12px;">
+																	 <thead>
+																	    <tr>
+																	      <th scope="col">Name </th>
+																	      <th scope="col">DN </th>
+																	      <th scope="col">uId</th>
+																	    </tr>
+																	  </thead>
+																
+																	<tr th:each="subEntry : ${subEntries}">
+																		<td th:text="${subEntry.name}"></td>
+																		<td th:text="${subEntry.distinguishedName}"></td>
+																		<td th:text="${subEntry.uid}"></td>
+																		<td> 
+																		
+																		<button class="btn btn-xs btn-default" type="button" id="entryAttributeId" data-toggle="modal" data-target="#attributeModal" 
+																				title=""  th:attr="data-id=${subEntry.name}" > 
+																				
+																				
+																				<img class="img-responsive" src="img/attribute.png" title="Lider MYS" alt="Lider MYS" />  
+																		
+																		</button>
+																			<!-- <table>
+																				<tr th:each="subEntry : ${subEntry.attributes}">
+																					<td th:text="${subEntry.key}+' = '+${subEntry.value}"></td>
+																				
+																				</tr>
+																			</table> -->
+																		
+																		</td>
+																		
+								
+																	</tr>
+															
+															</table> 
+									</div>
+		
+							</div>
+					</div>
+
+					
+
+			</div>
+			
+			
+	<div id="attributeModal" class="modal fade">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+					
+					<div class="card-header bg-green bg-inverse">
+                                    <h4> Attributes </h4>
+                                    <ul class="card-actions">
+                                        <li>
+                                            <button data-dismiss="modal" type="button"><i class="ion-close"></i></button>
+                                        </li>
+                                    </ul>
+                    </div>
+                    
+					<div class="modal-body">
+
+						<div id="attributes"></div>
+						<div id="dn"></div>
+					</div>
+
+					<div class="modal-footer">
+						<input type="submit" class="btn btn-primary"
+							value="Özellikleri Guncelle" id="btnAttributes" name="bnt_gonder">
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Vazgeç</button>
+					</div>
+			</div>
+		</div>
+	</div>
+			
+</body>
+</html>

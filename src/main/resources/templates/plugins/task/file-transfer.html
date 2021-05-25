@@ -1,0 +1,126 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/file-transfer.js"></script>
+<style>
+<!--
+.custom-file-transfer ~ .custom-file-label::after {
+    content: "Gözat";
+}
+</style>
+
+</head>
+<body>
+	<div class="main-card mb-3 card">
+		<div id="divFileTransfer">
+			<div class="card-header">
+				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+				<div class="col-lg-6 text-left">DOSYA PAYLAŞIMI</div>
+				<div class="col-lg-6 text-right">
+					<button id="sendTaskCronFileTransfer" type="button" class="btn-shadow btn btn-info btn-sm" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+					<button id="sendTaskFileTransfer" type="button" title="Dosya Paylaş" class="btn-shadow btn btn-info btn-sm"><i class="fa fa-share-alt"></i></button>
+				</div>
+			</div>
+			<div class="card-body">
+				<div class="login-form-1">
+					<div class="custom-file">
+						<input type="file" class="custom-file-input custom-file-transfer" title="Dosya seçili değil" id="selectedFileTransfer">
+					  	<label class="custom-file-label" for="selectedFileTransfer">Gönderilecek dosyayı seçiniz...</label>
+					</div>
+					<br><br>
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text form-control-sm">Hedef dizin</span>
+						</div>
+						<input type="text" id="remotePath" class="form-control form-control-sm" placeholder="/tmp/example/" aria-describedby="fileManagementHelp">
+					</div>
+					<div class="row">
+						<div class="col-lg-4">
+							<div class="custom-control custom-switch">
+								<input type="checkbox" class="custom-control-input" id="userPermissionCb">
+							  	<label class="custom-control-label" for="userPermissionCb">Kullanıcı izinlerini düzenle</label>
+							</div>
+							<br>
+							<div class="main-card mb-3 card"  style="background-color: #EAEDED; min-height: 150px">
+								<div class="card-body">
+									<div class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input user-file-permissions" id="userReadPerCb">
+									    <label class="custom-control-label" for="userReadPerCb">Okuma</label>
+									</div>
+								   	<div class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input user-file-permissions" id="userWritePerCb">
+									    <label class="custom-control-label" for="userWritePerCb">Yazma</label>
+									</div>
+								   	<div class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input user-file-permissions" id="userExecutePerCb">
+									    <label class="custom-control-label" for="userExecutePerCb">Çalıştırma</label>
+								   	</div><br>
+								   	<input type="text" class="form-control user-file-permissions" id="userOwnerOfFile" placeholder="kullanıcı adı..." style="height: 25px">
+							 	</div>
+						   </div>
+						</div>
+						
+						<div class="col-lg-4">
+							<div class="custom-control custom-switch">
+								<input type="checkbox" class="custom-control-input" id="groupPermissionCb">
+							  	<label class="custom-control-label" for=groupPermissionCb>Grup izinlerini düzenle</label>
+							</div>
+							<br>
+							<div class="main-card mb-3 card"  style="background-color: #EAEDED; min-height: 150px">
+								<div class="card-body">
+									<div class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input group-file-permissions" id="groupReadPerCb">
+									    <label class="custom-control-label" for="groupReadPerCb">Okuma</label>
+									</div>
+								   	<div class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input group-file-permissions" id="groupWritePerCb">
+									    <label class="custom-control-label" for="groupWritePerCb">Yazma</label>
+									</div>
+								   	<div class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input group-file-permissions" id="groupExecutePerCb">
+									    <label class="custom-control-label" for="groupExecutePerCb">Çalıştırma</label>
+								   	</div><br>
+								   	<input type="text" class="form-control group-file-permissions" id="groupOwnerOfFile" placeholder="grup adı..." style="height: 25px">
+							 	</div>
+						   </div>
+						</div>
+						
+						<div class="col-lg-4">
+							<div class="custom-control custom-switch">
+								<input type="checkbox" class="custom-control-input" id="otherPermissionCb">
+							  	<label class="custom-control-label" for="otherPermissionCb">Diğer izinleri düzenle</label>
+							</div>
+							<br>
+							<div class="main-card mb-3 card"  style="background-color: #EAEDED; min-height: 150px">
+								<div class="card-body">
+									<div class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input other-file-permissions" id="otherReadPerCb">
+									    <label class="custom-control-label" for="otherReadPerCb">Okuma</label>
+									</div>
+								   	<div class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input other-file-permissions" id="otherWritePerCb">
+									    <label class="custom-control-label" for="otherWritePerCb">Yazma</label>
+									</div>
+								   	<div class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input other-file-permissions" id="otherExecutePerCb">
+									    <label class="custom-control-label" for="otherExecutePerCb">Çalıştırma</label>
+								   	</div>
+							 	</div>
+						   </div>
+						</div>
+					</div>
+					<small class="text-muted">Paylaşmak istediğiniz dosyayı seçerek Dosya Paylaş butonuna tıklayınız. Dosya boyutu 20 MB'tan fazla olamaz.</small>
+					<div id="plugin-result-file-transfer"></div>
+				</div>
+			</div>
+		</div>
+		<div id="progressFileTransfer"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+		   	<div style="position:absolute; ; top: 38%; left: 30%;"> 
+			   	<img src="img/LoadingPage.gif" width="80" height="80"  /> <span> <b>   Görev Gönderildi.. Lütfen Bekleyiniz... </b> </span> 
+		   	</div>
+		</div>	
+	</div>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<script src="js/FileSaver.js"></script>
+<script src="js/xlsx.full.min.js"></script>
+<script src="js/plugins/definitions/registration_template.js"></script>
+
+<style>
+::-webkit-input-placeholder {
+   font-size: 25px;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+      font-size: 25px;
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+      font-size: 25px;
+}
+
+/* Overriding styles */
+
+::-webkit-input-placeholder {
+   font-size: 14px!important;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+      font-size: 14px!important;
+}
+::-moz-placeholder {  /* Firefox 19+ */
+      font-size: 14px!important;
+}
+</style>
+<div class="main-card mb-3 card" style="margin: 10px;">
+		<div class="card-body">
+			<div>
+				<h4> Kayıt Şablonları </h4>
+				<div class="page-title-subheading">
+				Şablonda belirtilen metinle başlayan istemcilerin domaine sadece şablonda belirtilen gruba üye olan 
+					kullanıcılar tarafından alınmasını sağlayıp bu kullanıcıların şablonda verilen grup altında oluşturulmasını sağlar.<br>
+					Örneğin şablon adı <b>'pardus-01-'</b>, yetkili grup DN'i ya da kullanıcı DN'i <b>'ou=Teknik,ou=Ankara,ou=People,dc=liderahenk,dc=org'</b> 
+					ve istemcilerin dahil edileceği grup ise
+					<b>'ou=Yöneticiler,ou=Çankaya,ou=Ankara,ou=People,dc=liderahenk,dc=org'</b> olsun. <br>
+					Bu kayıt şablonundan sonra istemci adı <b>'pardus-01-'</b> ile başlayan tüm kullanıcılar sadece 
+					<b>'ou=Teknik,ou=Ankara,ou=People,dc=liderahenk,dc=org'</b> grubunda
+					yer alan yetkili kullanıcılar tarafından domaine alınabilir(yetkili gruba sadece bir kullanıcı DN'i de eklenebilir) ve domaine alınan istemciler 
+					<b>'ou=Yöneticiler,ou=Çankaya,ou=Ankara,ou=People,dc=liderahenk,dc=org'</b> grubu altında oluşturulur.
+				</div>
+			</div>
+			<hr>
+			<div class="col-lg-2">
+				<label>Birim Şablon Metni</label>
+				<input class="form-control form-control-sm" type="text" id="templateText" 
+					name="templateText" placeholder="pardus-01-" />
+			</div>
+			<div class="col-lg-4">
+				<label>İstemcinin Dahil Edileceği Klasör</label>
+				<div class="input-group mb-3">
+					<input type="text" class="form-control form-control-sm" placeholder="ou=Çankaya,ou=Ankara,ou=People,dc=liderahenk,dc=org" 
+						name="agentCreationDN" id="agentCreationDN">
+					<div class="input-group-append">
+			    		<button class="btn-icon btn-icon-only btn btn-info btn-sm" onclick="btnCreateTreeForAgentGroupSelectionClicked()" 
+			    			data-toggle="modal" data-target="#genericModal" title="Grup ağacından ekle" type="button">
+			    			<i class="pe-7s-network btn-icon-wrapper fa-lg"> </i>
+			    		</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-4">
+				<label>Yetkili Kullanıcı Grubu</label>
+				<div class="input-group mb-3">
+					<input type="text" class="form-control form-control-sm" placeholder="ou=Teknik,ou=Ankara,ou=People,dc=liderahenk,dc=org"
+						name="authorizedUserGroupDN" id="authorizedUserGroupDN">
+					<div class="input-group-append">
+			    		<button class="btn-icon btn-icon-only btn btn-info btn-sm"  title="Kullanıcı grubu ağacından ekle" 
+			    			onclick="btnCreateTreeForAuthSelectionClicked()" type="button" 
+			    			data-toggle="modal" data-target="#genericModal">
+			    			<i class="pe-7s-network btn-icon-wrapper fa-lg"> </i>
+			    		</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-2">
+			<label><br></label>
+				<div class="form-group" id="newGroupInput">
+					<button type="button" class="btn btn-primary btn-sm" id="btnCreateRegistrationTemplate" 
+						onclick="btnCreateRegistrationTemplateClicked()">Şablonu Kaydet</button>
+				</div>
+			</div>
+			 <div class="col-lg-12">
+			    <h5 class="card-title mt-2">Kayıt Şablonları</h5>
+			        <div class="main-card mb-3 card">
+			            <div class="card-body">
+			                <table  id="tableRegistrationTemplate" class="table table-striped table-bordered" style="width:100%">
+			                    <thead>
+				                    <tr>
+				                        <th style="width: 5%">#</th>
+				                        <th style="width: 15%">Birim Şablon Metni</th>
+				                        <th style="width: 30%">İstemcinin Dahil Edileceği Klasör</th>
+				                        <th style="width: 30%">Yetkili Kullanıcı Grubu</th>
+				                        <th style="width: 15%">Oluşturulma Tarihi</th>
+				                        <th style="width: 5%"></th>
+				                    </tr>
+			                    </thead>
+			                    <tbody id="bodyRegistrationTemplate">
+			                    </tbody>
+			                </table>
+			            </div>
+			        </div>
+			 </div>
+		</div>
+</div>
+

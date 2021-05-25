@@ -1,0 +1,85 @@
+/* Custom checkbox. All plugins using checkbox use this css. Example package-manager, service*/
+.cb-package-name {
+	position: relative;
+}
+.cb-package-name input[type="checkbox"] {    
+	opacity: 0;
+	position: absolute;
+	margin: 5px 0 0 3px;
+	z-index: 9;
+}
+.cb-package-name label:before{
+	width: 18px;
+	height: 18px;
+}
+.cb-package-name label:before {
+	content: '';
+	margin-right: 10px;
+	display: inline-block;
+	vertical-align: text-top;
+	background: white;
+	border: 1px solid #bbb;
+	border-radius: 2px;
+	box-sizing: border-box;
+	z-index: 2;
+}
+.cb-package-name input[type="checkbox"]:checked + label:after {
+	content: '';
+	position: absolute;
+	left: 6px;
+	top: 3px;
+	width: 6px;
+	height: 11px;
+	border: solid #000;
+	border-width: 0 3px 3px 0;
+	transform: inherit;
+	z-index: 3;
+	transform: rotateZ(45deg);
+}
+.cb-package-name input[type="checkbox"]:checked + label:before {
+	border-color: #03A9F4;
+	background: #03A9F4;
+}
+.cb-package-name input[type="checkbox"]:checked + label:after {
+	border-color: #fff;
+}
+.cb-package-name input[type="checkbox"]:disabled + label:before {
+	color: #b8b8b8;
+	cursor: auto;
+	box-shadow: none;
+	background: #ddd;
+}
+.plugin-table table tr:hover td, tr.selected td {
+    background: #70C1F9 !important;
+    background-color: black;
+}
+.plugin-table table tr.selected td {
+	color: #636462;
+	background: #70C1F9 !important;
+    background-color: black;
+}
+
+.packages-table select {
+	width: 50px !important;
+	height: 25px;
+	margin: 0 5px;
+}
+
+.packages-table .selectTag {
+	width: 172px !important;
+	height: 30px;
+}
+
+.packages-table .page-item.active .page-link {
+    background-color: #02a9f4 !important;
+    border: 1px solid blue;
+}
+.packages-table .page-link {
+    color: black !important;
+}
+.packages-table .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: none;
+  color: #02a9f4!important;
+  border-radius: 2px;
+  border: 1px solid #828282;
+}

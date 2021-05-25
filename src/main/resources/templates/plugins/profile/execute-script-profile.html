@@ -1,0 +1,90 @@
+<script type="text/javascript" src="js/plugins/profile/execute-script-profile.js"></script>
+<link rel="stylesheet" href="css/policy.profile.css" />
+
+<div class="login-form-1">
+	<div class="row">
+		<div class="col-lg-5">
+			<div class="main-card mb-3 card">
+				<div class="card-header">
+					<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+					<div>BETİK LİSTESİ</div>
+				</div>
+				<div class="card-body">
+					<div class="script-scroll">
+						<table class="table table-striped table-bordered" id="scriptTableTemp" border="1">
+							<thead>
+								<tr>
+									<th style="width: 75%">Adı</th>
+									<th style="width: 25%">Türü</th>
+								</tr>
+							</thead>
+							<tbody id="scriptsBody"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-7">
+			<div class="main-card mb-3 card">
+				<div class="card-header">
+					<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+					<div class="col-lg-6 text-left">Betik Ayar Listesi</div>
+					<div class="col-lg-6 text-right">
+						<button id="scriptProfileSave" type="button" class="btn-shadow btn btn-info btn-sm" title="Kaydet"><i class="fa fa-save"></i></button>
+						<button id="scriptProfileDel" type="button" class="btn-shadow btn btn-info btn-sm" title="Sil"><i class="fa fa-trash-alt"></i></button>
+						<button id="scriptProfileUpdate" type="button" class="btn-shadow btn btn-info btn-sm" title="Güncelle"><i class="fa fa-redo-alt"></i></button>
+						<button id="scriptProfileAddToPolicy" type="button" class="btn-shadow btn btn-info btn-sm" title="Politikaya Ekle"><i class="fa fa-layer-group"></i></button>
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="form-row">
+						<div class="col-md-5">
+							<div class="position-relative form-group">
+								<label for="scriptProfileNameForm" class="control-label">Ayar Adı</label>
+								<input type="text" class="form-control form-control-sm" id="scriptProfileNameForm" placeholder="Ayar adı giriniz...">
+							</div>
+						</div>
+						<div class="col-md-7">
+							<div class="position-relative form-group">
+								<label for="scriptProfileDescriptionForm" class="control-label">Açıklaması</label>
+								<input type="text" class="form-control form-control-sm" id="scriptProfileDescriptionForm" placeholder="Açıklama giriniz...">
+							</div>
+						</div>
+					</div>
+					<div class="profile">
+						<table class="table table-striped table-bordered" id="scriptProfileTable">
+							<thead>
+								<tr>
+									<th style="width: 20%">Ayar Adı</th>
+									<th style="width: 60%">Açıklama</th>
+									<th style="width: 20%">Oluşturma Tarihi</th>
+								</tr>
+							</thead>
+							<tbody id="scriptProfileBody"></tbody>
+						</table>
+					</div>
+					<div id="scriptProfileEditForm">
+						<div class="row">
+							<div class="form-group col-lg-10">
+								<input type="text" id="scriptProfileParameters" class="form-control form-control-sm" placeholder="Varsa betik parametrelerini giriniz...">
+							</div>
+							<div class="form-group col-lg-2">
+								<select class="form-control form-control-sm" id="scriptProfileType">
+									<option value="bash">Bash</option>
+									<option value="python">Python</option>
+									<option value="perl">Perl</option>
+									<option value="ruby">Ruby</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="scriptProfileContent">Betik Ayar İçeriği</label>
+							<textarea class="form-control" id="scriptProfileContent" rows="12"></textarea>
+						</div>
+					</div>
+					<small class="text-muted">Yeni bir betik ayarı oluşturmak için BETİK LİSTESİ'den betik seçiniz. Daha sonra ayar adı ve açıklama girerek Kaydet butonuna tıklayınız. Güncellemek istediğiniz betik ayarını seçerek betik içeriğini Betik Listesinden bir betik ile değiştirebilir ya da var olan betik içeriğini güncelleyebilirsiniz. Politika kullanmak istediğiniz ayarı listeden tablodan seçerek Politikaya Ekle butonuna tıklayınız.</small>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

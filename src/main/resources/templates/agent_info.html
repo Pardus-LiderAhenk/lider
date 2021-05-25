@@ -1,0 +1,178 @@
+<link rel="stylesheet" href="css/daterangepicker.css">
+<script src="js/FileSaver.js"></script>
+<script src="js/xlsx.full.min.js"></script>
+<!-- <script type="text/javascript" src="js/computers/computerTreeManager.js"></script> -->
+
+
+<div class="main-card mb-3 card" style="margin: 18px;">
+	<div class="card-body" id="agentInfoBodyDiv">
+		<div class="table-wrapper">
+			<div class="table-title">
+				<div class="row">
+					<div class="col-sm-4">
+						<h2>Detaylı İstemci Listesi</h2>
+					</div>
+					<div class="col-sm-8">
+						<div class="d-block dropdown">
+							<button type="button" id="dropdownButton" data-toggle="dropdown"
+								aria-haspopup="true" aria-expanded="false"
+								class="btn-shadow dropdown-toggle btn btn-primary ml-2">
+								<i class="fa fa-plus" aria-hidden="true"></i> <span>İstemci Grubu
+									Oluştur</span>
+							</button>
+							<div tabindex="-1" id="operationDropDown" role="menu"
+								aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+								<a class="dropdown-item" href="#" data-toggle="modal"
+									data-target="#genericModal"
+									onclick="dropdownButtonClicked('addToExistingGroup')">Mevcut
+									Gruba Ekle</a> <a class="dropdown-item" href="#"
+									data-toggle="modal" data-target="#genericModal"
+									onclick="dropdownButtonClicked('addToNewGroup')">Yeni
+									İstemci Grubu Oluştur</a>
+							</div>
+						</div>
+						<a href="#" class="btn btn-primary"
+							onclick="exportButtonClicked()"> <i class="fa fa-download" aria-hidden="true"> </i><span>Dışa
+								Aktar</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="table-filter">
+				<div class="row">
+					<div class="col-sm-2">
+						<div class="show-entries">
+							<select id="pageSize" name="pageSize" class="form-control">
+								<option>10</option>
+								<option>20</option>
+								<option>25</option>
+								<option>50</option>
+								<option>100</option>
+								<option>200</option>
+								<option>500</option>
+								<option>1000</option>
+							</select> <span> Sonuç Göster</span>
+						</div>
+					</div>
+					<div class="col-sm-10">
+						<button type="button" class="btn btn-primary" onclick="search()" id="searchButton">
+							<i class="fa fa-search"></i>
+						</button>
+						<div class="filter-group">
+							<div class="input-group" id="inputDiv">
+							  <input type="text" class="form-control" placeholder="Search" id="searchText">
+							  <div class="input-group-append">
+							    <button class="btn btn-success" type="submit" data-toggle="modal" 
+							    	data-target="#genericModal" id="btnSelectDNFromTree" 
+							    	onclick="btnSelectDNFromTreeClicked()">
+							    	<i class="pe-7s-network btn-icon-wrapper fa-lg"></i>
+							    </button>
+							  </div>
+							</div>
+						</div>
+						<div class="filter-group">
+
+						</div>
+						<div class="filter-group">
+							<label>Filtre Alanı</label> <select class="form-control filter"
+								id="searchByAgentProperty">
+								<option value="dn">DN</option>
+								<option value="jid">JID</option>
+								<option value="hostname">Bilgisayar Adı</option>
+								<option value="ipAddresses">IP Adresleri</option>
+								<option value="macAddresses">MAC Adresleri</option>
+								<option value="os.distributionName">İşletim Sistemi</option>
+								<option value="os.distributionVersion">İşletim Sistemi Versiyonu</option>
+								<option value="hardware.baseboard.manufacturer">Marka</option>
+								<option value="hardware.systemDefinitions">Model</option>
+								<option value="hardware.memory.total">Bellek</option>
+								<option value="hardware.disk.total">Disk</option>
+								<option value="agentVersion">Ahenk Versiyonu</option>
+								<option value="phase">Faz</option>
+							</select>
+						</div>
+						<div class="filter-group">
+							<label>Durumu</label> <select class="form-control stat"
+								id="searchByStatus">
+								<option value="all">Hepsi</option>
+								<option value="online">Açık</option>
+								<option value="offline">Kapalı</option>
+							</select>
+						</div>
+						<div class="filter-group"  id="date-range-picker">
+							<label>Kayıt Tarihi</label>
+		                    <input type="text" class="form-control dtpicker" id="registration_date_filter" onkeydown="return false" autocomplete="off">
+						</div>
+						<span class="filter-icon"><i class="fa fa-filter"></i></span>
+						
+					</div>
+				</div>
+			</div>
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr>
+						<th style="width: 3%"><span class="cb-agent-info"> <input
+								type="checkbox" id="selectAll"> <label for="selectAll"></label>
+						</span></th>
+						<th class="text-center" style="width: 5%">#</th>
+						<th style="width: 13%">Bilgisayar Adı</th>
+						<th style="width: 11%">MAC Adresi</th>
+						<th style="width: 11%">IP Adresi</th>
+						<th style="width: 8%">Durum</th>
+						<th style="width: 8%">Faz</th>
+						<th style="width: 10%">Marka</th>
+						<th style="width: 8%">İşletim Sistemi</th>
+						<th style="width: 8%">Versiyon</th>
+						<th style="width: 9%">Oluşturulma Tarihi</th>
+						<th class="text-center" style="width: 6%"></th>
+					</tr>
+				</thead>
+				<tbody id="agentsTable">
+				</tbody>
+			</table>
+			<div class="clearfix">
+				<!-- <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>  -->
+				<ul id="pagingList" class="pagination">
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div id="progressAgentInfo" class="plugin-progress" style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+    	<div style="position:absolute; ; top: 38%; left: 45%;"> 
+    		<img src="img/LoadingPage.gif" width="80" height="80"  /> <span> <b>   Ahenk listesi getiriliyor lütfen bekleyiniz ... </b> </span> 
+    	</div>
+	</div>
+</div>
+<script src="js/agent.info.js"></script>
+<script src="js/daterangepicker/moment-with-locales.min.js"></script>
+<script src="js/daterangepicker/locale/tr.js"></script>
+<script src="js/daterangepicker/tempusdominus-bootstrap-4.min.js"></script>
+<script src="js/daterangepicker/daterangepicker.js"></script>
+<script>
+  $(function() {
+    //Date range picker
+    $('#registration_date_filter').daterangepicker( {
+    	 autoUpdateInput: false,
+         locale: {
+             cancelLabel: 'Temizle',
+             applyLabel: 'Uygula',
+             format: 'DD/MM/YYYY'
+         },
+    	language: 'tr',
+    });
+
+    $('#registration_date_filter').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        registrationStartDate = picker.startDate.format('DD/MM/YYYY HH:mm:ss');
+        registrationEndDate = picker.endDate.format('DD/MM/YYYY  HH:mm:ss');
+    });
+
+    $('#registration_date_filter').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+        registrationStartDate = "";
+        registrationEndDate = "";
+    });
+  });
+  
+</script>
+

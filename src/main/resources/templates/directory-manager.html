@@ -1,0 +1,113 @@
+<script  type="text/javascript" >
+var enableDeleteUpdate = '[[${enableDeleteUpdate}]]';
+</script>
+
+<script type="text/javascript" src="js/ad/dmTreeManager.js"></script>
+<script type="text/javascript" src="js/ad/dm.js"></script>
+<style type="text/css">
+
+.allow-scroll {
+    height: 560px;
+    overflow-y: auto;
+    overflow-x: none ;
+}
+.notifyjs-foo-base {
+  opacity: 0.85;
+  width: 200px;
+  background: #F5F5F5;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.notifyjs-foo-base .title {
+  width: 100px;
+  float: left;
+  margin: 10px 0 0 10px;
+  text-align: right;
+}
+
+.notifyjs-foo-base .buttons {
+  width: 70px;
+  float: right;
+  font-size: 9px;
+  padding: 5px;
+  margin: 2px;
+}
+
+.notifyjs-foo-base button {
+  font-size: 9px;
+  padding: 5px;
+  margin: 2px;
+  width: 60px;
+}
+</style>
+
+<div id="dmMainDiv"> 
+
+
+<div class="col-lg-3">
+	<div>
+		<div id="treeGridAdUserHolderDiv" style="margin-top: 7px;"></div>
+		
+		<div id="progressAdTree"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+		  <div style="position:absolute; top: -50%; left: 30%;" > 
+	  			<img src="img/LoadingPage.gif" width="50" height="50"  />  <b> Lütfen Bekleyiniz... </b>  
+		  </div>
+		</div>
+		
+		<div id='treeMenu'>
+			<div class="main-card mb-3 card">
+					<div id="treeMenuDomain" >
+						<ul>  
+							<a href="#"  class="btn btnAdUserAddModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-user-plus blue">&nbsp;</i>    Kullanıcı Ekle  </li> </a>    
+							<a href="#"  class="btn btnAdOuAddModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-folder-plus">&nbsp;</i>  Organizasyon Birimi Ekle  </li> </a>   
+							<a href="#"  class="btn btnAdGroupAddModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-users blue">&nbsp;</i>  Grup Ekle  </li> </a>  
+							<a href="#"  class="btn btnEntryAttributeModal" data-target="#genericModalLarge"	data-toggle="modal">  <li> <i class="fa fa-tasks blue">&nbsp; &nbsp;</i>  Öznitelikler   </li> </a>
+						</ul>
+					</div>
+					<div id="treeMenuContainer" >
+						<ul>  
+							<a href="#"  class="btn btnAdUserAddModal" data-target="#genericModalLarge"	data-toggle="modal">  <li> <i class="fa fa-user-plus blue">&nbsp;</i>  Kullanıcı Ekle   </li> </a>   
+							<a href="#"  class="btn btnAdGroupAddModal" data-target="#genericModalLarge"	data-toggle="modal"> <li>  <i class="fa fa-users blue">&nbsp;</i>  Grup Ekle  </li>  </a>  
+							<a href="#"  class="btn btnEntryAttributeModal" data-target="#genericModalLarge"	data-toggle="modal"> <li>  <i class="fa fa-tasks blue">&nbsp; &nbsp;</i>  Öznitelikler  </li> </a> 
+						</ul>
+					</div>
+					<div id="treeMenuOu" >
+						<ul>  
+							<a href="#"  class="btn btnAdUserAddModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-user-plus blue">&nbsp;</i>  Kullanıcı Ekle  </li> </a>    
+							<a href="#"  class="btn btnAdOuAddModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-folder-plus blue">&nbsp;</i>  Organizasyon Birimi Ekle  </li> </a>  
+							<a href="#"  class="btn btnAdGroupAddModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-users blue">&nbsp;</i>  Grup Ekle  </li> </a> 
+							<a href="#"  class="btn btnEntryAttributeModal" data-target="#genericModalLarge"	data-toggle="modal">  <li> <i class="fa fa-tasks blue">&nbsp; &nbsp;</i>  Öznitelikler  </li> </a> 
+							<a href="#"  class="btn" id="btnDeleteOuModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp; &nbsp;</i> Organizasyon Birimi Sil  </li> </a> 
+						</ul>
+					</div>
+					<div id="treeMenuGroup" >
+						<ul>  
+							<a href="#" class="btn" id="btnAddMember2GroupModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-user-plus blue">&nbsp;</i> Gruba Üye Ekle   </li> </a> 
+							<a href="#"  class="btn btnEntryAttributeModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-tasks blue">&nbsp; &nbsp;</i>  Öznitelikler  </li> </a> 
+							<a href="#"  class="btn" id="btnDeleteGroupModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp; &nbsp;</i> Grubu Sil  </li> </a>  
+						</ul>
+					</div>
+					<div id="treeMenuUser" >
+						<ul>  
+							<a href="#"  class="btn" id="btnAddUserToADGroupModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-plus-square blue">&nbsp; &nbsp;</i> Gruba Ekle </li> </a> 
+							<a href="#"  class="btn" id="moveLdapModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-certificate blue">&nbsp; &nbsp;</i> Lider'e Aktar </li> </a> 
+							<a href="#"  class="btn" id="btnDeleteUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp; &nbsp;</i>Kullanıcı Sil </li> </a> 
+							<a href="#"  class="btn btnEntryAttributeModal" data-target="#genericModalLarge"	data-toggle="modal"> <li> <i class="fa fa-tasks blue">&nbsp; &nbsp;</i>  Öznitelikler  </li> </a> 
+						</ul>
+					</div>
+			</div>
+   		</div>
+		
+	</div>
+</div>
+<div class="col-lg-9 green" >
+			<div class="row" style="margin-top: 15px"> 
+					<div class="col-lg-12 col-md-12">
+						<div id="innerPageContent"></div>
+					</div>		
+					
+			</div>
+</div>
+
+</div>

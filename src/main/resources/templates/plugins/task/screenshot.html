@@ -1,0 +1,37 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/screenshot.js"></script>
+</head>
+<body>
+	<div class="main-card mb-3 card">
+		<div id="screenshotDiv">
+			<div class="card-header">
+				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+				<div class="col-lg-6 text-left">EKRAN GÖRÜNTÜSÜ</div>
+				<div class="col-lg-6 text-right">
+				<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page}-->
+					<button id="sendTaskCronScreenshot" type="button" class="btn-shadow btn btn-info btn-sm" title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+					<button id="sendTaskScreenshot" type="button" class="btn-shadow btn btn-info btn-sm" title="Ekran Görüntüsü Al"><i class="fa fa-camera"></i></button>
+				</div>
+			</div>
+			<div class="card-body">
+			   	<div class="login-form-1">
+<!-- 			   		<div id="setImage"> -->
+			   			
+<!-- 			   		</div> -->
+			   		<img class="img-responsive" id="setImage" width="100" height="200" src="">
+					<div id="plugin-result-screenshot"></div>
+				</div>
+			</div>
+		</div>
+		<div id="progressScreenshot"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+	    	<div style="position:absolute; ; top: 38%; left: 30%;"> 
+	    		<img src="img/LoadingPage.gif" width="40" height="40"  /> <span> <b>   Görev Gönderildi.. Lütfen Bekleyiniz... </b> </span> 
+	    	</div>
+		 </div>
+	</div>
+</body>
+</html>

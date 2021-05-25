@@ -1,0 +1,74 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/manage-root.js"></script>
+</head>
+<body>
+	<div class="main-card mb-3 card">
+		<div id="manageRootDiv">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">ROOT PAROLA YÖNETİMİ</div>
+			<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page} -->
+			<div class="col-lg-6 text-right">
+				<button id="sendTaskCron-manage-root" type="button"	class="btn-shadow btn btn-info btn-sm"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+				<button id="sendTask-manage-root" type="button" title="Çalıştır" class="btn-shadow btn btn-info btn-sm"><i class="fa fa-play"></i></button>
+			</div>
+		</div>
+		<div class="card-body">
+			<div class="login-form-1">
+				<div class="login-group">
+					<div class="custom-control custom-switch">
+						<div>
+							<input type="checkbox" class="custom-control-input" id="lockRootUserButton">
+					  		<label class="custom-control-label" for="lockRootUserButton">Root Kullanıcısını Kilitle</label>
+					  	</div>
+					  	<small id="passwordHelpInline" class="text-muted"> Root Kullanıcısı, Root Parola Yönetimi eklentisinden tekrar parola verilene kadar istemcide kullanılamaz.</small>
+					</div>
+					<br>
+					<div class="row">
+						<div class="col-lg-2">
+							<img id="rootPasswordImage" height="100" width="50" src="images/unlock-solid.svg"/>
+						</div>
+						<div class="col-lg-10">
+							<div class="row">
+								<div class="col-lg-10">
+									<div class="input-group mb-3">
+									    <div class="input-group-prepend">
+									      	 <button class="btn btn-info btn-xs btn-sm" id="newRootPwdShowBtn" onclick="newRootPwdShow()"> <i class="fas fa-eye-slash"></i> </button> 
+									    </div>
+									    <input type="password" class="form-control form-control-sm" id="inputRootPassword" placeholder="Yeni Root Parolası...">
+									</div>
+					 				<div class="input-group mb-3">
+									    <div class="input-group-prepend">
+									      	<button class="btn btn-info btn-xs btn-sm" id="newConfirmRootPwdShowBtn" onclick="newConfirmRootPwdShow()"><i class="fas fa-eye-slash"></i> </button>
+									    </div>
+									    <input type="password" class="form-control form-control-sm" id="inputRootPasswordConfirm" placeholder="Root Parolası Doğrula...">
+					 				</div>
+				 				</div>
+				 				<div class="col-lg-2">
+									<button id=generateRootPassword type="button"
+										class="btn-shadow btn btn-info btn-sm" title="Parola Oluştur">
+										<i class="fa fa-key"></i>
+									</button>
+								</div>
+			 				</div>
+						</div>
+						<small id="passwordHelpInline" class="text-muted"> Parolanız en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.</small>
+					</div>
+					<div id="plugin-result-manage-root"></div>
+				</div>
+			</div>
+		</div> 
+		</div> 
+		
+		<div id="progressManageRoot"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+		    	<div style="position:absolute; ; top: 38%; left: 30%;"> 
+		    	<img src="img/LoadingPage.gif" width="40" height="40"  /> <span> <b>   Görev Gönderildi.. Lütfen Bekleyiniz... </b> </span> 
+		    	</div>
+		  </div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/packages.js"></script>
+<link rel="stylesheet" href="css/plugin.task.css" />
+
+</head>
+<body>
+	<div class="main-card mb-3 card">
+	<div id="divPackages">
+		<div class="card-header">
+				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+				<div class="col-lg-6 text-left">PAKET KUR VEYA KALDIR</div>
+				<div class="col-lg-6 text-right">
+					<button id="sendTaskCronPackages" type="button"	class="btn-shadow btn btn-info btn-sm"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+					<button id="repoAddrUpdateBtn" onclick="editRepoAddress()" title="Depo Adresi Düzenle" value="edit" type="button" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></button>
+					<button id="sendTaskPackages" type="button" title="Çalıştır" class="btn-shadow btn btn-info btn-sm"><i class="fa fa-play"></i></button>
+				</div>
+			</div>
+		<div class="card-body">
+		   	<div class="login-form-1 ">
+		   		<div class="input-group">
+		  			<div class="input-group-prepend">
+		  			 <select class="form-control custom-select custom-select-sm" id="packageType">
+					    <option value="deb">deb</option>
+					    <option value="deb-src">deb-src</option>
+		  			</select>
+		  			</div>
+		  			<input type="text" id="repoUrl" class="form-control form-control-sm">
+		  			<input type="text" id="repoComponent" class="form-control form-control-sm">
+					<div class="input-group-append">
+						<button id="getPackagesListBtn" type="button" class="btn btn-info btn-sm"><i class="fa fa-list"></i> Paketleri Listele</button>
+					</div>
+				</div>
+				<div class="input_fields_wrap" id="addedRepositoryId"></div>
+				<div class="packages-table">
+				<table class="table table-striped table-bordered display" id="packagesListTableId" border="1">
+				        <thead>
+				            <tr>
+				                <th style="width: 4%">#</th>
+								<th style="width: 16%">Paket Adı</th>
+								<th style="width: 15%">Versiyon</th>
+								<th style="width: 10%">Büyüklük</th>
+								<th style="width: 40%">Tanım</th>
+								<th style="width: 15%">İşlem Seç</th>
+				            </tr>
+				        </thead>
+			        <tbody id="packageBody"></tbody>
+		    	</table>
+		    	</div>
+		    	<small id="packagesHelp" class="text-muted">Girilen depo adresindeki paketleri listemek için Paketleri Listele butonuna tıklayınız.</small>
+				<div id="plugin-result-packages"></div>
+			</div>
+		</div>
+		</div>
+		<div id="progressPackages"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+		    	<div style="position:absolute; ; top: 38%; left: 30%;"> 
+		    	<img src="img/LoadingPage.gif" width="80" height="80"  /> <span> <b>   Görev Gönderildi.. Lütfen Bekleyiniz... </b> </span> 
+		    	</div>
+		  </div>
+	</div>
+</body>
+</html>

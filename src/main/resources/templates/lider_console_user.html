@@ -1,0 +1,174 @@
+<script type="text/javascript" src="js/user/lider_console_user.js"></script>
+<link rel="stylesheet" href="css/operation.log.css" />
+
+<div class="row" style="height: 820px; margin: 10px;">
+  <div class="col-3">
+    <div class="list-group" id="list-tab" role="tablist">
+      <a class="list-group-item list-group-item-action active" id="btnLiderConsoleProfileTab" data-toggle="list" href="#liderConsoleProfile" role="tab" aria-controls="userProfile">Kullanıcı Bilgileri</a>
+      <a class="list-group-item list-group-item-action" id="btnChangePasswordLiderConsoleTab" data-toggle="list" href="#changePasswordLiderConsole" role="tab" aria-controls="userChangePassword">Hesap Güvenliği</a>
+      <a class="list-group-item list-group-item-action" id="btnLiderConsoleSessions" data-toggle="list" href="#liderConsoleSessionsList" role="tab" aria-controls="liderConsoleSessions">Kullanım Geçmişi</a>
+      <a class="list-group-item list-group-item-action" id="btnGroupsOfLiderConsole" data-toggle="list" href="#groupsOfLiderConsole" role="tab" aria-controls="groupsOfLiderConsole">Grup Bilgileri</a>
+<!--       <a class="list-group-item list-group-item-action" id="btnPolicyHistorOfLiderConsoley" data-toggle="list" href="#policyHistorOfLiderConsoley" role="tab" aria-controls="policyHistorOfLiderConsoley">Politika Geçmişi</a> -->
+    </div>
+  </div>
+  <div class="col-9 white">
+    <div class="tab-content" id="nav-tabContent">
+		<div class="tab-pane fade show active col-lg-8" id="liderConsoleProfile" role="tabpanel" aria-labelledby="liderConsoleProfile">
+			<hr>
+            <h5>Kullanıcı Bilgileri</h5>
+            <hr>
+			<div>
+				<div class="form-group">
+					<label>Kullanıcı ID</label> 
+					<input class="form-control form-control-sm" disabled="disabled" type="text" id="liderConsoleUserUid">
+				</div>
+				<div class="form-group">
+					<label>Kullanıcı Adı</label> 
+					<input class="form-control form-control-sm" type="text" id="liderConsoleUserCn">
+				</div>
+				<div class="form-group">
+					<label>Kullanıcı Soyadı</label> 
+					<input class="form-control form-control-sm" type="text" id="liderConsoleUserSn">
+				</div>
+				<div class="form-group">
+					<label>Kullanıcı DN</label> 
+					<input class="form-control form-control-sm" disabled="disabled" type="text" id="liderConsoleUserDn">
+				</div>
+				<div class="form-group">
+					<label>E-posta</label> 
+					<input class="form-control form-control-sm" type="text" id="liderConsoleUserEmail">
+				</div>
+				<div class="form-group">
+					<label>Telefon Numarası</label> 
+					<input class="form-control form-control-sm" type="text" id="liderConsoleUserPhone">
+				</div>
+				<div class="form-group">
+					<label>Kullanıcı Ev Dizini</label> 
+					<input class="form-control form-control-sm" disabled="disabled" type="text" id="liderConsoleUserHomeDirectory">
+				</div>
+				<div class="form-group">
+					<label>Oluşturma Tarihi</label> 
+					<input class="form-control form-control-sm" disabled="disabled" type="text" id="liderConsoleUserCreateDate">
+				</div>
+				<div class="form-group">
+					<label>Adres</label>
+					<textarea class="form-control form-control-sm" id="liderConsoleUserAddress" rows="4"></textarea>
+				</div>
+				<div class="form-group">
+					<a href="#" class="btn btn-info pull-right btn-sm" id="btnUpdateConsoleUserProfile">
+						<span>Bilgileri Güncelle</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	    <div class="tab-pane fade col-lg-8" id="changePasswordLiderConsole" role="tabpanel" aria-labelledby="change-password-lider-console">
+			<hr>
+			<h5>Parola Durumunuz</h5>
+			<hr>
+			<div class="form-group">
+				<label>Son Değişiklik Tarihi</label>
+				<input class="form-control form-control-sm" disabled="disabled" type="text"	id="lasChangedPasswordDate" name="lasChangedPasswordDate" placeholder="01/01/2020"/>
+			</div>
+			<hr>
+			<h5>Parola Değiştir</h5>
+			<hr>
+			<form id="consoleUserPassword">
+				<label>Eski Parola</label>
+				<div class="input-group mb-3">
+					<input type="password" id="oldConsoleUserPassword" class="form-control form-control-sm" name="oldUserPassword" placeholder="Eski Parola">
+					<div class="input-group-append">
+						<button id="oldConsoleUserPasswordShowBtn" type="button" onclick="showOldPassword()" class="btn btn-info btn-sm"><i class="fas fa-eye-slash"></i></button>
+					</div>
+				</div>
+				<label>Yeni Parola</label>
+				<div class="input-group mb-3">
+					<input type="password" id="newConsoleUserPassword" class="form-control form-control-sm" name="newUserPassword" placeholder="Yeni Parola">
+					<div class="input-group-append">
+						<button id="newConsoleUserPasswordShowBtn" type="button" onclick="showNewPassword()" class="btn btn-info btn-sm"><i class="fas fa-eye-slash"></i></button>
+					</div>
+				</div>
+				<label>Yeni Parola Onayla</label>
+				<div class="input-group mb-3">
+					<input type="password" id="newConsoleUserConfirmPassword" class="form-control form-control-sm" name="newConfirmPassword" placeholder="Yeni Parola Onayla">
+					<div class="input-group-append">
+						<button id="newConsoleUserConfirmPasswordShowBtn" type="button" onclick="showNewConfirmPassword()"	class="btn btn-info btn-sm"><i class="fas fa-eye-slash"></i></button>
+					</div>
+				</div>
+				<div class="form-group">
+					<span class="text-secondary">Şifre en az 6 karakter olmalıdır. En az bir büyük harf, küçük harf ve sayı içermelidir.</span>
+				</div>
+				<div class="form-group">
+					<a href="#" class="btn btn-info pull-right btn-sm" id="btnUpdateConsoleUserPassword">
+						<span>Parola Güncelle</span>
+					</a>
+				</div>
+			</form>
+	  </div>
+     <div class="tab-pane fade" id="liderConsoleSessionsList" role="tabpanel" aria-labelledby="liderConsoleSessionsList">
+     	<hr>
+		<h5>Lider Arayüz Kullanım Geçmişi</h5>
+		<hr>
+		
+		<div class="console-table-filter">
+			<div class="form-row">
+				<div class="col-sm-3">
+					<div class="console-show-entries">
+						<select id="lcPageSize" name="lcPageSize" class="form-control form-control-sm console-filter">
+							<option>10</option>
+							<option selected="selected">20</option>
+							<option>50</option>
+							<option>100</option>
+							<option>200</option>
+							<option>500</option>
+						</select> <span> Sonuç Göster</span>
+					</div>
+				</div>
+				<div class="col-sm-9">
+					<div class="console-show-entries console-filter-group">
+						<span>Durum</span><select class="form-control console-filter" id="lcLoginStatus" onchange="changeOperationTypeForLogin()">
+							<option value="all" selected="selected">Hepsi</option>
+							<option value="login">Oturum Açıldı</option>
+							<option value="logout">Oturum Kapatıldı</option>
+					</select>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="operation-log-table">
+			<table class="table table-striped table-hover table-bordered">
+				<thead>
+					<tr>
+						<th style="width: 7%" class="text-center">#</th>
+						<th style="width: 30%" >Kullanıcı Adı</th>
+						<th style="width: 28%" >Tarih</th>
+						<th style="width: 30%" >IP Adresi</th>
+						<th style="width: 25%" >Durum</th>
+					</tr>
+				</thead>
+				<tbody id="liderConsoleSessionListBody"></tbody>
+			</table>
+		</div>
+		<div class="clearfix">
+			<ul id="pagingConsoleUserList" class="pagination"></ul>
+		</div>
+     </div>
+     <div class="tab-pane fade col-lg-8" id="groupsOfLiderConsole" role="tabpanel" aria-labelledby="groupsOfLiderConsole">
+     	<hr>
+		<h5>Kullanıcı Grup Bilgileri</h5>
+		<hr>
+     	<div id="groupsOfLiderConsoleDiv"></div>
+     	<hr>
+     	<h5>Kullanıcı Yetki Grup Bilgileri(Sudo)</h5>
+     	<hr>
+     	<div id="rolesOfLiderConsoleDiv"></div>
+     </div>
+     <div class="tab-pane fade" id="policyHistorOfLiderConsoley" role="tabpanel" aria-labelledby="policyHistorOfLiderConsoley">
+     	<hr>
+		<h5>Politika Geçmişi</h5>
+		<hr>
+     	<div id="policyHistorOfLiderConsoleyDiv"></div>
+     </div>
+    </div>
+  </div>
+</div>
+	

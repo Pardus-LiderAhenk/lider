@@ -1,0 +1,23 @@
+<!-- Start Create New Computer Group Modal-->
+<div class="row">
+	<div class="col-12">
+		<div class="card-header-title"><span>İstemci Grubu Adı</span></div>
+		<input class="form-control block" type="text" id="agentGroupsNewAgentGroupName" 
+			name="agentGroupsNewAgentGroupName" placeholder="İstemci grubu adı giriniz..." />
+	</div>
+
+	<div class="card-header-title ml-2 mt-2"><span class="ml-2">İstemciler</span></div>
+	
+    <div class="col-12" id="createNewAgentGroupTreeDiv">
+	    <div id="createNewAgentGroupTreeGridAgent"></div>
+    </div>
+	<div class="col-12">
+		<div><i>*Grup oluşturmak için en az bir istemci seçmelisiniz.</i></div><br>
+    </div>
+    <div class="col-12">
+		<div class="form-group float-right  mt-3 mr-2" id="newGroupInput">
+			<button type="button" class="btn btn-primary p-2" id="btnCreateAgentGroup" onclick="btnCreateAgentGroupClicked()">İstemci Grubunu Oluştur</button>
+		</div>
+    </div>
+</div>
+<!--  End Create New Computer Group Modal-->

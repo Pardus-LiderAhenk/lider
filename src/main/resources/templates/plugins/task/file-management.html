@@ -1,0 +1,64 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/file-management.js"></script>
+</head>
+<body>
+	<div class="main-card mb-3 card">
+		<div id="fileManagementContent"> 
+			<div class="card-header">
+				<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+				<div class="col-lg-6 text-left">DOSYA YÖNETİMİ</div>
+				<div class="col-lg-6 text-right">
+					<button id="sendTaskCronFileManagement" type="button"	class="btn-shadow btn btn-info btn-sm"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+					<button id="sendTaskFileManagement" type="button" title="Kaydet" class="btn-shadow btn btn-info btn-sm"><i class="fa fa-save"></i></button>
+				</div>
+			</div>
+			<div class="card-body">
+				<div class="login-form-1">
+					<div class="form-group">
+						<div class="form-row">
+							<div class="col-lg-5">
+								<label>Sık Kullanılan Dosyalar</label>
+								<div class="form-group ">
+									<select class="form-control form-control-sm" id="favUsedFileSelectBox">
+										<option value="NA" selected>...</option>
+										<option value="/etc/ahenk/ahenk.conf">ahenk.conf</option>
+										<option value="/etc/ssh/sshd_config">sshd_conf</option>
+										<option value="/etc/hosts">hosts</option>
+										<option value="/etc/resolv.conf">resolv.conf</option>
+										<option value="/etc/apt/sources.list">sources.list</option>
+										<option value="/etc/sssd/sssd.conf">sssd.conf</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-7">
+								<label>Dosya Yolu</label>
+								<div class="input-group mb-3">
+									<input type="text" id="filePath" class="form-control form-control-sm" placeholder="/tmp/example.txt" aria-describedby="fileManagementHelp">
+									<div class="input-group-append">
+										<button id=getFileBtn type="button"	class="btn btn-info btn-sm" title="Dosya Ara"><i class="fa fa-search"></i></button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<small id="fileManagementHelp" class="form-text text-muted">İstemcideki bir dosyayı düzenlemek için Sık kullanılanlardan dosya yolu seçilirek ya da Dosya Yolu girilirek Dosya Ara butonu ile içerik görüntülenir. Düzenleme işleminden sonra Kaydet butonu ile değişiklikler kaydedilir. İstemcide yeni bir dosya oluşturmak için Dosya Yolu ve İçerik girilerek Kaydet butonuna tıklanır. </small>
+						</div>
+						<div class="form-group">
+							<label for="fileContent">Dosya İçeriği</label>
+							<textarea class="form-control" id="fileContent" rows="16"></textarea>
+						</div>
+						<div id="plugin-result-file-management"></div>
+				</div>
+			</div>
+		</div>
+		 <div id="waitFileManagement"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+		    	<div style="position:absolute; ; top: 38%; left: 30%;"> 
+		    	<img src="img/LoadingPage.gif" width="80" height="80"  /> <span> <b>   Görev Gönderildi.. Lütfen Bekleyiniz... </b> </span> 
+		    	</div>
+		 </div>
+	</div>
+</body>
+</html>

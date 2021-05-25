@@ -1,0 +1,197 @@
+<script type="text/javascript" src="js/custom.js"></script>
+<script type="text/javascript" src="js/policy/policy.js"></script>
+<script type="text/javascript" >
+
+$(document).ready(function(){
+	$('.collapse-link').click();
+	  });
+</script>
+<link rel="stylesheet" href="css/policy.profile.css" />
+
+
+<div id="policyPage">
+	<div style=" margin-top : 10px; margin-left: 10px; margin-right: 10px;">
+		<div class="main-card mb-3 card">
+			<div class="card-body row">
+				<div class="col-lg-5">
+					<div class="main-card mb-3 card" style="min-height: 400px;">
+						<div class="card-header">
+							<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+							<div class="col-lg-6 text-left">POLİTİKA LİSTESİ</div>
+							<div class="col-lg-6 text-right">
+								<button id="policyRefreshBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Yenile"><i class="fa fa-sync-alt"></i></button>
+								<button id="policyPassiveBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Pasif Et"><i class="fas fa-times-circle"></i></button>
+								<button id="policyActiveBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Aktif Et"><i class="fa fa-check-square"></i></button>
+								<button id="policyDelBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Sil"><i class="fa fa-trash-alt"></i></button>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="policy">
+								<table class="table table-striped table-bordered table-sm" id="policyListTable">
+									<thead>
+										<tr>
+											<th style="width: 35%">Politika Adı</th>
+											<th style="width: 50%">Açıklama</th>
+											<th style="width: 15%">Durum</th>
+										</tr>
+									</thead>
+									<tbody id="policyListBody"></tbody>
+								</table>
+							</div>
+							<small class="text-muted">Listeden seçilen bir politikayı düzenleyebilir, Aktif/Pasif yapabilir veya Silebilirsiniz.</small>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4">
+					<div class="main-card mb-3 card" style="min-height: 400px;">
+						<div class="card-header">
+							<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+							<div class="col-lg-6 text-left">AYARLAR</div>
+							<div class="col-lg-6 text-right">
+								<button id="policyAddBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Politika Oluştur"><i class="fa fa-plus"></i></button>
+								<button id="policyUpdateBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Politika Güncelle"><i class="fa fa-redo-alt"></i></button>
+								<button id="removeProfileBtn" type="button" class="btn-shadow btn btn-info btn-sm" title="Profil Sil"><i class="fa fa-trash-alt"></i></button>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="form-row">
+								<div class="col-md-5">
+									<div class="position-relative form-group">
+										<label for="policyNameForm" class="control-label">Politika Adı</label>
+										<input type="text" class="form-control form-control-sm" id="policyNameForm" placeholder="Politika adı giriniz...">
+									</div>
+								</div>
+								<div class="col-md-7">
+									<div class="position-relative form-group">
+										<label for="policyDescriptionForm" class="control-label">Politika Açıklaması</label>
+										<input type="text" class="form-control form-control-sm" id="policyDescriptionForm" placeholder="Açıklama giriniz...">
+									</div>
+								</div>
+							</div>
+							<div class="profile">
+								<table class="table table-striped table-bordered table-sm" id="policyProfileTable">
+									<thead>
+										<tr>
+											<th style="width: 30%">Ayar Adı</th>
+											<th style="width: 45%">Açıklama</th>
+											<th style="width: 25%">Eklenti</th>
+										</tr>
+									</thead>
+									<tbody id="profileListBody"></tbody>
+								</table>
+							</div>
+							<small class="text-muted">Yeni bir politika oluşturabilir ya da var olan bir politikayı güncelleyebilirsiniz. Politika güncellemek için POLİKA LİSTESİ'den bir politika seçerek içeriğini düzenleyebilirsiniz. Yeni bir politika oluşturmak için ayar/ları seçerek AYARLAR'a ekleyiniz.</small>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3">
+					<div class="main-card mb-3 card" style="min-height: 400px;">
+						<div class="card-header">
+							<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+							<div class="col-lg-6 text-left">POLİTİKA İSTATİSTİĞİ</div>
+						</div>
+						<div class="card-body">
+							<canvas id="policyInfoChart" width="100" height="50"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+<!-- 		Profile pages  -->
+	</div>
+	<div style="margin-left: 10px; margin-right: 10px;">
+		<div class="x_panel card">
+			<div class="x_title">
+		    	<h2 class="nav navbar-right panel_toolbox collapse-link btn btn-outline-info btn-sm"><i class="ml-2 fa fa-chevron-up"></i> Betik Ayarları</h2>
+		    	<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+			 	<div id="execute-script-profile"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="x_panel card">
+					 <div class="x_title">
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-outline-info btn-sm"><i class="ml-2 fa fa-chevron-up"></i> Oturum Yönetimi Ayarları</h2>
+					    <div class="clearfix"></div>
+					 </div>
+					 <div class="x_content">
+					   <div id="login-manager-profile"></div>
+					 </div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+		        <div class="x_panel card">
+					 <div class="x_title">
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-outline-info btn-sm"><i class="ml-2 fa fa-chevron-up"></i> USB Ayarları</h2>
+					    <div class="clearfix"></div>
+					 </div>
+					 <div class="x_content">
+					    <div id="usb-profile"></div>
+					 </div>
+		        </div>
+	        </div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="x_panel card">
+					 <div class="x_title">
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-outline-info btn-sm"><i class="ml-2 fa fa-chevron-up"></i> İnternet Tarayıcı Ayarları</h2>
+					    <div class="clearfix"></div>
+					 </div>
+					 <div class="x_content">
+					   <div id="browser-profile"></div>
+					 </div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+		        <div class="x_panel card">
+					 <div class="x_title">
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-outline-info btn-sm"><i class="ml-2 fa fa-chevron-up"></i> Rsyslog Ayarları</h2>
+					    <div class="clearfix"></div>
+					 </div>
+					 <div class="x_content">
+					   <div id="rsyslog-profile"></div>
+					 </div>
+		        </div>
+	        </div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="x_panel card">
+					 <div class="x_title">
+					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-outline-info btn-sm"><i class="ml-2 fa fa-chevron-up"></i> Sistem Gözlemcisi Ayarları</h2>
+					    <div class="clearfix"></div>
+					 </div>
+					 <div class="x_content">
+					   <div id="conky-profile"></div>
+					 </div>
+				</div>
+			</div>
+<!-- 			<div class="col-lg-6"> -->
+<!-- 		        <div class="x_panel card"> -->
+<!-- 					 <div class="x_title"> -->
+<!-- 					    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-outline-info btn-sm"><i class="ml-2 fa fa-chevron-up"></i> Disk Kota Ayarları</h2> -->
+<!-- 					    <div class="clearfix"></div> -->
+<!-- 					 </div> -->
+<!-- 					 <div class="x_content"> -->
+<!-- 					   <p>PROFİL İÇERİĞİ</p> -->
+<!-- 					 </div> -->
+<!-- 		        </div> -->
+<!-- 	        </div> -->
+		</div>
+<!-- 		<div> -->
+<!-- 			<div class="x_panel card"> -->
+<!-- 				 <div class="x_title"> -->
+<!-- 				    <h2 class="nav navbar-right panel_toolbox collapse-link btn btn-outline-info btn-sm"><i class="ml-2 fa fa-chevron-up"></i> Conky Ayarları</h2> -->
+<!-- 				    <div class="clearfix"></div> -->
+<!-- 				 </div> -->
+<!-- 				 <div class="x_content"> -->
+<!-- 				   <p>PROFİL İÇERİĞİ</p> -->
+<!-- 				 </div> -->
+<!-- 			</div> -->
+<!-- 		</div>	 -->
+	</div>
+</div>
+

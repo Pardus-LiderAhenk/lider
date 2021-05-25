@@ -1,0 +1,51 @@
+/* policy table and profile table scroll and table row height */
+
+.table tbody tr.policysettings td {
+	color: #636462;
+	background-color: #70C1F9;
+}
+.policy table tr:hover td {
+    background: #70C1F9 !important;
+}
+.profile table tr:hover td {
+    background: #70C1F9 !important;
+}
+
+.policy {
+	height: 250px;
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
+.policy table tr {
+	line-height: 10px;
+}
+
+.profile {
+	height: 180px;
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
+.profile table tr {
+	line-height: 10px;
+}
+
+.script-scroll {
+	height: 285px;
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
+.script-scroll table tr {
+	line-height: 10px;
+}
+.script-scroll table tr:hover td {
+    background: #70C1F9 !important;
+}
+
+.browser {
+	height: 370px;
+	overflow-y: auto;
+	overflow-x: auto;
+}

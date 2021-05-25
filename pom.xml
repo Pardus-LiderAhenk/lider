@@ -1,638 +1,241 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                              http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.0.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
 
-	<groupId>tr.org.liderahenk</groupId>
-	<artifactId>lider-parent</artifactId>
-	<packaging>pom</packaging>
-	<version>1.0.0-SNAPSHOT</version>
-	<name>Lider Ahenk Parent POM</name>
+	</parent>
+	<groupId>tr.com.lider</groupId>
+	<artifactId>Lider2</artifactId>
+	<version>2.0</version>
+	<name>Lider2</name>
+	<packaging>war</packaging>
+	<description>Lider2 Merkezi Yonetim Sistemi</description>
 
 	<properties>
+		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<target.dir>target</target.dir>
-		<!--Not using 3.1 at the moment since it recompiles all classes everytime -->
-		<!--https://jira.codehaus.org/browse/MCOMPILER-205 -->
-		<!--<maven.compiler.plugin.version>3.1</maven.compiler.plugin.version> -->
-		<maven.compiler.plugin.version>2.5.1</maven.compiler.plugin.version>
-		<maven.jar.plugin.version>2.3.2</maven.jar.plugin.version>
-		<maven.war.plugin.version>2.6</maven.war.plugin.version>
-		<maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
-		<maven.bundle.plugin.version>3.0.1</maven.bundle.plugin.version>
-		<karaf.maven.plugin>4.0.10</karaf.maven.plugin>
-		<findbugs.maven.plugin.version>3.0.0</findbugs.maven.plugin.version>
-		<checkstyle.maven.plugin.version>2.12</checkstyle.maven.plugin.version>
-		<java.version>1.7</java.version>
-		<junit.version>4.12</junit.version>
-		<mockito.version>2.2.29</mockito.version>
-		<log4j.version>1.2.17</log4j.version>
-		<slf4j.version>1.6.1</slf4j.version>
-		<hibernate.jpa.api.version>1.0.0.Final</hibernate.jpa.api.version>
-		<hibernate.entity.manager.version>4.3.6.Final</hibernate.entity.manager.version>
-		<geronimo.transaction.version>3.1.1</geronimo.transaction.version>
-		<aries.transaction.blueprint.version>1.0.1</aries.transaction.blueprint.version>
-		<commons.io.version>2.4</commons.io.version>
-		<commons.collections.version>3.2.1</commons.collections.version>
-		<commons.lang.version>2.6</commons.lang.version>
-		<commons.dbcp.version>1.4</commons.dbcp.version>
-		<commons.pool.version>1.6</commons.pool.version>
-		<apache.directory.api.version>1.0.0-M20</apache.directory.api.version>
-		<jackson.version>1.9.13</jackson.version>
-		<antlr.version>2.7.7</antlr.version>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<smack.version>4.1.5</smack.version>
-		<hazelcast.version>3.1.7</hazelcast.version>
-		<osgi.core.version>6.0.0</osgi.core.version>
-		<osgi.compendium.version>5.0.0</osgi.compendium.version>
-		<apache.ws.version>2.4.0</apache.ws.version>
-		<jersey.client.version>1.19</jersey.client.version>
-		<file.upload.version>1.2.2</file.upload.version>
-		<jersey.client.version>1.17.1</jersey.client.version>
-		<commons.compress.version>1.7</commons.compress.version>
-		<springsource.jstl>1.2.0.v20110728</springsource.jstl>
-		<spring.framework.version>3.1.1.RELEASE</spring.framework.version>
-		<commons.fileupload>1.2.2</commons.fileupload>
-		<shiro.version>1.2.4</shiro.version>
-		<servlet.api.version>2.5</servlet.api.version>
-		<servicemix.specs>2.4.0</servicemix.specs>
-		<jersey.client>1.18.1</jersey.client>
-		<jersey.core>1.18.1</jersey.core>
-		<com.jcraft>0.1.50</com.jcraft>
-		<com.lowagie>2.1.7</com.lowagie>
-		<ehcache.version>2.8.0</ehcache.version>
-		<commons.beanutils.version>1.8.3</commons.beanutils.version>
-		<aries.blueprint.version>1.1.0</aries.blueprint.version>
-		<commons.codec.version>1.10</commons.codec.version>
-		<commons.lang.version>2.6</commons.lang.version>
-		<javax.mail.version>1.5.5</javax.mail.version>
-		<javax.mail.api.version>1.5.5</javax.mail.api.version>
-		<karaf.shell.core.version>4.0.5</karaf.shell.core.version>
-		<itext.version>5.5.9</itext.version>
-
-		<!--JPA -->
-		<ariesEbaMavenPluginVersion>1.0.0</ariesEbaMavenPluginVersion>
-		<!-- Aries Application Versions -->
-		<ariesApplicationApiVersion>1.0.0</ariesApplicationApiVersion>
-		<ariesApplicationVersion>1.0.0</ariesApplicationVersion>
-		<ariesApplicationConvertersVersion>1.0.0</ariesApplicationConvertersVersion>
-		<ariesApplicationDefaultLocalPlatformVersion>1.0.0</ariesApplicationDefaultLocalPlatformVersion>
-		<ariesApplicationDeploymentManagementVersion>1.0.0</ariesApplicationDeploymentManagementVersion>
-		<ariesApplicationInstallVersion>1.0.0</ariesApplicationInstallVersion>
-		<ariesApplicationItestInterfaceVersion>1.0.0</ariesApplicationItestInterfaceVersion>
-		<ariesApplicationManagementVersion>1.0.0</ariesApplicationManagementVersion>
-		<ariesApplicationModellerVersion>1.0.0</ariesApplicationModellerVersion>
-		<ariesApplicationNoopResolverVersion>1.0.0</ariesApplicationNoopResolverVersion>
-		<ariesApplicationObrResolverVersion>1.0.0</ariesApplicationObrResolverVersion>
-		<ariesApplicationRuntimeVersion>1.0.0</ariesApplicationRuntimeVersion>
-		<ariesApplicationRuntimeFrameworkVersion>1.0.0</ariesApplicationRuntimeFrameworkVersion>
-		<ariesApplicationRuntimeFrameworkManagementVersion>1.0.0</ariesApplicationRuntimeFrameworkManagementVersion>
-		<ariesApplicationRuntimeIsolatedVersion>1.0.0</ariesApplicationRuntimeIsolatedVersion>
-		<ariesApplicationRuntimeRepositoryVersion>1.0.0</ariesApplicationRuntimeRepositoryVersion>
-		<ariesApplicationUtilsVersion>1.0.0</ariesApplicationUtilsVersion>
-		<!-- Aries Jmx Versions -->
-		<ariesJmxiApiVersion>1.0.0</ariesJmxiApiVersion>
-		<ariesJmxBlueprintApiVersion>1.0.0</ariesJmxBlueprintApiVersion>
-		<ariesJmxBlueprintVersion>1.0.0</ariesJmxBlueprintVersion>
-		<ariesJmxBlueprintCoreVersion>1.0.0</ariesJmxBlueprintCoreVersion>
-		<ariesJmxVersion>1.0.0</ariesJmxVersion>
-		<ariesJmxCoreVersion>1.0.0</ariesJmxCoreVersion>
-		<ariesJmxWhiteboardVersion>1.0.0</ariesJmxWhiteboardVersion>
-		<!-- Aries Jndi Versions -->
-		<ariesJndiApiVersion>1.0.0</ariesJndiApiVersion>
-		<ariesJndiVersion>1.0.0</ariesJndiVersion>
-		<ariesJndiCoreVersion>1.0.0</ariesJndiCoreVersion>
-		<ariesJndiLegacySupportVersion>1.0.0</ariesJndiLegacySupportVersion>
-		<ariesJndiRmiVersion>1.0.0</ariesJndiRmiVersion>
-		<ariesJndiUrlVersion>1.0.0</ariesJndiUrlVersion>
-		<!-- Aries Jpa Versions -->
-		<ariesJpaApiVersion>1.0.0</ariesJpaApiVersion>
-		<ariesJpaBlueprintAriesVersion>1.0.1</ariesJpaBlueprintAriesVersion>
-		<ariesJpaContainerVersion>1.0.0</ariesJpaContainerVersion>
-		<ariesJpaContainerContextVersion>1.0.1</ariesJpaContainerContextVersion>
-		<!-- Aries Proxy Versions -->
-		<ariesProxyApiVersion>1.0.0</ariesProxyApiVersion>
-		<ariesProxyVersion>1.0.0</ariesProxyVersion>
-		<ariesProxyImplVersion>1.0.0</ariesProxyImplVersion>
-		<!-- Aries Quiesce Versions -->
-		<ariesQuiesceApiVersion>1.0.0</ariesQuiesceApiVersion>
-		<ariesQuiesceManagerVersion>1.0.0</ariesQuiesceManagerVersion>
-		<!-- Aries Testsupport Versions -->
-		<ariesTestsupportUnitVersion>1.0.0</ariesTestsupportUnitVersion>
-		<!-- Aries Transaction Versions -->
-		<ariesTransactionBlueprintVersion>1.0.1</ariesTransactionBlueprintVersion>
-		<ariesTransactionManagerVersion>1.0.1</ariesTransactionManagerVersion>
-		<ariesTransactionTestdsVersion>1.0.0</ariesTransactionTestdsVersion>
-		<ariesTransactionWrappersVersion>1.0.0</ariesTransactionWrappersVersion>
-		<!-- Aries Util Versions -->
-		<ariesUtilVersion>1.0.0</ariesUtilVersion>
-		<!-- Aries Web Versions -->
-		<ariesWebVersion>1.0.0</ariesWebVersion>
-
-
-		<openjpaVersion>2.3.0</openjpaVersion>
-		<geronimoJpaSpecVersion>1.1</geronimoJpaSpecVersion>
-		<geronimoJtaSpecVersion>1.1.1</geronimoJtaSpecVersion>
-		<geronimoTransactionVersion>3.1.1</geronimoTransactionVersion>
-		<geronimoServletVersion>1.2</geronimoServletVersion>
-		<geronimoJ2eeConnector15SpecVersion>2.0.0</geronimoJ2eeConnector15SpecVersion>
-		<geronimoJsp21SpecVersion>1.0.1</geronimoJsp21SpecVersion>
-		<asmVersion>3.2</asmVersion>
-		<serpVersion>1.13.1</serpVersion>
-		<servicemixBundlesSerpVersion>1.13.1_2</servicemixBundlesSerpVersion>
-		<servicemixBundlesCglibVersion>2.1_3_4</servicemixBundlesCglibVersion>
+		<start-class>tr.org.lider.Lider2Application</start-class>
 	</properties>
 
-	<licenses>
-		<license>
-			<name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3</name>
-			<url>http://www.gnu.org/licenses/lgpl.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<modules>
-		<module>lider-core</module>
-		<module>lider-localization</module>
-		<module>lider-persistence-mariadb</module>
-		<module>lider-messaging-xmpp</module>
-		<module>lider-web</module>
-		<module>lider-karaf</module>
-		<module>lider-rest-impl</module>
-		<module>lider-log-impl</module>
-		<module>lider-router-impl</module>
-		<module>lider-ldap-impl</module>
-		<module>lider-taskmanager-impl</module>
-		<module>lider-datasource-mariadb</module>
-		<module>lider-authorization-impl</module>
-		<module>lider-config</module>
-		<module>lider-cache-impl</module>
-		<module>lider-service-impl</module>
-		<module>lider-pluginmanager-impl</module>
-		<module>lider-policymanager-impl</module>
-		<module>lider-report-impl</module>
-		<module>lider-deployer</module>
-		<module>lider-mail-notification</module>
-		<!-- <module>lider-itest</module> -->
-	</modules>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${maven.javadoc.plugin.version}</version>
-				<configuration>
-					<!-- <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile> -->
-					<show>protected</show>
-					<failOnError>false</failOnError>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven.compiler.plugin.version}</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-					<encoding>${project.build.sourceEncoding}</encoding>
-					<compilerArgument>-proc:none</compilerArgument>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>${maven.war.plugin.version}</version>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>${findbugs.maven.plugin.version}</version>
-				<configuration>
-					<xmlOutput>true</xmlOutput>
-					<findbugsXmlOutput>true</findbugsXmlOutput>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>${maven.bundle.plugin.version}</version>
-				<extensions>true</extensions>
-			</plugin>
-
-			<plugin>
-       			     <groupId>org.apache.maven.plugins</groupId>
-		            <artifactId>maven-install-plugin</artifactId>
-		            <version>2.5.2</version>
-		        </plugin>
-		
-	        <plugin>
-        	    <groupId>org.apache.maven.plugins</groupId>
-            		<artifactId>maven-deploy-plugin</artifactId>
-	            <version>2.8.2</version>
-        	</plugin>
-
-		</plugins>
-	</build>
-
-	<profiles>
-		<profile>
-			<id>findbugs</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>findbugs-maven-plugin</artifactId>
-						<version>${findbugs.maven.plugin.version}</version>
-						<executions>
-							<execution>
-								<phase>compile</phase>
-								<goals>
-									<goal>check</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<failOnError>false</failOnError>
-							<excludeFilterFile>${main.basedir}/findbugs/findbugs-exclude.xml</excludeFilterFile>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>checkstyle</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-checkstyle-plugin</artifactId>
-						<version>${checkstyle.maven.plugin.version}</version>
-						<executions>
-							<execution>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkstyle</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<configLocation>${main.basedir}/checkstyle/checkstyle.xml</configLocation>
-							<!-- TODO need to build suppressions file -->
-							<!-- <suppressionsLocation>${main.basedir}/checkstyle/suppressions.xml</suppressionsLocation> -->
-							<!-- <headerLocation>${main.basedir}/checkstyle/ClassHeader.txt</headerLocation> -->
-							<enableRSS>false</enableRSS>
-							<linkXRef>true</linkXRef>
-							<consoleOutput>true</consoleOutput>
-							<failsOnError>true</failsOnError>
-							<failOnViolation>true</failOnViolation>
-							<includeTestSourceDirectory>false</includeTestSourceDirectory>
-							<enableRulesSummary>true</enableRulesSummary>
-							<propertyExpansion>main.basedir=${main.basedir}</propertyExpansion>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
-	<dependencyManagement>
-		<dependencies>
-			
-			<dependency>
-				<groupId>tr.org.liderahenk</groupId>
-				<artifactId>lider-core</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>lider-service-impl</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.geronimo.components</groupId>
-				<artifactId>geronimo-transaction</artifactId>
-				<version>${geronimo.transaction.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.aries.transaction</groupId>
-				<artifactId>org.apache.aries.transaction.blueprint</artifactId>
-				<version>${aries.transaction.blueprint.version}</version>
-			</dependency>
-			<!-- REST/Web Dependencies -->
-			<dependency>
-				<groupId>org.codehaus.jackson</groupId>
-				<artifactId>jackson-core-asl</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.codehaus.jackson</groupId>
-				<artifactId>jackson-mapper-asl</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-core</artifactId>
-				<version>${jersey.core}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.jersey</groupId>
-				<artifactId>jersey-client</artifactId>
-				<version>${jersey.client}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.servicemix.specs</groupId>
-				<artifactId>org.apache.servicemix.specs.jsr311-api-1.1.1</artifactId>
-				<version>${servicemix.specs}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>servlet-api</artifactId>
-				<version>${servlet.api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.shiro</groupId>
-				<artifactId>shiro-web</artifactId>
-				<version>${shiro.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.shiro</groupId>
-				<artifactId>shiro-core</artifactId>
-				<version>${shiro.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
-				<version>${spring.framework.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
-				<version>${spring.framework.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>com.springsource.javax.servlet.jsp.jstl</artifactId>
-				<version>${springsource.jstl}</version>
-			</dependency>
-			<!-- End of REST/Web Dependencies -->
-			<!-- XMPP Dependencies -->
-			<dependency>
-				<groupId>org.igniterealtime.smack</groupId>
-				<artifactId>smack-core</artifactId>
-				<version>${smack.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.igniterealtime.smack</groupId>
-				<artifactId>smack-extensions</artifactId>
-				<version>${smack.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.igniterealtime.smack</groupId>
-				<artifactId>smack-im</artifactId>
-				<version>${smack.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.igniterealtime.smack</groupId>
-				<artifactId>smack-tcp</artifactId>
-				<version>${smack.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.igniterealtime.smack</groupId>
-				<artifactId>smack-sasl-javax</artifactId>
-				<version>${smack.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.igniterealtime.smack</groupId>
-				<artifactId>smack-java7</artifactId>
-				<version>${smack.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.igniterealtime.smack</groupId>
-				<artifactId>smack-resolver-javax</artifactId>
-				<version>${smack.version}</version>
-			</dependency>
-			<!-- End of XMPP Dependencies -->
-			<!-- Apache Commons Dependencies -->
-			<dependency>
-				<groupId>commons-beanutils</groupId>
-				<artifactId>commons-beanutils</artifactId>
-				<version>${commons.beanutils.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>${commons.lang3.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-compress</artifactId>
-				<version>${commons.compress.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>${commons.io.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-codec</groupId>
-				<artifactId>commons-codec</artifactId>
-				<version>${commons.codec.version}</version>
-			</dependency>
-			<!-- End of Apache Commons Dependencies -->
-			<!-- LDAP Dependencies -->
-			<dependency>
-				<groupId>org.apache.directory.api</groupId>
-				<artifactId>api-ldap-client-api</artifactId>
-				<version>${apache.directory.api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.directory.api</groupId>
-				<artifactId>api-ldap-schema-data</artifactId>
-				<version>${apache.directory.api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.directory.api</groupId>
-				<artifactId>api-ldap-extras-aci</artifactId>
-				<version>${apache.directory.api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.directory.api</groupId>
-				<artifactId>api-ldap-net-mina</artifactId>
-				<version>${apache.directory.api.version}</version>
-			</dependency>
-			<!-- End of LDAP Dependencies -->
-			<dependency>
-				<groupId>com.hazelcast</groupId>
-				<artifactId>hazelcast-all</artifactId>
-				<version>${hazelcast.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>net.sf.ehcache</groupId>
-				<artifactId>ehcache</artifactId>
-				<version>${ehcache.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.compendium</artifactId>
-				<version>${osgi.compendium.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.core</artifactId>
-				<version>${osgi.core.version}</version>
-			</dependency>
-			<!-- Mail Dependencies -->
-			<dependency>
-				<groupId>javax.mail</groupId>
-				<artifactId>javax.mail-api</artifactId>
-				<version>${javax.mail.api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
-				<version>${javax.mail.version}</version>
-			</dependency>
-			<!-- End of Mail Dependencies -->
-			<dependency>
-				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-jsp_2.1_spec</artifactId>
-				<version>${geronimoJsp21SpecVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.geronimo.components</groupId>
-				<artifactId>geronimo-transaction</artifactId>
-				<version>${geronimoTransactionVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-jta_1.1_spec</artifactId>
-				<version>${geronimoJtaSpecVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-jpa_2.0_spec</artifactId>
-				<version>${geronimoJpaSpecVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>asm</groupId>
-				<artifactId>asm-all</artifactId>
-				<version>${asmVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.openjpa</groupId>
-				<artifactId>openjpa</artifactId>
-				<version>${openjpaVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.openjpa</groupId>
-				<artifactId>openjpa-persistence-jdbc</artifactId>
-				<version>${openjpaVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>net.sourceforge.serp</groupId>
-				<artifactId>serp</artifactId>
-				<version>${serpVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.servicemix.bundles</groupId>
-				<artifactId>org.apache.servicemix.bundles.serp</artifactId>
-				<version>${servicemixBundlesSerpVersion}</version>
-			</dependency>
-			<!-- jpa -->
-			<dependency>
-				<groupId>org.apache.aries.jpa</groupId>
-				<artifactId>org.apache.aries.jpa.api</artifactId>
-				<version>${ariesJpaApiVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.aries.jpa</groupId>
-				<artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
-				<version>${ariesJpaBlueprintAriesVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.aries.jpa</groupId>
-				<artifactId>org.apache.aries.jpa.container</artifactId>
-				<version>${ariesJpaContainerVersion}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.aries.jpa</groupId>
-				<artifactId>org.apache.aries.jpa.container.context</artifactId>
-				<version>${ariesJpaContainerContextVersion}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.karaf.shell</groupId>
-				<artifactId>org.apache.karaf.shell.core</artifactId>
-				<version>${karaf.shell.core.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.itextpdf</groupId>
-				<artifactId>itextpdf</artifactId>
-				<version>${itext.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
+
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<optional>true</optional>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>${mockito.version}</version>
-			<scope>test</scope>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-		<!-- Logging -->
+
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
+			<groupId>nz.net.ultraq.thymeleaf</groupId>
+			<artifactId>thymeleaf-layout-dialect</artifactId>
 		</dependency>
-		<!-- OSGI related stuff -->
+
+		<!-- Apache DS Dependencies -->
 		<dependency>
-			<groupId>org.apache.aries.blueprint</groupId>
-			<artifactId>org.apache.aries.blueprint</artifactId>
-			<version>${aries.blueprint.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.compendium</artifactId>
-			<version>${osgi.compendium.version}</version>
+			<groupId>org.apache.directory.api</groupId>
+			<artifactId>api-ldap-client-api</artifactId>
+			<version>1.0.0-M20</version>
 		</dependency>
 		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.core</artifactId>
-			<version>${osgi.core.version}</version>
+			<groupId>org.apache.directory.api</groupId>
+			<artifactId>api-ldap-schema-data</artifactId>
+			<version>1.0.0-M20</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.directory.api</groupId>
+			<artifactId>api-ldap-codec-standalone</artifactId>
+			<version>1.0.0-M20</version>
+		</dependency>
+
+		<!-- XMPP Dependencies -->
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-core</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-extensions</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-im</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-tcp</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-sasl-javax</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-java7</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-resolver-javax</artifactId>
+			<version>${smack.version}</version>
+		</dependency>
+		<!-- End of XMPP Dependencies -->
+
+
+		<!-- security dependencies -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-ldap</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.ldap</groupId>
+			<artifactId>spring-ldap-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-ldap</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.19</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
+
+		<!-- Main Guacamole library -->
+		<dependency>
+			<groupId>org.apache.guacamole</groupId>
+			<artifactId>guacamole-common</artifactId>
+			<version>1.1.0</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Guacamole JavaScript library -->
+		<dependency>
+			<groupId>org.apache.guacamole</groupId>
+			<artifactId>guacamole-common-js</artifactId>
+			<version>1.1.0</version>
+			<type>zip</type>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.53</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+			<version>2.2.5.RELEASE</version>
 		</dependency>
 	</dependencies>
 
-	<developers>
-		<developer>
-			<id>edip.yildiz</id>
-			<name>muhammed edip yildiz</name>
-			<email>muhammededip.yildiz@tubitak.gov.tr</email>
-		</developer>
-		
-		<developer>
-			<id>ibasaran</id>
-			<name>ismail basaran</name>
-			<email>basaran.ismaill@gmail.com</email>
-		</developer>
-	</developers>
+	<build>
+		<finalName>ROOT</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>build-info</id>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
+			<!-- Compile using Java 1.8 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<charset>utf-8</charset>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+
+					<overlays>
+						<overlay>
+							<groupId>org.apache.guacamole</groupId>
+							<artifactId>guacamole-common-js</artifactId>
+							<type>zip</type>
+						</overlay>
+					</overlays>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
 </project>

@@ -1,0 +1,396 @@
+/*
+ * operation-log-report.js
+ * 
+ * This js contains pagination of operations logs and insert in on table,
+ * exporting table data to excel file and show selected log detail
+ * 
+ * Tuncay ÇOLAK
+ * tuncay.colak@tubitak.gov.tr
+ * 
+ * http://www.liderahenk.org/
+ */
+
+var operationType = null;
+var logs = [];
+var operationTypeList = null;
+var pageNumber = 1;
+var pageSize = 10;
+var totalPages = 0;
+var filterStartDate = "";
+var filterEndDate = "";
+var selectedFilterStartDate = "";
+var selectedFilterEndDate = "";
+var selectedUserDN = null;
+var searchText = null;
+var field = null;
+
+//Operation Types
+//CREATE(1), READ(2), UPDATE(3), DELETE(4), LOGIN(5), LOGOUT(6), EXECUTE_TASK(7), EXECUTE_POLICY(8), CHANGE_PASSWORD(9), MOVE(10), UNASSIGMENT_POLICY(11)
+
+$(document).ready(function(){
+	$("#btnSelectUserDN").show();
+	$.ajax({ 
+		type: 'POST', 
+		url: 'operation/types',
+		dataType: 'json',
+		success: function (data) {
+			operationTypeList = data;
+			if(data.length > 0) {
+				$('#selectOperationType').empty().append('<option value="ALL">Hepsi</option>');
+				$.each(data, function(index, element) {
+					$('#selectOperationType').append($('<option>', {
+						value: element,
+						text : getOpetarionType(element)
+					}));
+				});
+			}
+			else {
+				$.notify("Sistem güncesi tipleri getirilirken hata oluştu", "error");
+			}
+		},
+		error: function (data, errorThrown) {
+		}, complete: function() {
+			getOperationLogs();
+			pagination(1, totalPages);
+		}
+	});
+
+	$('#logFilterParam').change(function(){
+		selectedUserDN = null;
+		$('#searchTextForLog').val("");
+		if($("#logFilterParam option:selected").val() == "userId") {
+			$("#btnSelectUserDN").show();
+		} else {
+			$("#btnSelectUserDN").hide();
+		}
+	});
+});
+
+function getOpetarionType(type) {
+	var typeText = type;
+	if (type == "CREATE") {
+		typeText = "Oluşturma";
+	} else if (type == "READ") {
+		typeText = "Okuma";
+	} else if (type == "UPDATE") {
+		typeText = "Güncelleme";
+	} else if (type == "DELETE") {
+		typeText = "Silme";
+	} else if (type == "LOGIN") {
+		typeText = "Oturum Açma";
+	} else if (type == "LOGOUT") {
+		typeText = "Oturum Kapatma";
+	} else if (type == "EXECUTE_TASK") {
+		typeText = "Görev Çalıştırma";
+	} else if (type == "EXECUTE_POLICY") {
+		typeText = "Politika Çalıştırma";
+	} else if (type == "CHANGE_PASSWORD") {
+		typeText = "Parola Değiştir";
+	} else if (type == "MOVE") {
+		typeText = "Taşı";
+	} else if (type == "UNASSIGMENT_POLICY") {
+		typeText = "Politika Kaldır";
+	}
+	return typeText;
+}
+
+function exportToExcel () {
+	var sheetData = [];
+
+	var wb = XLSX.utils.book_new();
+	wb.Props = {
+			Title: "Lider Ahenk Operation Logs",
+			Subject: "Operation Logs",
+			Author: "Lider Ahenk",
+			CreatedDate: new Date(2020,12,19)
+	};
+
+	wb.SheetNames.push("Operation Logs");
+	var wsData = [];
+	var header = ['' , 
+		'Günce Tipi', 
+		'Oluşturulma Tarihi', 
+		'Mesaj',
+		'Kullanıcı Adı', 
+		'IP Adresi'];
+	//give character number size for column width
+	var colLength = [];
+	for (var i = 0; i < header.length; i++) {
+		colLength[i] = header[i].length + 3;
+	}
+	wsData[0] = header;
+	var logListData = [];
+	$.each(logs, function(index, log) {
+		var crudType = getOpetarionType(log.crudType);
+		logListData = [index+1, 
+			crudType, 
+			log.createDate, 
+			log.logMessage,
+			log.userId,
+			log.requestIp];
+
+		//if column element character length is bigger than before update it
+		for (var i = 0; i < logListData.length; i++) {
+			if(logListData[i] != "") {
+				if(String(logListData[i]).length > colLength[i]){
+					colLength[i] = String(logListData[i]).length + 3;
+				}
+			}
+		}
+		wsData.push(logListData);
+	});
+	//set column widths
+	var wscols = [];
+	for (let i = 0; i < colLength.length; i++) {
+		wscols.push({ wch: colLength[i]});  // wch = character
+	}
+	var ws = XLSX.utils.aoa_to_sheet(wsData);
+	ws['!cols'] = wscols;
+	wb.Sheets["Operation Logs"] = ws;
+	var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+
+	var buf = new ArrayBuffer(wbout.length);
+	var view = new Uint8Array(buf);
+	for (var i=0; i<wbout.length; i++) view[i] = wbout.charCodeAt(i) & 0xFF;
+	return buf;
+}
+
+function exportButtonClicked() {
+	saveAs(new Blob([exportToExcel()],{type:"application/octet-stream"}), 'Operation Logs.xlsx');
+}
+
+function logsPagingClicked(pNum) {
+	pageNumber = pNum;
+	getOperationLogs();
+}
+
+$('#logPageSize').change(function(){
+	if (pageNumber != 1) {
+		pageNumber = 1;
+	}
+	$('#pagingLogList').empty()
+	pageSize = $('#logPageSize').val();
+	getOperationLogs();
+});
+
+//get operation logs function
+function getOperationLogs() {
+	progress("LogsReportBodyDiv","progressLogsReport",'show');
+
+	var params = {
+			"pageNumber": pageNumber,
+			"pageSize": pageSize,
+			"operationType": $('#selectOperationType').val(),
+			'field': field,
+			'searchText': searchText
+	};
+
+	if(selectedFilterStartDate != "" && selectedFilterEndDate != "" && $('#date_filter').val() != "") {
+		params['startDate'] = selectedFilterStartDate;
+		params['endDate'] = selectedFilterEndDate;
+	}
+
+	var num = (pageNumber-1) * pageSize + 1;
+	var html = "";
+	$.ajax({ 
+		type: 'POST',
+		url: 'operation/logs',
+		dataType: 'json',
+		data: params,
+		success: function (data) {
+			if(data.content.length > 0) {
+				logs = data.content;
+				totalPages = data.totalPages;
+				pagination(pageNumber, totalPages);
+				if(logs.length>0 && logs != null){
+					for (var m = 0; m < logs.length; m++) {
+						var row = logs[m];
+						var requestIp = row.requestIp;
+//						if (row.requestIp == "0:0:0:0:0:0:0:1") {
+//						requestIp = "localhost";
+//						}
+						var typeText = getOpetarionType(row.crudType);
+						html += '<tr>';
+						html += '<td class="text-center"> '+ (num) +' </td>';
+						html += '<td >' + typeText + '</td>';
+						html += '<td >' + row.createDate + '</td>';
+						html += '<td >' + row.logMessage + '</td>';
+						html += '<td >' + row.userId + '</td>';
+						html += '<td >' + requestIp + '</td>';
+						html += '<td class="text-center"><a href="#" class="edit" data-toggle="modal" '
+							+ 'onclick="selectedLogDetailClicked('+ row.id +')"'
+							+ '" data-toggle="modal" data-target="#genericModal">'
+							+ '<i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>'
+							html += '</tr>';
+						num++;
+					}
+				}
+			} else{
+				html += '<tr><td class="text-center" colspan="100%">Sonuç Bulunamadı</td></tr>'
+					$('#pagingLogList').empty();
+			}
+			$("#operationLogsTable").html(html);
+		},
+		complete: function() {
+			progress("LogsReportBodyDiv","progressLogsReport",'hide');
+		}
+	});
+}
+
+function logSearch() {
+	searchText = null;
+	field = null;
+	operationType = $("#selectoperationType option:selected").val();
+	searchText = $('#searchTextForLog').val();
+	field = $("#logFilterParam option:selected").val();
+
+	if(filterStartDate != "")
+		selectedFilterStartDate = filterStartDate;
+	if(filterEndDate != "")
+		selectedFilterEndDate = filterEndDate;
+
+	pageNumber = 1;
+	pageSize = $('#logPageSize').val();
+	getOperationLogs();
+}
+
+//sets paging div according to total page number
+function pagination(c, m) {
+	var current = c,
+	last = m,
+	delta = 2,
+	left = current - delta,
+	right = current + delta + 1,
+	range = [],
+	rangeWithDots = [],
+	l;
+
+	for (let i = 1; i <= last; i++) {
+		if (i == 1 || i == last || i >= left && i < right) {
+			range.push(i);
+		}
+	}
+
+	for (let i of range) {
+		if (l) {
+			if (i - l === 2) {
+				rangeWithDots.push(l + 1);
+			} else if (i - l !== 1) {
+				rangeWithDots.push('...');
+			}
+		}
+		rangeWithDots.push(i);
+		l = i;
+	}
+	$('#pagingLogList').empty()
+	if(m != 1){
+		for (let i = 0; i < rangeWithDots.length; i++) {
+			if(rangeWithDots[i] == c) {
+				$('#pagingLogList').append('<li class="active"><a href="javascript:logsPagingClicked(' + rangeWithDots[i] + ')">' + rangeWithDots[i] + '</a></li>');
+			}
+			else {
+				if(rangeWithDots[i] == "...") {
+					$('#pagingLogList').append('<li class="disabled"><a href="javascript:logsPagingClicked(' + rangeWithDots[i] + ')">' + rangeWithDots[i]+ '</a></li>');
+				}
+				else {
+					$('#pagingLogList').append('<li ><a href="javascript:logsPagingClicked(' + rangeWithDots[i] + ')">' + rangeWithDots[i]+ '</a></li>');
+				}
+			}
+		}
+	}
+}
+
+//open generic modal for userDN
+function btnSelectUserDNFromTreeClicked() {
+	getModalContent("modals/reports/operation_logs/select_user", function content(data){
+		$('#genericModalHeader').html("Aramak için bir kullanıcı seçiniz");
+		$('#genericModalBodyRender').html(data);
+		
+		createUserTree("selectUserDNTreeDiv",false,false,
+				function(row, rootDnUser){
+						selectedUserDN = row.distinguishedName;
+						if(row.type == "ORGANIZATIONAL_UNIT") {
+							$('#btnSelectedUserForLog').prop('disabled', true);
+						} else {
+							//check if user already has role for console
+							var selectedRows = $("#selectUserDNTreeGrid").jqxTreeGrid('getSelection');
+							$('#btnSelectedUserForLog').prop('disabled', false);
+						}
+				},
+				//check action
+				function(checkedRows, row){
+					
+				},
+				//uncheck action
+				function(unCheckedRows, row){
+					
+				},
+				// post tree created
+				function(root , treeGridId){
+					$('#'+ treeGridId).jqxTreeGrid('selectRow', root);
+					$('#'+ treeGridId).jqxTreeGrid('expandRow', root);
+				}
+		)
+	});
+}
+
+function btnUseForLogSelectedUserDNClicked() {
+	$('#searchTextForLog').val(selectedUserDN);
+	$('#genericModal').trigger('click');
+}
+
+//open generic modal for selected log detail
+function selectedLogDetailClicked(logId) {
+	var params = {
+			"id": logId
+	};
+
+	$.ajax({ 
+		type: 'POST',
+		url: 'operation/selectedLog',
+		dataType: 'json',
+		data: params,
+		success: function (data) {
+			if (data != null || data.lenght > 0 ) {
+				var tableContent = '<tr><th style="width: 30%">Günce ID</th><td style="width: 70%">' + data.id + '</td></tr>';
+				tableContent += '<tr><th>Günce Tipi</th><td>' + getOpetarionType(data.crudType) + '</td></tr>';
+				tableContent += '<tr><th>Oluşturma Tarihi</th><td>' + data.createDate + '</td></tr>';
+				tableContent += '<tr><th>Mesaj</th><td>' + data.logMessage + '</td></tr>';
+				tableContent += '<tr><th>Kullanıcı Adı</th><td>' + data.userId + '</td></tr>';
+				tableContent += '<tr><th>IP Adresi</th><td>' + data.requestIp + '</td></tr>';
+				if (data.profileId != null) {
+					tableContent += '<tr><th colspan="100%"><h6>Politika Ayar Detayı</h6></th></tr>';
+					tableContent += '<tr><th>Ayar ID</th><td>' + data.profileId + '</td></tr>';
+					$.each(jQuery.parseJSON(data.requestDataStr), function(key, value){
+						tableContent += '<tr><th>' + key + '</th><td>' + value + '</td></tr>';
+					});
+				} else if (data.crudType == "EXECUTE_TASK") {
+					tableContent += '<tr><th colspan="100%"><h6>Görev Çalıştırma Detayı</h6></th></tr>';
+					tableContent += '<tr><th>Görev ID</th><td>' + data.taskId + '</td></tr>';
+					$.each(jQuery.parseJSON(data.requestDataStr), function(key, value){
+						if (key == "password" || key == "RootPassword" || key == "admin-password" || key == "admin_password") {
+							value = value.replace(value, "*****");
+						}
+						tableContent += '<tr><th>' + key + '</th><td>' + value + '</td></tr>';
+					});
+				} else {
+					if (data.requestDataStr != null) {
+						if (data.crudType == "EXECUTE_POLICY" || data.crudType == "UNASSIGMENT_POLICY" || data.policyId != null) {
+							tableContent += '<tr><th colspan="100%"><h6>Politika Detayı</h6></th></tr>';
+							tableContent += '<tr><th>Politika ID</th><td>' + data.policyId + '</td></tr>';
+							tableContent += '<tr><th>Politika Adı</th><td>' + data.requestDataStr + '</td></tr>';
+						} else {
+							tableContent += '<tr><th>Günce İçeriği</th><td>' + data.requestDataStr + '</td></tr>';
+						}
+					}
+				}
+				getModalContent("modals/reports/operation_logs/selected_log_datail", function content(data){
+					$('#genericModalHeader').html("Seçilen Sistem Güncesi Detayı");
+					$('#genericModalBodyRender').html(data);
+					$("#selectedLogDetailBody").empty();
+					$('#selectedLogDetailBody').append(tableContent);
+				});
+			}
+		}
+	});
+}

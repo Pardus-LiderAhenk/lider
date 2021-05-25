@@ -1,0 +1,57 @@
+<div>
+	<div class="card-header-title">
+	
+	
+	</div>
+</div>
+<br>
+<div>
+	<div class="col-lg-12 ">
+	
+	</div>
+	<div class="clearfix"></div>
+<div class="col-lg-6 col-md-6" id="selectedEntryTableDiv">
+	  <label> Seçilen kullanıcı : </label> <label id="selectedEntrySize"> </label>
+		<table class="table table-striped table-bordered display table-hover" id="selectedEntryTable" >
+		<thead>
+			<tr>
+				<th>Ad</th>
+				<th>Açıklama</th>
+			</tr>
+		</thead>
+		<tbody id="selectedEntryTableBody"></tbody>
+		</table>
+		
+		<div>
+			<p> Dizin yapısında bulunan kullanıcıların arayüzü kullanması için Lider'e aktarılması gerekmektedir.      </p>
+			<p> Etki alanı parola erişimi kısıtından dolayı aktarılacak kullanıcının Lider arayüz giriş parolası etki alanı parolasından bağımsız tanımlanmalıdır. </p>
+			<p> Aktarılacak kullanıcının sayfa erişimlerini Ayarlar Menüsünden tanımlayabilirsiniz.</p>
+		</div>		
+	</div>
+	<div  class="col-lg-6 col-md-6">
+		<div class="main-card mb-3 card">
+		
+		<div class="card-body">
+	
+			<div class="form-group">
+				<label>Yeni Parola </label> <input class="form-control" type="password"
+					id="newUserPassword" name="newUserPassword" placeholder="Yeni Parola " />
+			</div>
+			<div class="form-group">
+				<label>Yeni Parola Onayla</label> <input class="form-control"
+					type="password" id="newConfirmPassword" name="newConfirmPassword"
+					placeholder="Yeni Parola Onayla" />
+			</div>
+			<div class="form-group">
+				<span class="text-secondary">Parola en az 8 karakter olmalıdır. En az bir büyük harf, küçük harf, sayı ve karakter içermelidir.</span>
+			</div>
+			<div class="form-group">
+				<button type="button" class="btn btn-info btn-sm pull-right" id="btnMoveUserAd2Ldap" onclick="btnMoveUserAd2Ldap()"> Arayüz yetkisi ver.</button>
+			</div>
+		</div>
+	
+</div>
+	</div>
+</div>
+<div class="form-group float-right  mt-3" id="addToNewGroupButtonDiv">
+</div>

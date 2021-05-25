@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Language" content="tr">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport"	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+<meta name="description" content="">
+<meta name="msapplication-tap-highlight" content="no">
+<!-- <link rel="stylesheet"	href="http://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,900%7CRoboto+Slab:300,400%7CRoboto+Mono:400" /> -->
+<!-- <link rel="stylesheet"	href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round"> -->
+<!-- <link rel="stylesheet"	href="https://fonts.googleapis.com/icon?family=Material+Icons"> -->
+
+<link href="css/main.css" rel="stylesheet">
+<link rel="stylesheet" href="css/jqx.base.css" type="text/css" />
+<link rel="stylesheet" type="text/css" href="css/main_b.css" />
+<link rel="stylesheet" type="text/css" href="css/custom.css" />
+<link rel="stylesheet" id="css-font-awesome" href="css/agent.info.css" />
+<link rel="stylesheet" id="css-font-awesome" href="css/executed-task-report.css" />
+<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.min.css"> 
+
+<link rel="stylesheet" href="css/jquery-confirm.min.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-multiselect.css">
+<link rel="stylesheet" type="text/css" href="css/select.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="css/buttons.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="css/jquery-editable-select.min.css">
+<link rel="stylesheet" type="text/css" href="css/computers.css">
+<title>Liderahenk</title>
+<style type="text/css">
+
+.progress {
+    display: block;
+    text-align: center;
+    width: 0;
+    height: 3px;
+    background: red;
+    transition: width .3s;
+}
+.progress.hide {
+    opacity: 0;
+    transition: opacity 1.3s;
+}
+
+.green {
+		color: black;
+		background-color: #EAEDED;
+	}
+	
+.back{
+ 	background-color:#505165;  
+	}
+
+.treeRowOnline {
+		background-color:#D0ECE7 ;
+	}
+
+.treegridClass {
+		
+}
+
+.white {
+		color: black;
+		background-color: white;
+	}
+	
+.btn-group {
+	    margin-bottom: 10px;
+	    font-size: 13px;
+		border: none;
+	}
+	
+.btn span {
+		float: left;
+		margin-top: 3px;
+	}
+	
+.agent-offline{
+	font-size: 15px; 
+	font-weight: bold;
+}
+
+.liderMenuItem{
+	margin-top: 3px;
+}
+</style>
+
+<!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>  -->
+<!--  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script> -->
+<!--  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script> -->
+<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script> 
+<script type="text/javascript" src="js/bootstrap.min.js"></script> 
+<script type="text/javascript" src="js/strophe.js"></script>
+<script type="text/javascript" src="js/jquery.dataTables.min.js" ></script>
+<script type="text/javascript" src="js/jquery-confirm.min.js"></script>
+<script type="text/javascript" src="js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="js/additional-methods.min.js"></script>
+<script type="text/javascript" src="js/loadingoverlay.min.js"></script>
+<script type="text/javascript">
+ 	var user_name = '[[${userName}]]';
+	var xmppHost = '[[${xmppHost}]]';
+	var liderVersion = '[[${liderVersion}]]';
+	var SID = '[[${SID}]]';
+	var RID = '[[${RID}]]';
+	var JID = '[[${JID}]]';
+	
+
+	var BOSH_SERVICE = 'http://' + xmppHost + ':5280/bosh';
+	var connection = null;
+	var rosterList = [];
+	var onlineEntryList = [];
+	var childEntryList = [];
+	var scheduledParam = null;
+	var computerTreeCreated=false;
+</script>
+<script type="text/javascript" src="assets/scripts/main.js"></script> 
+<script type="text/javascript" src="js/modal.js"></script>
+
+</head>
+<body>
+
+	<div class="app-container app-theme-white body-tabs-shadow fixed-header" id="mainHtmlContent">
+		<div class="app-header header-shadow" >
+			<div class="app-header__content" >
+				<div class="app-header-left" >
+                    <ul class="nav" style="font-weight: bold;">
+                        <li class="nav-item" >
+                           <a class="nav-link dizin" href="#" data-page="dashboard"> 
+                           		<img width="120" src="img/LiderAhenk-Logo-01.png"  > 
+								<span class="fa ml-2 opacity-8"  id="liderVersion" style="font-size: 14px;" >  </span>  
+						   </a>
+                        </li>
+                       <!-- Computer MANAGEMENT -->
+                        <li class="nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTERS')}">
+                            <a class="nav-link dizin " id="menuBtnComputers" href="#" data-page="computers">
+                                <i class="nav-link-icon fas fa-laptop-code"> </i>
+                                <span th:text="#{computer.management}"></span>
+                            </a>
+                        </li>
+                         <!-- User MANAGEMENT -->
+                        <li class="dropdown nav-item liderMenuItem" 
+                        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+                        			or ${#lists.contains(roleNames, 'ROLE_USERS')} 
+                        			or ${#lists.contains(roleNames, 'ROLE_AD_SYNC')}">
+                            <a class="nav-link dropdown-toggle " href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
+                               <i class="nav-link-icon fa fa-users-cog"></i>
+                                <span th:text="#{user.management}"></span>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+						        <div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).ACTIVE_DIRECTORY}" >
+                            		<a class="nav-link dizin" 
+		                            	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AD_SYNC')}" 
+		                            	href="#" data-page="directory-manager" >
+			                            <span>Kullanıcı Yönetimi</span>
+		                        	</a>
+                            	</div>
+                            	<div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).LDAP}">
+                            	  <a class="nav-link dizin" 
+						        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}" 
+						        	href="#" data-page="users" >
+						       	           <span th:text="#{user.operations}"></span>
+	                           		 </a>
+	                           		 
+		                           	<a class="nav-link dizin" 
+		                            	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AD_SYNC')}" 
+		                            	href="#" data-page="ad_user" >
+			                            <span th:text="#{ad.synchronization}"></span>
+			                        </a>
+                            	</div>
+                            	
+                            	<div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).NONE}">
+        	                    	  <a class="nav-link dizin" 
+							        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}" 
+							        	href="#" data-page="users" >
+					       	           <span th:text="#{user.operations}"></span>
+	                           		 </a>
+	                           		 <a class="nav-link dizin" 
+	                            		th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AD_SYNC')}" 
+	                            		href="#" data-page="ad_user" >
+		                            <span th:text="#{ad.synchronization}"></span>
+		                        </a>
+		                           	
+                            	</div>
+					        </div>
+                        </li>
+                        
+                        <!-- GROUP MANAGEMENT -->
+                         <li class="dropdown nav-item liderMenuItem" 
+                        		th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+                        		or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')} 
+                        		or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')} 
+                        		or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}
+                        		or ${#lists.contains(roleNames, 'ROLE_POLICY')}">
+                            <a class="nav-link dropdown-toggle " href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
+                                <i class="nav-link-icon fa fa-chalkboard-teacher"></i>
+                                <span th:text="#{group.management}"></span>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            	
+                              	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_COMPUTER_GROUPS')}" 
+					          	class="nav-link  dizin " href="#" data-page="computer_groups">
+					          		<span th:text="#{group.management.computer}"></span>
+					          	</a>
+                             <div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).LDAP} | ">
+						          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}" 
+						          		class="nav-link dizin" href="#" data-page="user_groups">
+						          		<span th:text="#{group.management.user}"></span>
+						          	</a>
+						          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}" 
+					          			class="nav-link  dizin " href="#" data-page="sudo_groups">
+					          			<span th:text="#{group.management.role}"></span>
+					          		</a>
+					         </div>
+					         
+                             <div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).NONE}">
+						        	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}" 
+						          		class="nav-link dizin" href="#" data-page="user_groups">
+						          		<span th:text="#{group.management.user}"></span>
+						          	</a>
+						          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SUDO_GROUPS')}" 
+					          			class="nav-link  dizin " href="#" data-page="sudo_groups">
+					          			<span th:text="#{group.management.role}"></span>
+					          		</a>
+					         </div>
+					         
+					         
+					          
+					          <a class="nav-link  dizin" href="#" data-page="policy" 
+					          	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_POLICY')}" >
+                                <span th:text="#{policy.management}"></span>
+                              </a>
+					          	
+					        </div>
+                        </li>
+                        
+                       <!-- REPORT -->
+                      <li class="dropdown nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+                      			or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}
+                      			or ${#lists.contains(roleNames, 'ROLE_EXECUTED_TASK')}
+                      			or ${#lists.contains(roleNames, 'ROLE_OPERATION_LOG')}">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                                <i class="nav-link-icon fas fa-tasks"></i>
+                                <span th:text="#{reports}"></span>
+                            </a>
+                            
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_AGENT_INFO')}" 
+					          class="nav-link dizin" href="#" data-page="agent_info">
+					          	<span th:text="#{reports.detailed.agent.report}"></span>
+					          </a>
+					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_EXECUTED_TASK')}" 
+					          class="nav-link dizin" href="#" data-page="executed_task_report">
+					          	<span th:text="#{reports.executed.task.report}"></span>
+					          </a>
+					          <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_OPERATION_LOG')}" 
+					          class="nav-link dizin" href="#" data-page="operation_log_report">
+					          	<span th:text="#{reports.operation.log.report}"></span>
+					          </a>
+					        </div>
+                        </li>
+                        
+<!--                         <li class="dropdown nav-item" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')}  -->
+<!--                         		or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}  -->
+<!--                         		or ${#lists.contains(roleNames, 'ROLE_NOTIFY_DEFINITION')}  -->
+<!--                         		or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')}  -->
+<!--                         		or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}"> -->
+<!--                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" > -->
+<!--                                 <i class="nav-link-icon fa fa-cog"></i> -->
+<!--                                 Tanımlar -->
+<!--                             </a> -->
+                            
+<!--                             <div class="dropdown-menu" aria-labelledby="navbarDropdown"> -->
+<!-- 					          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}"  -->
+<!-- 					          		class="dropdown-item dizin" href="#" data-page="plugins/definitions/script_definition">Betik Tanımları</a> -->
+<!-- 					          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_NOTIFY_DEFINITION')}"  -->
+<!-- 					          		class="dropdown-item dizin " href="#" data-page="plugins/definitions/notify_definition">ETA Mesaj Tanımları</a> -->
+<!-- 					          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')}"  -->
+<!-- 					          		class="dropdown-item dizin " href="#" data-page="plugins/definitions/conky_definition">Conky Tanımları</a> -->
+<!-- 					           	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}"  -->
+<!-- 					           		class="dropdown-item dizin " href="#" data-page="plugins/definitions/registration_template">Kayıt Şablonları</a> -->
+<!-- 					        </div> -->
+<!--                         </li> -->
+<!--                         <li class="nav-item" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SETTINGS')}" > -->
+<!--                             <a class="nav-link dizin" href="#" data-page="settings" > -->
+<!--                                 <i class="nav-link-icon fas fa-tools"> </i> -->
+<!--                                 Ayarlar -->
+<!--                             </a> -->
+<!--                         </li> -->
+                        <li class="nav-item liderMenuItem" th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')}" >
+                            
+                        </li>
+                    </ul>
+                 </div>
+				<div class="app-header-right">
+					<div class="header-btn-lg pr-0">
+						<div class="widget-content p-0">
+							<div class="widget-content-wrapper">
+								<div class="widget-content-left">									
+                                    <div class="btn-group mr-2">
+                                        <a th:if="${#locale.language == 'tr'}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                                        	class="p-0 btn" style="margin-top: 7px;">
+                                            <img width="22" class="" src="img/turkey.png" alt="">
+                                            <i class="fa fa-angle-down ml-1 opacity-8"></i>
+                                        </a>
+                                        <a th:if="${#locale.language == 'en'}"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                                        	class="p-0 btn" style="margin-top: 7px;">
+                                            <img width="22" class="" src="img/us.png" alt="">
+                                            <i class="fa fa-angle-down ml-1 opacity-8"></i>
+                                        </a>
+                                        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+	                                        <a class=" btn dropdown-item" onclick="changeLanguage('tr');">
+	                                            <img width="22" class=" mr-3" src="img/turkey.png" alt=""> <b>Türkçe</b>
+	                                        </a>
+	                                        <a class=" btn dropdown-item" onclick="changeLanguage('en');">
+	                                            <img width="22" class=" mr-3" src="img/us.png" alt=""> <b>English</b>
+	                                        </a>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="btn-group"
+										th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+			                        		or ${#lists.contains(roleNames, 'ROLE_SERVER_SETTINGS')} 
+			                        		or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')} 
+			                        		or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}
+			                        		or ${#lists.contains(roleNames, 'ROLE_ETA_MESSAGE_DEFINITION')}
+			                        		or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}">
+										<a data-toggle="dropdown" aria-haspopup="true"
+											aria-expanded="false" class="p-0 btn" style="margin-top: 7px;"> <img width="22"
+											class="" src="img/settings.jpeg"
+											alt="">  <i class="fa fa-angle-down ml-1 opacity-8" style=""></i>
+										</a>
+										
+										<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+											 
+											 <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONSOLE_ACCESS_SETTINGS')}" 
+											 	class="nav-link dizin" href="#" data-page="settings_console_access" >
+				                               <span th:text="#{console.access.settings}"></span>
+				                            </a>	
+											 <a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SERVER_SETTINGS')}" 
+											 	class="nav-link dizin" href="#" data-page="settings" >
+				                               <span th:text="#{server.settings}"></span>
+				                            </a>	
+				                            <div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} 
+					                        		or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')} 
+					                        		or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}
+					                        		or ${#lists.contains(roleNames, 'ROLE_ETA_MESSAGE_DEFINITION')}"
+				                            	class="dropdown-divider"></div>
+								          	
+								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_CONKY_DEFINITION')}" 
+								          		class="nav-link dizin " href="#" data-page="plugins/definitions/conky_definition">
+								          		<span th:text="#{conky.definitions}"></span>
+								          	</a>
+								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_SCRIPT_DEFINITION')}" 
+								          		class="nav-link dizin" href="#" data-page="plugins/definitions/script_definition">
+								          		<span th:text="#{script.definitions}"></span>
+								          	</a>
+								          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_ETA_MESSAGE_DEFINITION')}" 
+								          		class="nav-link dizin" href="#" data-page="plugins/definitions/notify_definition">
+								          		<span th:text="#{eta.message.definitions}"></span>
+								          	</a>
+								          	<div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}"
+								          		class="dropdown-divider"></div>
+								           	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_REGISTRATION_TEMPLATE')}" 
+								           		class="nav-link dizin " href="#" data-page="plugins/definitions/registration_template">
+								           		<span th:text="#{registration.templates}"></span>
+								           	</a>		
+<!-- 									        <div th:if="${userDomainType==T(tr.org.lider.messaging.enums.DomainType).ACTIVE_DIRECTORY} "> -->
+<!-- 									          	<div th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}" -->
+<!-- 							          				class="dropdown-divider"></div> -->
+<!-- 								          		 <a class="nav-link dizin"  -->
+<!-- 										        	th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USERS')}"  -->
+<!-- 										        	href="#" data-page="users" > -->
+<!-- 										       	           <span th:text="#{console.user.operations}"></span> -->
+<!-- 					                           	</a> -->
+<!-- 									          	<a th:if="${#lists.contains(roleNames, 'ROLE_ADMIN')} or ${#lists.contains(roleNames, 'ROLE_USER_GROUPS')}"  -->
+<!-- 									          		class="nav-link dizin" href="#" data-page="user_groups"> -->
+<!-- 									          		<span th:text="#{console.group.management.user}"></span> -->
+<!-- 									          	</a> -->
+<!-- 									         </div> -->
+										</div>
+									</div>
+						
+									<div class="btn-group">
+										<a data-toggle="dropdown" aria-haspopup="true"
+											aria-expanded="false" class="btn" style="margin-top: 7px;"><img width="22"
+											class="" src="img/person.png" th:title="${user.liderUser.name}">
+<!-- 											<i th:title="${user.liderUser.name}" class="fa fa-user ml-1 opacity-8" style=""></i> -->
+<!-- 											<span th:text="${user.liderUser.name}"></span> -->
+											<i class="fa fa-angle-down" style=""></i>
+										</a>
+										<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+								          	<a id="userProfile" class="nav-link dizin "data-page="lider_console_user">
+								          		<span>Profil Görüntüle</span>
+								          	</a>
+								          	<div class="dropdown-divider"></div>
+								          	<a href="logout" id="logout" class="nav-link">
+								          		<span>Çıkış Yap</span>
+								          	</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+			<div class="app-main">
+	 			<div class="app-main__inner back" > 
+					<!--  Dynamic Content  -->
+					<div id="mainArea">
+						<div th:insert="dashboard :: navbar"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+ 			
+ 		<div class="ui-theme-settings">
+		  <button type="button" id="TooltipDemo" class="btn-open-options btn btn-default" title="Sistem Güncesi">
+               <i > <img class="" src="img/log.png"> </i> 
+            </button>          
+             <div class="theme-settings__inner">
+            	 <div class="scrollbar-container">
+            	 	
+            	 <div class="theme-settings__options-wrapper">
+            	 		<h3 class="themeoptions-heading">
+            	 		 	<div>
+                               Sistem Güncesi
+                            </div>
+                            <button type="button" class="btn-info btn-wide ml-auto btn btn-focus btn-sm switch-header-cs-class" id="clearLogBtn">
+                                Temizle
+                            </button>
+                        </h3>		
+            			<div class="p-3">
+            				 <div id="logger" >
+            				 </div>
+            			</div>
+            	 </div>           	 
+            	 </div>
+             </div>	 
+		 </div>
+
+	<!--All Modals should be add here.. -->
+<!--Plugin Tasks loading here. XL-MODAL -->
+	<div class="modal fade" id="pluginHtmlPageLargeModal" tabindex="0"
+		role="dialog" aria-labelledby="pluginHtmlPageModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" id="pluginHtmlPageModalLabel"></h5>
+<!-- 					<button type="button" class="close" id="closePagePluginLarge" data-dismiss="modal" -->
+<!-- 						aria-label="Close"> -->
+<!-- 						<span aria-hidden="true">&times;</span> -->
+<!-- 					</button> -->
+				</div>
+				<div class="modal-body">
+					<div id="pluginPageRender"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+<!-- Plugin Tasks loading here. LG-MODAL -->
+	<div class="modal fade" id="pluginHtmlPageNormalModal" tabindex="0"
+		role="dialog" aria-labelledby="pluginHtmlPageModalLabel2"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" id="pluginHtmlPageModalLabel2"></h5>
+<!-- 					<button type="button" class="close" id="closePagePluginNormal" data-dismiss="modal" -->
+<!-- 						aria-label="Close"> -->
+<!-- 						<span aria-hidden="true">&times;</span> -->
+<!-- 					</button> -->
+				</div>
+				<div class="modal-body">
+					<div id="pluginPageRender2"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- START Scheduled Tasks loading here. -->
+	<div class="modal fade" id="scheduledTasksModal" tabindex="0"
+		role="dialog" aria-labelledby="scheduledTasksModal" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center"
+						id="scheduledTasksModalHeader">Zamanlanmış Görev Parametreleri</h5>
+				</div>
+				<div class="modal-body">
+					<div id="scheduledTasksModal">
+						<div class="form-group row">
+							<label for="inputSchedule" class="col-sm-4 col-form-label">Zamanlama</label>
+							<div class="col-sm-8">
+								<select class="form-control" id="scheduledSelection">
+									<option value="custom">Özel</option>
+									<option value="yearly">Yıllık</option>
+									<option value="monthly">Aylık</option>
+									<option value="weekly">Haftalık</option>
+									<option value="daily">Günlük</option>
+									<option value="hourly">Saatlik</option>
+									<option value="once">Tek Seferlik</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="inputSchedule" class="col-sm-4 col-form-label">Dakika</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="scheduledMinute"
+									placeholder="Dakika">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="inputSchedule" class="col-sm-4 col-form-label">Saat</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="scheduledHour"
+									placeholder="Saat">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="inputSchedule" class="col-sm-4 col-form-label">Ayın
+								Günü</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="scheduledDayOfMonth"
+									placeholder="Ayın Günü">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="inputSchedule" class="col-sm-4 col-form-label">Aylık</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="scheduledMonth"
+									placeholder="Aylık">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="inputSchedule" class="col-sm-4 col-form-label">Haftanın
+								Günü</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" id="scheduledDayOfWeek"
+									placeholder="Haftanın Günü">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="inputSchedule" class="col-sm-4 col-form-label">Tarih</label>
+							<div class="col-sm-8">
+								<input class="form-control" type="date" id="scheduledDate">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-info btn-secondary" data-dismiss="modal" id="scheduledSendTask">Tamam</button>
+					<button type="button" class="btn btn-info btn-secondary"
+						data-dismiss="modal" id="scheduledTasksModalClose">Kapat</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- END Scheduled Tasks loading here. -->
+
+<!-- Selected ldap entries searching and ahenks listing here-->
+	<div id="selectedEntryListModal" class="modal fade">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h5 class="modal-title">Seçili İstemci Listesi</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body">
+
+					<div class="d-block dropdown pull-right mb-1">
+	                    <button type="button" id="dropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+	                        <span class="btn-icon-wrapper pr-1">
+	                            <i class="fa fa-bars fa-w-20 mr-2"></i> İstemci Grubu Oluştur
+	                        </span>
+	                    </button>
+	                    <div tabindex="-1" id="operationDropDown" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-left">
+						    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#genericModal"
+						    	onclick="dropdownButtonClicked('addToExistingGroup')">Mevcut Gruba Ekle</a>
+						    <a class="dropdown-item" href="#"  data-toggle="modal" data-target="#genericModal"
+						    	onclick="dropdownButtonClicked('addToNewGroup')">Yeni İstemci Grubu Oluştur</a>
+	                    </div>
+	                </div>
+					<div id="selectedEntriesHolder"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Kapat</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Start Agent Detail Modal -->
+	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="agentDetailModal">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="exampleModalLongTitle">Ahenk Detayı</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+				<div class="modal-body">
+					<!-- Card Tabs Justified Alternative Style -->
+					<div class="card">
+						<div class="card-header">
+							<ul class="nav nav-justified">
+							    <li class="nav-item"><a data-toggle="tab" href="#tab-detail" class="active nav-link" id="tab-detail-url"><i class="fa fa-laptop"></i> Bilgisayar Öznitelikleri </a></li>
+							    <li class="nav-item"><a data-toggle="tab" href="#tab-session" class="nav-link" id="tab-session-url"><i class="fa fa-users"></i> Kullanıcı Oturumları</a></li>
+							</ul>
+						</div>
+						<div class="card-body">
+							<div class="tab-content">
+								<div class="tab-pane active" id="tab-detail" role="tabpanel">
+									<table class="table table-striped table-hover table-bordered">
+										<thead>
+											<tr>
+												<th>Özellik Adı</th>
+												<th>Özellik Değeri</th>
+											</tr>
+										</thead>
+										<tbody id="agentDetailTable">
+										</tbody>
+									</table>
+								</div>
+								<div class="tab-pane" id="tab-session" role="tabpanel">
+									<table class="table table-striped table-hover table-bordered">
+										<thead>
+											<tr>
+												<th style="width: 35%">Kullanıcı Adı</th>
+												<th style="width: 35%">Oturum Durumu</th>
+												<th style="width: 30%">Oluşturulma Tarihi</th>
+											</tr>
+										</thead>
+										<tbody id="userSessionsTable">
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- End Card Tabs Justified Default Style -->
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!--END Agent Detail Modal -->
+<!-- Start Command Executed Agents Modal -->
+	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="taskExecutedAgentModal">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="exampleModalLongTitle">Görev Gönderilen Ahenk Listesi</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+				<div class="modal-body" style="height: 600px;overflow-y: auto;">
+				    <table class="mb-0 table table-bordered table-sm">
+				        <thead>
+				        <tr>
+				            <th style="width: 10%">#</th>
+				            <th style="width: 25%">Bilgisayar Adı</th>
+				            <th style="width: 20%">Gönderilme Tarihi</th>
+				            <th style="width: 20%">Çalıştırılma Tarihi</th>
+				            <th style="width: 15%" class="text-center">Sonuç</th>
+				            <th style="width: 10%" class="text-center">Cevap</th>
+				        </tr>
+				        </thead>
+				        <tbody id="taskSentAgentList">
+				        </tbody>
+				    </table>
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- End Executed Task Detail Modal -->	
+	<!-- Start Executed Task Detail Modal -->
+	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="executedTaskDetail">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">Seçilen Görevin Detayları</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+				<div class="modal-body">
+					<table class="table table-striped table-hover">
+						<tbody id="executedTaskDetailTable">
+						</tbody>
+					</table>
+				</div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<!-- End Executed Task Detail Modal -->	
+
+	<div class="modal fade" id="genericModal" tabindex="0" role="dialog" aria-labelledby="genericModal" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" id="genericModalHeader"></h5>
+				</div>
+				<div class="modal-body">
+					<div id="genericModalBodyRender"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCloseGenericModal">Kapat</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="genericModalLarge" tabindex="0"
+		role="dialog" aria-labelledby="genericModalLarge"
+		aria-hidden="true">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" id="genericModalLargeHeader"></h5>
+				</div>
+				<div class="modal-body">
+					<div id="genericModalLargeBodyRender"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCloseGenericModalLarge">Kapat</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- User tree modal -->
+	<div class="modal fade" id="userTreeModal" tabindex="0" role="dialog" aria-labelledby="userTreeModal" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" id="userTreeModalHeader">Kullanıcı Ekle</h5>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+					    <div class="col-12" id="selectMemberTreeDiv">
+						    <div id="selectMemberTreeGrid"></div>
+					    </div>
+					    <div class="col-12">
+							<div>Seçilen kullanıcı sayısı: <b id="selectedUserCount">0</b></div>
+					    </div>
+					    <div class="col-12">
+							<div class="form-group float-right  mt-3 mr-2" id="newGroupInput">
+								<button type="button" class="btn btn-primary p-2" id="btnAddMember" 
+									onclick="btnMembersSelectedFromUserTree()">Kullanıcıları Seç</button>
+							</div>
+					    </div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCloseGenericModal">Kapat</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- AD detail -->
+	<div class="modal fade" id="adEntryDetailModal" tabindex="0" role="dialog" aria-labelledby="adEntryDetailModal" aria-hidden="true">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" >Öznitelikler</h5>
+				</div>
+				
+				<div class="modal-body">
+					<table class="mb-0 table table-bordered">
+								<thead>
+									<tr>
+										<th style="width: 30%">Özellik Adı</th>
+										<th style="width: 70%">Değer</th>
+									</tr>
+								</thead>
+								<tbody id="bodyMembers">
+									<tr><td colspan="100%" class="text-center">Kayıt bulunamadı</td></tr>
+								</tbody>
+							</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCloseGenericModal">Kapat</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Selected Entry Info LDAP detail -->
+	<div class="modal fade" id="entryLdapInfoModal" tabindex="0" role="dialog" aria-labelledby="entryLdapInfoModal" aria-hidden="true">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center">Öznitelikler</h5>
+					<span id="entryLdapInfoDN"></span>
+				</div>
+				
+				<div class="modal-body">
+					<div id="entryLdapInfoHolder"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCloseGenericModal">Kapat</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<script type="text/javascript" src="js/notify.min.js"></script>
+
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxcore.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxbuttons.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxscrollbar.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxdatatable.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxtreegrid.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxdata.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxcheckbox.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxlistbox.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxdropdownlist.js"></script>
+	<script type="text/javascript" src="js/treegrid/jqxmenu.js"></script>
+	<script type="text/javascript" src="js/treegrid/demos.js"></script>
+	<script type="text/javascript" src="js/schedule_task.js"></script>
+	<script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
+<!-- 	<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script> -->
+	<script type="text/javascript" src="js/dataTables.select.min.js"></script>
+	<script type="text/javascript" src="js/dataTables.bootstrap4.min.js"></script>
+	<script type="text/javascript" src="js/dataTables.buttons.min.js"></script>
+	<script type="text/javascript" src="js/jquery-editable-select.min.js"></script>
+	<script src="js/Chart.js"></script>
+	<script type="text/javascript" src="js/messaging.js"></script> <!-- for xmmp connection send message -->
+	
+	<script type="text/javascript" src="js/computers/computerTreeManager.js"></script>
+	<script type="text/javascript" src="js/user-groups/user_groups_treemanager.js"></script>
+	<script type="text/javascript" src="js/user/userTreeManager.js"></script>
+	<script type="text/javascript" src="js/agent-groups/agents_group_treemanager.js"></script>
+	
+	<script type="text/javascript" src="js/custom.js"></script>
+	<script type="text/javascript" src="js/util.js"></script>
+
+</body>
+</html>

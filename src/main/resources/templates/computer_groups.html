@@ -1,0 +1,115 @@
+<script type="text/javascript" src="js/agent-groups/agents_groups.js"></script>
+<style type="text/css">
+
+.allow-scroll {
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+</style>
+	<div class="col-lg-3">
+		<div class="d-block dropdown" style="margin: 5px;">
+	    </div>
+	           
+	    <div id="treeGridComputerGroupsDiv">
+	    </div>
+	    
+	    <div class="col-lg-12" >
+			<button  class="btn btn-link btn-sm pull-right" id="btnTreeRefresh" title="Yenile" style="color:white;  font-weight: bold;"> <i class="fas fa-sync primary" ></i> </button> 
+		</div>
+	
+		<div id="baseDnAgentGroupMenuDiv" style="display: none;">
+			<ul>
+				<a href="#"  class="btn "  id="btnCreateNewOrganizationalUnitForBase" data-toggle="modal" data-target="#genericModal">  <li> <i class="fa fa-folder-plus blue">&nbsp;</i> Yeni Klasör Oluştur </li> </a>  
+				<a href="#" class="btn " id="btnCreateNewAgentGroupForBase" title="Kullanıcı Grubu Ekle" data-target="#genericModal" data-toggle="modal">   <li>  <i class="fa fa-users blue"> &nbsp;</i>  İstemci Grubu Ekle </li> </a> 
+			</ul>
+		</div>
+		
+		<div id="folderPopUpAgentGroupMenuDiv" style="display: none;" >
+			<ul>
+				<a href="#" class="btn " id="btnCreateNewAgentGroup" title="Kullanıcı Grubu Ekle" data-target="#genericModal" data-toggle="modal">  <li>  <i class="fa fa-users blue"> &nbsp;</i>İstemci Grubu Ekle  </li>  </a> 
+				<a href="#" class="btn " id="btnCreateNewOrganizationalUnit" data-toggle="modal" data-target="#genericModal"> <li>  <i class="fa fa-folder-plus blue"> &nbsp;</i>Yeni Klasör Oluştur</li>  </a>   
+<!-- 				<a href="#" class="btn " id="btnEditOrganizationalUnitName" data-toggle="modal" data-target="#genericModal" >  <li>  <i class="fa fa-edit blue">&nbsp;</i>Klasör Adı Düzenle </li> </a>  -->
+				<a href="#" class="btn " id="btnMoveOuAgentGroupModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-random blue">&nbsp;</i>Klasör Taşı   </li> </a>
+				<a href="#" class="btn " id="btnDeleteOrganizationalUnit" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-trash red">&nbsp; &nbsp;</i>Klasörü Sil </li> </a>
+			</ul>
+		</div>
+		
+		<div id="agentGroupPopUpMenuDiv" style="display: none;" >
+			<ul>
+				 <a href="#"  class="btn addMemberAgentGroupBtn" id="addMemberAgentGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-user-plus blue">&nbsp;</i>İstemci Ekle  </li> </a>   
+				 <a href="#"  class="btn editAgentGroupBtn" id="editAgentGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-edit blue">&nbsp;</i>Grubu Düzenle  </li> </a> 
+				 <a href="#"  class="btn moveAgentGroupBtn" id="moveAgentGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-random blue">&nbsp;</i>Grubu Taşı  </li> </a>
+				 <a href="#"  class="btn deleteAgentGroup" id="deleteAgentGroup" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp;</i>Grubu Sil </li> </a> 
+			</ul>
+		</div>
+	</div>
+	
+	<div class="col-lg-9 green">
+			<div>
+				<div class="row" style="margin-top: 15px">
+					<div class="col-lg-10">
+						<div>
+							<button  class="btn"> </button>
+							<button role="tab" class="btn btn-info" id="btn-system" data-toggle="tab"><i class="fa fa-sliders-h"></i> Sistem Yönetimi </button>
+							<button role="tab" class="btn btn-info" id="btn-script" data-toggle="tab"><i class="fas fa-hashtag"></i> Betik</button>
+							<button role="tab" class="btn btn-info" id="btn-packages" data-toggle="tab"><i class="fa fas fa-cubes"></i> Paket</button>
+						</div>
+					</div>
+					<div class="col-lg-2" >
+<!-- 						<a class="nav-link  pull-right"> <i class="nav-link-icon fas fa-info-circle"> </i> &nbsp; <span > </span> </a> -->
+					</div>
+				</div>
+					<hr>
+					<div>
+						<div id="agentGroupsSystemPage">
+							<div class="row">
+								<div class="col-lg-5">
+									<div style="height:420px;" id="membersOfGroupCard">
+										<div class="main-card mb-3 card" style="height:400px; "  >
+											<div class="card-header">
+												<div class="col-lg-12"> <button  class="btn btn-link agent-offline " id=selectedAgentGroupInfo>  Lütfen İstemci Grubu Seçiniz.</button> </div>
+											</div>
+											<div class="card-body">
+												<div class="allow-scroll">
+													<div> 
+														<table class="mb-0 table table-bordered table-sm">
+															<thead>
+																<tr>
+																	<th style="width: 14%" class="text-center">#</th>
+																	<th style="width: 68%">Üye DN</th>
+																	<th style="width: 18%">  </th>
+																</tr>
+															</thead>
+															<tbody id="bodyMembers">
+																<tr><td colspan="100%" class="text-center">Üye bulunamadı</td></tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div id="end-sessions"></div>
+									<div id="manage-root"></div>
+									<div id="local-user"></div>
+									<div id="ldap-login"></div>
+									<div id="usb-management"></div>
+								</div>
+								<div class="col-lg-7">
+									<div id="file-transfer"></div>
+									<div id="conky"></div>
+									<div id="eta-notify"></div>
+									<div id="xmessage"></div>
+								</div>
+							</div>
+					   </div>
+					   <div id="agentGroupsScriptPage">
+							<div id="execute-script"></div>
+					  </div>
+					  <div id="agentGroupsPackageManagePage">
+							<div id="packages"></div>
+					  </div>
+				</div>
+			</div>
+		</div>

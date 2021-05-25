@@ -1,0 +1,122 @@
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/plugins/task/ldap-login.js"></script>
+</head>
+<body>
+	<div class="main-card mb-3 card">
+		<div id="divLdapLogin">
+		<div class="card-header">
+			<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+			<div class="col-lg-6 text-left">İSTEMCİ OTURUM AÇMA AYARLARI</div>
+			<!-- ids of the following buttons must be sendTask-{plugin-page} and  sendTaskCron-{plugin-page} -->
+			<div class="col-lg-6 text-right">
+				<button id="sendTaskCronLdapLogin" type="button"	class="btn-shadow btn btn-info btn-sm"	title="Zamanlanmış Görev Parametreleri"><i class="fa fa-clock"></i></button>
+				<button id="sendTaskLdapLogin" type="button" title="Çalıştır" class="btn-shadow btn btn-info btn-sm"><i class="fa fa-play"></i></button>
+			</div>
+		</div>
+		<div class="card-body">
+			<div class="login-form-1">
+				<div class="login-group">
+					<div class="row">
+						<div class="col-lg-3">
+							<img height="120" width="60" src="images/sitemap-solid.svg"/>
+						</div>
+						<div class="col-lg-9">
+							<div class="custom-control custom-switch">
+								<div>
+									<input type="checkbox" class="custom-control-input" id="ldapLoginCancelCb">
+							  		<label class="custom-control-label" for="ldapLoginCancelCb">Oturum açma ayarlarını iptal et</label>
+							  	</div>
+						  		<small class="text-muted">İstemcinin LDAP'tan / Active Directory'den oturum açma ayarlarını iptal eder.</small>
+							</div>
+							<br>
+<!-- 						<label for="notifySize">Kaynak Dizin</label> -->
+							<select class="form-control form-control-sm" id="ldapLoginSb">
+								<option value="NA" selected>Dizin seçiniz...</option>
+								<option value="OpenLDAP">OpenLDAP</option>
+								<option value="AD">Active Directory</option>
+							</select>
+						</div>
+					</div>
+					<br>
+					<div id="openLdapInfo">
+						<div class="form-group row">
+						    <label for="colFormLabel" class="col-sm-4 col-form-label">Sunucu Adresi</label>
+						    <div class="col-sm-8">
+						    	<input type="text" disabled="disabled" class="form-control form-control-sm" id="openLdapServerAddrInfo" placeholder="İstemci seçiniz...">
+						    </div>
+						</div>
+						<div class="form-group row">
+						    <label for="colFormLabel" class="col-sm-4 col-form-label">Base DN</label>
+						    <div class="col-sm-8">
+						    	<input type="text" disabled="disabled" class="form-control form-control-sm" id="openLdapBaseDnInfo" placeholder="İstemci seçiniz...">
+						    </div>
+						</div>
+<!-- 						<div class="form-group row"> -->
+<!-- 						    <label for="colFormLabel" class="col-sm-3 col-form-label">Seçili DN</label> -->
+<!-- 						    <div class="col-sm-9"> -->
+<!-- 						    	<input type="text" disabled="disabled" class="form-control" id="openLdapAgentDnInfo" placeholder="İstemci seçiniz..."> -->
+<!-- 						    </div> -->
+<!-- 						</div> -->
+<!-- 						<div class="form-group row"> -->
+<!-- 						    <label for="colFormLabel" class="col-sm-3 col-form-label">Ahenk Parolası</label> -->
+<!-- 						    <div class="col-sm-9"> -->
+<!-- 						    	<input type="password" disabled="disabled" class="form-control" id="openLdapAgentPasswordInfo" placeholder="İstemci seçiniz..."> -->
+<!-- 						    </div> -->
+<!-- 						</div> -->
+					</div>
+					
+					<div id="activeDirectoryInfo">
+						<div class="form-group row">
+						    <label for="colFormLabel" class="col-sm-4 col-form-label">Etki Alanı</label>
+						    <div class="col-sm-8">
+						    	<input type="text" disabled="disabled" class="form-control form-control-sm" id="adDomainNameInfo" placeholder="İstemci seçiniz...">
+						    </div>
+						</div>
+						<div class="form-group row">
+						    <label for="colFormLabel" class="col-sm-4 col-form-label">Sunucu Adresi</label>
+						    <div class="col-sm-8">
+						    	<input type="text" disabled="disabled" class="form-control form-control-sm" id="adServerAddrInfo" placeholder="İstemci seçiniz...">
+						    </div>
+						</div>
+						<div class="form-group row">
+						    <label for="colFormLabel" class="col-sm-4 col-form-label">Sunucu Adı</label>
+						    <div class="col-sm-8">
+						    	<input type="text" disabled="disabled" class="form-control form-control-sm" id="adHostnameInfo" placeholder="İstemci seçiniz...">
+						    </div>
+						</div>
+						<div class="form-group row">
+						    <label for="colFormLabel" class="col-sm-4 col-form-label">Port</label>
+						    <div class="col-sm-8">
+						    	<input type="text" disabled="disabled" class="form-control form-control-sm" id="adPortInfo" placeholder="İstemci seçiniz...">
+						    </div>
+						</div>
+						<div class="form-group row">
+						    <label for="colFormLabel" class="col-sm-4 col-form-label">Kullanıcı Adı</label>
+						    <div class="col-sm-8">
+						    	<input type="text" disabled="disabled" class="form-control form-control-sm" id="adUsernameInfo" placeholder="İstemci seçiniz...">
+						    </div>
+						</div>
+<!-- 						<div class="form-group row"> -->
+<!-- 						    <label for="colFormLabel" class="col-sm-3 col-form-label">AD Kullanıcı Parolası</label> -->
+<!-- 						    <div class="col-sm-9"> -->
+<!-- 						    	<input type="password" disabled="disabled" class="form-control" id="adUserPasswordInfo" placeholder="İstemci seçiniz..."> -->
+<!-- 						    </div> -->
+<!-- 						</div> -->
+					</div>
+					<div id="plugin-result-ldap-login"></div>
+				</div>
+			</div>
+		</div>
+		</div>
+		<div id="progressLdapLogin"  style="display: none;  width: 100%; height: 100%;  left: 0px; position:absolute ;  text-align: center;">
+		    	<div style="position:absolute; ; top: 38%; left: 30%;"> 
+		    	<img src="img/LoadingPage.gif" width="80" height="80"  /> <span> <b>   Görev Gönderildi.. Lütfen Bekleyiniz... </b> </span> 
+		    	</div>
+		  </div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<script type="text/javascript" src="js/user-groups/user_groups.js"></script>
+<style>
+.table tbody tr.selectpolicytable td {
+  background-color: #85C1E9;
+}
+.active-policy.table tr:hover td {
+    background: #70C1F9 !important;
+}
+.allow-scroll {
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+</style>
+
+<div class="col-lg-3" style="margin-top: 12px;">
+	<div id="treeGridUserGroupsDiv">
+		<div id="treeGridUserGroups"></div>
+	</div>
+	<div class="col-lg-12" >
+		<button  class="btn btn-link btn-sm pull-right" id="btnTreeRefresh" title="Yenile" style="color:white;  font-weight: bold;"> <i class="fas fa-sync primary" ></i> </button> 
+	</div>
+	
+<!-- 		  		<div id="userMenuDiv"> -->
+<!-- 		  					<div id="baseDnUserMenuDiv" style="display: none;"> -->
+<!-- 								<ul> -->
+<!-- 									<a href="#"  class="btn btnAddOuModal" data-toggle="modal" data-target="#genericModal">  <li> <i class="fa fa-folder-plus blue">&nbsp;</i> Yeni Klasör Oluştur </li> </a>   -->
+<!-- 									<a href="#" class="btn btnAddUserModal" data-target="#genericModalLarge" data-toggle="modal">   <li>  <i class="fa fa-users blue"> &nbsp;</i>  Kullanıcı Ekle </li> </a>  -->
+<!-- 								</ul> -->
+<!-- 							</div> -->
+							
+<!-- 							 <div id="userFolderPopUpMenuDiv" style="display: none;" > -->
+<!-- 								<ul> -->
+<!-- 								<a href="#" class="btn btnAddUserModal"  data-target="#genericModalLarge" data-toggle="modal">  <li>  <i class="fa fa-users blue"> &nbsp;</i>Kullanıcı Ekle  </li>  </a>  -->
+<!-- 								<a href="#"  class="btn btnAddOuModal" data-toggle="modal" data-target="#genericModal"> <li>  <i class="fa fa-folder-plus blue"> &nbsp;</i>Yeni Klasör Oluştur</li>  </a>    -->
+<!-- <!-- 								<a href="#" class="btn btnRenameOu" data-toggle="modal" data-target="#genericModal" >  <li>  <i class="fa fa-edit blue">&nbsp;</i>Klasör Adı Değiştir </li> </a>  --> -->
+<!-- 								<a href="#" class="btn" id="btnMoveOuUserModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-random blue">&nbsp;</i>Klasör Taşı   </li> </a> -->
+<!-- 								<a href="#" class="btn btnDeleteOuModal" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-trash red">&nbsp; &nbsp;</i>Klasörü Sil </li> </a> -->
+<!-- 								</ul> -->
+<!-- 							</div>' -->
+							
+<!-- 							 <div id="userPopUpMenuDiv" style="display: none;" > -->
+<!-- 								<ul> -->
+<!-- 								 <a href="#"  class="btn " id="btnMoveUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-random blue">&nbsp;</i> Kullanıcı Taşı  </li> </a> -->
+<!-- 								 <a href="#"  class="btn btnDeleteUserModal" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp;</i> Kullanıcı Sil </li> </a>  -->
+<!-- 								</ul> -->
+<!-- 							</div>'; -->
+<!-- 		  		</div> -->
+			
+			<div id="userGroupMenuDiv">
+					 	<div id="baseUserGroupDnMenuDiv" style="display: none;">
+							<ul>
+							<a href="#"  class="btn  btnCreateNewOu" id="btnCreateNewOuBaseDn" data-toggle="modal" data-target="#genericModal">  <li> <i class="fa fa-folder-plus blue">&nbsp;</i> Yeni Klasör Oluştur </li> </a>  
+							<a href="#" class="btn  btnCreateNewUserGroup" id="btnCreateNewUserGroupBaseDn" title="Kullanıcı Grubu Ekle" data-target="#genericModal" data-toggle="modal">   <li>  <i class="fa fa-users blue"> &nbsp;</i>  Kullanıcı Grubu Ekle </li> </a> 
+							</ul>
+						</div>
+						
+						<div id="userGroupFolderPopUpMenuDiv" style="display: none;" >
+							<ul>
+							<a href="#" class="btn btnCreateNewUserGroup" id="btnCreateNewUserGroup" title="Kullanıcı Grubu Ekle" data-target="#genericModal" data-toggle="modal">  <li>  <i class="fa fa-users blue"> &nbsp;</i>Kullanıcı Grubu Ekle  </li>  </a> 
+							<a href="#"  class="btn btnCreateNewOu" id="btnCreateNewOu" data-toggle="modal" data-target="#genericModal"> <li>  <i class="fa fa-folder-plus blue"> &nbsp;</i>Yeni Klasör Oluştur</li>  </a>   
+<!-- 							<a href="#" class="btn btnRenameOu" id="btnRenameOu" data-toggle="modal" data-target="#genericModal" >  <li>  <i class="fa fa-edit blue">&nbsp;</i>Klasör Adı Değiştir </li> </a>  -->
+							<a href="#" class="btn btnMoveOu" id="btnMoveOu" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-random blue">&nbsp;</i>Klasör Taşı   </li> </a>
+							<a href="#" class="btn btnDeleteOu" id="btnDeleteOu" data-toggle="modal" data-target="#genericModal" > <li>  <i class="fa fa-trash red">&nbsp; &nbsp;</i>Klasörü Sil </li> </a>
+							</ul>
+						</div>
+						
+						<div id="userGroupPopUpMenuDiv" style="display: none;" >
+							<ul>
+							 <a href="#"  class="btn addMemberUserGroupBtn" id="addMemberUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-user-plus blue">&nbsp;</i>Kullanıcı Ekle  </li> </a>   
+							 <a href="#"  class="btn editUserGroupBtn" id="editUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-edit blue">&nbsp;</i>Grubu Düzenle  </li> </a> 
+							 <a href="#"  class="btn moveUserGroupBtn" id="moveUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-random blue">&nbsp;</i>Grubu Taşı  </li> </a>
+							 <a href="#"  class="btn deleteUserGroupBtn"  id="deleteUserGroupBtn" data-target="#genericModal"	data-toggle="modal"> <li> <i class="fa fa-trash red">&nbsp;</i>Grubu Sil </li> </a> 
+							</ul>
+						</div>
+			
+			</div>
+</div>
+	<div class="col-lg-9 green">
+			<div>
+				<div class="row" style="margin-top: 15px">
+					<div class="col-lg-10">
+						<div>
+							<img id="agent_image" alt="" src="img/person.png">
+							<button  class="btn btn-link agent-offline " id=userGroupName>  Lütfen Kullanıcı Grubu Seçiniz.</button>
+							<button  class="btn"> </button>
+						</div>
+					</div>
+					
+				</div>
+					<hr>
+						<div>
+							<div class="row">
+								<div class="col-lg-5">
+									<div >
+										<div class="main-card mb-3 card"  >
+											<div class="card-header">
+												<div class="col-lg-4"> GRUP ÜYELERİ </div>
+											</div>
+											<div class="card-body">
+												<div class="allow-scroll"> 
+													<table class="mb-0 table table-bordered" >
+														<thead>
+															<tr>
+																<th style="width: 15%">#</th>
+																<th style="width: 67%">Üye DN</th>
+																<th style="width: 18%">  </th>
+															</tr>
+														</thead>
+														<tbody id="bodyMembers">
+															<tr><td colspan="3" class="text-center">Üye bulunamadı</td></tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div class="main-card mb-3 card"  >
+											<div class="card-header">ATANAN POLİTİKALAR</div>
+											<div class="card-body">
+												<div class="allow-scroll" id="executedPolicies">
+													<table class="mb-0 table table-bordered" id="executedPoliciesTable">
+														<thead>
+															<tr>
+																<th style="width: 10%">#</th>
+																<th style="width: 25%">Politika Adı</th>
+																<th style="width: 30%">Atanma Tarihi</th>
+																<th style="width: 20%">Versiyon</th>
+																<th style="width: 15%"></th>
+															</tr>
+														</thead>
+														<tbody id="bodyExecutedPolicies">
+															<tr id="bodyExecutedPoliciesRow"><td colspan="5" class="text-center">Lütfen Kullanıcı Grubu Seçiniz.</td></tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-7">
+									<div class="main-card mb-3 card"  >
+										<div class="card-header">
+											<i class="header-icon lnr-license icon-gradient bg-plum-plate"></i>
+											<div class="col-lg-6 text-left">Aktif Politika Listesi</div>
+											<div class="col-lg-6 text-right">
+												<button id="policyApplyBtn" type="button" class="btn-shadow btn btn-info btn-sm"><i class="fa fa-play"></i> Uygula</button>
+											</div>
+										</div>
+										<div class="card-body">
+											<div class="allow-scroll">
+												<div> 
+													<table class="mb-0 table table-bordered active-policy" id="activePolicyTable">
+														<thead>
+															<tr>
+																<th style="width: 10%">#</th>
+																<th style="width: 25%">Politika Adı</th>
+																<th style="width: 25%">Oluşturma Tarihi</th>
+																<th style="width: 40%">Açıklama</th>
+															</tr>
+														</thead>
+														<tbody id="bodyPolicies">
+															<tr id="bodyPolicyRow"><td colspan="4" class="text-center">Politika bulunamadı</td></tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+				  			 </div>
+						</div>
+					</div>
+				</div>

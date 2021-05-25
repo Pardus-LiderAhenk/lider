@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr" class="app-ui" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+	<script src="assets/js/core/jquery.min.js"></script>
+	<script src="js/FileSaver.js"></script>
+	<script src="js/xlsx.full.min.js"></script>
+</head>
+<body>
+<div id="navbar"><span>Red Stapler - SheetJS </span></div>
+<div id="wrapper">
+    
+        <a href="javascript:pagingClicked()">Create Excel</a>
+</div>
+<script>
+
+        function s2ab(s) {
+
+        	var wb = XLSX.utils.book_new();
+        	wb.Props = {
+        	        Title: "SheetJS Tutorial",
+        	        Subject: "Test",
+        	        Author: "Red Stapler",
+        	        CreatedDate: new Date(2017,12,19)
+        	};
+
+        	wb.SheetNames.push("Test Sheet");
+        	var header = ['Header 1' , 'Header 2'];
+        	var dd = ['hello' , 'world'];
+        	var ws_data = [];
+        	ws_data[0] = header;
+        	ws_data[1] = dd;
+        	var ws = XLSX.utils.aoa_to_sheet(ws_data);
+        	wb.Sheets["Test Sheet"] = ws;
+        	var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+        	
+	        var buf = new ArrayBuffer(wbout.length);
+	        var view = new Uint8Array(buf);
+	        for (var i=0; i<wbout.length; i++) view[i] = wbout.charCodeAt(i) & 0xFF;
+	        return buf;
+                
+        }
+        function pagingClicked(){
+                saveAs(new Blob([s2ab()],{type:"application/octet-stream"}), 'test.xlsx');
+        };
+  
+</script>
+</body>
+</html>

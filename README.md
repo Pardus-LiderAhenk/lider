@@ -2,7 +2,7 @@
 
 **Lider Ahenk** is an open source project which provides solutions to manage, monitor and audit unlimited number of different systems and users on a network.
 
-lider is the business layer of [Lider Ahenk](http://liderahenk.org/) project running on [Karaf](http://karaf.apache.org/) container. It contains core functionalities (such as LDAP client, task manager, XMPP client), core services (such as plugin DB service, log service) and provides an API for other plug-ins/bundles.
+lider is the business layer of Spring framwork. It contains core functionalities (such as LDAP client, task manager, XMPP client), core services (such as plugin DB service, log service) and provides an API for other plug-ins/bundles.
 
 ## Features
 
@@ -13,9 +13,8 @@ lider is the business layer of [Lider Ahenk](http://liderahenk.org/) project run
 ## Documentation
 
 * See [Lider wiki](https://github.com/Pardus-LiderAhenk/lider/wiki) to get started!
-* See how to [setup development environment](https://github.com/Pardus-LiderAhenk/lider/wiki/01.-Setup-Development-Environment)
-* Learn how to [build & run](https://github.com/Pardus-LiderAhenk/lider/wiki/02.-Building-&-Running)) lider.
-* Create [Lider distribution](https://github.com/Pardus-LiderAhenk/lider/wiki/03.-Lider-Distribution) as custom Karaf container.
+* https://www.liderahenk.org/
+
 
 ## Contribution
 
@@ -25,20 +24,19 @@ We encourage contributions to the project. To contribute:
 * Make your commits with clean, understandable comments
 * Perform a pull request
 
-## Other Lider Ahenk Projects
-
-* [Lider Console](https://github.com/Pardus-LiderAhenk/lider-console): Administration console built as Eclipse RCP project.
-* [Ahenk](https://github.com/Pardus-LiderAhenk/ahenk): Agent service running on remote machines.
-* [Lider Ahenk Installer](https://github.com/Pardus-LiderAhenk/lider-ahenk-installer): Installation wizard for Ahenk and Lider (and also its LDAP, database, XMPP servers).
-* [Lider Ahenk Archetype](https://github.com/Pardus-LiderAhenk/lider-ahenk-archetype): Maven archetype for easy plugin development.
-
 ## Changelog
 
 See [changelog](https://github.com/Pardus-LiderAhenk/lider/wiki/Changelog) to learn what we have been up to.
 
 ## Roadmap
+#### 2022
 
-#### Today
+#### 2021
+* Lider WEB ui
+* Spring framework 
+* Console administration switch to WEB
+
+#### 2019
 
 * 30+ plugins
 * Linux agent service written in Python

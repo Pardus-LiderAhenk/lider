@@ -2,7 +2,7 @@
 
 **Lider Ahenk** is an open source project which provides solutions to manage, monitor and audit unlimited number of different systems and users on a network.
 
-lider is the business layer of Spring framwork. It contains core functionalities (such as LDAP client, task manager, XMPP client), core services (such as plugin DB service, log service) and provides an API for other plug-ins/bundles.
+Business layer of Lider V2.0 is Spring framework. It contains core functionalities (such as LDAP client, task manager, XMPP client), core services (such as plugin DB service, log service) and provides an API for other plug-ins/bundles.
 
 ## Features
 
